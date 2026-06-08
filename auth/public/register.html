@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — Tilezilla</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Create Tilezilla Account</h1>
+    <p style="text-align:center;color:#666;font-size:.9rem;margin-bottom:12px">Uses your Skifflake Games account (same as Words Online).</p>
+    <form id="registerForm">
+      <label for="username">Username</label>
+      <input type="text" id="username" required minlength="3" maxlength="30" pattern="[a-zA-Z0-9_-]+">
+      <label for="email">Email</label>
+      <input type="email" id="email" required maxlength="45">
+      <label for="password">Password</label>
+      <input type="password" id="password" required minlength="6">
+      <label for="confirmPassword">Confirm password</label>
+      <input type="password" id="confirmPassword" required minlength="6">
+      <button type="submit" id="registerButton">Create account</button>
+    </form>
+    <div id="errorMessage" class="msg"></div>
+    <div id="successMessage" class="msg"></div>
+    <p class="links"><a href="login.html">Already have an account?</a></p>
+  </div>
+  <script src="js/register.js"></script>
+</body>
+</html>

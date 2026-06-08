@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+</head>
+<body>
+  <div class="tz-app" data-screen="daily-challenge">
+
+    <div class="tz-bg" aria-hidden="true"></div>
+
+    <div class="tz-stage">
+      <div class="tz-shell">
+
+        <header class="tz-header">
+          <button class="tz-menu-btn" type="button" aria-label="Open menu">
+            <img src="/img/Menu Bubble.png" alt="" class="tz-menu-btn__img" />
+          </button>
+          <img src="/img/Title.png" alt="Tilezilla — Skiff Lake Games" class="tz-title-img" />
+          <div class="tz-hints">
+            <img src="/img/Hint Tokens bubble.png" alt="" class="tz-hints-img" aria-hidden="true" />
+            <span class="tz-hints__count" id="hintCount">18</span>
+            <button class="tz-hints__add" type="button" aria-label="Get more hint tokens"></button>
+          </div>
+        </header>
+
+        <section class="tz-status" aria-label="Game status">
+          <article class="tz-panel tz-rank-panel">
+            <span class="tz-panel__eyebrow">Rank</span>
+            <div class="tz-rank-panel__body">
+              <div class="tz-rank-badge" aria-hidden="true">
+                <svg viewBox="0 0 64 72" class="tz-rank-badge__shield">
+                  <path d="M32 4 L56 16 L56 40 C56 56 44 66 32 70 C20 66 8 56 8 40 L8 16 Z" fill="#2d5a3d" stroke="#8b6914" stroke-width="3"/>
+                  <path d="M20 38 L28 46 L44 28" fill="none" stroke="#c4a35a" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tz-rank-panel__info">
+                <h2 class="tz-rank-panel__name" id="rankName">Pathfinder IV</h2>
+                <div class="tz-progress">
+                  <div class="tz-progress__track">
+                    <div class="tz-progress__fill" id="rankProgressFill" style="width:74.2%"></div>
+                  </div>
+                  <span class="tz-progress__text" id="rankProgressText">742 / 1000</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="tz-panel tz-challenge-panel">
+            <span class="tz-panel__eyebrow">Daily Challenge</span>
+            <time class="tz-challenge-panel__date" id="challengeDate" datetime="">—</time>
+            <p class="tz-challenge-panel__code" id="puzzleCode">—</p>
+            <p class="tz-challenge-panel__solutions">
+              <strong id="solutionCount">—</strong> Possible Solutions
+            </p>
+          </article>
+          <article class="tz-panel tz-timer-panel">
+            <div class="tz-timer-panel__current">
+              <span class="tz-timer-panel__icon" aria-hidden="true">⏱</span>
+              <span class="tz-timer-panel__time" id="timerCurrent">00:00</span>
+            </div>
+            <div class="tz-timer-panel__best">
+              <span class="tz-timer-panel__star" aria-hidden="true">★</span>
+              <span class="tz-timer-panel__label">Best</span>
+              <span class="tz-timer-panel__time" id="timerBest">—</span>
+            </div>
+          </article>
+        </section>
+
+        <p id="gameMessage" class="tz-game-message" role="status" aria-live="polite"></p>
+
+        <section class="tz-board-section" aria-label="Puzzle board">
+          <div class="tz-board-frame">
+            <div class="tz-board-wrap boardWrap" id="boardWrap">
+              <div class="tz-board board" id="board" aria-label="Puzzle board"></div>
+              <canvas id="liveValidationOverlay" class="overlay tz-live-validation" aria-hidden="true"></canvas>
+              <canvas id="hoverOverlay" class="overlay"></canvas>
+              <div id="loadingHud" class="tz-loading" hidden>Loading puzzle…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tz-preview-section" aria-label="Tile preview">
+          <div class="tz-preview-frame">
+            <h2 class="tz-sr-only" id="previewTitle">Preview Tile</h2>
+            <button class="tz-preview-rotate tz-preview-rotate--ccw" type="button" id="rotateCCW" aria-label="Rotate left"></button>
+            <div id="activePad" class="activePad tz-active-pad tz-preview-renderer" aria-label="Active tile preview">
+              <div id="activeEmpty" class="activeEmpty">Select a tile</div>
+              <img id="activeImg" class="activeImg" alt="" />
+            </div>
+            <button class="tz-preview-rotate tz-preview-rotate--cw" type="button" id="rotateCW" aria-label="Rotate right"></button>
+            <p class="tz-preview-tile__dir">Rotation: <strong id="previewDir">0°</strong></p>
+            <div class="tz-preview-check-solve" id="previewCheckSolve" aria-hidden="true">
+              <img
+                class="tz-preview-check-solve__panel"
+                src="/img/Check Solve nb.png"
+                alt="All tiles placed — ready to check solution"
+              />
+              <button
+                type="button"
+                class="tz-preview-check-solve__btn"
+                id="previewCheckSolBtn"
+                aria-label="Check solution"
+              >
+                <img src="/img/Check Solve Button.png" alt="" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tz-tilebag-container" id="tileBagContainer" aria-label="Tile bag">
+          <div class="tz-tilebag-frame">
+            <div class="tz-tilebag-count-overlay">
+              <span class="tz-tilebag-header__count" id="tileBagCount">0/0</span>
+            </div>
+            <button
+              type="button"
+              class="tz-tilebag-expand-handle"
+              id="tileBagExpandHandle"
+              aria-expanded="false"
+              aria-controls="tileBagTrack"
+            >
+              <span class="tz-tilebag-expand-handle__bar" aria-hidden="true"></span>
+              <span class="tz-tilebag-expand-handle__chevron" id="tileBagExpandIcon" aria-hidden="true"></span>
+              <span class="tz-sr-only" id="tileBagExpandLabel">Expand tile bag</span>
+            </button>
+            <button class="tz-tilebag-arrow tz-tilebag-arrow--prev" type="button" id="bagPrev" aria-label="Scroll tile bag left">‹</button>
+            <div class="tz-tilebag-track" id="tileBagTrack">
+              <div id="palette" class="palette tz-palette-h" role="listbox" aria-label="Available tiles"></div>
+            </div>
+            <button class="tz-tilebag-arrow tz-tilebag-arrow--next" type="button" id="bagNext" aria-label="Scroll tile bag right">›</button>
+          </div>
+        </section>
+
+        <section class="tz-actions" aria-label="Game actions">
+          <button class="tz-img-btn tz-img-btn--undo" type="button" id="undoBtn" aria-label="Undo">
+            <img src="/img/Undo bubble.png" alt="" />
+          </button>
+          <button class="tz-img-btn tz-img-btn--reset" type="button" id="resetBtn" aria-label="Reset">
+            <img src="/img/reset bubble.png" alt="" />
+          </button>
+          <button class="tz-img-btn tz-img-btn--hint" type="button" id="hintBtn" aria-label="Hint — 1 of 2 tokens">
+            <img src="/img/use hint bubble.png" alt="" />
+          </button>
+          <button class="tz-img-btn tz-img-btn--solutions" type="button" id="solutionsBtn" aria-label="View solutions">
+            <img src="/img/view solutions.png" alt="" />
+          </button>
+          <button class="tz-img-btn tz-img-btn--config" type="button" id="settingsBtn" aria-label="Settings">
+            <img src="/img/setup_config bubble.png" alt="" />
+          </button>
+        </section>
+
+      </div>
+
+      <nav class="tz-bottom-nav" aria-label="Main navigation">
+        <button class="tz-nav-item" type="button" data-nav="adventure">
+          <span class="tz-nav-item__icon" aria-hidden="true">⛰</span>
+          <span class="tz-nav-item__label">Adventure</span>
+        </button>
+        <button class="tz-nav-item tz-nav-item--active" type="button" data-nav="daily-challenge" aria-current="page">
+          <span class="tz-nav-item__icon" aria-hidden="true">📅</span>
+          <span class="tz-nav-item__label">Daily Challenge</span>
+        </button>
+        <button class="tz-nav-item" type="button" data-nav="random">
+          <span class="tz-nav-item__icon" aria-hidden="true">🔀</span>
+          <span class="tz-nav-item__label">Random Puzzle</span>
+        </button>
+        <button class="tz-nav-item" type="button" data-nav="library">
+          <span class="tz-nav-item__icon" aria-hidden="true">📖</span>
+          <span class="tz-nav-item__label">Puzzle Library</span>
+        </button>
+        <button class="tz-nav-item" type="button" data-nav="profile">
+          <span class="tz-nav-item__icon" aria-hidden="true">👤</span>
+          <span class="tz-nav-item__label">Profile</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="tz-sheet-root" id="menuRoot" hidden>
+      <button type="button" class="tz-sheet-backdrop" aria-label="Close menu"></button>
+      <div class="tz-sheet tz-sheet--menu" role="dialog" aria-modal="true" aria-label="Menu">
+        <header class="tz-sheet__header">
+          <h2 class="tz-sheet__title">Menu</h2>
+          <button type="button" class="tz-sheet__close" id="menuCloseBtn" aria-label="Close">×</button>
+        </header>
+        <nav class="tz-sheet__nav">
+          <button type="button" class="tz-sheet__link" id="menuOpenSettingsBtn">Settings</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="tz-sheet-root" id="settingsRoot" hidden>
+      <button type="button" class="tz-sheet-backdrop" aria-label="Close settings"></button>
+      <div class="tz-sheet tz-sheet--settings" role="dialog" aria-modal="true" aria-label="Settings">
+        <header class="tz-sheet__header">
+          <button type="button" class="tz-sheet__back" id="settingsBackBtn" aria-label="Back">‹</button>
+          <h2 class="tz-sheet__title">Settings</h2>
+          <button type="button" class="tz-sheet__close" id="settingsCloseBtn" aria-label="Close">×</button>
+        </header>
+        <div class="tz-sheet__body" id="settingsGameplay">
+          <h3 class="tz-settings-section">Gameplay</h3>
+          <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
+
+          <div class="tz-setting" data-setting="liveEdgeValidation">
+            <div class="tz-setting__label">Live Edge Validation</div>
+            <div class="tz-setting__help">Highlight open paths, mismatches, dead ends, and disconnected tiles while building.</div>
+            <div class="tz-segmented" role="group" aria-label="Live Edge Validation">
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="showTileBorders">
+            <div class="tz-setting__label">Show Tile Borders</div>
+            <div class="tz-setting__help">Tile outlines and separation lines on the board.</div>
+            <div class="tz-segmented" role="group" aria-label="Show Tile Borders">
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="true">On</button>
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="false">Off</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="usedTileBehavior">
+            <div class="tz-setting__label">Used Tile Behavior</div>
+            <div class="tz-setting__help">How placed tiles appear in the tile bag.</div>
+            <div class="tz-segmented" role="group" aria-label="Used Tile Behavior">
+              <button type="button" class="tz-segment" data-value="REMOVE" aria-pressed="true">Remove</button>
+              <button type="button" class="tz-segment" data-value="GREY_OUT" aria-pressed="false">Grey out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tz-dev-stubs" hidden aria-hidden="true">
+      <span id="rotHud">0</span>
+      <span id="sizeHud"></span>
+      <span id="cellHud"></span>
+      <span id="progressHud"></span>
+      <span id="levelHud"></span>
+      <span id="checkMsg"></span>
+      <span id="hintCost"></span>
+      <select id="boardSizeSelect"></select>
+      <select id="tierSelect"></select>
+      <select id="levelSelect"></select>
+      <input id="keepPreviewChk" type="checkbox" />
+      <button id="deleteBtn"></button>
+      <button id="clearBtn"></button>
+      <button id="checkSolBtn"></button>
+    </div>
+
+  </div>
+
+  <script type="module" src="js/app_v16.js"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js"></script>
+</body>
+</html>

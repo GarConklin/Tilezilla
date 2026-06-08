@@ -1,0 +1,75 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x6",
+  "tier": "0B",
+  "count": 3,
+  "levels": [
+    {
+      "id": "3x6-0B-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "UT": 3,
+        "LL": 1,
+        "LR": 1,
+        "DC": 1,
+        "RC": 1
+      },
+      "solvesFile": "3x6-0B-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0B-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "VL": 1,
+        "RC": 1,
+        "QC": 1,
+        "SH": 1,
+        "DC": 1,
+        "DB": 1,
+        "UT": 1,
+        "LL": 1
+      },
+      "solvesFile": "3x6-0B-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0B-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 1,
+        "UT": 1,
+        "DB": 1,
+        "DC": 1,
+        "LC": 1,
+        "VL": 1,
+        "LR": 1,
+        "ET": 1,
+        "SZ": 1
+      },
+      "solvesFile": "3x6-0B-AAC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

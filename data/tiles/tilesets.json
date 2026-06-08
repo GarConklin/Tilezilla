@@ -1,0 +1,128 @@
+{
+  "activeTileset": "gray-backs",
+  "tilesets": {
+    "gray-backs": {
+      "CR": "CR-Snake-G-Tile.png",
+      "CT": "CT-Snake-G-Tile.png",
+      "CQ": "CQ-Snake-G-Tile.png",
+      "DB": "DB-Snake-G-Tile.png",
+      "DC": "DC-Snake-G-Tile.png",
+      "DS": "DS-Snake-G-Tile.png",
+      "ET": "ET-Snake-G-Tile.png",
+      "ES": "ES-Snake-G-Tile.png",
+      "HL": "HL-Snake-G-Tile.png",
+      "LC": "LC-Snake-G-Tile.png",
+      "LL": "LL-Snake-G-Tile.png",
+      "LR": "LR-Snake-G-Tile.png",
+      "QC": "QC-Snake-G-Tile.png",
+      "QS": "QS-Snake-G-Tile.png",
+      "RC": "RC-Snake-G-Tile.png",
+      "SH": "SH-Snake-G-Tile.png",
+      "SS": "SS-Snake-G-Tile.png",
+      "SZ": "SZ-Snake-G-Tile.png",
+      "UT": "UT-Snake-G-Tile.png",
+      "VL": "VL-Snake-G-Tile.png",
+      "B1": "B1-Blocker-G-Tile.png",
+      "B2": "B2-Blocker-G-Tile.png",
+      "E1": "E1-Blank-G-Tile.png",
+      "E2": "E2-Blank-G-Tile.png"
+    },
+    "og": {
+      "CR": "CR-Snake-Tile.png",
+      "CT": "CT-Snake-Tile.png",
+      "CQ": "CQ-Snake-Tile.png",
+      "DB": "DB-Snake-Tile.png",
+      "DC": "DC-Snake-Tile.png",
+      "DS": "DS-Snake-Tile.png",
+      "ET": "ET-Snake-Tile.png",
+      "ES": "ES-Snake-Tile.png",
+      "HL": "HL-Snake-Tile.png",
+      "LC": "LC-Snake-Tile.png",
+      "LL": "LL-Snake-Tile.png",
+      "LR": "LR-Snake-Tile.png",
+      "QC": "QC-Snake-Tile.png",
+      "QS": "QS-Snake-Tile.png",
+      "RC": "RC-Snake-Tile.png",
+      "SH": "SH-Snake-Tile.png",
+      "SS": "SS-Snake-Tile.png",
+      "SZ": "SZ-Snake-Tile.png",
+      "UT": "UT-Snake-Tile.png",
+      "VL": "VL-Snake-Tile.png",
+      "B1": "B1-Blocker-Tile.png",
+      "B2": "B2-Blocker-Tile.png",
+      "E1": "E1-Blank-Tile.png",
+      "E2": "E2-Blank-Tile.png"
+    }
+  },
+  "tileMeta": {
+    "SH": {
+      "comment": "Start"
+    },
+    "ET": {
+      "comment": "End"
+    },
+    "UT": {
+      "comment": "U-Turn"
+    },
+    "RC": {
+      "comment": "Mini 1/4 turn right side"
+    },
+    "LC": {
+      "comment": "Mini 1/4 turn left side"
+    },
+    "LL": {
+      "comment": "L-Left"
+    },
+    "LR": {
+      "comment": "L-Right"
+    },
+    "HL": {
+      "comment": "Horizontal Line"
+    },
+    "VL": {
+      "comment": "Vertical Line"
+    },
+    "DB": {
+      "comment": "Double Line"
+    },
+    "SZ": {
+      "comment": "Z-type"
+    },
+    "SS": {
+      "comment": "S-type"
+    },
+    "DC": {
+      "comment": "Double exit combined hl & rc"
+    },
+    "DS": {
+      "comment": "Double exit combined hl & lc"
+    },
+    "QC": {
+      "comment": "Double exit combined lc & rc"
+    },
+    "QS": {
+      "comment": "Dual independent corners (opposite S-curve pair, 2x1)"
+    },
+    "B1-Blocker-G-Tile.png": {
+      "comment": "Blocker (1x1)"
+    },
+    "B2-Blocker-G-Tile.png": {
+      "comment": "Blocker (2x1)"
+    },
+    "E1-Blank-G-Tile.png": {
+      "comment": "Blank (1x1)"
+    },
+    "E2-Blank-G-Tile.png": {
+      "comment": "Blank (2x1)"
+    },
+    "CR": {
+      "comment": "Snake X crossover (2x1)"
+    },
+    "CT": {
+      "comment": "Snake T crossover (2x1)"
+    },
+    "CQ": {
+      "comment": "Snake crossover + quarter (path tile, 2x1)"
+    }
+  }
+}

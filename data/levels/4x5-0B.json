@@ -1,0 +1,31 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "4x5",
+  "tier": "0B",
+  "count": 1,
+  "levels": [
+    {
+      "id": "4x5-0B-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 4,
+        "cols": 5
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "SZ": 1,
+        "SS": 1,
+        "QC": 1,
+        "DS": 1,
+        "UT": 2,
+        "LL": 1,
+        "LR": 1
+      },
+      "solvesFile": "4x5-0B-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    }
+  ]
+}

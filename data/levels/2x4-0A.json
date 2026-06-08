@@ -1,0 +1,79 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "2x4",
+  "tier": "0A",
+  "count": 3,
+  "levels": [
+    {
+      "id": "2x4-0A-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 2,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "UT": 1,
+        "HL": 1
+      },
+      "solvesFile": "2x4-0A-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "2x4-0A-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 2,
+        "cols": 4
+      },
+      "tiles": {
+        "ET": 1,
+        "SH": 1,
+        "VL": 1
+      },
+      "blockers": [
+        [
+          0,
+          0,
+          "B2"
+        ]
+      ],
+      "solvesFile": "2x4-0A-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "2x4-0A-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 2,
+        "cols": 4
+      },
+      "tiles": {
+        "ET": 1,
+        "SH": 1,
+        "LC": 1
+      },
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ],
+        [
+          0,
+          3,
+          "B1"
+        ]
+      ],
+      "solvesFile": "2x4-0A-AAC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

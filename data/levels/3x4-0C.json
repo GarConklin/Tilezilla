@@ -1,0 +1,152 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x4",
+  "tier": "0C",
+  "count": 7,
+  "levels": [
+    {
+      "id": "3x4-0C-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "CR": 1,
+        "UT": 1,
+        "ET": 1,
+        "LL": 1,
+        "E2": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "CT": 1,
+        "RC": 2,
+        "ET": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "RC": 1,
+        "ET": 1,
+        "DS": 1,
+        "CR": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAD",
+      "name": "AAD",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "DS": 1,
+        "UT": 2,
+        "ET": 1,
+        "SH": 1,
+        "E1": 2
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAE",
+      "name": "AAE",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "RC": 1,
+        "LL": 1,
+        "LC": 1,
+        "E2": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAF",
+      "name": "AAF",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "UT": 2,
+        "E1": 2,
+        "ET": 1,
+        "QC": 1,
+        "SH": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x4-0C-AAG",
+      "name": "AAG",
+      "board": {
+        "rows": 3,
+        "cols": 4
+      },
+      "tiles": {
+        "LC": 1,
+        "LR": 1,
+        "ET": 1,
+        "CQ": 1,
+        "UT": 1,
+        "SH": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x4-0C-AAG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

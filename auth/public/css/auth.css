@@ -1,0 +1,44 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.2);
+}
+h1 { font-size: 1.5rem; margin-bottom: 20px; color: #333; text-align: center; }
+label { display: block; margin: 12px 0 4px; font-size: .9rem; color: #555; }
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button:disabled { opacity: .6; cursor: not-allowed; }
+.msg { margin-top: 12px; padding: 10px; border-radius: 6px; font-size: .9rem; display: none; }
+.msg.error { display: block; background: #fdecea; color: #c62828; }
+.msg.success { display: block; background: #e8f5e9; color: #2e7d32; }
+.links { margin-top: 16px; text-align: center; font-size: .9rem; }
+.links a { color: #667eea; }

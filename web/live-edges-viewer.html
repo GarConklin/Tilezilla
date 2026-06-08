@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Edge Viewer</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 16px; }
+    .top { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; margin-bottom: 12px; }
+    label { font-size: 14px; }
+    select, input { padding: 6px 8px; font-size: 14px; }
+    .wrap { display: grid; grid-template-columns: 380px 1fr; gap: 16px; align-items: start; }
+    canvas { border: 1px solid #aaa; background: #fff; width: 360px; height: 360px; }
+    .hint { color:#555; font-size: 13px; }
+    pre { background:#f6f6f6; padding: 10px; border:1px solid #ddd; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h2>Live Edge Viewer</h2>
+  <div class="top">
+    <label>Tile:
+      <select id="tileSelect"></select>
+    </label>
+    <label>Rotation:
+      <select id="rotSelect">
+        <option value="0">0°</option>
+        <option value="90">90°</option>
+        <option value="180">180°</option>
+        <option value="270">270°</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" id="showAll" /> Show all rotations
+    </label>
+  </div>
+
+  <div class="wrap">
+    <div>
+      <canvas id="cv" width="360" height="360"></canvas>
+      <div class="hint" style="margin-top:8px;">
+        Squares are <b>A</b> and <b>B</b>. Dots mark the <b>live edges</b> tied to that square. Rotations are clockwise.
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">Definition</h3>
+      <pre id="def"></pre>
+    </div>
+  </div>
+
+  <script type="module" src="./js/live_edges_viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+Tilezilla -  Puzzle Game – Progression Strategy Document
+Project Overview
+
+This is a mobile-friendly browser-based puzzle game built around rotating connected two-square tiles to create valid paths between a Start and End tile.
+
+The game is designed to:
+
+be easy to learn
+gradually increase in complexity
+support endless puzzle generation
+encourage replayability
+work well on phones and desktop browsers
+
+The project is intended to become:
+
+a Progressive Web App (PWA)
+playable directly in browser
+hosted online
+account/database driven later for progression tracking
+Core Gameplay
+Tile Structure
+
+Each tile:
+
+consists of two connected squares:
+A
+B
+contains path/hotspot edges
+can rotate clockwise
+hotspots rotate with the tile
+
+Rotation logic:
+
+N → E → S → W → N
+
+Tiles must:
+
+connect valid live edges
+avoid invalid edge collisions
+avoid live edges pointing off-board unless allowed
+Core Design Philosophy
+
+The progression system should follow:
+
+Teach
+Reinforce
+Introduce Twist
+Test Mastery
+
+Players should feel:
+
+“I understand this… now there’s a new challenge.”
+
+The game should avoid:
+
+overwhelming new players
+sudden difficulty spikes
+unclear failure reasons
+
+The game should provide:
+
+visual feedback
+satisfying progression
+increasing strategic depth
+Progression Structure
+1. Early Game
+Goal
+
+Teach the mechanics simply.
+
+Board Sizes
+2x2
+3x3
+Features
+obvious path solutions
+few tile types
+low complexity
+minimal dead ends
+Teach Players
+tile rotation
+path matching
+valid edge placement
+completing start-to-end connections
+Player Experience
+
+Should feel:
+
+relaxing
+rewarding
+intuitive
+2. Mid Game
+Goal
+
+Introduce planning and strategy.
+
+Board Sizes
+4x4
+5x5
+Additions
+misleading placements
+multiple possible paths
+dead-end risks
+more tile variety
+Teach Players
+future planning
+edge management
+avoiding traps
+spatial reasoning
+Player Experience
+
+Should feel:
+
+thoughtful
+strategic
+increasingly satisfying
+3. Advanced Game
+Goal
+
+Challenge mastery and efficiency.
+
+Board Sizes
+6x6+
+specialty challenge layouts
+Advanced Mechanics
+move limits
+timed challenges
+perfect solution goals
+limited rotations
+advanced tile combinations
+puzzle constraints
+Examples
+Solve in under 10 moves
+Solve without undo
+Solve using only clockwise rotations
+Perfect efficiency completion
+Meta Progression System
+Unlockables
+
+Players can unlock:
+
+tile themes
+background themes
+visual effects
+board skins
+puzzle packs
+challenge modes
+
+Avoid:
+
+pay-to-win mechanics
+
+Progression should feel:
+
+cosmetic
+rewarding
+collectible
+Challenge System
+Super Challenges
+
+Special high-difficulty puzzles.
+
+Example:
+
+“Solve Level 12 in 8 rotations.”
+
+Purpose:
+
+replayability
+mastery goals
+competitive challenge
+community engagement
+
+Potential future features:
+
+leaderboard
+daily challenge
+weekly challenge
+seasonal events
+Puzzle Generation Strategy
+
+The game should support:
+
+procedural puzzle generation
+solver validation
+difficulty scoring
+
+Generated puzzles should:
+
+always be solvable
+have controlled difficulty
+avoid unfair randomness
+
+Benefits:
+
+nearly endless content
+reduced manual level creation
+scalable content system
+Difficulty Curve Design
+
+Difficulty should increase gradually.
+
+Recommended flow:
+
+Introduce mechanic
+Allow practice
+Combine mechanics
+Test mastery
+
+Avoid:
+
+sudden complexity spikes
+unclear puzzle states
+impossible-looking boards
+UX / Player Feedback
+Important Principle
+
+Players should understand WHY something failed.
+
+Instead of:
+
+generic “invalid move”
+
+The game should:
+
+highlight invalid edges
+visually show conflicts
+explain impossible placements
+
+This improves:
+
+accessibility
+learning
+player retention
+Mobile Design Strategy
+
+The game is primarily designed for phones/tablets.
+
+Recommended Controls
+Tap
+
+Rotate clockwise
+
+Long Press
+
+Rotate counter-clockwise
+
+Drag
+
+Move tiles onto board
+
+UI Goals
+large touch targets
+minimal clutter
+responsive layout
+thumb-friendly interaction
+Technical Direction
+Frontend
+HTML5
+CSS
+JavaScript
+
+Possible future framework:
+
+React
+Vue
+Phaser
+Backend
+Node.js or PHP
+Database
+MySQL
+
+Database may track:
+
+user accounts
+completed puzzles
+progression
+scores
+unlocks
+challenge stats
+Hosting Strategy
+
+The game should run as:
+
+online browser app
+mobile-friendly PWA
+
+Benefits:
+
+no app store fees
+no Android/iOS separate builds
+instant updates
+cross-platform support
+Long-Term Expansion Ideas
+
+Future possibilities:
+
+daily puzzle system
+puzzle sharing
+multiplayer races
+puzzle editor
+custom community levels
+seasonal themes
+achievements
+cloud saves
+statistics tracking
+Core Development Priority
+
+Focus order:
+
+Core tile logic
+Board validation
+Rotation system
+Puzzle generation
+Mobile interaction polish
+Progression system
+Cosmetics/content expansion
+Overall Vision
+
+The game should combine:
+
+relaxing puzzle solving
+strategic planning
+satisfying progression
+endless replayability
+
+Target feeling:
+
+Easy to learn, difficult to master.

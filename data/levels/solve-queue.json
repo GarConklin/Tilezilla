@@ -1,0 +1,239 @@
+{
+  "schema": "solve-queue-v1",
+  "note": "Run one pending job at a time (docker: pending[].runDocker; host: pending[].run). Regenerate: docker compose run --rm web node scripts/refresh-solve-queue.js",
+  "windowHours": 8760,
+  "generatedAt": "2026-05-11T00:23:57.097Z",
+  "bucketsScannedForMtime": [
+    "2x4-0A.json",
+    "2x4-0C.json",
+    "3x3-0A.json",
+    "3x3-0B.json",
+    "3x3-0C.json",
+    "3x3-1C.json",
+    "3x4-0A.json",
+    "3x4-0B.json",
+    "3x4-0C.json",
+    "3x4-1A.json",
+    "3x5-0A.json",
+    "3x5-0B.json",
+    "3x5-0C.json",
+    "3x5-1A.json",
+    "3x5-1C.json",
+    "3x6-0A.json",
+    "3x6-0B.json",
+    "3x6-0C.json",
+    "3x6-1A.json",
+    "3x6-1B.json",
+    "3x6-1C.json",
+    "4x4-0A.json",
+    "4x4-0B.json",
+    "4x4-0C.json",
+    "4x4-1A.json",
+    "4x5-0A.json",
+    "4x5-0B.json",
+    "4x6-0A.json",
+    "4x6-0B.json",
+    "4x6-0C.json",
+    "5x5-0A.json",
+    "5x5-0B.json",
+    "5x5-0C.json",
+    "5x6-0A.json",
+    "5x6-0B.json",
+    "5x6-0C.json",
+    "6x6-0A.json",
+    "6x6-0B.json",
+    "6x6-0C.json",
+    "6x7-0C.json"
+  ],
+  "manualIds": [
+    "5x6-0B-AAO",
+    "5x6-0B-AAP",
+    "5x6-0B-AAQ",
+    "5x6-0B-AAR",
+    "5x6-0B-AAS",
+    "5x6-0B-AAT",
+    "5x6-0B-AAU",
+    "5x6-0B-AAV",
+    "5x6-0B-AAW",
+    "5x6-0B-AAX",
+    "5x6-0B-AAY",
+    "5x6-0B-AAZ",
+    "5x6-0B-ABA",
+    "5x6-0B-ABB",
+    "5x6-0B-ABC",
+    "5x6-0B-ABD",
+    "5x6-0B-ABE",
+    "5x6-0B-ABF",
+    "5x6-0B-ABG",
+    "5x6-0B-ABH",
+    "5x6-0B-ABI",
+    "5x6-0B-ABJ",
+    "5x6-0B-ABK",
+    "5x6-0B-ABL",
+    "5x6-0B-ABM",
+    "5x6-0B-ABN",
+    "5x6-0B-ABO",
+    "5x6-0B-ABP",
+    "5x6-0B-ABQ",
+    "5x6-0B-ABR",
+    "5x6-0C-AAA",
+    "6x6-0A-AAA"
+  ],
+  "skippedManual": [],
+  "pending": [
+    {
+      "id": "5x6-0B-AAY",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-AAY.json",
+      "run": "node solves/solve-level.js 5x6-0B-AAY --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-AAY --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-AAZ",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-AAZ.json",
+      "run": "node solves/solve-level.js 5x6-0B-AAZ --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-AAZ --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABA",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABA.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABA --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABA --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABB",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABB.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABB --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABB --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABC",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABC.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABC --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABC --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABD",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABD.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABD --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABD --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABE",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABE.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABE --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABE --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABF",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABF.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABF --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABF --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABG",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABG.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABG --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABG --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABH",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABH.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABH --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABH --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABI",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABI.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABI --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABI --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABJ",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABJ.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABJ --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABJ --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABK",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABK.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABK --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABK --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABL",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABL.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABL --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABL --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABM",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABM.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABM --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABM --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABN",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABN.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABN --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABN --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABO",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABO.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABO --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABO --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABP",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABP.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABP --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABP --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABQ",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABQ.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABQ --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABQ --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0B-ABR",
+      "bucket": "5x6-0B.json",
+      "solvesFile": "5x6-0B-ABR.json",
+      "run": "node solves/solve-level.js 5x6-0B-ABR --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-ABR --viable-seeds-only --write-solves --json-summary"
+    },
+    {
+      "id": "5x6-0C-AAA",
+      "bucket": "5x6-0C.json",
+      "solvesFile": "5x6-0C-AAA.json",
+      "run": "node solves/solve-level.js 5x6-0C-AAA --viable-seeds-only --write-solves --json-summary",
+      "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0C-AAA --viable-seeds-only --write-solves --json-summary"
+    }
+  ],
+  "next": {
+    "id": "5x6-0B-AAY",
+    "bucket": "5x6-0B.json",
+    "solvesFile": "5x6-0B-AAY.json",
+    "run": "node solves/solve-level.js 5x6-0B-AAY --viable-seeds-only --write-solves --json-summary",
+    "runDocker": "docker compose run --rm web node solves/solve-level.js 5x6-0B-AAY --viable-seeds-only --write-solves --json-summary"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x5",
+  "tier": "1A",
+  "count": 3,
+  "levels": [
+    {
+      "id": "3x5-1A-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 5
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "LL": 2,
+        "LC": 1
+      },
+      "blockers": [
+        [
+          2,
+          4,
+          "B1"
+        ]
+      ],
+      "solvesFile": "3x5-1A-AAA.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x5-1A-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 3,
+        "cols": 5
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "UT": 1,
+        "DB": 1,
+        "LC": 1
+      },
+      "blockers": [
+        [
+          2,
+          4,
+          "B1"
+        ]
+      ],
+      "solvesFile": "3x5-1A-AAB.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x5-1A-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 3,
+        "cols": 5
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "QC": 1,
+        "RC": 1,
+        "LR": 1,
+        "E1": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x5-1A-AAC.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

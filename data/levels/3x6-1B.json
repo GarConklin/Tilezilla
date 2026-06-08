@@ -1,0 +1,31 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x6",
+  "tier": "1B",
+  "count": 1,
+  "levels": [
+    {
+      "id": "3x6-1B-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 1,
+        "ES": 1,
+        "CR": 1,
+        "RC": 1,
+        "LC": 1,
+        "DS": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x6-1B-AAA.json",
+      "pathMode": "multi",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

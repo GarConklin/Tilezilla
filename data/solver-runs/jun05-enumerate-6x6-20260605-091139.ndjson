@@ -1,0 +1,11 @@
+{"event":"start","phase":"6x6","count":10,"ts":"2026-06-05T09:11:39.2103552-03:00"}
+{"index":1,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACP","ts":"2026-06-05T09:12:50.8557907-03:00"}
+{"index":2,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACQ","ts":"2026-06-05T09:12:53.1965328-03:00"}
+{"index":3,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACR","ts":"2026-06-05T10:02:13.6818579-03:00"}
+{"index":4,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACS","ts":"2026-06-05T10:39:27.3656691-03:00"}
+{"index":5,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACT","ts":"2026-06-05T11:27:53.2472213-03:00"}
+{"index":6,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACU","ts":"2026-06-05T12:05:57.6033748-03:00"}
+{"index":7,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACV","ts":"2026-06-05T12:46:02.5438744-03:00"}
+{"index":8,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACW","ts":"2026-06-05T13:14:37.4663998-03:00"}
+{"index":9,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":16,"exit":0,"levelId":"6x6-0B-ACX","ts":"2026-06-05T16:55:50.7970684-03:00"}
+{"index":10,"hitMaxSolCap":false,"total":10,"totalUniqueSolutions":null,"exit":137,"levelId":"6x6-0B-ACY","ts":"2026-06-05T19:29:26.1775632-03:00"}

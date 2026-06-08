@@ -1,0 +1,233 @@
+/**
+ * Progress tracking for puzzle solutions.
+ * Tracks which solutions the player has found per level,
+ * supports "bonus" discoveries, and persists to localStorage.
+ */
+export class Progress {
+  constructor(app) {
+    this.app = app;
+    this.storageKey = 'snake_progress_v1';
+    this.data = this.load();
+  }
+
+  // -- Storage --
+
+  load() {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) return {};
+      return JSON.parse(raw);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  save() {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+    } catch (e) { /* quota exceeded etc. */ }
+  }
+
+  // -- Per-level accessors --
+
+  getFoundForLevel(levelId) {
+    return this.data[levelId]?.found || [];
+  }
+
+  /** Returns {found, total, bonuses} counts */
+  getStats(levelId, totalKnown) {
+    const found = this.getFoundForLevel(levelId);
+    const bonuses = found.filter(f => f.bonus).length;
+    const knownFound = found.filter(f => !f.bonus).length;
+    return { found: knownFound, total: totalKnown, bonuses };
+  }
+
+  // -- Canonical form --
+
+  /**
+   * Convert placements array to a canonical JSON string for comparison.
+   * Sorts by (r, c, tile, deg) so placement order doesn't matter.
+   */
+  canonicalize(placements) {
+    const sorted = placements
+      .map(p => this.normalizePlacement(p))
+      .sort((a, b) =>
+        a.r - b.r || a.c - b.c || a.tile.localeCompare(b.tile) || a.deg - b.deg
+      );
+    return JSON.stringify(sorted);
+  }
+
+  normalizePlacement(p) {
+    const tile = p?.tile;
+    const r = p?.r | 0;
+    const c = p?.c | 0;
+    const deg = ((p?.deg | 0) % 360 + 360) % 360;
+    const shape = this.app?.state?.liveEdges?.[tile]?.shape;
+    const cellCount = Array.isArray(shape) ? shape.length : 2;
+
+    // 1-cell tiles are orientation-invariant for matching.
+    if (cellCount <= 1) return { tile, r, c, deg: 0 };
+
+    // Canonicalize 2-cell anchor/orientation so equivalent encodings compare equal.
+    const cells = this.app?.targetCells ? this.app.targetCells(r, c, deg) : [[r, c], [r, c + 1]];
+    if (!Array.isArray(cells) || cells.length < 2) return { tile, r, c, deg };
+    const [a, b] = cells;
+    const [r1, c1] = a;
+    const [r2, c2] = b;
+
+    if (r1 === r2) {
+      // Horizontal: anchor is left cell, deg 0.
+      return { tile, r: r1, c: Math.min(c1, c2), deg: 0 };
+    }
+    // Vertical: anchor is top cell, deg 90.
+    return { tile, r: Math.min(r1, r2), c: c1 === c2 ? c1 : Math.min(c1, c2), deg: 90 };
+  }
+
+  /**
+   * Return the 180-degree board rotation of a set of placements.
+   * Each tile at (r,c,deg) maps to (rows-1-r, cols-1-c, (deg+180)%360).
+   */
+  mirror180(placements, rows, cols) {
+    return placements.map(p => ({
+      tile: p.tile,
+      r: rows - 1 - p.r,
+      c: cols - 1 - p.c,
+      deg: (p.deg + 180) % 360
+    }));
+  }
+
+  /** Full-board 90° clockwise (square n×n); matches solves/solve-level.js. */
+  rotate90CW(placements, n) {
+    return placements.map(p => ({
+      tile: p.tile,
+      r: p.c,
+      c: n - 1 - p.r,
+      deg: ((p.deg + 90) % 360 + 360) % 360
+    }));
+  }
+
+  /**
+   * One stable key per geometric layout: on square boards, lexicographically smallest
+   * canonical string among 0°/90°/180°/270° rotations (C4). On rectangles, half-turn (180°) only.
+   */
+  equivalenceKey(placements, rows, cols) {
+    if (!rows || !cols) return this.canonicalize(placements);
+    if (rows === cols) {
+      let cur = placements;
+      let best = this.canonicalize(cur);
+      for (let k = 0; k < 3; k++) {
+        cur = this.rotate90CW(cur, rows);
+        const s = this.canonicalize(cur);
+        if (s < best) best = s;
+      }
+      return best;
+    }
+    const a = this.canonicalize(placements);
+    const b = this.canonicalize(this.mirror180(placements, rows, cols));
+    return a < b ? a : b;
+  }
+
+  // -- Solution checking --
+
+  /**
+   * Check the current board against known solutions and already-found list.
+   * Square boards: same layout at 0°/90°/180°/270° counts once. Rectangles: 180° half-turn only.
+   * @param {string} levelId
+   * @param {Array} placements - current board placements [{tile,r,c,deg}]
+   * @param {Array} knownSolutions - from the level's solution file
+   * @returns {{matched:boolean, index:number|null, bonus:boolean, duplicate:boolean, msg:string}}
+   */
+  checkSolution(levelId, placements, knownSolutions) {
+    const currentCanon = this.canonicalize(placements);
+    const board = this.app?.state?.currentLevel?.board;
+    const rows = board?.rows;
+    const cols = board?.cols;
+    const keyCur = rows && cols ? this.equivalenceKey(placements, rows, cols) : currentCanon;
+    const found = this.getFoundForLevel(levelId);
+
+    for (const f of found) {
+      const keyF = rows && cols ? this.equivalenceKey(f.placements, rows, cols) : this.canonicalize(f.placements);
+      if (keyCur !== keyF) continue;
+      const exact = this.canonicalize(f.placements) === currentCanon;
+      let msg = 'You already found this solution!';
+      if (!exact && rows === cols) {
+        msg = 'You already found this layout (0°, 90°, 180°, and 270° rotations count as one).';
+      } else if (!exact && rows !== cols) {
+        msg = 'You already found this layout (180° board rotation matches what you saved).';
+      }
+      return { matched: true, index: f.index, bonus: f.bonus, duplicate: true, msg };
+    }
+
+    for (let i = 0; i < knownSolutions.length; i++) {
+      const sol = knownSolutions[i].placements;
+      const keySol = rows && cols ? this.equivalenceKey(sol, rows, cols) : this.canonicalize(sol);
+      if (keyCur !== keySol) continue;
+      const exact = this.canonicalize(sol) === currentCanon;
+      const n = i + 1;
+      let msg = `Solution #${n} found!`;
+      if (!exact && rows === cols) {
+        msg = `Solution #${n} found! — same layout at 0°, 90°, 180°, or 270° rotation as the catalog.`;
+      } else if (!exact && rows !== cols) {
+        msg = `Solution #${n} found! — same layout after 180° board rotation as the catalog.`;
+      }
+      return { matched: true, index: i, bonus: false, duplicate: false, msg };
+    }
+
+    return { matched: true, index: null, bonus: true, duplicate: false, msg: 'Bonus solution discovered!' };
+  }
+
+  // -- Recording --
+
+  recordFound(levelId, index, placements, bonus, elapsedMs = 0) {
+    if (!this.data[levelId]) {
+      this.data[levelId] = { found: [] };
+    }
+    this.data[levelId].found.push({
+      index,
+      placements: placements.map(p => ({ tile: p.tile, r: p.r, c: p.c, deg: p.deg })),
+      bonus,
+      elapsedMs,
+      foundAt: new Date().toISOString(),
+    });
+    this.save();
+  }
+
+  // -- Reset --
+
+  resetLevel(levelId) {
+    if (this.data[levelId]) {
+      delete this.data[levelId];
+      this.save();
+    }
+  }
+
+  resetAll() {
+    this.data = {};
+    this.save();
+  }
+
+  /**
+   * Snapshot for download / backup (plain JSON file per user).
+   * Browser storage uses the same shape under localStorage key snake_progress_v1_<user>.
+   */
+  exportSnapshot(userId = '') {
+    return {
+      schema: 'snake-progress-export-v1',
+      savedAt: new Date().toISOString(),
+      userId: userId || undefined,
+      data: this.data,
+    };
+  }
+
+  /**
+   * Restore from export file or raw progress object { levelId: { found: [...] } }.
+   */
+  importSnapshot(obj) {
+    if (!obj || typeof obj !== 'object') return false;
+    const payload = obj.data !== undefined && obj.data !== null ? obj.data : obj;
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false;
+    this.data = payload;
+    this.save();
+    return true;
+  }
+}

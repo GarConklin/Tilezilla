@@ -1,0 +1,45 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "6x7",
+  "tier": "0C",
+  "count": 1,
+  "levels": [
+    {
+      "id": "6x7-0C-ZZZ",
+      "name": "ZZZ Sandbox",
+      "board": {
+        "rows": 6,
+        "cols": 7
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "ES": 2,
+        "CR": 4,
+        "CT": 4,
+        "CQ": 4,
+        "DB": 4,
+        "DC": 4,
+        "DS": 4,
+        "HL": 4,
+        "LC": 4,
+        "LL": 4,
+        "LR": 4,
+        "QC": 4,
+        "QS": 4,
+        "RC": 4,
+        "SS": 4,
+        "SZ": 4,
+        "UT": 8,
+        "VL": 4,
+        "B1": 2,
+        "B2": 1,
+        "E1": 2,
+        "E2": 1
+      },
+      "blockers": [],
+      "pathMode": "single",
+      "pathCount": 0
+    }
+  ]
+}

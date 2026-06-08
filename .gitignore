@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.auth.example
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+
+# Level solve JSON trees — distribute via solves.zip instead
+solves/

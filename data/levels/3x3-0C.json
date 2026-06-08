@@ -1,0 +1,113 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x3",
+  "tier": "0C",
+  "count": 5,
+  "levels": [
+    {
+      "id": "3x3-0C-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "UT": 1,
+        "ET": 1,
+        "LC": 1,
+        "E1": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x3-0C-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x3-0C-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "RC": 1,
+        "UT": 1,
+        "E1": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x3-0C-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x3-0C-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "UT": 1,
+        "E1": 1,
+        "ET": 1,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x3-0C-AAC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x3-0C-AAD",
+      "name": "AAD",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "LL": 1,
+        "UT": 1,
+        "E1": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x3-0C-AAD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x3-0C-AAE",
+      "name": "AAE",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "LR": 1,
+        "E2": 1
+      },
+      "blockers": [
+        [
+          1,
+          1,
+          "B1"
+        ]
+      ],
+      "solvesFile": "3x3-0C-AAE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

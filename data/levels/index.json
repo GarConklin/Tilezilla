@@ -1,0 +1,263 @@
+{
+  "schema": "levels-index-v1",
+  "buckets": [
+    {
+      "size": "2x4",
+      "tier": "0A",
+      "file": "2x4-0A.json",
+      "count": 3
+    },
+    {
+      "size": "2x4",
+      "tier": "0B",
+      "file": "2x4-0B.json",
+      "count": 1
+    },
+    {
+      "size": "2x4",
+      "tier": "0C",
+      "file": "2x4-0C.json",
+      "count": 5
+    },
+    {
+      "size": "3x3",
+      "tier": "0A",
+      "file": "3x3-0A.json",
+      "count": 5
+    },
+    {
+      "size": "3x3",
+      "tier": "0B",
+      "file": "3x3-0B.json",
+      "count": 1
+    },
+    {
+      "size": "3x3",
+      "tier": "0C",
+      "file": "3x3-0C.json",
+      "count": 5
+    },
+    {
+      "size": "3x3",
+      "tier": "1A",
+      "file": "3x3-1A.json",
+      "count": 1
+    },
+    {
+      "size": "3x3",
+      "tier": "1C",
+      "file": "3x3-1C.json",
+      "count": 1
+    },
+    {
+      "size": "3x4",
+      "tier": "0A",
+      "file": "3x4-0A.json",
+      "count": 34
+    },
+    {
+      "size": "3x4",
+      "tier": "0B",
+      "file": "3x4-0B.json",
+      "count": 60
+    },
+    {
+      "size": "3x4",
+      "tier": "0C",
+      "file": "3x4-0C.json",
+      "count": 7
+    },
+    {
+      "size": "3x4",
+      "tier": "1A",
+      "file": "3x4-1A.json",
+      "count": 9
+    },
+    {
+      "size": "3x5",
+      "tier": "0A",
+      "file": "3x5-0A.json",
+      "count": 76
+    },
+    {
+      "size": "3x5",
+      "tier": "0B",
+      "file": "3x5-0B.json",
+      "count": 136
+    },
+    {
+      "size": "3x5",
+      "tier": "0C",
+      "file": "3x5-0C.json",
+      "count": 1
+    },
+    {
+      "size": "3x5",
+      "tier": "1A",
+      "file": "3x5-1A.json",
+      "count": 3
+    },
+    {
+      "size": "3x5",
+      "tier": "1C",
+      "file": "3x5-1C.json",
+      "count": 3
+    },
+    {
+      "size": "3x6",
+      "tier": "0A",
+      "file": "3x6-0A.json",
+      "count": 306
+    },
+    {
+      "size": "3x6",
+      "tier": "0B",
+      "file": "3x6-0B.json",
+      "count": 3
+    },
+    {
+      "size": "3x6",
+      "tier": "0C",
+      "file": "3x6-0C.json",
+      "count": 7
+    },
+    {
+      "size": "3x6",
+      "tier": "1A",
+      "file": "3x6-1A.json",
+      "count": 2
+    },
+    {
+      "size": "3x6",
+      "tier": "1B",
+      "file": "3x6-1B.json",
+      "count": 1
+    },
+    {
+      "size": "3x6",
+      "tier": "1C",
+      "file": "3x6-1C.json",
+      "count": 1
+    },
+    {
+      "size": "4x4",
+      "tier": "0A",
+      "file": "4x4-0A.json",
+      "count": 83
+    },
+    {
+      "size": "4x4",
+      "tier": "0B",
+      "file": "4x4-0B.json",
+      "count": 77
+    },
+    {
+      "size": "4x4",
+      "tier": "0C",
+      "file": "4x4-0C.json",
+      "count": 5
+    },
+    {
+      "size": "4x4",
+      "tier": "1A",
+      "file": "4x4-1A.json",
+      "count": 1
+    },
+    {
+      "size": "4x5",
+      "tier": "0A",
+      "file": "4x5-0A.json",
+      "count": 776
+    },
+    {
+      "size": "4x5",
+      "tier": "0B",
+      "file": "4x5-0B.json",
+      "count": 1
+    },
+    {
+      "size": "4x5",
+      "tier": "1A",
+      "file": "4x5-1A.json",
+      "count": 7
+    },
+    {
+      "size": "4x6",
+      "tier": "0A",
+      "file": "4x6-0A.json",
+      "count": 135
+    },
+    {
+      "size": "4x6",
+      "tier": "0B",
+      "file": "4x6-0B.json",
+      "count": 327
+    },
+    {
+      "size": "4x6",
+      "tier": "0C",
+      "file": "4x6-0C.json",
+      "count": 1
+    },
+    {
+      "size": "5x5",
+      "tier": "0A",
+      "file": "5x5-0A.json",
+      "count": 254
+    },
+    {
+      "size": "5x5",
+      "tier": "0B",
+      "file": "5x5-0B.json",
+      "count": 959
+    },
+    {
+      "size": "5x5",
+      "tier": "0C",
+      "file": "5x5-0C.json",
+      "count": 1
+    },
+    {
+      "size": "5x6",
+      "tier": "0A",
+      "file": "5x6-0A.json",
+      "count": 2745
+    },
+    {
+      "size": "5x6",
+      "tier": "0B",
+      "file": "5x6-0B.json",
+      "count": 684
+    },
+    {
+      "size": "5x6",
+      "tier": "0C",
+      "file": "5x6-0C.json",
+      "count": 11
+    },
+    {
+      "size": "6x6",
+      "tier": "0A",
+      "file": "6x6-0A.json",
+      "count": 5
+    },
+    {
+      "size": "6x6",
+      "tier": "0B",
+      "file": "6x6-0B.json",
+      "count": 83
+    },
+    {
+      "size": "6x6",
+      "tier": "0C",
+      "file": "6x6-0C.json",
+      "count": 18
+    },
+    {
+      "size": "6x7",
+      "tier": "0C",
+      "file": "6x7-0C.json",
+      "count": 1
+    }
+  ]
+}

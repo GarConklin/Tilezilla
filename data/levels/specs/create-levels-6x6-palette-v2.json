@@ -1,0 +1,41 @@
+{
+  "schema": "Create-levels-bucket-v2",
+  "_note": "Max pool for 6x6 level generation — not one level. Target any candidate multiset: 36 cells, 1 SH + 1 ET, pathMode single. Blank footprint: either 2x E1 (2 cells) OR 1x E2 (2 cells), not both in the same design rule set unless cell math allows.",
+  "size": "6x6",
+  "tier": "palette",
+  "count": 1,
+  "levels": [
+    {
+      "id": "6x6-palette-v2",
+      "name": "Generation pool (max counts)",
+      "board": { "rows": 6, "cols": 6 },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "CR": 4,
+        "CT": 4,
+        "CQ": 4,
+        "DB": 4,
+        "DC": 4,
+        "DS": 4,
+        "HL": 4,
+        "LC": 6,
+        "LL": 6,
+        "LR": 6,
+        "QC": 4,
+        "QS": 4,
+        "RC": 4,
+        "SS": 4,
+        "SZ": 4,
+        "UT": 10,
+        "VL": 4,
+        "E1": 2,
+        "E2": 1
+      },
+      "blockers": [],
+      "solvesFile": "(n/a — enumerate subsets first)",
+      "pathMode": "single",
+      "pathCount": 1
+    }
+  ]
+}

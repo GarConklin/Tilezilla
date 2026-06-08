@@ -1,0 +1,130 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "6x6",
+  "tier": "0A",
+  "count": 5,
+  "levels": [
+    {
+      "id": "6x6-0A-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "UT": 4,
+        "RC": 4,
+        "LL": 2,
+        "LR": 2,
+        "HL": 1,
+        "VL": 1,
+        "DB": 2
+      },
+      "solvesFile": "6x6-0A-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "6x6-0A-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "DB": 2,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0A-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAC",
+      "name": "AAC",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "DB": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "UT": 5,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0A-AAC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAD",
+      "name": "AAD",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "UT": 5,
+        "HL": 3,
+        "LL": 3,
+        "LR": 1,
+        "RC": 1,
+        "LC": 1,
+        "SH": 1,
+        "ET": 1,
+        "DB": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0A-AAD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAE",
+      "name": "AAE",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "UT": 5,
+        "HL": 1,
+        "LR": 2,
+        "LC": 2,
+        "SH": 1,
+        "LL": 2,
+        "DB": 1,
+        "ET": 1,
+        "RC": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0A-AAE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

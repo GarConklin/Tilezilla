@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email — Tilezilla</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="card">
+    <h1 id="title">Verifying email…</h1>
+    <p id="message" style="text-align:center;color:#555;line-height:1.6"></p>
+    <p class="links" id="actions" style="display:none"><a href="login.html" class="button-link">Go to login</a></p>
+  </div>
+  <script>
+    const token = new URLSearchParams(location.search).get('token');
+    const title = document.getElementById('title');
+    const message = document.getElementById('message');
+    const actions = document.getElementById('actions');
+
+    if (!token) {
+      title.textContent = 'Verification failed';
+      message.textContent = 'No verification token provided.';
+    } else {
+      fetch('/api/verify-email.php?token=' + encodeURIComponent(token))
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            title.textContent = 'Email verified';
+            message.textContent = data.message || 'You can log in now.';
+            actions.style.display = 'block';
+          } else {
+            title.textContent = 'Verification failed';
+            message.textContent = data.error || 'Please try again.';
+          }
+        })
+        .catch(() => {
+          title.textContent = 'Error';
+          message.textContent = 'Could not reach the server.';
+        });
+    }
+  </script>
+</body>
+</html>

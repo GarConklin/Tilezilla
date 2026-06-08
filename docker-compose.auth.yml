@@ -1,0 +1,41 @@
+# Tilezilla auth service — joins Words Online mail relay on words_network.
+# Start Words stack first: docker compose -f docker-compose.mail.yml up -d (in WordsOnline)
+#
+# Usage:
+#   docker compose -f docker-compose.auth.yml up -d --build
+
+services:
+  php-auth:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: tilezilla_auth
+    restart: unless-stopped
+    ports:
+      - "${AUTH_PORT:-8081}:80"
+    volumes:
+      - ./auth/config:/var/www/html/config
+      - ./auth/api:/var/www/html/api
+      - ./auth/src:/var/www/html/src
+      - ./auth/public:/var/www/html/public
+      - ./web:/var/www/html/public/web:ro
+    environment:
+      DB_HOST: ${WORDS_DB_HOST:-words_db}
+      DB_USER: ${WORDS_DB_USER:-wordsgame}
+      DB_PASS: ${WORDS_DB_PASS:-wordspass123}
+      DB_NAME: ${WORDS_DB_NAME:-WordsOnline}
+      GAME_DB_HOST: ${MYSQL_HOST:-garz-puzzle-mysql}
+      GAME_DB_USER: ${MYSQL_USER:-tilegame}
+      GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8081}
+      APP_NAME: ${APP_NAME:-Tilezilla}
+      APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+    networks:
+      - words_network
+
+networks:
+  words_network:
+    external: true
+    name: words_network

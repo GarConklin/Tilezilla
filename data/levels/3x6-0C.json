@@ -1,0 +1,170 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "3x6",
+  "tier": "0C",
+  "count": 7,
+  "levels": [
+    {
+      "id": "3x6-0C-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "CR": 1,
+        "VL": 2,
+        "RC": 1,
+        "DC": 1,
+        "LL": 1,
+        "LR": 1
+      },
+      "solvesFile": "3x6-0C-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0C-AAB",
+      "name": "AAB",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "LL": 2,
+        "RC": 1,
+        "DC": 1,
+        "CR": 1,
+        "VL": 1,
+        "LC": 1
+      },
+      "solvesFile": "3x6-0C-AAB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0C-ZZZ",
+      "name": "ZZZ Sandbox",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "UT": 4,
+        "RC": 4,
+        "LC": 4,
+        "LL": 4,
+        "LR": 4,
+        "HL": 4,
+        "VL": 4,
+        "DB": 4,
+        "SZ": 4,
+        "SS": 4,
+        "DC": 4,
+        "QS": 4,
+        "CQ": 4,
+        "DS": 4,
+        "QC": 4,
+        "CR": 4,
+        "CT": 4,
+        "B1": 4,
+        "B2": 4,
+        "E1": 4,
+        "E2": 4
+      },
+      "pathMode": "single",
+      "pathCount": 0
+    },
+    {
+      "id": "3x6-0C-AAD",
+      "name": "AAD",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "SH": 2,
+        "ET": 2,
+        "LL": 2,
+        "RC": 1,
+        "CT": 1,
+        "LR": 1
+      },
+      "solvesFile": "3x6-0C-AAD.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0C-AAE",
+      "name": "AAE",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 2,
+        "CT": 1,
+        "LR": 2,
+        "SH": 2,
+        "LC": 2
+      },
+      "solvesFile": "3x6-0C-AAE.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0C-AAF",
+      "name": "AAF",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 2,
+        "CT": 1,
+        "LR": 1,
+        "SH": 2,
+        "CR": 1,
+        "UT": 1,
+        "LL": 1
+      },
+      "solvesFile": "3x6-0C-AAF.json",
+      "pathMode": "multi",
+      "pathCount": 2,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "3x6-0C-AAG",
+      "name": "AAG",
+      "board": {
+        "rows": 3,
+        "cols": 6
+      },
+      "tiles": {
+        "CT": 1,
+        "LR": 1,
+        "SH": 1,
+        "CR": 1,
+        "UT": 1,
+        "LC": 1,
+        "ET": 1,
+        "DS": 1,
+        "RC": 1
+      },
+      "solvesFile": "3x6-0C-AAG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}

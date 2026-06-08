@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Tilezilla</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Tilezilla Login</h1>
+    <form id="loginForm">
+      <label for="username">Username or email</label>
+      <input type="text" id="username" required autocomplete="username">
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+      <button type="submit" id="loginButton">Log in</button>
+    </form>
+    <div id="errorMessage" class="msg"></div>
+    <p class="links"><a href="register.html">Create account</a> · <a href="web/index.html">Play as guest</a></p>
+  </div>
+  <script src="js/login.js"></script>
+</body>
+</html>

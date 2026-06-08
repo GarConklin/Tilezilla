@@ -1,0 +1,202 @@
+Tile Anchor & Shape Specification
+
+(Snake-Tile Puzzle Engine)
+
+1. Purpose
+
+This document defines how tiles are positioned, rotated, and connected on the board using an anchor-based shape system.
+The goal is to support current 2-cell tiles (A/B) and allow future 3-cell, 4-cell, or larger tiles without changing the core engine.
+
+This specification applies to tiles-live-edges.json, which is the single source of truth for tile definitions.
+
+2. Definitions
+Tile
+
+A tile is a logical piece placed on the board.
+A tile may consist of multiple cells (2 or more).
+
+Cell
+
+A cell is a single board square occupied by part of a tile.
+
+Cells are identified by IDs: A, B, C, D, …
+
+Anchor Cell
+
+The anchor cell is the reference cell for a tile.
+
+The tile’s stored board position (r, c) always refers to the anchor cell
+
+All other cells are positioned relative to the anchor
+
+3. Anchor Rule (Authoritative)
+Anchor Rule
+
+Cell A is always the anchor cell and must be located at (dr: 0, dc: 0)
+
+This rule is mandatory for all tiles.
+
+Why this rule exists
+
+Keeps placement math simple
+
+Avoids negative offsets
+
+Makes solution data stable
+
+Matches the current A/B mental model
+
+4. Shape Specification
+
+Each tile defines a "shape" array describing which cells exist and where they are relative to the anchor.
+
+Shape Entry Format
+{ "id": "<cell-id>", "dr": <row-offset>, "dc": <col-offset> }
+
+Shape Rules
+
+"A" must exist
+
+"A" must have { "dr": 0, "dc": 0 }
+
+All dr / dc values must be integers
+
+All offsets must be non-negative
+
+No two cells may occupy the same (dr, dc)
+
+5. Rotation Model
+
+Each tile defines four rotations:
+
+r0 – base orientation
+
+r90 – 90° clockwise
+
+r180 – 180°
+
+r270 – 270° clockwise
+
+Rotation Rules
+
+Rotation is clockwise
+
+Live edges rotate as:
+N → E → S → W → N
+
+The "shape" itself is rotated by the engine using offsets
+
+Live edges for each cell are explicitly defined per rotation
+
+6. Live Edge Specification
+
+Live edges are defined per cell, per rotation.
+
+Format
+"r0": {
+  "A": ["E"],
+  "B": ["W"]
+}
+
+Rules
+
+Valid edge values: "N", "E", "S", "W"
+
+Empty array ([]) means no live edges
+
+Every cell listed in "shape" must appear in every rotation
+
+No other keys are allowed
+
+7. Current 2-Cell Tile (Domino) — Existing Pattern
+Shape
+"shape": [
+  { "id": "A", "dr": 0, "dc": 0 },
+  { "id": "B", "dr": 0, "dc": 1 }
+]
+
+
+This represents a horizontal domino at r0.
+
+Example Tile
+"SH-Snake-Tile.png": {
+  "_comment": "Straight horizontal domino",
+  "shape": [
+    { "id": "A", "dr": 0, "dc": 0 },
+    { "id": "B", "dr": 0, "dc": 1 }
+  ],
+  "r0":   { "A": ["E"], "B": ["W"] },
+  "r90":  { "A": ["S"], "B": ["N"] },
+  "r180": { "A": ["W"], "B": ["E"] },
+  "r270": { "A": ["N"], "B": ["S"] }
+}
+
+8. Future 3-Cell Tile Examples
+3-Cell Straight Line
+A B C
+
+"shape": [
+  { "id": "A", "dr": 0, "dc": 0 },
+  { "id": "B", "dr": 0, "dc": 1 },
+  { "id": "C", "dr": 0, "dc": 2 }
+]
+
+3-Cell L-Shape
+A B
+  C
+
+"shape": [
+  { "id": "A", "dr": 0, "dc": 0 },
+  { "id": "B", "dr": 0, "dc": 1 },
+  { "id": "C", "dr": 1, "dc": 1 }
+]
+
+9. Future 4-Cell Tile Examples
+2×2 Square
+A B
+C D
+
+"shape": [
+  { "id": "A", "dr": 0, "dc": 0 },
+  { "id": "B", "dr": 0, "dc": 1 },
+  { "id": "C", "dr": 1, "dc": 0 },
+  { "id": "D", "dr": 1, "dc": 1 }
+]
+
+4-Cell L-Shape
+A
+B
+C D
+
+"shape": [
+  { "id": "A", "dr": 0, "dc": 0 },
+  { "id": "B", "dr": 1, "dc": 0 },
+  { "id": "C", "dr": 2, "dc": 0 },
+  { "id": "D", "dr": 2, "dc": 1 }
+]
+
+10. Metadata & Comments
+
+Because JSON does not support comments, documentation is stored using keys that begin with _.
+
+Conventions
+
+_meta – file-level documentation
+
+_comment – tile-level notes
+
+These keys must be ignored by the engine.
+
+11. Summary (Rules You Can Rely On)
+
+tiles-live-edges.json is the only tile definition file
+
+Cell A is always the anchor at (0,0)
+
+Shapes define geometry
+
+Live edges define connectivity
+
+Rotation is explicit and clockwise
+
+Tiles can grow beyond 2 cells without engine redesign

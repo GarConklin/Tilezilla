@@ -1,0 +1,37 @@
+{
+  "schema": "levels-bucket-v1",
+  "size": "2x4",
+  "tier": "0B",
+  "count": 1,
+  "levels": [
+    {
+      "id": "2x4-0B-AAA",
+      "name": "AAA",
+      "board": {
+        "rows": 2,
+        "cols": 4
+      },
+      "tiles": {
+        "SH": 1,
+        "ET": 1,
+        "SZ": 1
+      },
+      "blockers": [
+        [
+          1,
+          0,
+          "B1"
+        ],
+        [
+          1,
+          1,
+          "B1"
+        ]
+      ],
+      "solvesFile": "2x4-0B-AAA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    }
+  ]
+}
