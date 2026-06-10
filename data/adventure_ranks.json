@@ -1,0 +1,58 @@
+[
+  {
+    "rank_id": 1,
+    "rank_code": "L1",
+    "rank_name": "Wanderer",
+    "badge_image": "/img/ranks/Wanderer.png",
+    "display_order": 1
+  },
+  {
+    "rank_id": 2,
+    "rank_code": "L2",
+    "rank_name": "Pathfinder",
+    "badge_image": "/img/ranks/Pathfinder.png",
+    "display_order": 2
+  },
+  {
+    "rank_id": 3,
+    "rank_code": "L3",
+    "rank_name": "Trailblazer",
+    "badge_image": "/img/ranks/Trailblazer.png",
+    "display_order": 3
+  },
+  {
+    "rank_id": 4,
+    "rank_code": "L4",
+    "rank_name": "Navigator",
+    "badge_image": "/img/ranks/Navigator.png",
+    "display_order": 4
+  },
+  {
+    "rank_id": 5,
+    "rank_code": "L5",
+    "rank_name": "Waymaker",
+    "badge_image": "/img/ranks/Waymaker.png",
+    "display_order": 5
+  },
+  {
+    "rank_id": 6,
+    "rank_code": "L6",
+    "rank_name": "Route Master",
+    "badge_image": "/img/ranks/RouteMaster.png",
+    "display_order": 6
+  },
+  {
+    "rank_id": 7,
+    "rank_code": "L7",
+    "rank_name": "Grand Cartographer",
+    "badge_image": "/img/ranks/GrandCartographer.png",
+    "display_order": 7
+  },
+  {
+    "rank_id": 8,
+    "rank_code": "L8",
+    "rank_name": "Vaultwalker",
+    "badge_image": "/img/ranks/Vaultwalker.png",
+    "display_order": 8
+  }
+]

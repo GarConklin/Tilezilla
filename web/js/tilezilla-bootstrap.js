@@ -22,12 +22,15 @@ const TZ_MAX_BOARD_ROWS = 6;
 
 function applyUiScale() {
   const vw = window.innerWidth;
+  const vh = window.innerHeight;
   let scale = 1;
   if (vw >= TZ_DESKTOP_MIN_WIDTH) {
     scale = TZ_DESKTOP_SCALE;
   } else if (vw < TZ_DESIGN_WIDTH) {
     scale = vw / TZ_DESIGN_WIDTH;
   }
+  // Keep the full 844px artboard on screen (2× desktop scale can clip bottom nav).
+  scale = Math.min(scale, vh / TZ_DESIGN_HEIGHT);
 
   const stage = document.querySelector('.tz-stage');
   if (stage) {
@@ -135,6 +138,17 @@ async function refreshPaletteIfReady(app) {
   app.renderActivePreview?.();
 }
 
+function getRemainingBagTileCount(app) {
+  if (app?.state?.paletteInstances?.length) {
+    const total = app.state.paletteInstances.length;
+    const used = app.state.used?.size || 0;
+    return Math.max(0, total - used);
+  }
+  return $('tileBagTrack')?.querySelectorAll('.palItem:not(.used):not(.palItem--removed)').length ?? 0;
+}
+
+let syncTileBagExpandAvailability = () => {};
+
 function updateTileBagCount(app) {
   const el = $('tileBagCount');
   if (!el) return;
@@ -142,6 +156,7 @@ function updateTileBagCount(app) {
   const used = app.state.used?.size || 0;
   const remaining = total - used;
   el.textContent = `${remaining}/${total}`;
+  syncTileBagExpandAvailability(app);
 }
 
 function updateChallengePanel(level, meta) {
@@ -165,6 +180,221 @@ function updatePreviewDir() {
   if (rotHud && previewDir) previewDir.textContent = `${rotHud.textContent || '0'}°`;
 }
 
+const HINT_BOARD_TOOLTIP =
+  'Hints may only be used on an empty board or a board containing only hint tiles.';
+const HINT_LOCKED_LABEL = 'Reset To Use';
+
+/** Dev adventure rank display — maps to DB player_progress + adventure_rank later. */
+const DEV_PLAYER_ADVENTURE = {
+  gar: { rankId: 1, subLevel: 1, stepProgress: 0, stepTotal: 1000 },
+  Arn: { rankId: 4, subLevel: 1, stepProgress: 0, stepTotal: 1000 },
+};
+
+let adventureRanksCache = null;
+
+async function loadAdventureRanks() {
+  if (!adventureRanksCache) {
+    const res = await fetch('/data/adventure_ranks.json');
+    if (!res.ok) throw new Error('Failed to load adventure ranks');
+    adventureRanksCache = await res.json();
+  }
+  return adventureRanksCache;
+}
+
+function romanForSubLevel(subLevel) {
+  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  return numerals[subLevel - 1] || String(subLevel);
+}
+
+function resolveDevAdventureProfile(userId) {
+  const key = userId || 'gar';
+  return DEV_PLAYER_ADVENTURE[key] || DEV_PLAYER_ADVENTURE.gar;
+}
+
+async function updateRankPanel(app) {
+  const profile = resolveDevAdventureProfile(app?.state?.userId);
+  const ranks = await loadAdventureRanks();
+  const rank = ranks.find((r) => r.rank_id === profile.rankId) || ranks[0];
+  const total = Math.max(1, profile.stepTotal || 1000);
+  const current = Math.max(0, Math.min(profile.stepProgress || 0, total));
+  const pct = (current / total) * 100;
+
+  const badge = $('rankBadgeImg');
+  const subLevelEl = $('rankSubLevel');
+  const glyph = $('rankRomanGlyph');
+  const fill = $('rankProgressFill');
+  const text = $('rankProgressText');
+  const roman = romanForSubLevel(profile.subLevel);
+
+  if (badge) {
+    badge.src = rank.badge_image;
+    badge.alt = `${rank.rank_name} rank`;
+  }
+  if (glyph) glyph.textContent = roman;
+  if (subLevelEl) subLevelEl.setAttribute('aria-label', `Sublevel ${roman}`);
+  if (fill) fill.style.width = `${pct}%`;
+  if (text) text.textContent = `${current} / ${total}`;
+}
+
+function formatHintTokenLabel(app) {
+  const max = app.CONFIG?.hintsPerPuzzle ?? 2;
+  const remaining = app.hintsRemainingThisPuzzle?.() ?? max;
+  return `${remaining} of ${max}`;
+}
+
+let selectedHintType = null;
+
+function updateGlobalHintCount(app) {
+  const el = $('hintCount');
+  if (el) el.textContent = String(app.getGlobalHintTokens?.() ?? 0);
+}
+
+function updateHintMenuAvailable(app) {
+  const el = $('hintMenuAvailable');
+  if (el) el.textContent = formatHintTokenLabel(app);
+}
+
+function updateHintMenuControls(app) {
+  document.querySelectorAll('.tz-hint-menu__token').forEach((btn) => {
+    const type = btn.dataset.hintType;
+    const cost = app.getHintCost?.(type) ?? 1;
+    const afford = app.canAffordHint?.(cost) ?? false;
+    btn.disabled = !afford;
+    btn.setAttribute('aria-disabled', afford ? 'false' : 'true');
+    if (!afford) {
+      btn.classList.remove('is-selected');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  });
+  if (selectedHintType) {
+    const selectedBtn = document.querySelector(`.tz-hint-menu__token[data-hint-type="${selectedHintType}"]`);
+    if (selectedBtn?.disabled) selectedHintType = null;
+  }
+  const useBtn = $('hintMenuUseBtn');
+  if (useBtn) {
+    const cost = selectedHintType ? (app.getHintCost?.(selectedHintType) ?? 0) : 0;
+    useBtn.disabled = !selectedHintType || !(app.canAffordHint?.(cost));
+  }
+}
+
+function resetHintMenuSelection() {
+  selectedHintType = null;
+  document.querySelectorAll('.tz-hint-menu__token').forEach((btn) => {
+    btn.classList.remove('is-selected');
+    btn.setAttribute('aria-pressed', 'false');
+  });
+  const useBtn = $('hintMenuUseBtn');
+  if (useBtn) useBtn.disabled = true;
+}
+
+function openHintMenu(app) {
+  const root = $('hintMenuRoot');
+  if (!root) return;
+  resetHintMenuSelection();
+  updateHintMenuAvailable(app);
+  updateHintMenuControls(app);
+  root.hidden = false;
+  document.body.classList.add('tz-modal-open');
+  $('hintMenuCloseBtn')?.focus();
+}
+
+function closeHintMenu() {
+  const root = $('hintMenuRoot');
+  if (!root || root.hidden) return;
+  root.hidden = true;
+  document.body.classList.remove('tz-modal-open');
+  resetHintMenuSelection();
+  $('hintBtn')?.focus();
+}
+
+function wireHintMenu(app) {
+  $('hintBtn')?.addEventListener('click', () => {
+    const btn = $('hintBtn');
+    if (btn?.getAttribute('aria-disabled') === 'true') return;
+    openHintMenu(app);
+  });
+
+  $('hintMenuCloseBtn')?.addEventListener('click', closeHintMenu);
+  $('hintMenuBackdrop')?.addEventListener('click', closeHintMenu);
+  $('hintMenuCancelBtn')?.addEventListener('click', closeHintMenu);
+
+  document.querySelectorAll('.tz-hint-menu__token').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
+      const type = btn.dataset.hintType;
+      if (!type) return;
+      selectedHintType = type;
+      document.querySelectorAll('.tz-hint-menu__token').forEach((other) => {
+        const on = other === btn;
+        other.classList.toggle('is-selected', on);
+        other.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      updateHintMenuControls(app);
+    });
+  });
+
+  $('hintMenuUseBtn')?.addEventListener('click', async () => {
+    if (!selectedHintType) return;
+    const cost = app.getHintCost?.(selectedHintType) ?? 0;
+    if (!(app.canAffordHint?.(cost))) {
+      showGameMessage('Not enough hint tokens for this hint.', 'error');
+      return;
+    }
+    const useBtn = $('hintMenuUseBtn');
+    if (useBtn) useBtn.disabled = true;
+    const res = await app.applyHint?.(selectedHintType);
+    if (!res?.ok) {
+      showGameMessage(res?.msg || 'Hint could not be applied.', 'error');
+      updateHintMenuControls(app);
+      return;
+    }
+    updateTileBagCount(app);
+    updateGlobalHintCount(app);
+    updateValidationState(app);
+    showGameMessage(res.msg, 'success');
+    closeHintMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if ($('hintMenuRoot')?.hidden) return;
+    closeHintMenu();
+  });
+}
+
+function updateHintButtonState(app) {
+  const btn = $('hintBtn');
+  const label = $('hintBtnLabel');
+  if (!btn) return;
+
+  const boardAllowed = app.boardAllowsHints?.(app.state.tiles) ?? true;
+  const remaining = app.hintsRemainingThisPuzzle?.() ?? 0;
+  const tokenLabel = formatHintTokenLabel(app);
+  const exhausted = remaining <= 0;
+  const locked = !boardAllowed || exhausted;
+
+  btn.classList.toggle('is-locked', locked);
+  btn.setAttribute('aria-disabled', locked ? 'true' : 'false');
+
+  if (!boardAllowed) {
+    btn.title = HINT_BOARD_TOOLTIP;
+    btn.setAttribute('aria-label', `Hint locked — ${HINT_LOCKED_LABEL}. ${HINT_BOARD_TOOLTIP}`);
+    if (label) label.textContent = HINT_LOCKED_LABEL;
+    return;
+  }
+
+  if (exhausted) {
+    btn.title = 'No hint tokens remaining for this puzzle.';
+    btn.setAttribute('aria-label', `Hint — ${tokenLabel}. No hints remaining.`);
+    if (label) label.textContent = tokenLabel;
+    return;
+  }
+
+  btn.title = HINT_BOARD_TOOLTIP;
+  btn.setAttribute('aria-label', `Hint — ${tokenLabel}`);
+  if (label) label.textContent = tokenLabel;
+}
+
 function updateValidationState(app) {
   const root = document.querySelector('.tz-app');
   const title = $('previewTitle');
@@ -185,6 +415,8 @@ function updateValidationState(app) {
     solutionsBtn.setAttribute('aria-disabled', allPlaced ? 'false' : 'true');
   }
   if (checkBtn) checkBtn.disabled = !allPlaced;
+  updateHintButtonState(app);
+  updateGlobalHintCount(app);
 }
 
 function showGameMessage(msg, kind = '') {
@@ -224,47 +456,85 @@ const TILE_BAG = {
   frameCollapsedH: 94,
   trackCollapsedH: 70,
   frameHeaderH: 12,
-  frameBottomPad: 12,
+  frameBottomPad: 8,
   handleH: 14,
   trackPad: 4,
   minRows: 2,
-  maxRows: 4,
+  maxRows: 3,
   dragThreshold: 18,
 };
 
+function readCssPx(varName, fallback) {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName));
+  return Number.isFinite(v) && v >= 0 ? v : fallback;
+}
+
+function readCssFloat(varName, fallback) {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName));
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+}
+
+function readCssInt(varName, fallback) {
+  const v = parseInt(getComputedStyle(document.documentElement).getPropertyValue(varName), 10);
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+}
+
 function getTileRowHeightPx() {
   const root = getComputedStyle(document.documentElement);
-  const thumb = parseFloat(root.getPropertyValue('--tz-tile-thumb')) || 44;
   const gap = parseFloat(root.getPropertyValue('--tz-tile-gap')) || 5;
-  return thumb + gap;
+  const thumbs = document.querySelectorAll('.tz-palette-h .palItem:not(.palItem--removed) .palThumb');
+  if (thumbs.length) {
+    let maxH = 0;
+    for (const thumb of thumbs) {
+      maxH = Math.max(maxH, thumb.getBoundingClientRect().height);
+    }
+    if (maxH > 0) return maxH + gap;
+  }
+  const cell = parseFloat(root.getPropertyValue('--tz-tilebag-cell')) || 34;
+  const hScale = parseFloat(root.getPropertyValue('--tz-tilebag-thumb-h-scale')) || 0.8;
+  return Math.ceil(cell * hScale) + gap;
 }
 
 function measureTileBagExpansion(container) {
   const preview = document.querySelector('.tz-preview-section');
   const frame = container?.querySelector('.tz-tilebag-frame');
-  if (!preview || !frame) {
-    return {
-      rows: TILE_BAG.minRows,
-      trackHeight: TILE_BAG.trackCollapsedH + getTileRowHeightPx(),
-      frameHeight: TILE_BAG.frameCollapsedH + getTileRowHeightPx(),
-    };
+  const maxRows = readCssInt('--tz-tilebag-expanded-max-rows', TILE_BAG.maxRows);
+  const capTop = readCssPx('--tz-tilebag-expanded-cap-top', 26);
+  const capBottom = readCssPx('--tz-tilebag-expanded-cap-bottom', 24);
+  const rowH = getTileRowHeightPx();
+  const rows = maxRows;
+
+  let trackHeight = rows * rowH + TILE_BAG.trackPad;
+  let frameHeight = capTop + trackHeight + capBottom;
+
+  if (preview && frame) {
+    const previewRect = preview.getBoundingClientRect();
+    const frameRect = frame.getBoundingClientRect();
+    const margin = 8;
+    const gapAbove = frameRect.top - previewRect.bottom;
+    const maxUpwardGrow = readCssPx('--tz-tilebag-expanded-max-overlap', 72);
+    const maxFrameHeight =
+      TILE_BAG.frameCollapsedH + Math.max(0, gapAbove - margin) + maxUpwardGrow;
+    if (frameHeight > maxFrameHeight) {
+      frameHeight = Math.max(TILE_BAG.frameCollapsedH, maxFrameHeight);
+      trackHeight = Math.max(
+        TILE_BAG.trackCollapsedH,
+        frameHeight - capTop - capBottom,
+      );
+    }
   }
 
-  const previewRect = preview.getBoundingClientRect();
-  const frameRect = frame.getBoundingClientRect();
-  const rowH = getTileRowHeightPx();
-  const margin = 8;
-  const roomAbove = Math.max(0, frameRect.top - previewRect.top - margin);
-  const maxTrackH = Math.max(
-    TILE_BAG.trackCollapsedH,
-    roomAbove - TILE_BAG.frameHeaderH,
-  );
-  const rows = Math.min(
-    TILE_BAG.maxRows,
-    Math.max(TILE_BAG.minRows, Math.floor((maxTrackH - TILE_BAG.trackPad) / rowH)),
-  );
-  const trackHeight = Math.min(maxTrackH, rows * rowH + TILE_BAG.trackPad);
-  const frameHeight = TILE_BAG.frameHeaderH + trackHeight + TILE_BAG.frameBottomPad;
+  const growScale = readCssFloat('--tz-tilebag-expanded-grow-scale', 1);
+  if (growScale !== 1) {
+    frameHeight = Math.max(
+      TILE_BAG.frameCollapsedH,
+      Math.round(frameHeight * growScale),
+    );
+    trackHeight = Math.max(
+      TILE_BAG.trackCollapsedH,
+      frameHeight - capTop - capBottom,
+    );
+  }
 
   return { rows, trackHeight, frameHeight };
 }
@@ -278,17 +548,18 @@ function applyTileBagExpandedLayout(container, expanded) {
     container.classList.remove('is-expanded');
     container.style.removeProperty('--tz-tilebag-frame-h');
     container.style.removeProperty('--tz-tilebag-track-h');
-    container.style.removeProperty('top');
+    frame.style.removeProperty('--tz-tilebag-frame-h');
+    track.style.removeProperty('--tz-tilebag-track-h');
     track.scrollTop = 0;
     return;
   }
 
   const { trackHeight, frameHeight } = measureTileBagExpansion(container);
-  const growBy = frameHeight - TILE_BAG.frameCollapsedH;
   container.classList.add('is-expanded');
   container.style.setProperty('--tz-tilebag-frame-h', `${frameHeight}px`);
   container.style.setProperty('--tz-tilebag-track-h', `${trackHeight}px`);
-  container.style.top = `calc(var(--tz-y-tilebag) + var(--tz-y-tilebag-nudge) - ${growBy}px)`;
+  frame.style.setProperty('--tz-tilebag-frame-h', `${frameHeight}px`);
+  track.style.setProperty('--tz-tilebag-track-h', `${trackHeight}px`);
   track.scrollLeft = 0;
 }
 
@@ -304,7 +575,7 @@ function setTileBagExpanded(container, expanded, syncBagScroll) {
   syncBagScroll?.();
 }
 
-function wireTileBagExpand(syncBagScroll) {
+function wireTileBagExpand(syncBagScroll, getApp) {
   const container = $('tileBagContainer');
   const handle = $('tileBagExpandHandle');
   if (!container || !handle) return;
@@ -314,12 +585,35 @@ function wireTileBagExpand(syncBagScroll) {
   let dragActive = false;
   let dragMoved = false;
 
-  const toggle = () => {
-    expanded = !expanded;
+  const resolveApp = () => (typeof getApp === 'function' ? getApp() : null);
+
+  const canExpandBag = (app) => getRemainingBagTileCount(app) > 0;
+
+  const setExpanded = (next, app) => {
+    if (next && !canExpandBag(app)) return;
+    expanded = next;
     setTileBagExpanded(container, expanded, syncBagScroll);
   };
 
+  syncTileBagExpandAvailability = (app) => {
+    const resolvedApp = app || resolveApp();
+    const allowed = canExpandBag(resolvedApp);
+    container.classList.toggle('is-expand-disabled', !allowed);
+    handle.disabled = !allowed;
+    handle.setAttribute('aria-disabled', allowed ? 'false' : 'true');
+    if (!allowed && expanded) {
+      setExpanded(false, resolvedApp);
+    }
+  };
+
+  const toggle = () => {
+    const app = resolveApp();
+    if (!expanded && !canExpandBag(app)) return;
+    setExpanded(!expanded, app);
+  };
+
   handle.addEventListener('click', (e) => {
+    if (handle.disabled) return;
     if (dragMoved) {
       dragMoved = false;
       return;
@@ -328,6 +622,7 @@ function wireTileBagExpand(syncBagScroll) {
   });
 
   handle.addEventListener('pointerdown', (e) => {
+    if (handle.disabled) return;
     dragActive = true;
     dragMoved = false;
     dragStartY = e.clientY;
@@ -335,16 +630,16 @@ function wireTileBagExpand(syncBagScroll) {
   });
 
   handle.addEventListener('pointermove', (e) => {
-    if (!dragActive) return;
+    if (!dragActive || handle.disabled) return;
     const dy = e.clientY - dragStartY;
     if (Math.abs(dy) < TILE_BAG.dragThreshold) return;
     dragMoved = true;
+    const app = resolveApp();
     if (dy < 0 && !expanded) {
-      expanded = true;
-      setTileBagExpanded(container, expanded, syncBagScroll);
+      if (!canExpandBag(app)) return;
+      setExpanded(true, app);
     } else if (dy > 0 && expanded) {
-      expanded = false;
-      setTileBagExpanded(container, expanded, syncBagScroll);
+      setExpanded(false, app);
     }
     dragActive = false;
     handle.releasePointerCapture(e.pointerId);
@@ -387,7 +682,9 @@ function wireBottomNav() {
 
 function wireActions(app) {
   $('resetBtn')?.addEventListener('click', async () => {
+    if (app.boardHasHintTiles?.() && !confirm('Remove hint tiles from the board?')) return;
     await app.clearBoard();
+    resetPuzzleTimer();
     updateTileBagCount(app);
     updateValidationState(app);
     showGameMessage('Board reset.', 'info');
@@ -399,19 +696,27 @@ function wireActions(app) {
       showGameMessage('Nothing to undo.', 'info');
       return;
     }
-    const last = tiles[tiles.length - 1];
+    let last = null;
+    for (let i = tiles.length - 1; i >= 0; i--) {
+      if (!app.isHintTile?.(tiles[i])) {
+        last = tiles[i];
+        break;
+      }
+    }
+    if (!last) {
+      showGameMessage('Nothing to undo (hint tiles cannot be removed).', 'info');
+      return;
+    }
     app.removeTileById(last.id);
     app.state.selectedTileId = null;
     app.rebuildOccFromTiles();
     await app.renderTiles();
+    if (!(app.state.tiles || []).length) resetPuzzleTimer();
     updateTileBagCount(app);
     updateValidationState(app);
     showGameMessage('Last tile removed.', 'info');
   });
 
-  $('hintBtn')?.addEventListener('click', () => {
-    showGameMessage('Hints — coming soon.', 'info');
-  });
 }
 
 function wireCheckMessageMirror() {
@@ -469,18 +774,50 @@ function wireBoardHooks(app) {
   }, 0));
 }
 
-function startTimer() {
+function formatPuzzleTimer(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+let puzzleTimerInterval = null;
+let puzzleTimerStartedAt = null;
+let puzzleTimerRunning = false;
+
+function updatePuzzleTimerDisplay(sec = 0) {
   const el = $('timerCurrent');
-  if (!el) return;
-  const start = Date.now();
+  if (el) el.textContent = formatPuzzleTimer(sec);
+}
+
+function resetPuzzleTimer() {
+  puzzleTimerRunning = false;
+  puzzleTimerStartedAt = null;
+  if (puzzleTimerInterval) {
+    clearInterval(puzzleTimerInterval);
+    puzzleTimerInterval = null;
+  }
+  updatePuzzleTimerDisplay(0);
+}
+
+/** Starts on first manual placement from preview/bag — not on load or hints. */
+function startPuzzleTimerOnFirstPlacement() {
+  if (puzzleTimerRunning) return;
+  puzzleTimerRunning = true;
+  puzzleTimerStartedAt = Date.now();
   const tick = () => {
-    const sec = Math.floor((Date.now() - start) / 1000);
-    const m = String(Math.floor(sec / 60)).padStart(2, '0');
-    const s = String(sec % 60).padStart(2, '0');
-    el.textContent = `${m}:${s}`;
+    if (!puzzleTimerStartedAt) return;
+    updatePuzzleTimerDisplay(Math.floor((Date.now() - puzzleTimerStartedAt) / 1000));
   };
   tick();
-  setInterval(tick, 1000);
+  puzzleTimerInterval = setInterval(tick, 1000);
+}
+
+function wirePuzzleTimer(app) {
+  resetPuzzleTimer();
+  app.onManualTilePlaced = (tile) => {
+    if (tile?.fromHint) return;
+    startPuzzleTimerOnFirstPlacement();
+  };
 }
 
 async function loadDailyPuzzle(app) {
@@ -499,6 +836,7 @@ async function loadDailyPuzzle(app) {
 
     applyResponsiveBoard(app);
     await app.applyLevel(level);
+    resetPuzzleTimer();
     await refreshPaletteIfReady(app);
     updateChallengePanel(level, meta);
     updateTileBagCount(app);
@@ -516,11 +854,17 @@ async function loadDailyPuzzle(app) {
 async function init() {
   applyUiScale();
   const syncBagScroll = wireBagScroll();
-  wireTileBagExpand(syncBagScroll);
+  let appRef = null;
+  wireTileBagExpand(syncBagScroll, () => appRef);
   wireBottomNav();
-  startTimer();
+  resetPuzzleTimer();
 
   const app = await waitForApp();
+  appRef = app;
+  updateGlobalHintCount(app);
+  wirePuzzleTimer(app);
+  await updateRankPanel(app);
+  syncTileBagExpandAvailability(app);
   applyResponsiveBoard(app);
   const settings = loadGameplaySettings();
   app.applyGameplaySettings(settings);
@@ -541,6 +885,7 @@ async function init() {
   });
 
   wireActions(app);
+  wireHintMenu(app);
   wireCheckMessageMirror();
   wirePreviewSync();
   wirePaletteHooks(app);

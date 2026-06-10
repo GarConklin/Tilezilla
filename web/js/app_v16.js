@@ -10,6 +10,7 @@ const CONFIG = {
   tileSetsUrl: '/data/tiles/tilesets.json',
   /** Red live-edge overlay on tiles (visual debug). Validation still uses edge data. */
   showLiveEdges: false,
+  hintsPerPuzzle: 2,
 };
 
 
@@ -210,6 +211,8 @@ const state = {
   blockerTypeByCell: new Map(), // key: 'r,c' -> tile id (B1/B2)
   blockerEditMode: false, // toolbar: click cells to place/remove blockers (sandbox only)
   foundListEntries: [], // [{label, placements, kind}]
+  hintsUsedThisPuzzle: 0,
+  hintTokens: 18,
   userId: 'gar',
   lastLoadedSolveDoc: null,
   /** levelId -> count from loaded solve file (authoritative vs level.totalUniqueSolutions) */
@@ -505,6 +508,7 @@ function removeTileById(tileId) {
   const i = state.tiles.findIndex(t => t.id === tileId);
   if (i === -1) return null;
   const t = state.tiles[i];
+  if (isHintTile(t)) return null;
   state.tiles.splice(i, 1);
   clearTileFromOcc(tileId);
 
@@ -1140,9 +1144,9 @@ function renderHover(r,c){
   if(!state.selectedPal && !state.selectedTileId) return;
   const deg=state.deg;
   const selectedTile = state.selectedTileId ? (state.tiles.find(t => t.id===state.selectedTileId)?.tile || null) : (getSelectedInstance()?.tile || state.previewTile);
+  if (!selectedTile) return;
   const ok = canPlace(r,c,deg, state.selectedTileId, selectedTile);
-  const inferredTile = tileRef || (ignoreTileId ? (state.tiles.find(t => t.id===ignoreTileId)?.tile || null) : (getSelectedInstance()?.tile || state.previewTile));
-  const cells = cellsForTile(inferredTile, r,c,deg);
+  const cells = cellsForTile(selectedTile, r,c,deg);
   g.save();
   g.globalAlpha=0.25;
   g.fillStyle = ok ? 'green' : 'red';
@@ -1223,10 +1227,15 @@ async function renderTiles(){
     tileEl.style.height = ((rMax - rMin + 1) * CONFIG.cellPx) + 'px';
 
     if(state.selectedTileId===t.id) tileEl.classList.add('selected');
+    if(isHintTile(t)) tileEl.classList.add('tile--hint');
 
     tileEl.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       if(!isSandboxLevel() && isBlockerTile(t.tile)) return;
+      if(isHintTile(t)) {
+        status('Hint tiles cannot be moved or removed.');
+        return;
+      }
       const removed = removeTileById(t.id);
       if(!removed) return;
       state.selectedTileId = null;
@@ -1347,7 +1356,7 @@ function buildPaletteInstances(){
         instances.push({ instanceId: `${tileName}#${i}`, tile: tileName, deg: 0 });
       }
     }
-    return instances;
+    return sortPaletteInstances(instances);
   }
   for (const tileName of (state.tileCatalog || [])) {
     const def = state.liveEdges?.[tileName] || {};
@@ -1360,7 +1369,23 @@ function buildPaletteInstances(){
       });
     }
   }
-  return instances;
+  return sortPaletteInstances(instances);
+}
+
+/** SH (start) first, ET (end) second, then all other tiles. */
+function paletteInstanceSortRank(tileRef) {
+  const id = tileId(tileRef);
+  if (id === 'SH') return 0;
+  if (id === 'ET') return 1;
+  return 2;
+}
+
+function sortPaletteInstances(instances) {
+  return [...instances].sort((a, b) => {
+    const rankDiff = paletteInstanceSortRank(a.tile) - paletteInstanceSortRank(b.tile);
+    if (rankDiff !== 0) return rankDiff;
+    return a.instanceId.localeCompare(b.instanceId, undefined, { numeric: true });
+  });
 }
 
 function getInstance(instanceId){
@@ -1387,6 +1412,23 @@ function paletteThumbPixelSize(tileName, deg = 0){
   const hScale = paletteThumbHeightScale(tileName);
   if (hScale !== 1) h = Math.max(1, Math.round(h * hScale));
   return { w, h };
+}
+
+function selectPaletteInstance(instanceId) {
+  const inst = getInstance(instanceId);
+  if (!inst) return;
+  const tileName = inst.tile;
+  if (!isSandboxLevel() && isBlockerTile(tileName)) return;
+  if (state.used.has(instanceId)) return;
+  state.selectedPal = instanceId;
+  state.previewTile = tileName;
+  state.selectedTileId = null;
+  syncActionButtons();
+  state.deg = inst.deg || 0;
+  rotHud.textContent = state.deg + '';
+  markPaletteSelected(instanceId);
+  void renderActivePreview();
+  void renderTiles();
 }
 
 async function buildPalette(){
@@ -1433,19 +1475,7 @@ async function buildPalette(){
 
     if(!isSandboxLevel() && isBlockerTile(tileName)) item.classList.add('locked');
     item.addEventListener('click', () => {
-      if(!isSandboxLevel() && isBlockerTile(tileName)) return;
-      if(state.used.has(instanceId)) return;
-      state.selectedPal = instanceId;   // placement-ready instanceId
-      state.previewTile = tileName;     // base tile name for preview drawing
-      state.selectedTileId = null;
-      syncActionButtons();
-      // restore per-instance rotation (so you can rotate, pick another, come back)
-      state.deg = inst.deg || 0;
-      rotHud.textContent = state.deg + '';
-      markPaletteSelected(instanceId);
-      renderActivePreview();
-      // deselect tiles on board
-      renderTiles();
+      selectPaletteInstance(instanceId);
     });
     paletteEl.appendChild(item);
   }
@@ -1908,7 +1938,249 @@ function getInventoryMismatch(levelTileCounts, placedTiles){
   return null;
 }
 
+// ---- Hints ----
+const HINT_COSTS = { random: 1, start: 2, end: 2 };
+const DEFAULT_GLOBAL_HINT_TOKENS = 18;
+
+function hintTokensStorageKey() {
+  return `snake_hint_tokens_v1_${state.userId || 'gar'}`;
+}
+
+function loadGlobalHintTokens() {
+  try {
+    const raw = localStorage.getItem(hintTokensStorageKey());
+    if (raw != null) {
+      const n = parseInt(raw, 10);
+      if (Number.isFinite(n)) return Math.max(0, n);
+    }
+  } catch (e) { /* ignore */ }
+  return DEFAULT_GLOBAL_HINT_TOKENS;
+}
+
+function saveGlobalHintTokens() {
+  try {
+    localStorage.setItem(hintTokensStorageKey(), String(state.hintTokens));
+  } catch (e) { /* ignore */ }
+}
+
+function getGlobalHintTokens() {
+  return Math.max(0, Number(state.hintTokens) || 0);
+}
+
+function getHintCost(hintType) {
+  return HINT_COSTS[hintType] || 0;
+}
+
+function isHintTile(tile) {
+  return !!tile?.fromHint;
+}
+
+function isStartTileType(typeId) {
+  return typeId === 'SH' || typeId === 'ST';
+}
+
+function boardAllowsHints(tiles = state.tiles) {
+  const placed = tiles || [];
+  if (!placed.length) return true;
+  return placed.every((t) => t.fromHint === true);
+}
+
+function hintsRemainingThisPuzzle() {
+  const max = Number(CONFIG.hintsPerPuzzle) || 2;
+  const used = Number(state.hintsUsedThisPuzzle) || 0;
+  return Math.max(0, max - used);
+}
+
+function canAffordHint(cost) {
+  const c = Number(cost) || 0;
+  if (c <= 0) return false;
+  return hintsRemainingThisPuzzle() >= c && getGlobalHintTokens() >= c;
+}
+
+function consumeHintTokens(cost) {
+  const c = Number(cost) || 0;
+  if (!canAffordHint(c)) return false;
+  state.hintsUsedThisPuzzle = (Number(state.hintsUsedThisPuzzle) || 0) + c;
+  state.hintTokens = Math.max(0, getGlobalHintTokens() - c);
+  saveGlobalHintTokens();
+  return true;
+}
+
+/** @deprecated Use consumeHintTokens(cost) */
+function consumeHintToken() {
+  return consumeHintTokens(1);
+}
+
+function findFreeInstanceForTileType(typeId) {
+  return (state.paletteInstances || []).find((inst) => {
+    if (state.used.has(inst.instanceId)) return false;
+    return tileId(inst.tile) === typeId;
+  }) || null;
+}
+
+function placementFitsOnBoard(placement) {
+  const typeId = tileId(placement?.tile) || placement?.tile;
+  if (!typeId) return false;
+  const inst = findFreeInstanceForTileType(typeId);
+  if (!inst) return false;
+  return canPlaceNew(placement.r, placement.c, placement.deg, inst.tile);
+}
+
+async function getFirstUndiscoveredSolution() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return null;
+  const knownSolutions = await loadKnownSolutionsForLevel(lv);
+  if (!knownSolutions.length) return null;
+  const found = progress?.getFoundForLevel(lv.id) || [];
+  const foundIndices = new Set(
+    found
+      .filter((f) => !f.bonus && Number.isFinite(f.index))
+      .map((f) => f.index)
+  );
+  for (let i = 0; i < knownSolutions.length; i++) {
+    if (!foundIndices.has(i)) {
+      return { index: i, solution: knownSolutions[i] };
+    }
+  }
+  return null;
+}
+
+function pickHintPlacement(hintType, placements) {
+  const list = Array.isArray(placements) ? placements : [];
+  if (hintType === 'random') {
+    const candidates = list.filter((p) => {
+      const id = tileId(p?.tile);
+      if (!id || isStartTileType(id) || id === 'ET') return false;
+      return placementFitsOnBoard(p);
+    });
+    if (!candidates.length) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+  if (hintType === 'start') {
+    return list.find((p) => isStartTileType(tileId(p?.tile)) && placementFitsOnBoard(p)) || null;
+  }
+  if (hintType === 'end') {
+    return list.find((p) => tileId(p?.tile) === 'ET' && placementFitsOnBoard(p)) || null;
+  }
+  return null;
+}
+
+async function placeHintTile(placement) {
+  const typeId = tileId(placement?.tile) || placement?.tile;
+  const inst = findFreeInstanceForTileType(typeId);
+  if (!inst) {
+    return { ok: false, msg: `No available ${typeId} tile in the bag.` };
+  }
+  const r = placement.r | 0;
+  const c = placement.c | 0;
+  const deg = ((placement.deg | 0) % 360 + 360) % 360;
+  if (!canPlaceNew(r, c, deg, inst.tile)) {
+    return { ok: false, msg: `Cannot place ${typeId} hint at (${r},${c}).` };
+  }
+  const t = {
+    id: nextId++,
+    instanceId: inst.instanceId,
+    tile: inst.tile,
+    r,
+    c,
+    deg,
+    fromHint: true,
+  };
+  state.tiles.push(t);
+  claimCells(t.id, cellsForTile(t.tile, r, c, deg));
+  state.used.add(inst.instanceId);
+  setPaletteUsed(inst.instanceId, true);
+  state.selectedTileId = null;
+  state.selectedPal = null;
+  syncActionButtons();
+  rebuildOccFromTiles();
+  await renderTiles();
+  clearHover();
+  return { ok: true, tile: t };
+}
+
+async function applyHint(hintType) {
+  const cost = getHintCost(hintType);
+  if (!cost) return { ok: false, msg: 'Unknown hint type.' };
+  if (!state.currentLevel) return { ok: false, msg: 'No puzzle loaded.' };
+  if (!boardAllowsHints()) {
+    return { ok: false, msg: 'Hints may only be used on an empty board or a board containing only hint tiles.' };
+  }
+  if (!canAffordHint(cost)) {
+    return { ok: false, msg: 'Not enough hint tokens for this hint.' };
+  }
+
+  const undiscovered = await getFirstUndiscoveredSolution();
+  if (!undiscovered) {
+    return { ok: false, msg: 'No undiscovered solutions remain for this puzzle.' };
+  }
+
+  const placements = undiscovered.solution?.placements || [];
+  const placement = pickHintPlacement(hintType, placements);
+  if (!placement) {
+    const labels = { random: 'random tile', start: 'start tile', end: 'end tile' };
+    return { ok: false, msg: `Could not place ${labels[hintType] || 'hint'} from solution ${undiscovered.index + 1}.` };
+  }
+
+  const placed = await placeHintTile(placement);
+  if (!placed.ok) return placed;
+
+  consumeHintTokens(cost);
+  const typeId = tileId(placement.tile) || placement.tile;
+  const labels = { random: 'Random tile', start: 'Start tile', end: 'End tile' };
+  return {
+    ok: true,
+    msg: `${labels[hintType] || 'Hint'} placed (${typeId}) from solution ${undiscovered.index + 1}.`,
+    tile: placed.tile,
+    solutionIndex: undiscovered.index,
+    cost,
+  };
+}
+
+function boardHasHintTiles(tiles = state.tiles) {
+  return (tiles || []).some((t) => t.fromHint);
+}
+
 // ---- Board interaction ----
+
+async function placeSelectedPaletteTileAt(r, c) {
+  if (!state.selectedPal) return false;
+  const inst = getSelectedInstance();
+  if (!inst) return false;
+  const tileRef = inst.tile || state.previewTile;
+  if (!canPlaceNew(r, c, state.deg, tileRef)) {
+    status(`Place blocked @ (${r},${c}) ${state.deg} (out of bounds or overlap)`);
+    return false;
+  }
+  const t = { id: nextId++, instanceId: inst.instanceId, tile: inst.tile, r, c, deg: state.deg, fromHint: false };
+  state.tiles.push(t);
+  claimCells(t.id, cellsForTile(t.tile, r, c, t.deg));
+  state.used.add(inst.instanceId);
+  setPaletteUsed(inst.instanceId, true);
+  inst.deg = state.deg;
+  state.selectedTileId = t.id;
+  syncActionButtons();
+  state.selectedPal = null;
+  markPaletteSelected(null);
+  state.keepPreview = !!keepPreviewChk?.checked;
+  if (state.keepPreview) {
+    state.previewTile = t.tile;
+    state.deg = t.deg;
+  } else {
+    state.previewTile = null;
+    state.deg = 0;
+  }
+  rotHud.textContent = state.deg + '';
+  renderActivePreview();
+  rebuildOccFromTiles();
+  await renderTiles();
+  clearHover();
+  if (typeof window.__app?.onManualTilePlaced === 'function') {
+    window.__app.onManualTilePlaced(t);
+  }
+  return true;
+}
+
 if (boardEl) boardEl.addEventListener('click', async (e) => {
   const cell=e.target.closest('.cell');
   if(!cell) return;
@@ -1926,30 +2198,7 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
 
   // place from palette
   if(state.selectedPal){
-    const inst = getSelectedInstance();
-    if(!inst) return;
-    if(!canPlaceNew(r,c,state.deg, inst.tile || state.previewTile)) { status(`Place blocked @ (${r},${c}) ${state.deg} (out of bounds or overlap)`); return; }
-    const t={ id: nextId++, instanceId: inst.instanceId, tile: inst.tile, r, c, deg: state.deg };
-    state.tiles.push(t);
-    claimCells(t.id, cellsForTile(t.tile, r,c,t.deg));
-    state.used.add(inst.instanceId);
-    setPaletteUsed(inst.instanceId, true);
-    inst.deg = state.deg;
-    // select the newly placed tile (so Rotate/Delete act on it immediately)
-    state.selectedTileId = t.id;
-    syncActionButtons();
-    // placement consumes the placement-ready selection
-    state.selectedPal = null;
-    markPaletteSelected(null);
-    // keep or clear preview based on checkbox
-    state.keepPreview = !!keepPreviewChk?.checked;
-    if(state.keepPreview){ state.previewTile = t.tile; state.deg = t.deg; }
-    else { state.previewTile = null; state.deg = 0; }
-    rotHud.textContent = state.deg + '';
-    renderActivePreview();
-    rebuildOccFromTiles();
-    await renderTiles();
-    clearHover();
+    await placeSelectedPaletteTileAt(r, c);
     return;
   }
 
@@ -1957,11 +2206,24 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
   if(state.selectedTileId){
     const t = state.tiles.find(x=>x.id===state.selectedTileId);
     if(!t) return;
+    if(isHintTile(t)) {
+      status('Hint tiles cannot be moved.');
+      return;
+    }
     if(!updateTilePlacement(t.id, r, c, t.deg)) { status(`Move blocked @ (${r},${c}) ${t.deg} (out of bounds or overlap)`); return; }
     
     await renderTiles();
     clearHover();
   }
+});
+
+if (boardEl) boardEl.addEventListener('mousemove', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell) {
+    clearHover();
+    return;
+  }
+  renderHover(+cell.dataset.r, +cell.dataset.c);
 });
 
 if (boardEl) boardEl.addEventListener('mouseleave', clearHover);
@@ -1972,6 +2234,10 @@ async function rotateBy(delta) {
   if (state.selectedTileId) {
     const t = state.tiles.find(x => x.id === state.selectedTileId);
     if (!t) return;
+    if (isHintTile(t)) {
+      status('Hint tiles cannot be rotated.');
+      return;
+    }
     const nextDeg = (t.deg + delta + 360) % 360;
     if (updateTilePlacement(t.id, t.r, t.c, nextDeg)) {
       state.deg = nextDeg;
@@ -2006,6 +2272,11 @@ if (rotateCCW) rotateCCW.addEventListener('click', async () => rotateBy(-90));
 // Delete selected placed tile (board only)
 if (deleteBtn) deleteBtn.addEventListener('click', async () => {
   if (!state.selectedTileId) { status('No placed tile selected to delete'); return; }
+  const sel = state.tiles.find((t) => t.id === state.selectedTileId);
+  if (sel && isHintTile(sel)) {
+    status('Hint tiles cannot be removed individually. Reset the puzzle to remove them.');
+    return;
+  }
   const removed = removeTileById(state.selectedTileId);
   state.selectedTileId = null;
   syncActionButtons();
@@ -2033,6 +2304,7 @@ if (toggleBlockerBtn) toggleBlockerBtn.addEventListener('click', () => {
 async function clearBoard(){
   state.tiles=[];
   state.used.clear();
+  state.hintsUsedThisPuzzle = 0;
   state.selectedTileId = null;
   syncActionButtons();
   state.selectedPal = null;
@@ -2756,6 +3028,7 @@ async function applyLevel(level){
   state.selectedPal = null;
   state.previewTile = null;
   state.deg = 0;
+  state.hintsUsedThisPuzzle = 0;
   nextId = 1;
   occ = Array(CONFIG.rows * CONFIG.cols).fill(null);
 
@@ -3112,7 +3385,12 @@ async function init(){
     renderActivePreview, edgesFor, logSolver, canPlaceNew, updateTilePlacement, removeTileById,
     claimCells, clearTileFromOcc, rebuildOccFromTiles, occ, occIdx, resolveTileAsset, tileId,
     applySolveDocObject, applyLevel, buildGrid, setCssCell, clearBoard, totalKnownForLevel,
-    applyGameplaySettings, buildPalette,
+    applyGameplaySettings, buildPalette, getInventoryMismatch, boardAllowsHints,
+    hintsRemainingThisPuzzle, consumeHintToken, consumeHintTokens,
+    getGlobalHintTokens, getHintCost, canAffordHint, applyHint, isHintTile,
+    boardHasHintTiles,
+    onManualTilePlaced: null,
+    currentPortablePlacements, displayDimsForBoard,
   };
 
   solver = new Solver(window.__app, document.getElementById('speed'));
@@ -3174,6 +3452,7 @@ async function init(){
   progress = new Progress(window.__app);
   const savedUser = localStorage.getItem('snake_active_user_v1');
   state.userId = (savedUser && typeof savedUser === 'string') ? savedUser : 'gar';
+  state.hintTokens = loadGlobalHintTokens();
   progress.storageKey = `snake_progress_v1_${state.userId}`;
   progress.data = progress.load();
   if(userSelect){
@@ -3182,6 +3461,7 @@ async function init(){
     userSelect.addEventListener('change', async () => {
       state.userId = userSelect.value || 'gar';
       localStorage.setItem('snake_active_user_v1', state.userId);
+      state.hintTokens = loadGlobalHintTokens();
       progress.storageKey = `snake_progress_v1_${state.userId}`;
       progress.data = progress.load();
       syncAdminUi();

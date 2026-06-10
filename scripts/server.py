@@ -24,9 +24,9 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(path)
         req = unquote(parsed.path)
 
-        # Production shell (dev tool still at /index.html)
+        # Dev player picker → production shell (dev tool still at /index.html)
         if req in ("", "/"):
-            target = WEB / "tilezilla.html"
+            target = WEB / "dev-player-select.html"
         # Repo-root data consumed by app fetch() calls
         elif req.startswith("/data/") or req.startswith("/solves/"):
             target = ROOT / req.lstrip("/")

@@ -1,0 +1,131 @@
+{
+  "generatedAt": "2026-06-09T12:56:59.184Z",
+  "summary": {
+    "catalogLevels": 6973,
+    "solveFiles": 6973,
+    "catalogMissingSolve": 0,
+    "catalogMismatch": 5,
+    "orphanSolveFiles": 4,
+    "multiCatalogSameBag": 0,
+    "multiSolveSameBag": 3
+  },
+  "catalogMismatch": [
+    {
+      "id": "2x4-0A-AAB",
+      "bucketFile": "2x4-0A.json",
+      "catalogBag": "ET×1 SH×1 VL×1",
+      "solvesJsonBag": "ET×1 SH×1 VL×1",
+      "solve1Bag": "B2×1 ET×1 SH×1 VL×1",
+      "correctCatalogIds": [],
+      "suggestedAction": "no catalog row for play bag — new level or fix catalog tiles from solve-1",
+      "idTier": "0A",
+      "tierFromPlay": "0C"
+    },
+    {
+      "id": "2x4-0A-AAC",
+      "bucketFile": "2x4-0A.json",
+      "catalogBag": "ET×1 LC×1 SH×1",
+      "solvesJsonBag": "ET×1 LC×1 SH×1",
+      "solve1Bag": "B1×2 ET×1 LC×1 SH×1",
+      "correctCatalogIds": [],
+      "suggestedAction": "no catalog row for play bag — new level or fix catalog tiles from solve-1",
+      "idTier": "0A",
+      "tierFromPlay": "0A"
+    },
+    {
+      "id": "2x4-0C-AAB",
+      "bucketFile": "2x4-0C.json",
+      "catalogBag": "E1×1 ET×1 LC×1 SH×1",
+      "solvesJsonBag": "E1×1 ET×1 LC×1 SH×1",
+      "solve1Bag": "B1×1 E1×1 ET×1 LC×1 SH×1",
+      "correctCatalogIds": [],
+      "suggestedAction": "no catalog row for play bag — new level or fix catalog tiles from solve-1",
+      "idTier": "0C",
+      "tierFromPlay": "0C"
+    },
+    {
+      "id": "4x6-0C-ZZZ",
+      "bucketFile": "4x6-0C.json",
+      "catalogBag": "B1×4 B2×4 CR×4 CT×8 DB×2 DC×2 DS×2 E1×4 E2×4 ET×2 HL×2 LC×2 LL×2 LR×2 QC×2 RC×2 SH×2 SS×2 SZ×2 UT×2 VL×2",
+      "solvesJsonBag": "",
+      "solve1Bag": "",
+      "correctCatalogIds": [],
+      "suggestedAction": "no catalog row for play bag — new level or fix catalog tiles from solve-1",
+      "idTier": "0C",
+      "tierFromPlay": "0A"
+    },
+    {
+      "id": "5x5-0C-AAA",
+      "bucketFile": "5x5-0C.json",
+      "catalogBag": "B1×4 B2×4 CQ×4 CR×4 CT×8 DB×4 DC×4 DS×4 E1×4 E2×4 ET×2 HL×4 LC×4 LL×4 LR×4 QC×4 QS×4 RC×4 SH×2 SS×4 SZ×4 UT×6 VL×4",
+      "solvesJsonBag": "",
+      "solve1Bag": "",
+      "correctCatalogIds": [],
+      "suggestedAction": "no catalog row for play bag — new level or fix catalog tiles from solve-1",
+      "idTier": "0C",
+      "tierFromPlay": "0A"
+    }
+  ],
+  "correctOwner": [],
+  "orphanSolveFiles": [
+    {
+      "file": "4x5-basic-028.json",
+      "idFromName": "4x5-basic-028",
+      "levelIdInDoc": "4x5-basic-028",
+      "playBag": "DB×1 ET×1 HL×1 RC×1 SH×1 UT×5",
+      "matchingCatalogIds": [
+        "4x5-0A-ABB"
+      ]
+    },
+    {
+      "file": "4x5-basic-056.json",
+      "idFromName": "4x5-basic-056",
+      "levelIdInDoc": "4x5-basic-056",
+      "playBag": "ET×1 HL×1 LL×1 RC×1 SH×1 UT×5",
+      "matchingCatalogIds": [
+        "4x5-0A-ACC"
+      ]
+    },
+    {
+      "file": "migrate-apply-report.json",
+      "idFromName": "migrate-apply-report",
+      "levelIdInDoc": null,
+      "playBag": "",
+      "matchingCatalogIds": []
+    },
+    {
+      "file": "migrate-dry-run-report.json",
+      "idFromName": "migrate-dry-run-report",
+      "levelIdInDoc": null,
+      "playBag": "",
+      "matchingCatalogIds": []
+    }
+  ],
+  "catalogMissingSolve": [],
+  "multiCatalogSameBag": [],
+  "multiSolveSameBag": [
+    {
+      "sig": "4x5|[[\"DB\",1],[\"ET\",1],[\"HL\",1],[\"RC\",1],[\"SH\",1],[\"UT\",5]]",
+      "files": [
+        "4x5-0A-ABB.json",
+        "4x5-basic-028.json"
+      ]
+    },
+    {
+      "sig": "4x5|[[\"ET\",1],[\"HL\",1],[\"LL\",1],[\"RC\",1],[\"SH\",1],[\"UT\",5]]",
+      "files": [
+        "4x5-0A-ACC.json",
+        "4x5-basic-056.json"
+      ]
+    },
+    {
+      "sig": "undefinedxundefined|[]",
+      "files": [
+        "4x6-0C-ZZZ.json",
+        "5x5-0C-AAA.json",
+        "migrate-apply-report.json",
+        "migrate-dry-run-report.json"
+      ]
+    }
+  ]
+}

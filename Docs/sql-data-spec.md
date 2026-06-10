@@ -411,20 +411,20 @@ Derived on import (not stored in CSV):
 
 ### `adventure_rank`
 
-Eight ranks (seeded by import, not from CSV):
+Eight ranks (seeded by import, canonical list: `data/adventure_ranks.json`):
 
-| rank_id | code | name |
-|--------:|------|------|
-| 1 | L1 | Wanderer |
-| 2 | L2 | Pathfinder |
-| 3 | L3 | Trailblazer |
-| 4 | L4 | Navigator |
-| 5 | L5 | Waymaker |
-| 6 | L6 | Route Master |
-| 7 | L7 | Grand Cartographer |
-| 8 | L8 | Vaultwalker |
+| rank_id | code | name | badge_image |
+|--------:|------|------|-------------|
+| 1 | L1 | Wanderer | `/img/ranks/Wanderer.png` |
+| 2 | L2 | Pathfinder | `/img/ranks/Pathfinder.png` |
+| 3 | L3 | Trailblazer | `/img/ranks/Trailblazer.png` |
+| 4 | L4 | Navigator | `/img/ranks/Navigator.png` |
+| 5 | L5 | Waymaker | `/img/ranks/Waymaker.png` |
+| 6 | L6 | Route Master | `/img/ranks/RouteMaster.png` |
+| 7 | L7 | Grand Cartographer | `/img/ranks/GrandCartographer.png` |
+| 8 | L8 | Vaultwalker | `/img/ranks/Vaultwalker.png` |
 
-Badge fields (`badge_image`, `unlock_message`, …) live here for UI; NULL until art/copy is added.
+Badge fields (`badge_image`, `badge_locked_image`, `unlock_message`, …) live here for UI.
 
 ### `adventure_progression`
 

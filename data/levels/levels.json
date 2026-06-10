@@ -160544,7 +160544,7 @@
       "solvesFile": "5x6-0B-BAI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BAJ",
@@ -160567,7 +160567,7 @@
       "solvesFile": "5x6-0B-BAJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BAK",
@@ -160590,7 +160590,7 @@
       "solvesFile": "5x6-0B-BAK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BAL",
@@ -160613,7 +160613,7 @@
       "solvesFile": "5x6-0B-BAL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BAM",
@@ -160636,7 +160636,7 @@
       "solvesFile": "5x6-0B-BAM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 24
     },
     {
       "id": "5x6-0B-BAN",
@@ -160659,7 +160659,7 @@
       "solvesFile": "5x6-0B-BAN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BAO",
@@ -160682,7 +160682,7 @@
       "solvesFile": "5x6-0B-BAO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 44
     },
     {
       "id": "5x6-0B-BAP",
@@ -160705,7 +160705,7 @@
       "solvesFile": "5x6-0B-BAP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BAQ",
@@ -160728,7 +160728,7 @@
       "solvesFile": "5x6-0B-BAQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 102
     },
     {
       "id": "5x6-0B-BAR",
@@ -160751,7 +160751,7 @@
       "solvesFile": "5x6-0B-BAR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 110
     },
     {
       "id": "5x6-0B-BAS",
@@ -160773,7 +160773,7 @@
       "solvesFile": "5x6-0B-BAS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 196
     },
     {
       "id": "5x6-0B-BAT",
@@ -160796,7 +160796,7 @@
       "solvesFile": "5x6-0B-BAT.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BAU",
@@ -160818,7 +160818,7 @@
       "solvesFile": "5x6-0B-BAU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 180
     },
     {
       "id": "5x6-0B-BAV",
@@ -160841,7 +160841,7 @@
       "solvesFile": "5x6-0B-BAV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 28
     },
     {
       "id": "5x6-0B-BAW",
@@ -160864,7 +160864,7 @@
       "solvesFile": "5x6-0B-BAW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 34
     },
     {
       "id": "5x6-0B-BAX",
@@ -160886,7 +160886,7 @@
       "solvesFile": "5x6-0B-BAX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 74
     },
     {
       "id": "5x6-0B-BAY",
@@ -160909,7 +160909,7 @@
       "solvesFile": "5x6-0B-BAY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BAZ",
@@ -160931,7 +160931,7 @@
       "solvesFile": "5x6-0B-BAZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BBA",
@@ -160953,7 +160953,7 @@
       "solvesFile": "5x6-0B-BBA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BBB",
@@ -160975,7 +160975,7 @@
       "solvesFile": "5x6-0B-BBB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 48
     },
     {
       "id": "5x6-0B-BBC",
@@ -160997,7 +160997,7 @@
       "solvesFile": "5x6-0B-BBC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BBD",
@@ -161019,7 +161019,7 @@
       "solvesFile": "5x6-0B-BBD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BBE",
@@ -161041,7 +161041,7 @@
       "solvesFile": "5x6-0B-BBE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 28
     },
     {
       "id": "5x6-0B-BBF",
@@ -161063,7 +161063,7 @@
       "solvesFile": "5x6-0B-BBF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BBG",
@@ -161086,7 +161086,7 @@
       "solvesFile": "5x6-0B-BBG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 72
     },
     {
       "id": "5x6-0B-BBH",
@@ -161109,7 +161109,7 @@
       "solvesFile": "5x6-0B-BBH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BBI",
@@ -161132,7 +161132,7 @@
       "solvesFile": "5x6-0B-BBI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BBJ",
@@ -161155,7 +161155,7 @@
       "solvesFile": "5x6-0B-BBJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 26
     },
     {
       "id": "5x6-0B-BBK",
@@ -161177,7 +161177,7 @@
       "solvesFile": "5x6-0B-BBK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 126
     },
     {
       "id": "5x6-0B-BBL",
@@ -161199,7 +161199,7 @@
       "solvesFile": "5x6-0B-BBL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 24
     },
     {
       "id": "5x6-0B-BBM",
@@ -161221,7 +161221,7 @@
       "solvesFile": "5x6-0B-BBM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 266
     },
     {
       "id": "5x6-0B-BBN",
@@ -161244,7 +161244,7 @@
       "solvesFile": "5x6-0B-BBN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 192
     },
     {
       "id": "5x6-0B-BBO",
@@ -161267,7 +161267,7 @@
       "solvesFile": "5x6-0B-BBO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-BBP",
@@ -161289,7 +161289,7 @@
       "solvesFile": "5x6-0B-BBP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 246
     },
     {
       "id": "5x6-0B-BBQ",
@@ -161312,7 +161312,7 @@
       "solvesFile": "5x6-0B-BBQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BBR",
@@ -161335,7 +161335,7 @@
       "solvesFile": "5x6-0B-BBR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 22
     },
     {
       "id": "5x6-0B-BBS",
@@ -161358,7 +161358,7 @@
       "solvesFile": "5x6-0B-BBS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 26
     },
     {
       "id": "5x6-0B-BBT",
@@ -161381,7 +161381,7 @@
       "solvesFile": "5x6-0B-BBT.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BBU",
@@ -161404,7 +161404,7 @@
       "solvesFile": "5x6-0B-BBU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 92
     },
     {
       "id": "5x6-0B-BBV",
@@ -161427,7 +161427,7 @@
       "solvesFile": "5x6-0B-BBV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BBW",
@@ -161450,7 +161450,7 @@
       "solvesFile": "5x6-0B-BBW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 24
     },
     {
       "id": "5x6-0B-BBX",
@@ -161472,7 +161472,7 @@
       "solvesFile": "5x6-0B-BBX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 90
     },
     {
       "id": "5x6-0B-BBY",
@@ -161494,7 +161494,7 @@
       "solvesFile": "5x6-0B-BBY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 30
     },
     {
       "id": "5x6-0B-BBZ",
@@ -161516,7 +161516,7 @@
       "solvesFile": "5x6-0B-BBZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 48
     },
     {
       "id": "5x6-0B-BCA",
@@ -161538,7 +161538,7 @@
       "solvesFile": "5x6-0B-BCA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BCB",
@@ -161561,7 +161561,7 @@
       "solvesFile": "5x6-0B-BCB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 30
     },
     {
       "id": "5x6-0B-BCC",
@@ -161584,7 +161584,7 @@
       "solvesFile": "5x6-0B-BCC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BCD",
@@ -161606,7 +161606,7 @@
       "solvesFile": "5x6-0B-BCD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 42
     },
     {
       "id": "5x6-0B-BCE",
@@ -161628,7 +161628,7 @@
       "solvesFile": "5x6-0B-BCE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BCF",
@@ -161650,7 +161650,7 @@
       "solvesFile": "5x6-0B-BCF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BCG",
@@ -161672,7 +161672,7 @@
       "solvesFile": "5x6-0B-BCG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BCH",
@@ -161695,7 +161695,7 @@
       "solvesFile": "5x6-0B-BCH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BCI",
@@ -161718,7 +161718,7 @@
       "solvesFile": "5x6-0B-BCI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 22
     },
     {
       "id": "5x6-0B-BCJ",
@@ -161741,7 +161741,7 @@
       "solvesFile": "5x6-0B-BCJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BCK",
@@ -161762,7 +161762,7 @@
       "solvesFile": "5x6-0B-BCK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 150
     },
     {
       "id": "5x6-0B-BCL",
@@ -161784,7 +161784,7 @@
       "solvesFile": "5x6-0B-BCL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 78
     },
     {
       "id": "5x6-0B-BCM",
@@ -161806,7 +161806,7 @@
       "solvesFile": "5x6-0B-BCM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BCN",
@@ -161828,7 +161828,7 @@
       "solvesFile": "5x6-0B-BCN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 120
     },
     {
       "id": "5x6-0B-BCO",
@@ -161851,7 +161851,7 @@
       "solvesFile": "5x6-0B-BCO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-BCP",
@@ -161874,7 +161874,7 @@
       "solvesFile": "5x6-0B-BCP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 40
     },
     {
       "id": "5x6-0B-BCQ",
@@ -161897,7 +161897,7 @@
       "solvesFile": "5x6-0B-BCQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BCR",
@@ -161919,7 +161919,7 @@
       "solvesFile": "5x6-0B-BCR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BCS",
@@ -161941,7 +161941,7 @@
       "solvesFile": "5x6-0B-BCS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 22
     },
     {
       "id": "5x6-0B-BCT",
@@ -161963,7 +161963,7 @@
       "solvesFile": "5x6-0B-BCT.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BCU",
@@ -161984,7 +161984,7 @@
       "solvesFile": "5x6-0B-BCU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 32
     },
     {
       "id": "5x6-0B-BCV",
@@ -162006,7 +162006,7 @@
       "solvesFile": "5x6-0B-BCV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 92
     },
     {
       "id": "5x6-0B-BCW",
@@ -162029,7 +162029,7 @@
       "solvesFile": "5x6-0B-BCW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BCX",
@@ -162051,7 +162051,7 @@
       "solvesFile": "5x6-0B-BCX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BCY",
@@ -162073,7 +162073,7 @@
       "solvesFile": "5x6-0B-BCY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 16
     },
     {
       "id": "5x6-0B-BCZ",
@@ -162096,7 +162096,7 @@
       "solvesFile": "5x6-0B-BCZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BDA",
@@ -162120,7 +162120,7 @@
       "solvesFile": "5x6-0B-BDA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BDB",
@@ -162143,7 +162143,7 @@
       "solvesFile": "5x6-0B-BDB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BDC",
@@ -162167,7 +162167,7 @@
       "solvesFile": "5x6-0B-BDC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BDD",
@@ -162191,7 +162191,7 @@
       "solvesFile": "5x6-0B-BDD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 44
     },
     {
       "id": "5x6-0B-BDE",
@@ -162215,7 +162215,7 @@
       "solvesFile": "5x6-0B-BDE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-BDF",
@@ -162239,7 +162239,7 @@
       "solvesFile": "5x6-0B-BDF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 44
     },
     {
       "id": "5x6-0B-BDG",
@@ -162263,7 +162263,7 @@
       "solvesFile": "5x6-0B-BDG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BDH",
@@ -162287,7 +162287,7 @@
       "solvesFile": "5x6-0B-BDH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BDI",
@@ -162311,7 +162311,7 @@
       "solvesFile": "5x6-0B-BDI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BDJ",
@@ -162335,7 +162335,7 @@
       "solvesFile": "5x6-0B-BDJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-BDK",
@@ -162359,7 +162359,7 @@
       "solvesFile": "5x6-0B-BDK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 40
     },
     {
       "id": "5x6-0B-BDL",
@@ -162383,7 +162383,7 @@
       "solvesFile": "5x6-0B-BDL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BDM",
@@ -162407,7 +162407,7 @@
       "solvesFile": "5x6-0B-BDM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BDN",
@@ -162430,7 +162430,7 @@
       "solvesFile": "5x6-0B-BDN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BDO",
@@ -162453,7 +162453,7 @@
       "solvesFile": "5x6-0B-BDO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BDP",
@@ -162476,7 +162476,7 @@
       "solvesFile": "5x6-0B-BDP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BDQ",
@@ -162500,7 +162500,7 @@
       "solvesFile": "5x6-0B-BDQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-BDR",
@@ -162523,7 +162523,7 @@
       "solvesFile": "5x6-0B-BDR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 26
     },
     {
       "id": "5x6-0B-BDS",
@@ -162546,7 +162546,7 @@
       "solvesFile": "5x6-0B-BDS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-BDT",
@@ -162570,7 +162570,7 @@
       "solvesFile": "5x6-0B-BDT.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 42
     },
     {
       "id": "5x6-0B-BDU",
@@ -162594,7 +162594,7 @@
       "solvesFile": "5x6-0B-BDU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BDV",
@@ -162618,7 +162618,7 @@
       "solvesFile": "5x6-0B-BDV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BDW",
@@ -162641,7 +162641,7 @@
       "solvesFile": "5x6-0B-BDW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BDX",
@@ -162664,7 +162664,7 @@
       "solvesFile": "5x6-0B-BDX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BDY",
@@ -162688,7 +162688,7 @@
       "solvesFile": "5x6-0B-BDY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 14
     },
     {
       "id": "5x6-0B-BDZ",
@@ -162712,7 +162712,7 @@
       "solvesFile": "5x6-0B-BDZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 48
     },
     {
       "id": "5x6-0B-BEA",
@@ -162736,7 +162736,7 @@
       "solvesFile": "5x6-0B-BEA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BEB",
@@ -162760,7 +162760,7 @@
       "solvesFile": "5x6-0B-BEB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BEC",
@@ -162783,7 +162783,7 @@
       "solvesFile": "5x6-0B-BEC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BED",
@@ -162806,7 +162806,7 @@
       "solvesFile": "5x6-0B-BED.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEE",
@@ -162829,7 +162829,7 @@
       "solvesFile": "5x6-0B-BEE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BEF",
@@ -162853,7 +162853,7 @@
       "solvesFile": "5x6-0B-BEF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 16
     },
     {
       "id": "5x6-0B-BEG",
@@ -162877,7 +162877,7 @@
       "solvesFile": "5x6-0B-BEG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEH",
@@ -162900,7 +162900,7 @@
       "solvesFile": "5x6-0B-BEH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 18
     },
     {
       "id": "5x6-0B-BEI",
@@ -162923,7 +162923,7 @@
       "solvesFile": "5x6-0B-BEI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0B-BEJ",
@@ -162946,7 +162946,7 @@
       "solvesFile": "5x6-0B-BEJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BEK",
@@ -162969,7 +162969,7 @@
       "solvesFile": "5x6-0B-BEK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEL",
@@ -162992,7 +162992,7 @@
       "solvesFile": "5x6-0B-BEL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 38
     },
     {
       "id": "5x6-0B-BEM",
@@ -163015,7 +163015,7 @@
       "solvesFile": "5x6-0B-BEM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEN",
@@ -163038,7 +163038,7 @@
       "solvesFile": "5x6-0B-BEN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEO",
@@ -163061,7 +163061,7 @@
       "solvesFile": "5x6-0B-BEO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEP",
@@ -163084,7 +163084,7 @@
       "solvesFile": "5x6-0B-BEP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEQ",
@@ -163107,7 +163107,7 @@
       "solvesFile": "5x6-0B-BEQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BER",
@@ -163131,7 +163131,7 @@
       "solvesFile": "5x6-0B-BER.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BES",
@@ -163155,7 +163155,7 @@
       "solvesFile": "5x6-0B-BES.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BET",
@@ -163179,7 +163179,7 @@
       "solvesFile": "5x6-0B-BET.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-BEU",
@@ -163202,7 +163202,7 @@
       "solvesFile": "5x6-0B-BEU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BEV",
@@ -163225,7 +163225,7 @@
       "solvesFile": "5x6-0B-BEV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEW",
@@ -163249,7 +163249,7 @@
       "solvesFile": "5x6-0B-BEW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-BEX",
@@ -163272,7 +163272,7 @@
       "solvesFile": "5x6-0B-BEX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-BEY",
@@ -163295,7 +163295,7 @@
       "solvesFile": "5x6-0B-BEY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-BEZ",
@@ -163318,7 +163318,7 @@
       "solvesFile": "5x6-0B-BEZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0C-AAA",

@@ -23,24 +23,17 @@ import argparse
 import csv
 import os
 import re
+import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 try:
     import pymysql
 except ImportError:
     pymysql = None  # type: ignore
 
-RANKS: List[Tuple[int, str, str, int]] = [
-    (1, "L1", "Wanderer", 1),
-    (2, "L2", "Pathfinder", 2),
-    (3, "L3", "Trailblazer", 3),
-    (4, "L4", "Navigator", 4),
-    (5, "L5", "Waymaker", 5),
-    (6, "L6", "Route Master", 6),
-    (7, "L7", "Grand Cartographer", 7),
-    (8, "L8", "Vaultwalker", 8),
-]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.adventure_ranks import load_adventure_ranks
 
 
 def connect():
@@ -109,21 +102,33 @@ def derive_progression(rows: List[dict]) -> List[dict]:
     return out
 
 
-def upsert_ranks(cur) -> None:
+def upsert_ranks(cur, repo_root: Path) -> None:
     sql = """
         INSERT INTO adventure_rank (
             rank_id, rank_code, rank_name, badge_name, badge_image,
             badge_locked_image, badge_color, unlock_title, unlock_message,
             display_order, is_active
-        ) VALUES (%s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL, %s, TRUE)
+        ) VALUES (%s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, TRUE)
         ON DUPLICATE KEY UPDATE
             rank_code = VALUES(rank_code),
             rank_name = VALUES(rank_name),
+            badge_name = VALUES(badge_name),
+            badge_image = VALUES(badge_image),
             display_order = VALUES(display_order),
             is_active = VALUES(is_active)
     """
-    for rank_id, code, name, display_order in RANKS:
-        cur.execute(sql, (rank_id, code, name, display_order))
+    for row in load_adventure_ranks(repo_root):
+        cur.execute(
+            sql,
+            (
+                row["rank_id"],
+                row["rank_code"],
+                row["rank_name"],
+                row["rank_name"],
+                row["badge_image"],
+                row["display_order"],
+            ),
+        )
 
 
 def upsert_progression(cur, rows: List[dict]) -> None:
@@ -166,7 +171,7 @@ def main() -> None:
     prog_rows = derive_progression(raw_rows)
 
     print(f"CSV: {csv_path}")
-    print(f"ranks: {len(RANKS)}")
+    print(f"ranks: 8")
     print(f"progression steps: {len(prog_rows)}")
     print(
         f"cumulative at L8-10: {prog_rows[-1]['cumulative_levels_required']} "
@@ -181,7 +186,7 @@ def main() -> None:
     conn = connect()
     try:
         with conn.cursor() as cur:
-            upsert_ranks(cur)
+            upsert_ranks(cur, root)
             upsert_progression(cur, prog_rows)
         conn.commit()
         with conn.cursor() as cur:

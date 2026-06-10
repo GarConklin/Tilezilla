@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Choose test player</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #1a3d3a url("/img/Background lake and dock.png") center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .panel {
+      width: min(100%, 360px);
+      padding: 28px 24px 24px;
+      border-radius: 20px;
+      background: rgba(15, 42, 38, 0.92);
+      border: 2px solid rgba(196, 163, 90, 0.45);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    .panel img.logo {
+      width: min(240px, 80vw);
+      height: auto;
+      margin: 0 auto 8px;
+      display: block;
+    }
+
+    .panel h1 {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .panel p.sub {
+      margin: 0 0 20px;
+      font-size: 0.85rem;
+      opacity: 0.75;
+    }
+
+    .panel p.dev-tag {
+      margin: 0 0 16px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #c4a35a;
+      opacity: 0.9;
+    }
+
+    .players {
+      display: grid;
+      gap: 12px;
+    }
+
+    button.player {
+      appearance: none;
+      border: 2px solid rgba(196, 163, 90, 0.35);
+      border-radius: 14px;
+      background: rgba(45, 90, 61, 0.55);
+      color: inherit;
+      padding: 16px 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+
+    button.player:hover,
+    button.player:focus-visible {
+      border-color: #c4a35a;
+      background: rgba(45, 90, 61, 0.85);
+      outline: none;
+    }
+
+    button.player:active {
+      transform: scale(0.98);
+    }
+
+    button.player .name {
+      display: block;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    button.player .meta {
+      display: block;
+      font-size: 0.82rem;
+      opacity: 0.8;
+      line-height: 1.35;
+    }
+
+    .foot {
+      margin-top: 18px;
+      font-size: 0.75rem;
+      opacity: 0.55;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel" aria-labelledby="pick-title">
+    <img class="logo" src="/img/Title.png" width="240" height="48" alt="Tilezilla" />
+    <p class="dev-tag">Dev test players</p>
+    <h1 id="pick-title">Who is playing?</h1>
+    <p class="sub">Temporary picker — remove before production.</p>
+
+    <div class="players">
+      <button type="button" class="player" data-user="gar">
+        <span class="name">Gar</span>
+        <span class="meta">Newbie · Adventure L1-1 · 5 hint tokens · fresh progress</span>
+      </button>
+      <button type="button" class="player" data-user="Arn">
+        <span class="name">Arn</span>
+        <span class="meta">Adventure L4-1 · 1,141 puzzles cleared through L3-10</span>
+      </button>
+    </div>
+
+    <p class="foot">Progress is saved separately per player in this browser.</p>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'snake_active_user_v1';
+    const PLAY_URL = '/tilezilla.html';
+
+    document.querySelectorAll('button.player').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const user = btn.dataset.user;
+        if (!user) return;
+        localStorage.setItem(STORAGE_KEY, user);
+        window.location.href = PLAY_URL;
+      });
+    });
+  </script>
+</body>
+</html>

@@ -78,6 +78,14 @@ Existing MySQL volume without postgame table:
 Get-Content docker\mysql\init\04-adventure-postgame.sql -Raw | docker compose exec -T mysql mysql -utilegame -ptilegame_dev tilegame
 ```
 
+Existing MySQL volume without rank badge paths:
+
+```powershell
+Get-Content docker\mysql\init\06-adventure-rank-badges.sql -Raw | docker compose exec -T mysql mysql -utilegame -ptilegame_dev tilegame
+```
+
+Canonical rank list (names + `badge_image` URLs): `data/adventure_ranks.json`. Badge PNGs: `img/ranks/`.
+
 ## Upgrade existing MySQL volume
 
 If the DB was created before `reference_id` on `hint_transactions`, either reset (below) or apply the migration manually:
@@ -87,6 +95,23 @@ docker compose exec -T mysql mysql -uroot -p tilegame < docker/mysql/init/02-hin
 ```
 
 (Use root password from `.env`.)
+
+## Dev users (Gar + Arn)
+
+After catalog and adventure imports:
+
+```powershell
+.\scripts\seed-dev-users.ps1
+```
+
+| User | Username | Password | Adventure |
+|------|----------|----------|-----------|
+| Gar | `gar` | `gar` | L1-1, all stats 0 |
+| Arn | `Arn` | `arn` | L4-1 (1,141 puzzles through L3-10) |
+
+Seeds `tilegame.users`, `tile_profiles`, and `player_progress`. If `words_db` is running, also seeds WordsOnline login accounts (same fixed ids `900001` / `900002`).
+
+Use `-TilegameOnly` to skip WordsOnline. Use `-DryRun` to print steps without writing.
 
 ## Reset database (destructive)
 

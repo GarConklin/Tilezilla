@@ -10,3 +10,4 @@ node_modules/
 
 # Level solve JSON trees — distribute via solves.zip instead
 solves/
+!solves.zip
