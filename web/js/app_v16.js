@@ -1,6 +1,7 @@
 import { Solver } from './solver.js';
 import { Solutions } from './solutions.js';
 import { Progress } from './progress.js';
+import { isDevUser, syncDevUserUi } from './tilezilla-dev-user.js';
 
 const CONFIG = {
   rows: 6,
@@ -265,11 +266,11 @@ function currentPortablePlacements(){
   }));
 }
 
-function isAdminUser(){
-  return (state.userId || '').toLowerCase() === 'garadmin';
+function isAdminUser() {
+  return isDevUser(state.userId);
 }
 
-function syncAdminUi(){
+function syncAdminUi() {
   const admin = isAdminUser();
   if(approveReviewBtn){
     approveReviewBtn.style.display = admin ? '' : 'none';
@@ -425,12 +426,13 @@ function toggleBlockerAtCell(r, c){
   return true;
 }
 
-function resolveTileAsset(tileRef){
+function resolveTileAsset(tileRef, tilesetName){
   if(!tileRef || typeof tileRef !== 'string') return tileRef;
   const raw = tileRef.split('#')[0];
   const id = tileId(raw);
   if(id){
-    const bySet = state.tileSets?.tilesets?.[state.activeTileset]?.[id];
+    const setKey = tilesetName || state.activeTileset;
+    const bySet = state.tileSets?.tilesets?.[setKey]?.[id];
     if(bySet) return bySet;
   }
   // If already an image filename, keep it as-is.
@@ -607,23 +609,24 @@ function fatal(err){
 function logSolver(msg){ solver.log(msg); } // wired after solver init
 
 // ---- Image rotation (canvas) ----
-async function loadImage(tileName){
-  if(state.imgCache.has(tileName)) return state.imgCache.get(tileName);
+async function loadImage(tileName, tilesetName){
+  const cacheKey = tilesetName ? `${tilesetName}|${tileName}` : tileName;
+  if(state.imgCache.has(cacheKey)) return state.imgCache.get(cacheKey);
   const img = new Image();
-  img.src = 'img/' + resolveTileAsset(tileName);
+  img.src = 'img/' + resolveTileAsset(tileName, tilesetName);
   try {
     await img.decode();
   } catch (e) {
     throw new Error(`Tile image failed to load: ${tileName} (${img.src})`);
   }
-  state.imgCache.set(tileName, img);
+  state.imgCache.set(cacheKey, img);
   return img;
 }
 
-async function rotatedDataURL(tileName, deg){
-  const key = `${tileName}|${deg}`;
+async function rotatedDataURL(tileName, deg, tilesetName){
+  const key = tilesetName ? `${tilesetName}|${tileName}|${deg}` : `${tileName}|${deg}`;
   if(state.rotatedCache.has(key)) return state.rotatedCache.get(key);
-  const img = await loadImage(tileName);
+  const img = await loadImage(tileName, tilesetName);
 
   // Source is a 2x1 image. Normalize to that ratio.
   const srcW = img.naturalWidth;
@@ -1283,6 +1286,28 @@ function getSelectedInstance(){
   return state.selectedPal ? getInstance(state.selectedPal) : null;
 }
 
+/** Show a placed tile in the preview (board unchanged) — e.g. after Continue Search. */
+function syncPreviewFromBoardSelection({ preferLastPlaced = false } = {}) {
+  const tiles = state.tiles || [];
+  if (!tiles.length) return false;
+
+  let t = state.selectedTileId
+    ? tiles.find((x) => x.id === state.selectedTileId)
+    : null;
+  if (!t && preferLastPlaced) {
+    t = [...tiles].reverse().find((x) => !isHintTile(x)) || tiles[tiles.length - 1];
+  }
+  if (!t) return false;
+
+  state.previewTile = t.tile;
+  state.deg = t.deg || 0;
+  state.selectedTileId = t.id;
+  state.selectedPal = null;
+  markPaletteSelected(null);
+  if (rotHud) rotHud.textContent = String(state.deg);
+  return true;
+}
+
 async function renderActivePreview(){
   if(!activePad) return;
   const tileName = state.previewTile || state.selectedPal;
@@ -1311,22 +1336,42 @@ async function renderActivePreview(){
   if(activeEmpty) activeEmpty.style.display='none';
   const padW = activePad.clientWidth || 153;
   const padH = activePad.clientHeight || 91;
+  const rootStyle = getComputedStyle(document.documentElement);
+  const fitInsetX = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-fit-inset-x')) || 4;
+  const fitInsetY = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-fit-inset-y')) || 8;
+  const fitW = Math.max(1, padW - fitInsetX * 2);
+  const fitH = Math.max(1, padH - fitInsetY * 2);
   const a = anchorCellInFootprint(tileName, state.deg);
   const size = boardTilePixelSize(tileName, state.deg);
   let drawW = size.w;
   let drawH = size.h;
   let cell = CONFIG.cellPx;
-  // Match board cell pixels; only shrink if the pad is too small (never scale up).
-  if (drawW > padW || drawH > padH) {
-    const shrink = Math.min(padW / drawW, padH / drawH);
+
+  const rot = ((state.deg % 360) + 360) % 360;
+  const boardScale = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-board-scale')) || 1;
+  const rotScale = (rot === 90 || rot === 270)
+    ? (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot90-scale')) || 1)
+    : (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot0-scale')) || 1);
+  const clampToSlot = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-clamp-to-slot')) || 0;
+
+  const scale = boardScale * rotScale;
+  drawW *= scale;
+  drawH *= scale;
+  cell *= scale;
+
+  // Default: true board pixels (may extend past slot — overflow is visible). Set clamp-to-slot to 1 to shrink.
+  if (clampToSlot > 0 && (drawW > fitW || drawH > fitH)) {
+    const shrink = Math.min(fitW / drawW, fitH / drawH);
     drawW *= shrink;
     drawH *= shrink;
     cell *= shrink;
   }
 
+  const tileOffsetX = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-offset-x')) || 0;
+  const tileOffsetY = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-offset-y')) || 0;
+
   if(activeImg){
     activeImg.style.display = 'block';
-    activeImg.style.transform = '';
     activeImg.style.width = `${drawW}px`;
     activeImg.style.height = `${drawH}px`;
     activeImg.alt = tileName;
@@ -1340,8 +1385,8 @@ async function renderActivePreview(){
 
   const offX = (padW - drawW) / 2;
   const offY = (padH - drawH) / 2;
-  const cx = offX + (a.c + 0.5) * cell;
-  const cy = offY + (a.r + 0.5) * cell;
+  const cx = offX + (a.c + 0.5) * cell + tileOffsetX;
+  const cy = offY + (a.r + 0.5) * cell + tileOffsetY;
   anchor.style.display = 'block';
   anchor.style.left = `${cx}px`;
   anchor.style.top = `${cy}px`;
@@ -1940,7 +1985,9 @@ function getInventoryMismatch(levelTileCounts, placedTiles){
 
 // ---- Hints ----
 const HINT_COSTS = { random: 1, start: 2, end: 2 };
+const EXAMPLE_ROUTE_TOKEN_COST = 1;
 const DEFAULT_GLOBAL_HINT_TOKENS = 18;
+const PUZZLE_TIME_BONUS_SECONDS = 30 * 60;
 
 function hintTokensStorageKey() {
   return `snake_hint_tokens_v1_${state.userId || 'gar'}`;
@@ -1965,6 +2012,103 @@ function saveGlobalHintTokens() {
 
 function getGlobalHintTokens() {
   return Math.max(0, Number(state.hintTokens) || 0);
+}
+
+function grantHintTokens(amount, reason = '') {
+  const n = Math.max(0, Number(amount) || 0);
+  if (!n) return 0;
+  state.hintTokens = getGlobalHintTokens() + n;
+  saveGlobalHintTokens();
+  window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
+    detail: { amount: n, reason },
+  }));
+  return n;
+}
+
+function formatCompletionTime(sec) {
+  const total = Math.max(0, Number(sec) || 0);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function puzzleAttemptUsedHints() {
+  return (Number(state.hintsUsedThisPuzzle) || 0) > 0 || boardHasHintTiles();
+}
+
+function todayChallengeDate() {
+  return window.__dailyChallengeMeta?.date
+    || new Date().toISOString().slice(0, 10);
+}
+
+function processSolutionFound(lv, res, placements) {
+  const timer = window.__puzzleTimer;
+  const elapsedSec = timer?.stop?.() ?? 0;
+  const hintsUsed = puzzleAttemptUsedHints();
+  const exampleRouteViewed = hasViewedExampleRoute(lv.id);
+  const leaderboardEligible = !hasLeaderboardForfeit(lv.id);
+  const hintRewardEligible = !hasHintCompletionRewardForfeit(lv.id);
+
+  let leaderboardSubmitted = false;
+  if (leaderboardEligible) {
+    const lb = progress?.recordLeaderboardResult?.({
+      challengeDate: todayChallengeDate(),
+      userId: state.userId || 'gar',
+      levelId: lv.id,
+      solutionIndex: res.index,
+      solutionBonus: !!res.bonus,
+      completionTimeSeconds: elapsedSec,
+      hintsUsed,
+      exampleRouteViewed,
+      completedAt: new Date().toISOString(),
+    });
+    leaderboardSubmitted = !!lb?.saved;
+    if (leaderboardSubmitted && elapsedSec > 0) {
+      timer?.updateBest?.(elapsedSec, lv.id);
+    }
+  }
+
+  progress.recordFound(lv.id, res.index, placements, !!res.bonus, elapsedSec * 1000, {
+    completionTimeSeconds: elapsedSec,
+    hintsUsed,
+    exampleRouteViewed,
+    leaderboardSubmitted,
+  });
+
+  const bonusNotes = [];
+  let tokensEarned = 0;
+  if (hintRewardEligible && !hintsUsed) {
+    grantHintTokens(1, 'Puzzle Completion');
+    tokensEarned += 1;
+    bonusNotes.push('+1 hint (no hints used)');
+    if (elapsedSec > 0 && elapsedSec <= PUZZLE_TIME_BONUS_SECONDS) {
+      grantHintTokens(1, 'Time Bonus');
+      tokensEarned += 1;
+      bonusNotes.push('+1 hint (under 30 min)');
+    }
+  }
+
+  let msg = res.msg || 'Solution found!';
+  if (elapsedSec > 0) {
+    msg += ` Time: ${formatCompletionTime(elapsedSec)}.`;
+  }
+  if (leaderboardSubmitted) {
+    msg += ' Recorded for leaderboard.';
+  } else if (!leaderboardEligible && exampleRouteViewed) {
+    msg += ' Leaderboard ineligible (example route viewed).';
+  }
+  if (hintsUsed) {
+    const n = Number(state.hintsUsedThisPuzzle) || 0;
+    if (n > 0) {
+      msg += ` ${n} hint${n === 1 ? '' : 's'} used — no hint bonus.`;
+    } else {
+      msg += ' Hints used — no hint bonus.';
+    }
+  } else if (bonusNotes.length) {
+    msg += ` ${bonusNotes.join(' · ')}.`;
+  }
+
+  return { msg, elapsedSec, hintsUsed, leaderboardSubmitted, bonusNotes, tokensEarned };
 }
 
 function getHintCost(hintType) {
@@ -2006,6 +2150,22 @@ function consumeHintTokens(cost) {
   return true;
 }
 
+function canAffordExampleRoute() {
+  return getGlobalHintTokens() >= EXAMPLE_ROUTE_TOKEN_COST;
+}
+
+function consumeGlobalHintTokens(amount) {
+  const c = Number(amount) || 0;
+  if (c <= 0 || getGlobalHintTokens() < c) return false;
+  state.hintTokens = Math.max(0, getGlobalHintTokens() - c);
+  saveGlobalHintTokens();
+  return true;
+}
+
+function getExampleRouteTokenCost() {
+  return EXAMPLE_ROUTE_TOKEN_COST;
+}
+
 /** @deprecated Use consumeHintTokens(cost) */
 function consumeHintToken() {
   return consumeHintTokens(1);
@@ -2026,23 +2186,33 @@ function placementFitsOnBoard(placement) {
   return canPlaceNew(placement.r, placement.c, placement.deg, inst.tile);
 }
 
-async function getFirstUndiscoveredSolution() {
+/**
+ * Solution used for hints and route previews:
+ * first known solution not yet discovered by the player; if all are found, Solution #1.
+ */
+async function selectSolutionForReveal() {
   const lv = state.currentLevel;
   if (!lv?.id) return null;
   const knownSolutions = await loadKnownSolutionsForLevel(lv);
   if (!knownSolutions.length) return null;
+
   const found = progress?.getFoundForLevel(lv.id) || [];
   const foundIndices = new Set(
     found
       .filter((f) => !f.bonus && Number.isFinite(f.index))
       .map((f) => f.index)
   );
+
   for (let i = 0; i < knownSolutions.length; i++) {
-    if (!foundIndices.has(i)) {
-      return { index: i, solution: knownSolutions[i] };
-    }
+    if (foundIndices.has(i)) continue;
+    const placements = knownSolutions[i]?.placements;
+    if (!Array.isArray(placements) || !placements.length) continue;
+    return { index: i, solution: knownSolutions[i], placements };
   }
-  return null;
+
+  const firstPlacements = knownSolutions[0]?.placements;
+  if (!Array.isArray(firstPlacements) || !firstPlacements.length) return null;
+  return { index: 0, solution: knownSolutions[0], placements: firstPlacements };
 }
 
 function pickHintPlacement(hintType, placements) {
@@ -2110,16 +2280,15 @@ async function applyHint(hintType) {
     return { ok: false, msg: 'Not enough hint tokens for this hint.' };
   }
 
-  const undiscovered = await getFirstUndiscoveredSolution();
-  if (!undiscovered) {
-    return { ok: false, msg: 'No undiscovered solutions remain for this puzzle.' };
+  const selected = await selectSolutionForReveal();
+  if (!selected) {
+    return { ok: false, msg: 'No solutions are available for this puzzle.' };
   }
 
-  const placements = undiscovered.solution?.placements || [];
-  const placement = pickHintPlacement(hintType, placements);
+  const placement = pickHintPlacement(hintType, selected.placements);
   if (!placement) {
     const labels = { random: 'random tile', start: 'start tile', end: 'end tile' };
-    return { ok: false, msg: `Could not place ${labels[hintType] || 'hint'} from solution ${undiscovered.index + 1}.` };
+    return { ok: false, msg: `Could not place ${labels[hintType] || 'hint'} from solution ${selected.index + 1}.` };
   }
 
   const placed = await placeHintTile(placement);
@@ -2130,9 +2299,9 @@ async function applyHint(hintType) {
   const labels = { random: 'Random tile', start: 'Start tile', end: 'End tile' };
   return {
     ok: true,
-    msg: `${labels[hintType] || 'Hint'} placed (${typeId}) from solution ${undiscovered.index + 1}.`,
+    msg: `${labels[hintType] || 'Hint'} placed (${typeId}) from solution ${selected.index + 1}.`,
     tile: placed.tile,
-    solutionIndex: undiscovered.index,
+    solutionIndex: selected.index,
     cost,
   };
 }
@@ -2458,6 +2627,326 @@ function totalKnownForLevel(lev){
   const lib = Number(lev.totalUniqueSolutions);
   if(Number.isFinite(lib) && lib > 0) return lib;
   return 0;
+}
+
+const CHALLENGE_LABELS = {
+  'daily-challenge': 'Daily Challenge',
+  adventure: 'Adventure',
+  random: 'Random Puzzle',
+  library: 'Puzzle Library',
+  profile: 'Profile',
+};
+
+function challengeLabelForScreen(screen) {
+  return CHALLENGE_LABELS[screen] || 'Puzzle';
+}
+
+async function getMenuPuzzleInfo() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return null;
+  const known = await loadKnownSolutionsForLevel(lv);
+  const found = progress?.getFoundForLevel(lv.id) || [];
+  const foundCount = found.filter((f) => !f.bonus && Number.isFinite(f.index)).length;
+  const total = known.length || totalKnownForLevel(lv);
+  const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
+  const rows = lv.board?.rows;
+  const cols = lv.board?.cols;
+  const size = Number.isFinite(rows) && Number.isFinite(cols)
+    ? `${cols} x ${rows}`
+    : '—';
+  const hintsMax = Number(CONFIG.hintsPerPuzzle) || 2;
+  const hintsUsed = Math.min(hintsMax, Number(state.hintsUsedThisPuzzle) || 0);
+  const bestTimeSeconds = window.__puzzleTimer?.loadBest?.(lv.id, state.userId) ?? null;
+  const firstSolvedAt = progress?.getFirstSolvedAt?.(lv.id) || null;
+  return {
+    id: lv.id,
+    name: lv.name || lv.id,
+    size,
+    challengeStatus: challengeLabelForScreen(screen),
+    totalSolutions: total,
+    solutionsFound: foundCount,
+    hasKnownTotal: levelHasKnownTotal(lv),
+    viewedExampleRoute: progress?.hasViewedExampleRoute?.(lv.id) || false,
+    hintsUsed,
+    hintsMax,
+    bestTimeSeconds,
+    firstSolvedAt,
+  };
+}
+
+async function getMenuFoundSolutions() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return { entries: [], total: 0, foundCount: 0, hasKnownTotal: false };
+  const known = await loadKnownSolutionsForLevel(lv);
+  const found = progress?.getFoundForLevel(lv.id) || [];
+  const entries = found
+    .filter((f) => !f.bonus && Number.isFinite(f.index))
+    .map((f) => {
+      const placements = Array.isArray(f.placements) && f.placements.length
+        ? f.placements
+        : (known[f.index]?.placements || []);
+      return {
+        index: f.index,
+        label: `Solution #${f.index + 1}`,
+        placements,
+      };
+    })
+    .sort((a, b) => a.index - b.index);
+  const total = known.length || totalKnownForLevel(lv);
+  return {
+    entries,
+    total,
+    foundCount: entries.length,
+    hasKnownTotal: levelHasKnownTotal(lv),
+    level: lv,
+  };
+}
+
+async function getMenuDevKnownSolutions() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return { entries: [], total: 0, level: null };
+  const known = await loadKnownSolutionsForLevel(lv);
+  const entries = known
+    .map((k, i) => ({
+      index: i,
+      label: `Known #${i + 1}`,
+      placements: Array.isArray(k?.placements) && k.placements.length
+        ? k.placements
+        : [],
+    }))
+    .filter((e) => e.placements.length);
+  return { entries, total: entries.length, level: lv };
+}
+
+async function applyKnownSolutionToBoard(solutionIndex) {
+  if (!solutions?.apply || !state.currentLevel) return false;
+  const known = await loadKnownSolutionsForLevel(state.currentLevel);
+  const p = known[solutionIndex]?.placements;
+  if (!Array.isArray(p) || !p.length) return false;
+  await solutions.apply(p);
+  return true;
+}
+
+async function loadFirstValidKnownSolution() {
+  if (!solutions?.apply || !state.currentLevel) return false;
+  const known = await loadKnownSolutionsForLevel(state.currentLevel);
+  for (let i = 0; i < known.length; i += 1) {
+    const p = known[i]?.placements;
+    if (!Array.isArray(p) || !p.length) continue;
+    await solutions.apply(p);
+    const v = validateBoard();
+    if (v.ok) return true;
+  }
+  return false;
+}
+
+const ROUTE_PREVIEW_MAX_PX = 300;
+const ROUTE_PREVIEW_BG = '#e8dcc4';
+
+function loadImageElement(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.src = src;
+  });
+}
+
+function previewPlacementSortRank(tileRef) {
+  const id = tileId(tileRef);
+  if (id === 'SH') return 0;
+  if (id === 'ET') return 1;
+  return 2;
+}
+
+function blockersForPreviewLevel(level) {
+  if (state.currentLevel?.id === level?.id && state.blockerCells?.size) {
+    return [...state.blockerCells].map((ck) => {
+      const [r, c] = ck.split(',').map(Number);
+      return {
+        r,
+        c,
+        bt: state.blockerTypeByCell.get(ck) || 'B1',
+      };
+    });
+  }
+  const out = [];
+  const defaultBlockerType = (typeof level?.blockerType === 'string' && level.blockerType) ? level.blockerType : 'B1';
+  for (const b of (level?.blockers || [])) {
+    if (!Array.isArray(b) || b.length < 2) continue;
+    const br = Number(b[0]);
+    const bc = Number(b[1]);
+    if (!Number.isFinite(br) || !Number.isFinite(bc)) continue;
+    const bt = (typeof b[2] === 'string' && b[2]) ? b[2] : defaultBlockerType;
+    out.push({ r: br, c: bc, bt });
+  }
+  return out;
+}
+
+async function drawPreviewTileOnBoard(ctx, tileName, deg, left, top, cellPx, tilesetName) {
+  const rot = ((deg % 360) + 360) % 360;
+  const { w, h } = boardTilePixelSize(tileName, rot);
+  const url = await rotatedDataURL(tileName, rot, tilesetName);
+  const img = await loadImageElement(url);
+  ctx.drawImage(img, left, top, w, h);
+}
+
+function drawPreviewStartEndMarkers(ctx, placements, cellPx) {
+  for (const p of placements || []) {
+    const id = tileId(p?.tile);
+    if (id !== 'SH' && id !== 'ET') continue;
+    const cx = (p.c * cellPx) + (cellPx / 2);
+    const cy = (p.r * cellPx) + (cellPx / 2);
+    const radius = Math.max(4, cellPx * 0.18);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fillStyle = id === 'SH' ? 'rgba(72, 150, 88, 0.92)' : 'rgba(176, 62, 52, 0.92)';
+    ctx.fill();
+    ctx.lineWidth = Math.max(2, cellPx * 0.06);
+    ctx.strokeStyle = 'rgba(255, 248, 230, 0.95)';
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+/**
+ * Render a solution using the normal tile artwork, then scale for menu preview.
+ * Preview mode hides edges, grid, outlines, and metadata — route + start/end only.
+ */
+async function renderSolutionPreview(targetCanvas, placements, { level, tileset } = {}) {
+  const lv = level || state.currentLevel;
+  if (!targetCanvas || !lv?.board || !Array.isArray(placements) || !placements.length) return false;
+
+  const rows = Number(lv.board.rows) || CONFIG.rows;
+  const cols = Number(lv.board.cols) || CONFIG.cols;
+  const cellPx = CONFIG.cellPx || 55;
+  const boardW = cols * cellPx;
+  const boardH = rows * cellPx;
+  const previewTileset = tileset || null;
+
+  const off = document.createElement('canvas');
+  off.width = boardW;
+  off.height = boardH;
+  const ctx = off.getContext('2d');
+  if (!ctx) return false;
+
+  ctx.fillStyle = ROUTE_PREVIEW_BG;
+  ctx.fillRect(0, 0, boardW, boardH);
+
+  const prevShowEdges = state.showEdges;
+  state.showEdges = false;
+  try {
+    for (const blocker of blockersForPreviewLevel(lv)) {
+      const asset = resolveTileAsset(blocker.bt, previewTileset);
+      const img = await loadImageElement(`img/${asset}`);
+      ctx.drawImage(img, blocker.c * cellPx, blocker.r * cellPx, cellPx, cellPx);
+    }
+
+    const sorted = [...placements].sort(
+      (a, b) => previewPlacementSortRank(a.tile) - previewPlacementSortRank(b.tile)
+        || (a.r - b.r) || (a.c - b.c)
+    );
+
+    for (const p of sorted) {
+      const cells = cellsForTile(p.tile, p.r, p.c, p.deg);
+      if (!cells.length) continue;
+      const rMin = Math.min(...cells.map((cell) => cell[0]));
+      const cMin = Math.min(...cells.map((cell) => cell[1]));
+      await drawPreviewTileOnBoard(ctx, p.tile, p.deg, cMin * cellPx, rMin * cellPx, cellPx, previewTileset);
+    }
+
+    drawPreviewStartEndMarkers(ctx, placements, cellPx);
+  } finally {
+    state.showEdges = prevShowEdges;
+  }
+
+  const scale = Math.min(ROUTE_PREVIEW_MAX_PX / boardW, ROUTE_PREVIEW_MAX_PX / boardH);
+  const outW = Math.max(1, Math.round(boardW * scale));
+  const outH = Math.max(1, Math.round(boardH * scale));
+
+  targetCanvas.width = outW;
+  targetCanvas.height = outH;
+  const tctx = targetCanvas.getContext('2d');
+  if (!tctx) return false;
+  tctx.fillStyle = ROUTE_PREVIEW_BG;
+  tctx.fillRect(0, 0, outW, outH);
+  tctx.imageSmoothingEnabled = true;
+  tctx.imageSmoothingQuality = 'high';
+  tctx.drawImage(off, 0, 0, outW, outH);
+  return true;
+}
+
+async function getRevealSolutionPlacements() {
+  const selected = await selectSolutionForReveal();
+  return selected?.placements || null;
+}
+
+/** @deprecated Use getRevealSolutionPlacements — kept for existing callers. */
+async function findClosestSolutionPlacements() {
+  return getRevealSolutionPlacements();
+}
+
+async function getExampleRoutePlacements() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return null;
+  const stored = progress?.getExampleRouteRecord?.(lv.id);
+  if (Array.isArray(stored?.placements) && stored.placements.length) {
+    return stored.placements;
+  }
+  return getRevealSolutionPlacements();
+}
+
+function hasViewedExampleRoute(levelId) {
+  const id = levelId || state.currentLevel?.id;
+  return id ? !!progress?.hasViewedExampleRoute?.(id) : false;
+}
+
+function hasLeaderboardForfeit(levelId) {
+  const id = levelId || state.currentLevel?.id;
+  return id ? !!progress?.hasLeaderboardForfeit?.(id) : false;
+}
+
+function hasHintCompletionRewardForfeit(levelId) {
+  const id = levelId || state.currentLevel?.id;
+  return id ? !!progress?.hasHintCompletionRewardForfeit?.(id) : false;
+}
+
+async function purchaseExampleRoute() {
+  const lv = state.currentLevel;
+  if (!lv?.id || !progress) return { ok: false, reason: 'no-level' };
+
+  if (progress.hasViewedExampleRoute(lv.id)) {
+    return { ok: true, charged: false, alreadyViewed: true };
+  }
+
+  if (!canAffordExampleRoute()) {
+    return { ok: false, reason: 'insufficient-tokens' };
+  }
+
+  if (!consumeGlobalHintTokens(EXAMPLE_ROUTE_TOKEN_COST)) {
+    return { ok: false, reason: 'insufficient-tokens' };
+  }
+
+  const placements = await getRevealSolutionPlacements();
+
+  progress.markViewedExampleRoute(lv.id, {
+    playerId: state.userId || 'gar',
+    tokenCost: EXAMPLE_ROUTE_TOKEN_COST,
+    leaderboardForfeited: true,
+    hintCompletionRewardForfeited: true,
+    placements: Array.isArray(placements)
+      ? placements.map((p) => ({ tile: p.tile, r: p.r, c: p.c, deg: p.deg }))
+      : [],
+  });
+
+  return {
+    ok: true,
+    charged: true,
+    tokenCost: EXAMPLE_ROUTE_TOKEN_COST,
+    playerId: state.userId || 'gar',
+    puzzleId: lv.id,
+  };
 }
 
 function formatLevelSelectLabel(lev){
@@ -3188,15 +3677,26 @@ async function init(){
       }
       const res = progress.checkSolution(lv.id, placements, knownSolutions);
       if(res.duplicate){
-        setCheckMessage(res.msg || 'Already found.', 'checkWarn');
         renderFoundList(lv.id, knownSolutions);
+        window.__discoveryRecord?.show?.(
+          window.__discoveryRecord.buildDuplicatePayload(lv, res),
+        );
         return;
       }
-      progress.recordFound(lv.id, res.index, placements, !!res.bonus, 0);
-      if(res.bonus) setCheckMessage(res.msg || 'Bonus solution discovered!', 'checkBonus');
-      else setCheckMessage(res.msg || 'Solution found!', 'checkSuccess');
+
+      const outcome = processSolutionFound(lv, res, placements);
+      if(res.bonus) setCheckMessage(outcome.msg, 'checkBonus');
+      else setCheckMessage(outcome.msg, 'checkSuccess');
       renderFoundList(lv.id, knownSolutions);
       refreshLevelSelectOptionTexts();
+
+      const found = progress.getFoundForLevel(lv.id) || [];
+      const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+      const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+      window.__discoveryRecord?.show?.(
+        window.__discoveryRecord.buildPayload(lv, res, outcome, solutionsFoundTotal, totalKnown),
+      );
     });
   }
 
@@ -3382,13 +3882,22 @@ async function init(){
   // Solver + Solutions modules
   window.__app = {
     CONFIG, state, targetCells, cellsForTile, validateBoard, renderTiles, setPaletteUsed,
-    renderActivePreview, edgesFor, logSolver, canPlaceNew, updateTilePlacement, removeTileById,
+    renderActivePreview, syncPreviewFromBoardSelection, edgesFor, logSolver, canPlaceNew,
+    updateTilePlacement, removeTileById,
     claimCells, clearTileFromOcc, rebuildOccFromTiles, occ, occIdx, resolveTileAsset, tileId,
     applySolveDocObject, applyLevel, buildGrid, setCssCell, clearBoard, totalKnownForLevel,
     applyGameplaySettings, buildPalette, getInventoryMismatch, boardAllowsHints,
     hintsRemainingThisPuzzle, consumeHintToken, consumeHintTokens,
-    getGlobalHintTokens, getHintCost, canAffordHint, applyHint, isHintTile,
+    getGlobalHintTokens, grantHintTokens, getHintCost, canAffordHint, applyHint, isHintTile,
+    puzzleAttemptUsedHints, processSolutionFound, PUZZLE_TIME_BONUS_SECONDS,
     boardHasHintTiles,
+    getMenuPuzzleInfo, getMenuFoundSolutions, getDevKnownSolutions: getMenuDevKnownSolutions,
+    getExampleRoutePlacements, selectSolutionForReveal, getRevealSolutionPlacements,
+    applyKnownSolutionToBoard, loadFirstValidKnownSolution,
+    clearBoard, setCheckMessage, isDevUser,
+    canAffordExampleRoute, getExampleRouteTokenCost, purchaseExampleRoute,
+    hasViewedExampleRoute, hasLeaderboardForfeit, hasHintCompletionRewardForfeit,
+    renderSolutionPreview, findClosestSolutionPlacements,
     onManualTilePlaced: null,
     currentPortablePlacements, displayDimsForBoard,
   };
@@ -3465,6 +3974,7 @@ async function init(){
       progress.storageKey = `snake_progress_v1_${state.userId}`;
       progress.data = progress.load();
       syncAdminUi();
+      syncDevUserUi(state.userId);
       const lv = state.currentLevel;
       const knownSolutions = lv ? await loadKnownSolutionsForLevel(lv) : [];
       if(lv) renderFoundList(lv.id, knownSolutions);
@@ -3474,6 +3984,7 @@ async function init(){
     });
   }
   syncAdminUi();
+  syncDevUserUi(state.userId);
   if(state.currentLevel){
     const knownSolutions = await loadKnownSolutionsForLevel(state.currentLevel);
     renderFoundList(state.currentLevel.id, knownSolutions);

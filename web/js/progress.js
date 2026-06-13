@@ -34,12 +34,61 @@ export class Progress {
     return this.data[levelId]?.found || [];
   }
 
+  hasViewedExampleRoute(levelId) {
+    const entry = this.data[levelId];
+    return !!(entry?.exampleRoute?.used_example_route || entry?.viewedExampleRoute);
+  }
+
+  getExampleRouteRecord(levelId) {
+    return this.data[levelId]?.exampleRoute || null;
+  }
+
+  hasLeaderboardForfeit(levelId) {
+    const rec = this.getExampleRouteRecord(levelId);
+    return !!(rec?.leaderboard_forfeited || rec?.used_example_route);
+  }
+
+  hasHintCompletionRewardForfeit(levelId) {
+    const rec = this.getExampleRouteRecord(levelId);
+    return !!(rec?.hint_completion_reward_forfeited || rec?.used_example_route);
+  }
+
+  markViewedExampleRoute(levelId, meta = {}) {
+    if (!levelId) return;
+    if (!this.data[levelId]) this.data[levelId] = { found: [] };
+    const placements = Array.isArray(meta.placements)
+      ? meta.placements.map((p) => ({ tile: p.tile, r: p.r, c: p.c, deg: p.deg }))
+      : [];
+    this.data[levelId].exampleRoute = {
+      used_example_route: true,
+      token_cost: meta.tokenCost ?? 1,
+      player_id: meta.playerId ?? '',
+      leaderboard_forfeited: meta.leaderboardForfeited !== false,
+      hint_completion_reward_forfeited: meta.hintCompletionRewardForfeited !== false,
+      placements,
+      viewedAt: new Date().toISOString(),
+    };
+    this.data[levelId].viewedExampleRoute = true;
+    this.save();
+  }
+
   /** Returns {found, total, bonuses} counts */
   getStats(levelId, totalKnown) {
     const found = this.getFoundForLevel(levelId);
     const bonuses = found.filter(f => f.bonus).length;
     const knownFound = found.filter(f => !f.bonus).length;
     return { found: knownFound, total: totalKnown, bonuses };
+  }
+
+  /** Earliest ISO timestamp among recorded solutions for this level. */
+  getFirstSolvedAt(levelId) {
+    const found = this.getFoundForLevel(levelId);
+    let earliest = null;
+    for (const entry of found) {
+      if (!entry?.foundAt) continue;
+      if (!earliest || entry.foundAt < earliest) earliest = entry.foundAt;
+    }
+    return earliest;
   }
 
   // -- Canonical form --
@@ -81,6 +130,14 @@ export class Progress {
     }
     // Vertical: anchor is top cell, deg 90.
     return { tile, r: Math.min(r1, r2), c: c1 === c2 ? c1 : Math.min(c1, c2), deg: 90 };
+  }
+
+  /** Fixed board blockers appear in solve files but are not player-placed tiles. */
+  playablePlacements(placements) {
+    return (placements || []).filter((p) => {
+      const id = typeof p?.tile === 'string' ? p.tile : (p?.tile?.id || p?.tile || '');
+      return id !== 'B1' && id !== 'B2' && id !== 'SB';
+    });
   }
 
   /**
@@ -138,28 +195,50 @@ export class Progress {
    * @returns {{matched:boolean, index:number|null, bonus:boolean, duplicate:boolean, msg:string}}
    */
   checkSolution(levelId, placements, knownSolutions) {
-    const currentCanon = this.canonicalize(placements);
+    const playable = this.playablePlacements(placements);
+    const currentCanon = this.canonicalize(playable);
     const board = this.app?.state?.currentLevel?.board;
     const rows = board?.rows;
     const cols = board?.cols;
-    const keyCur = rows && cols ? this.equivalenceKey(placements, rows, cols) : currentCanon;
+    const keyCur = rows && cols ? this.equivalenceKey(playable, rows, cols) : currentCanon;
     const found = this.getFoundForLevel(levelId);
 
     for (const f of found) {
-      const keyF = rows && cols ? this.equivalenceKey(f.placements, rows, cols) : this.canonicalize(f.placements);
+      const foundPlayable = this.playablePlacements(f.placements);
+      const keyF = rows && cols ? this.equivalenceKey(foundPlayable, rows, cols) : this.canonicalize(foundPlayable);
       if (keyCur !== keyF) continue;
-      const exact = this.canonicalize(f.placements) === currentCanon;
+      const exact = this.canonicalize(foundPlayable) === currentCanon;
+      let index = f.index;
+      let bonus = f.bonus;
+      if (bonus) {
+        for (let i = 0; i < knownSolutions.length; i++) {
+          const sol = this.playablePlacements(knownSolutions[i].placements);
+          const keySol = rows && cols ? this.equivalenceKey(sol, rows, cols) : this.canonicalize(sol);
+          if (keyCur === keySol) {
+            index = i;
+            bonus = false;
+            break;
+          }
+        }
+      }
       let msg = 'You already found this solution!';
       if (!exact && rows === cols) {
         msg = 'You already found this layout (0°, 90°, 180°, and 270° rotations count as one).';
       } else if (!exact && rows !== cols) {
         msg = 'You already found this layout (180° board rotation matches what you saved).';
       }
-      return { matched: true, index: f.index, bonus: f.bonus, duplicate: true, msg };
+      return {
+        matched: true,
+        index,
+        bonus,
+        duplicate: true,
+        foundAt: f.foundAt || null,
+        msg,
+      };
     }
 
     for (let i = 0; i < knownSolutions.length; i++) {
-      const sol = knownSolutions[i].placements;
+      const sol = this.playablePlacements(knownSolutions[i].placements);
       const keySol = rows && cols ? this.equivalenceKey(sol, rows, cols) : this.canonicalize(sol);
       if (keyCur !== keySol) continue;
       const exact = this.canonicalize(sol) === currentCanon;
@@ -178,18 +257,99 @@ export class Progress {
 
   // -- Recording --
 
-  recordFound(levelId, index, placements, bonus, elapsedMs = 0) {
+  recordFound(levelId, index, placements, bonus, elapsedMs = 0, meta = {}) {
     if (!this.data[levelId]) {
       this.data[levelId] = { found: [] };
     }
+    const completionTimeSeconds = Math.max(
+      0,
+      Math.floor(Number(meta.completionTimeSeconds ?? elapsedMs / 1000) || 0),
+    );
     this.data[levelId].found.push({
       index,
       placements: placements.map(p => ({ tile: p.tile, r: p.r, c: p.c, deg: p.deg })),
       bonus,
-      elapsedMs,
+      elapsedMs: completionTimeSeconds * 1000,
+      completionTimeSeconds,
+      hintsUsed: !!meta.hintsUsed,
+      exampleRouteViewed: !!meta.exampleRouteViewed,
+      leaderboardSubmitted: !!meta.leaderboardSubmitted,
       foundAt: new Date().toISOString(),
     });
     this.save();
+  }
+
+  dailyResultsStorageKey() {
+    return 'snake_daily_results_v1';
+  }
+
+  loadDailyResults() {
+    try {
+      const raw = localStorage.getItem(this.dailyResultsStorageKey());
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  saveDailyResults(data) {
+    try {
+      localStorage.setItem(this.dailyResultsStorageKey(), JSON.stringify(data));
+    } catch { /* quota */ }
+  }
+
+  /**
+   * Record a daily leaderboard entry (local stand-in for daily_results table).
+   * Keeps the fastest eligible time per user per challenge date.
+   */
+  recordLeaderboardResult(entry) {
+    const {
+      challengeDate,
+      userId,
+      levelId,
+      solutionIndex,
+      solutionBonus = false,
+      completionTimeSeconds,
+      hintsUsed = false,
+      exampleRouteViewed = false,
+      completedAt,
+    } = entry || {};
+
+    if (!challengeDate || !userId || !levelId) {
+      return { saved: false, reason: 'missing-fields' };
+    }
+
+    const sec = Math.max(0, Number(completionTimeSeconds) || 0);
+    const store = this.loadDailyResults();
+    const rowKey = `${challengeDate}:${userId}`;
+    const existing = store[rowKey];
+
+    if (existing && Number(existing.completionTimeSeconds) <= sec) {
+      return { saved: false, reason: 'slower-or-equal', existing };
+    }
+
+    store[rowKey] = {
+      challengeDate,
+      userId,
+      levelId,
+      solutionId: Number.isFinite(solutionIndex) ? solutionIndex : null,
+      solutionBonus: !!solutionBonus,
+      completionTimeSeconds: sec,
+      hintsUsed: !!hintsUsed,
+      exampleRouteViewed: !!exampleRouteViewed,
+      completedAt: completedAt || new Date().toISOString(),
+    };
+    this.saveDailyResults(store);
+    return { saved: true, entry: store[rowKey] };
+  }
+
+  getLeaderboardResultsForDate(challengeDate) {
+    const store = this.loadDailyResults();
+    return Object.values(store)
+      .filter((row) => row?.challengeDate === challengeDate)
+      .sort((a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0));
   }
 
   // -- Reset --

@@ -168,7 +168,7 @@ function wireRotationButtons() {
 
 function wireBottomNav() {
   const app = document.querySelector('.tz-app');
-  const items = document.querySelectorAll('.tz-nav-item');
+  const items = document.querySelectorAll('.tz-bottom-nav__hit');
 
   items.forEach(item => {
     item.addEventListener('click', () => {
@@ -176,7 +176,7 @@ function wireBottomNav() {
       if (!screen) return;
 
       items.forEach(i => {
-        i.classList.toggle('tz-nav-item--active', i === item);
+        i.classList.toggle('tz-bottom-nav__hit--active', i === item);
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
       });
 
@@ -192,7 +192,7 @@ function wirePlaceholderActions() {
     });
   };
 
-  ['undoBtn', 'resetBtn', 'hintBtn', 'solutionsBtn', 'settingsBtn'].forEach(noop);
+  ['undoBtn', 'resetBtn', 'hintBtn'].forEach(noop);
 }
 
 function init() {

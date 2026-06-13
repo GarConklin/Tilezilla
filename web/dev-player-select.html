@@ -64,6 +64,11 @@
       gap: 12px;
     }
 
+    .player-card {
+      display: grid;
+      gap: 6px;
+    }
+
     button.player {
       appearance: none;
       border: 2px solid rgba(196, 163, 90, 0.35);
@@ -101,6 +106,32 @@
       line-height: 1.35;
     }
 
+    button.player-reset {
+      appearance: none;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      border-radius: 8px;
+      background: transparent;
+      color: #a8b8b4;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    button.player-reset:hover,
+    button.player-reset:focus-visible {
+      border-color: #e8b923;
+      color: #f4ecd8;
+      outline: none;
+    }
+
+    .status {
+      margin: 12px 0 0;
+      min-height: 1.2em;
+      font-size: 0.78rem;
+      color: #8fd49a;
+    }
+
     .foot {
       margin-top: 18px;
       font-size: 0.75rem;
@@ -116,22 +147,49 @@
     <p class="sub">Temporary picker — remove before production.</p>
 
     <div class="players">
-      <button type="button" class="player" data-user="gar">
-        <span class="name">Gar</span>
-        <span class="meta">Newbie · Adventure L1-1 · 5 hint tokens · fresh progress</span>
-      </button>
-      <button type="button" class="player" data-user="Arn">
-        <span class="name">Arn</span>
-        <span class="meta">Adventure L4-1 · 1,141 puzzles cleared through L3-10</span>
-      </button>
+      <div class="player-card">
+        <button type="button" class="player" data-user="dev">
+          <span class="name">Dev</span>
+          <span class="meta">QA account · dev menu · browse known solutions · load board · 99 hint tokens</span>
+        </button>
+        <button type="button" class="player-reset" data-reset-user="dev">Reset Dev progress</button>
+      </div>
+      <div class="player-card">
+        <button type="button" class="player" data-user="gar">
+          <span class="name">Gar</span>
+          <span class="meta">Newbie · Adventure L1-1 · 5 hint tokens · fresh progress</span>
+        </button>
+        <button type="button" class="player-reset" data-reset-user="gar">Reset Gar progress</button>
+      </div>
+      <div class="player-card">
+        <button type="button" class="player" data-user="Arn">
+          <span class="name">Arn</span>
+          <span class="meta">Adventure L4-1 · 1,141 puzzles cleared through L3-10</span>
+        </button>
+        <button type="button" class="player-reset" data-reset-user="Arn">Reset Arn progress</button>
+      </div>
     </div>
 
-    <p class="foot">Progress is saved separately per player in this browser.</p>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <p class="foot">
+      Progress is saved separately per player in this browser.
+      <a href="/rank-sublevel-tuner.html" style="color:#8fd49a">Rank sublevel tuner</a>
+      · <a href="/rank-badge-preview.html" style="color:#8fd49a">Badge preview</a>
+      · <a href="/discovery-record-tuner.html" style="color:#8fd49a">Discovery record tuner</a>
+      · <a href="/menu-tuner.html" style="color:#8fd49a">Menu tuner</a>
+      · <a href="/bottom-nav-tuner.html" style="color:#8fd49a">Bottom nav tuner</a>
+      · <a href="/preview-tuner.html" style="color:#8fd49a">Preview tuner</a>
+      · <a href="/stuck-reveal-tuner.html" style="color:#8fd49a">Stuck reveal tuner</a>
+    </p>
   </main>
 
-  <script>
+  <script type="module">
+    import { resetDevPlayerProgress } from './js/dev-player-reset.js';
+
     const STORAGE_KEY = 'snake_active_user_v1';
     const PLAY_URL = '/tilezilla.html';
+    const statusEl = document.getElementById('status');
 
     document.querySelectorAll('button.player').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -139,6 +197,19 @@
         if (!user) return;
         localStorage.setItem(STORAGE_KEY, user);
         window.location.href = PLAY_URL;
+      });
+    });
+
+    document.querySelectorAll('button.player-reset').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const user = btn.dataset.resetUser;
+        if (!user) return;
+        const label = user === 'gar' ? 'Gar' : user === 'dev' ? 'Dev' : user;
+        if (!confirm(`Reset all saved puzzle progress for ${label} in this browser?\n\nThis clears found solutions and best times so you can see the discovery popup again.`)) {
+          return;
+        }
+        const { removedKeys, hintTokens } = resetDevPlayerProgress(user);
+        statusEl.textContent = `${label} reset — ${removedKeys.length} item(s) cleared · ${hintTokens} hint tokens restored`;
       });
     });
   </script>

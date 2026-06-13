@@ -1,0 +1,33 @@
+{
+  "plaque": {
+    "offsetY": 2,
+    "wScale": 0.87,
+    "hScale": 0.505
+  },
+  "hits": {
+    "w": 20,
+    "h": 88,
+    "y": 50
+  },
+  "items": {
+    "adventure": {
+      "x": 10.5,
+      "y": 50.5
+    },
+    "dailyChallenge": {
+      "x": 31
+    },
+    "random": {
+      "x": 50.5,
+      "y": 50
+    },
+    "library": {
+      "x": 70,
+      "y": 50.5
+    },
+    "profile": {
+      "x": 90,
+      "y": 51
+    }
+  }
+}

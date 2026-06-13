@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Rank &amp; sublevel preview</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 20px 16px 40px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+      color: #e8b923;
+    }
+
+    .lead {
+      margin: 0 0 24px;
+      font-size: 0.85rem;
+      color: #a8b8b4;
+      max-width: 52rem;
+      line-height: 1.45;
+    }
+
+    .lead a { color: #8fd49a; }
+
+    section { margin-bottom: 32px; }
+
+    section h2 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+
+    .rank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .rank-card {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+
+    .rank-card__head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .rank-card__badge {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .rank-card__name {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .rank-card__code {
+      margin: 2px 0 0;
+      font-size: 0.72rem;
+      color: #a8b8b4;
+    }
+
+    .rank-card__style {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .rank-card__style--gld {
+      background: rgba(232, 185, 35, 0.2);
+      color: #e8b923;
+    }
+
+    .rank-card__style--slvr {
+      background: rgba(180, 190, 200, 0.2);
+      color: #d0d8e0;
+    }
+
+    .rank-card__mock-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 10px 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .rank-card__mock-label {
+      margin: 0;
+      font-size: 0.68rem;
+      color: #a8b8b4;
+      text-align: center;
+    }
+
+    .bubble-mock {
+      width: 59px;
+      height: 78px;
+      position: relative;
+      border-radius: 8px;
+      background: rgba(20, 48, 44, 0.72);
+      border: 1.5px solid rgba(196, 163, 90, 0.45);
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .bubble-mock--large {
+      transform: scale(2);
+      transform-origin: top center;
+      margin-bottom: 78px;
+    }
+
+    .bubble-mock__stack {
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100% - 4px);
+      height: calc(34px * 1.44 * 1.14);
+    }
+
+    .bubble-mock__badge {
+      display: block;
+      height: calc(34px * 1.44 * 1.14);
+      width: auto;
+      max-width: 100%;
+      transform: scaleX(1.13);
+      transform-origin: center top;
+      object-fit: contain;
+    }
+
+    .bubble-mock__sub {
+      position: absolute;
+      left: 50%;
+      top: calc(100% * 0.78);
+      z-index: 1;
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: var(--tz-rank-sublevel-icon-h, 9.6px);
+      object-fit: contain;
+      transform: translate(-50%, -50%)
+        translate(
+          var(--tz-rank-sublevel-nudge-x, 0px),
+          var(--tz-rank-sublevel-nudge-y, 0px)
+        )
+        scaleX(var(--tz-rank-sublevel-w-scale, 1));
+      transform-origin: center center;
+      pointer-events: none;
+    }
+
+    .bubble-mock__lower {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .bubble-mock__bar {
+      width: calc(100% - 6px);
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .rank-card__layout {
+      margin: 0;
+      font-size: 0.62rem;
+      font-family: ui-monospace, monospace;
+      color: #8fd49a;
+      text-align: center;
+    }
+
+    .sublevel-picks {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .sublevel-pick {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      cursor: pointer;
+      font: inherit;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .sublevel-pick:hover {
+      border-color: rgba(232, 185, 35, 0.55);
+      background: rgba(232, 185, 35, 0.08);
+    }
+
+    .sublevel-pick.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.18);
+      box-shadow: 0 0 0 1px rgba(232, 185, 35, 0.35);
+    }
+
+    .sublevel-pick__num {
+      font-size: 0.55rem;
+      color: #a8b8b4;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sublevel-pick__roman {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: "Times New Roman", Times, Georgia, serif;
+      line-height: 1;
+    }
+
+    .sublevel-pick__thumb {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: var(--tz-rank-sublevel-icon-h, 9.6px);
+      object-fit: contain;
+      transform: translate(
+        var(--tz-rank-sublevel-nudge-x, 0px),
+        var(--tz-rank-sublevel-nudge-y, 0px)
+      ) scaleX(var(--tz-rank-sublevel-w-scale, 1));
+      transform-origin: center center;
+      pointer-events: none;
+    }
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .style-panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.6);
+      border: 1px solid rgba(196, 163, 90, 0.25);
+    }
+
+    .style-panel h3 {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+    }
+
+    .err {
+      color: #f0a0a0;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(80, 20, 20, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <h1>Rank &amp; sublevel preview</h1>
+  <p class="lead">
+  Click a roman numeral (sublevel 1–10) to place it on the badge in the rank bubble mock.
+  To tune with scroll wheel and export JSON, use the
+  <a href="rank-sublevel-tuner.html">sublevel tuner</a>.
+  <a href="tilezilla.html">Back to game</a>
+  </p>
+
+  <div id="root" class="err">Loading…</div>
+
+  <script type="module">
+    import {
+      applySublevelIconElement,
+      getSublevelIconLayout,
+      loadSublevelIconLayout,
+      normalizeSublevelBadge,
+      romanForSubLevel,
+    } from './js/sublevel-icon.js';
+
+    function layoutLabel(L) {
+      return `h:${L.h}  x:${L.nudgeX}  y:${L.nudgeY}  w:${L.wScale}`;
+    }
+
+    function makeBubbleMock(rank, layout) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-mock bubble-mock--large';
+
+      const stack = document.createElement('div');
+      stack.className = 'bubble-mock__stack';
+
+      const badge = document.createElement('img');
+      badge.className = 'bubble-mock__badge';
+      badge.src = rank.badge_image;
+      badge.alt = rank.rank_name;
+
+      const sub = document.createElement('img');
+      sub.className = 'bubble-mock__sub';
+      sub.alt = 'Sublevel on badge';
+
+      stack.append(badge, sub);
+
+      const lower = document.createElement('div');
+      lower.className = 'bubble-mock__lower';
+      const bar = document.createElement('div');
+      bar.className = 'bubble-mock__bar';
+      bar.setAttribute('aria-hidden', 'true');
+      lower.append(bar);
+
+      wrap.append(stack, lower);
+      return { wrap, sub };
+    }
+
+    function setMockSublevel(mockSub, rank, subLevel, layout, layoutMetaEl, mockLabelEl) {
+      const cat = normalizeSublevelBadge(rank.sublevel_badge);
+      const roman = romanForSubLevel(subLevel);
+      applySublevelIconElement(mockSub, subLevel, cat, layout);
+      mockSub.alt = `Sublevel ${roman}`;
+      const L = getSublevelIconLayout(subLevel, cat, layout);
+      if (layoutMetaEl) layoutMetaEl.textContent = layoutLabel(L);
+      if (mockLabelEl) {
+        mockLabelEl.textContent = `On badge: ${roman} (${subLevel}) · ${cat}`;
+      }
+    }
+
+    function makeRankCard(rank, layout) {
+      const card = document.createElement('article');
+      card.className = 'rank-card';
+
+      const style = normalizeSublevelBadge(rank.sublevel_badge);
+      const head = document.createElement('div');
+      head.className = 'rank-card__head';
+      head.innerHTML = `
+        <img class="rank-card__badge" src="${rank.badge_image}" alt="" />
+        <div>
+          <p class="rank-card__name">${rank.rank_name}</p>
+          <p class="rank-card__code">${rank.rank_code} · rank_id ${rank.rank_id}</p>
+          <span class="rank-card__style rank-card__style--${style}">sublevel_badge: ${style}</span>
+        </div>
+      `;
+
+      const mockWrap = document.createElement('div');
+      mockWrap.className = 'rank-card__mock-wrap';
+
+      const mockLabel = document.createElement('p');
+      mockLabel.className = 'rank-card__mock-label';
+      mockLabel.textContent = 'Click a sublevel below to place it on the badge';
+
+      const { wrap: bubble, sub: mockSub } = makeBubbleMock(rank, layout);
+
+      const layoutMeta = document.createElement('p');
+      layoutMeta.className = 'rank-card__layout';
+
+      mockWrap.append(mockLabel, bubble, layoutMeta);
+
+      const picks = document.createElement('div');
+      picks.className = 'sublevel-picks';
+      picks.setAttribute('role', 'group');
+      picks.setAttribute('aria-label', `Sublevels for ${rank.rank_name}`);
+
+      let activeLevel = 1;
+
+      function selectLevel(subLevel) {
+        activeLevel = subLevel;
+        setMockSublevel(mockSub, rank, subLevel, layout, layoutMeta, mockLabel);
+        for (const btn of picks.querySelectorAll('.sublevel-pick')) {
+          btn.classList.toggle('is-active', Number(btn.dataset.sublevel) === subLevel);
+        }
+      }
+
+      for (let n = 1; n <= 10; n += 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sublevel-pick';
+        btn.dataset.sublevel = String(n);
+
+        const num = document.createElement('span');
+        num.className = 'sublevel-pick__num';
+        num.textContent = String(n);
+
+        const roman = document.createElement('span');
+        roman.className = 'sublevel-pick__roman';
+        roman.textContent = romanForSubLevel(n);
+
+        const thumb = document.createElement('img');
+        thumb.className = 'sublevel-pick__thumb';
+        thumb.alt = '';
+        applySublevelIconElement(thumb, n, rank.sublevel_badge, layout);
+
+        btn.append(num, roman, thumb);
+        btn.addEventListener('click', () => selectLevel(n));
+        picks.append(btn);
+      }
+
+      selectLevel(1);
+      card.append(head, mockWrap, picks);
+      return card;
+    }
+
+    function makeStylePanel(badge, layout, sampleRank) {
+      const cat = normalizeSublevelBadge(badge);
+      const panel = document.createElement('div');
+      panel.className = 'style-panel';
+
+      const title = document.createElement('h3');
+      title.textContent = `${cat.toUpperCase()} — click to preview on sample badge`;
+
+      const mockRank = { ...sampleRank, sublevel_badge: cat };
+      const mockWrap = document.createElement('div');
+      mockWrap.className = 'rank-card__mock-wrap';
+
+      const mockLabel = document.createElement('p');
+      mockLabel.className = 'rank-card__mock-label';
+
+      const { wrap: bubble, sub: mockSub } = makeBubbleMock(mockRank, layout);
+      const layoutMeta = document.createElement('p');
+      layoutMeta.className = 'rank-card__layout';
+
+      mockWrap.append(mockLabel, bubble, layoutMeta);
+
+      const picks = document.createElement('div');
+      picks.className = 'sublevel-picks';
+
+      function selectLevel(subLevel) {
+        setMockSublevel(mockSub, mockRank, subLevel, layout, layoutMeta, mockLabel);
+        for (const btn of picks.querySelectorAll('.sublevel-pick')) {
+          btn.classList.toggle('is-active', Number(btn.dataset.sublevel) === subLevel);
+        }
+      }
+
+      for (let n = 1; n <= 10; n += 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sublevel-pick';
+        btn.dataset.sublevel = String(n);
+
+        const roman = document.createElement('span');
+        roman.className = 'sublevel-pick__roman';
+        roman.textContent = romanForSubLevel(n);
+
+        const thumb = document.createElement('img');
+        thumb.className = 'sublevel-pick__thumb';
+        thumb.alt = '';
+        applySublevelIconElement(thumb, n, cat, layout);
+
+        btn.append(roman, thumb);
+        btn.addEventListener('click', () => selectLevel(n));
+        picks.append(btn);
+      }
+
+      selectLevel(1);
+      panel.append(title, mockWrap, picks);
+      return panel;
+    }
+
+    async function init() {
+      const root = document.getElementById('root');
+      try {
+        const [ranksRes, layout] = await Promise.all([
+          fetch('/data/adventure_ranks.json'),
+          loadSublevelIconLayout(),
+        ]);
+        if (!ranksRes.ok) throw new Error('Failed to load adventure_ranks.json');
+        const ranks = await ranksRes.json();
+        ranks.sort((a, b) => a.display_order - b.display_order);
+        const sampleRank = ranks[0];
+
+        root.className = '';
+        root.innerHTML = '';
+
+        const ranksSection = document.createElement('section');
+        ranksSection.innerHTML = '<h2>Adventure ranks — click sublevel to place on badge</h2>';
+        const rankGrid = document.createElement('div');
+        rankGrid.className = 'rank-grid';
+        for (const rank of ranks) {
+          rankGrid.append(makeRankCard(rank, layout));
+        }
+        ranksSection.append(rankGrid);
+
+        const allSection = document.createElement('section');
+        allSection.innerHTML = '<h2>GLD / SLVR layout tuning (sample badge)</h2>';
+        const styleGrid = document.createElement('div');
+        styleGrid.className = 'style-grid';
+        styleGrid.append(
+          makeStylePanel('gld', layout, sampleRank),
+          makeStylePanel('slvr', layout, sampleRank),
+        );
+        allSection.append(styleGrid);
+
+        root.append(ranksSection, allSection);
+      } catch (err) {
+        root.className = 'err';
+        root.textContent = String(err.message || err);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

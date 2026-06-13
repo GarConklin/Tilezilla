@@ -30,15 +30,21 @@
         <section class="tz-status" aria-label="Game status">
           <article class="tz-panel tz-rank-panel" aria-label="Rank">
             <div class="tz-rank-panel__body">
-              <div class="tz-rank-badge">
-                <img id="rankBadgeImg" class="tz-rank-badge__img" src="/img/ranks/Wanderer.png" alt="Wanderer rank" />
+              <div class="tz-rank-badge-stack" id="rankSubLevel" aria-label="Sublevel I">
+                <img
+                  id="rankBadgeImg"
+                  class="tz-rank-badge__img"
+                  src="/img/ranks/Wanderer.png"
+                  alt="Wanderer rank"
+                />
+                <img
+                  id="rankSubLevelIcon"
+                  class="tz-rank-sublevel__img"
+                  src="/img/ranks/gld-1.png"
+                  alt="Sublevel I"
+                />
               </div>
-              <div class="tz-rank-panel__info">
-                <h2 class="tz-rank-panel__roman" id="rankSubLevel" aria-label="Sublevel I">
-                  <span class="tz-roman__bar" aria-hidden="true"></span>
-                  <span class="tz-roman__glyph" id="rankRomanGlyph">I</span>
-                  <span class="tz-roman__bar" aria-hidden="true"></span>
-                </h2>
+              <div class="tz-rank-panel__lower">
                 <div class="tz-progress">
                   <div class="tz-progress__track">
                     <div class="tz-progress__fill" id="rankProgressFill" style="width:0%"></div>
@@ -49,7 +55,7 @@
             </div>
           </article>
           <article class="tz-panel tz-challenge-panel">
-            <span class="tz-panel__eyebrow">Daily Challenge</span>
+            <span class="tz-panel__eyebrow" id="challengeEyebrow">Daily Challenge</span>
             <time class="tz-challenge-panel__date" id="challengeDate" datetime="">—</time>
             <p class="tz-challenge-panel__code" id="puzzleCode">—</p>
             <p class="tz-challenge-panel__solutions">
@@ -61,11 +67,11 @@
               <span class="tz-timer-panel__icon" aria-hidden="true">⏱</span>
               <span class="tz-timer-panel__time" id="timerCurrent">00:00</span>
             </div>
-            <div class="tz-timer-panel__best">
+            <div class="tz-timer-panel__best-label">
               <span class="tz-timer-panel__star" aria-hidden="true">★</span>
               <span class="tz-timer-panel__label">Best</span>
-              <span class="tz-timer-panel__time" id="timerBest">—</span>
             </div>
+            <span class="tz-timer-panel__time tz-timer-panel__time--best" id="timerBest">—</span>
           </article>
         </section>
 
@@ -141,7 +147,7 @@
               <img id="activeImg" class="activeImg" alt="" />
             </div>
             <button class="tz-preview-rotate tz-preview-rotate--cw" type="button" id="rotateCW" aria-label="Rotate right"></button>
-            <p class="tz-preview-tile__dir">Rotation: <strong id="previewDir">0°</strong></p>
+            <p class="tz-preview-tile__dir" id="previewDir" aria-label="Tile rotation">0°</p>
             <div class="tz-preview-check-solve" id="previewCheckSolve" aria-hidden="true">
               <img
                 class="tz-preview-check-solve__panel"
@@ -156,6 +162,83 @@
               >
                 <img src="/img/Check Solve Button.png" alt="" />
               </button>
+            </div>
+            <div class="tz-preview-actions" aria-label="Game actions">
+              <button class="tz-img-btn tz-img-btn--hint" type="button" id="hintBtn" aria-label="Use hint">
+                <img src="/img/use hint bubble.png" alt="" class="tz-hint-btn__art" />
+              </button>
+              <button class="tz-preview-hit tz-preview-hit--undo" type="button" id="undoBtn" aria-label="Undo"></button>
+              <button class="tz-preview-hit tz-preview-hit--reset" type="button" id="resetBtn" aria-label="Reset"></button>
+            </div>
+
+            <div
+              class="tz-discovery-record"
+              id="discoveryRecord"
+              hidden
+              aria-hidden="true"
+              role="dialog"
+              aria-labelledby="discoveryRecordTitle"
+            >
+              <h2 class="tz-sr-only" id="discoveryRecordTitle">Discovery recorded</h2>
+              <img
+                class="tz-discovery-record__bg tz-discovery-record__bg--new-advance"
+                src="/img/RecordsPlacqueBase.png"
+                alt=""
+                width="1393"
+                height="1150"
+              />
+              <img
+                class="tz-discovery-record__bg tz-discovery-record__bg--new-regular"
+                src="/img/RecordsPlacqueBaseNoAdvance.png"
+                alt=""
+                width="1393"
+                height="1150"
+              />
+              <img
+                class="tz-discovery-record__bg tz-discovery-record__bg--duplicate-advance"
+                src="/img/AlreadyRecordsPlacqueBase.png"
+                alt=""
+                width="1400"
+                height="1123"
+              />
+              <img
+                class="tz-discovery-record__bg tz-discovery-record__bg--duplicate-regular"
+                src="/img/AlreadyRecordsPlacqueBaseNoADVPth.png"
+                alt=""
+                width="1400"
+                height="1123"
+              />
+              <span class="tz-discovery-record__field tz-discovery-record__field--note" id="discoveryRecordNote" hidden></span>
+              <span class="tz-discovery-record__field tz-discovery-record__field--solution-total" id="discoverySolutionTotal">0</span>
+              <span class="tz-discovery-record__field tz-discovery-record__field--puzzle-id" id="discoveryPuzzleId">—</span>
+              <span class="tz-discovery-record__field tz-discovery-record__field--solution-found" id="discoverySolutionFound">1</span>
+              <span class="tz-discovery-record__field tz-discovery-record__field--time" id="discoveryTime">0:00</span>
+              <span class="tz-discovery-record__field tz-discovery-record__field--tokens" id="discoveryTokens">0</span>
+              <button
+                type="button"
+                class="tz-discovery-record__btn tz-discovery-record__btn--continue"
+                id="discoveryContinueBtn"
+                aria-label="Continue search"
+              ></button>
+              <button
+                type="button"
+                class="tz-discovery-record__btn tz-discovery-record__btn--advance"
+                id="discoveryAdvanceBtn"
+                aria-label="Advance path"
+              ></button>
+              <button
+                type="button"
+                class="tz-discovery-record__btn tz-discovery-record__btn--view-found"
+                id="discoveryViewFoundBtn"
+                hidden
+                aria-label="View found solve"
+              ></button>
+              <button
+                type="button"
+                class="tz-discovery-record__btn tz-discovery-record__btn--book"
+                id="discoveryFoundBookBtn"
+                aria-label="View found solutions"
+              ></button>
             </div>
           </div>
         </section>
@@ -188,72 +271,122 @@
           </div>
         </section>
 
-        <section class="tz-actions" aria-label="Game actions">
-          <button class="tz-img-btn tz-img-btn--undo" type="button" id="undoBtn" aria-label="Undo">
-            <img src="/img/Undo bubble.png" alt="" />
-          </button>
-          <button class="tz-img-btn tz-img-btn--reset" type="button" id="resetBtn" aria-label="Reset">
-            <img src="/img/reset bubble.png" alt="" />
-          </button>
-          <button
-            class="tz-img-btn tz-img-btn--hint"
-            type="button"
-            id="hintBtn"
-            aria-label="Hint — 2 of 2"
-          >
-            <img src="/img/use hint bubble.png" alt="" class="tz-hint-btn__art" />
-            <span class="tz-hint-btn__lock" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                <path d="M8 10V8a4 4 0 1 1 8 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h4V8a2 2 0 1 0-4 0v2z" />
-              </svg>
-            </span>
-            <span class="tz-hint-btn__label" id="hintBtnLabel">2 of 2</span>
-          </button>
-          <button class="tz-img-btn tz-img-btn--solutions" type="button" id="solutionsBtn" aria-label="View solutions">
-            <img src="/img/view solutions.png" alt="" />
-          </button>
-          <button class="tz-img-btn tz-img-btn--config" type="button" id="settingsBtn" aria-label="Settings">
-            <img src="/img/setup_config bubble.png" alt="" />
-          </button>
-        </section>
-
       </div>
 
       <nav class="tz-bottom-nav" aria-label="Main navigation">
-        <button class="tz-nav-item" type="button" data-nav="adventure">
-          <span class="tz-nav-item__icon" aria-hidden="true">⛰</span>
-          <span class="tz-nav-item__label">Adventure</span>
-        </button>
-        <button class="tz-nav-item tz-nav-item--active" type="button" data-nav="daily-challenge" aria-current="page">
-          <span class="tz-nav-item__icon" aria-hidden="true">📅</span>
-          <span class="tz-nav-item__label">Daily Challenge</span>
-        </button>
-        <button class="tz-nav-item" type="button" data-nav="random">
-          <span class="tz-nav-item__icon" aria-hidden="true">🔀</span>
-          <span class="tz-nav-item__label">Random Puzzle</span>
-        </button>
-        <button class="tz-nav-item" type="button" data-nav="library">
-          <span class="tz-nav-item__icon" aria-hidden="true">📖</span>
-          <span class="tz-nav-item__label">Puzzle Library</span>
-        </button>
-        <button class="tz-nav-item" type="button" data-nav="profile">
-          <span class="tz-nav-item__icon" aria-hidden="true">👤</span>
-          <span class="tz-nav-item__label">Profile</span>
-        </button>
+        <div class="tz-bottom-nav-plaque">
+          <img
+            class="tz-bottom-nav-plaque__bg"
+            src="/img/NewBotmMenu.png"
+            alt=""
+            width="1698"
+            height="456"
+          />
+          <img class="tz-bottom-nav__hover tz-bottom-nav__hover--adventure" src="/img/BMB-1H.png" alt="" width="371" height="274" aria-hidden="true" />
+          <img class="tz-bottom-nav__hover tz-bottom-nav__hover--daily-challenge" src="/img/BMB-2H.png" alt="" width="324" height="274" aria-hidden="true" />
+          <img class="tz-bottom-nav__hover tz-bottom-nav__hover--random" src="/img/BMB-3H.png" alt="" width="325" height="274" aria-hidden="true" />
+          <img class="tz-bottom-nav__hover tz-bottom-nav__hover--library" src="/img/BMB-4H.png" alt="" width="326" height="274" aria-hidden="true" />
+          <img class="tz-bottom-nav__hover tz-bottom-nav__hover--profile" src="/img/BMB-5H.png" alt="" width="354" height="274" aria-hidden="true" />
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" data-nav="adventure" aria-label="Adventure"></button>
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" data-nav="daily-challenge" aria-current="page" aria-label="Daily Challenge"></button>
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" data-nav="random" aria-label="Random Puzzle"></button>
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" data-nav="library" aria-label="Puzzle Library"></button>
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" data-nav="profile" aria-label="Profile"></button>
+        </div>
       </nav>
     </div>
 
-    <div class="tz-sheet-root" id="menuRoot" hidden>
+    <div class="tz-sheet-root tz-sheet-root--menu" id="menuRoot" hidden>
       <button type="button" class="tz-sheet-backdrop" aria-label="Close menu"></button>
-      <div class="tz-sheet tz-sheet--menu" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="tz-menu-plaque" role="dialog" aria-modal="true" aria-label="Menu">
+        <h2 class="tz-sr-only">Menu</h2>
+        <img
+          class="tz-menu-plaque__bg tz-menu-plaque__bg--standard"
+          src="/img/Menu.png"
+          alt=""
+          width="1085"
+          height="1450"
+        />
+        <img
+          class="tz-menu-plaque__bg tz-menu-plaque__bg--devtools"
+          src="/img/Menu-devtools.png"
+          alt=""
+          width="1085"
+          height="1450"
+        />
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--close" id="menuCloseBtn" aria-label="Close menu and return to game"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--puzzle-info" id="menuPuzzleInfoBtn" aria-label="Puzzle Info"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--found-solutions" id="menuFoundSolutionsBtn" aria-label="View Found Solutions"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--stuck" id="menuStuckBtn" aria-label="I'm Stuck"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--hint-rules" id="menuHintRulesBtn" aria-label="Hint Rules"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--settings" id="menuOpenSettingsBtn" aria-label="Settings"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--dev-tools" id="menuDevToolsBtn" data-dev-only hidden aria-label="Dev Tools"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--force-discovery" id="menuDevForceDiscoveryBtn" data-dev-only hidden aria-label="Force Solution Popup"></button>
+        <a class="tz-menu-plaque__hit tz-menu-plaque__hit--switch-player" href="/dev-player-select.html" data-dev-only hidden aria-label="Switch test player"></a>
+      </div>
+    </div>
+
+    <div class="tz-sheet-root" id="menuPanelRoot" hidden>
+      <button type="button" class="tz-sheet-backdrop" aria-label="Close panel"></button>
+      <div class="tz-sheet tz-sheet--panel" role="dialog" aria-modal="true" aria-labelledby="menuPanelTitle">
         <header class="tz-sheet__header">
-          <h2 class="tz-sheet__title">Menu</h2>
-          <button type="button" class="tz-sheet__close" id="menuCloseBtn" aria-label="Close">×</button>
+          <button type="button" class="tz-sheet__back" id="menuPanelBackBtn" aria-label="Back">‹</button>
+          <h2 class="tz-sheet__title" id="menuPanelTitle">Menu</h2>
+          <button type="button" class="tz-sheet__close" id="menuPanelCloseBtn" aria-label="Close">×</button>
         </header>
-        <nav class="tz-sheet__nav">
-          <button type="button" class="tz-sheet__link" id="menuOpenSettingsBtn">Settings</button>
-          <a class="tz-sheet__link tz-sheet__link--dev" href="/">Switch test player</a>
-        </nav>
+        <div class="tz-sheet__body">
+          <section class="tz-menu-panel" id="menuPanelPuzzleInfo" hidden>
+            <dl class="tz-info-list">
+              <div class="tz-info-list__row">
+                <dt>Puzzle</dt>
+                <dd id="menuPuzzleId">—</dd>
+              </div>
+              <div class="tz-info-list__row">
+                <dt>Size</dt>
+                <dd id="menuPuzzleSize">—</dd>
+              </div>
+              <div class="tz-info-list__row">
+                <dt>Challenge</dt>
+                <dd id="menuPuzzleChallenge">—</dd>
+              </div>
+              <div class="tz-info-list__row">
+                <dt>Solutions Found</dt>
+                <dd id="menuPuzzleFound">—</dd>
+              </div>
+              <div class="tz-info-list__row" id="menuPuzzleExampleRow" hidden>
+                <dt>Example Route</dt>
+                <dd id="menuPuzzleExample">Viewed</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="tz-menu-panel" id="menuPanelFoundSolutions" hidden>
+            <p class="tz-menu-panel__lead" id="menuFoundSummary">—</p>
+            <ul class="tz-found-list" id="menuFoundList" role="list"></ul>
+            <div class="tz-route-preview-wrap" id="menuFoundPreviewWrap" hidden>
+              <p class="tz-route-preview__label" id="menuFoundPreviewLabel">Route preview</p>
+              <canvas class="tz-route-preview" id="menuFoundPreview" width="300" height="300" aria-label="Route shape preview"></canvas>
+            </div>
+          </section>
+
+          <section class="tz-menu-panel" id="menuPanelDevTools" hidden>
+            <h3 class="tz-menu-subhead">Load puzzle</h3>
+            <div class="tz-dev-level-picks" id="devLevelPickerHost"></div>
+
+            <h3 class="tz-menu-subhead">Known solutions</h3>
+            <p class="tz-menu-panel__lead" id="devKnownSummary">—</p>
+            <ul class="tz-found-list" id="devKnownList" role="list"></ul>
+            <div class="tz-route-preview-wrap" id="devKnownPreviewWrap" hidden>
+              <p class="tz-route-preview__label" id="devKnownPreviewLabel">Route preview</p>
+              <canvas class="tz-route-preview" id="devKnownPreview" width="300" height="300" aria-label="Known solution preview"></canvas>
+            </div>
+            <div class="tz-dev-actions">
+              <button type="button" class="tz-dev-action" id="devLoadKnownBtn">Load selected on board</button>
+              <button type="button" class="tz-dev-action" id="devLoadFirstValidBtn">Load first valid known</button>
+              <button type="button" class="tz-dev-action" id="devClearBoardBtn">Clear board</button>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
 
@@ -266,6 +399,18 @@
           <button type="button" class="tz-sheet__close" id="settingsCloseBtn" aria-label="Close">×</button>
         </header>
         <div class="tz-sheet__body" id="settingsGameplay">
+          <h3 class="tz-settings-section">Display</h3>
+          <p class="tz-settings-note">Preview how the game looks on a phone while developing on desktop.</p>
+
+          <div class="tz-setting" data-setting="phonePreview">
+            <div class="tz-setting__label">Phone preview (390px)</div>
+            <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules).</div>
+            <div class="tz-segmented" role="group" aria-label="Phone preview">
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
+            </div>
+          </div>
+
           <h3 class="tz-settings-section">Gameplay</h3>
           <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
 
@@ -295,6 +440,12 @@
               <button type="button" class="tz-segment" data-value="GREY_OUT" aria-pressed="false">Grey out</button>
             </div>
           </div>
+
+          <div class="tz-settings-dev" id="settingsDeveloper" data-dev-only hidden>
+            <h3 class="tz-settings-section">Developer</h3>
+            <p class="tz-settings-note">UI testing only — does not modify player progress.</p>
+            <button type="button" class="tz-dev-action" id="devForceDiscoveryPopupBtn">Force Solution Popup</button>
+          </div>
         </div>
       </div>
     </div>
@@ -316,6 +467,116 @@
       <button id="checkSolBtn"></button>
     </div>
 
+  </div>
+
+  <div class="tz-pinfo-root" id="puzzleInfoRoot" hidden>
+    <button type="button" class="tz-pinfo-root__backdrop" id="puzzleInfoBackdrop" aria-label="Close"></button>
+    <div class="tz-pinfo-dialog" role="dialog" aria-modal="true" aria-labelledby="puzzleInfoTitle">
+      <h2 class="tz-sr-only" id="puzzleInfoTitle">Puzzle Info</h2>
+
+      <div class="tz-pinfo-dialog__frame">
+        <img
+          src="/img/Puzzle-Info-Blank.png"
+          alt=""
+          class="tz-pinfo-dialog__bg"
+          width="1120"
+          height="1157"
+        />
+
+        <div class="tz-pinfo-dialog__rank-wrap">
+          <img id="pinfoRankBadge" class="tz-pinfo-dialog__rank" src="" alt="" hidden />
+          <span id="pinfoRankRoman" class="tz-pinfo-dialog__rank-roman" aria-hidden="true"></span>
+        </div>
+
+        <span class="tz-pinfo-field tz-pinfo-field--id" id="pinfoPuzzleId">—</span>
+        <span class="tz-pinfo-field tz-pinfo-field--size" id="pinfoBoardSize">—</span>
+        <span class="tz-pinfo-field tz-pinfo-field--type" id="pinfoType">—</span>
+
+        <div class="tz-pinfo-solutions-bar" id="pinfoSolutionsBar" aria-hidden="true"></div>
+        <span class="tz-pinfo-field tz-pinfo-field--found" id="pinfoSolutionsFound">—</span>
+
+        <span class="tz-pinfo-field tz-pinfo-field--hints" id="pinfoHintsUsed">—</span>
+        <span class="tz-pinfo-field tz-pinfo-field--best" id="pinfoBestTime">—</span>
+        <span class="tz-pinfo-field tz-pinfo-field--solved" id="pinfoFirstSolved">—</span>
+
+        <button type="button" class="tz-pinfo-dialog__close-x" id="puzzleInfoCloseX" aria-label="Close">
+          <img src="/img/exit-btn.png" alt="" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-stuck-root" id="stuckPopupRoot" hidden>
+    <button type="button" class="tz-stuck-root__backdrop" id="stuckPopupBackdrop" aria-label="Close"></button>
+    <div class="tz-stuck-dialog" role="dialog" aria-modal="true" aria-labelledby="stuckPopupTitle">
+      <h2 class="tz-sr-only" id="stuckPopupTitle">I'm Stuck</h2>
+
+      <div class="tz-stuck-dialog__frame">
+        <img
+          src="/img/ImStuck-base.png"
+          alt=""
+          class="tz-stuck-dialog__bg tz-stuck-dialog__bg--base"
+          width="1379"
+          height="1098"
+        />
+        <img
+          src="/img/Imstuckreveal.png"
+          alt=""
+          class="tz-stuck-dialog__bg tz-stuck-dialog__bg--reveal"
+          width="1402"
+          height="1122"
+        />
+        <p class="tz-stuck-dialog__warn" id="stuckTokenWarn" hidden role="alert">Not enough hint tokens.</p>
+
+        <div class="tz-stuck-dialog__preview" id="stuckPreviewWrap" hidden>
+          <canvas
+            id="stuckRoutePreview"
+            class="tz-stuck-dialog__preview-canvas"
+            width="300"
+            height="300"
+            aria-label="Example route shape"
+          ></canvas>
+        </div>
+
+        <div class="tz-stuck-dialog__actions" id="stuckConfirmActions">
+          <button type="button" class="tz-stuck-dialog__btn tz-stuck-dialog__btn--keep" id="stuckKeepTryingBtn" aria-label="Keep Trying">
+            <img src="/img/keeptrying-btn.png" alt="" />
+          </button>
+          <button type="button" class="tz-stuck-dialog__btn tz-stuck-dialog__btn--view" id="stuckViewRouteBtn" aria-label="View Example Route">
+            <img src="/img/View%20Example%20Route-btn.png" alt="" />
+          </button>
+        </div>
+
+        <button type="button" class="tz-stuck-dialog__btn tz-stuck-dialog__btn--close" id="stuckCloseBtn" hidden aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-hint-rules-root" id="hintRulesRoot" hidden>
+    <div
+      class="tz-hint-rules-window"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Hint Rules"
+    >
+      <div class="tz-hint-rules-scroll" id="hintRulesScroll">
+        <img
+          class="tz-hint-rules__img tz-hint-rules__img--mobile"
+          id="hintRulesImgMobile"
+          src="/img/MU-Hint%20Rules.png"
+          alt="Hint Rules"
+        />
+        <img
+          class="tz-hint-rules__img tz-hint-rules__img--desktop"
+          id="hintRulesImgDesktop"
+          src="/img/DT-Hint%20Rules.png"
+          alt="Hint Rules"
+        />
+      </div>
+      <button type="button" class="tz-hint-rules__exit tz-hint-rules__exit--bottom" id="hintRulesExitBottom" aria-label="Close">
+        <img src="/img/exit-btn.png" alt="" />
+      </button>
+    </div>
   </div>
 
   <script type="module" src="js/app_v16.js"></script>

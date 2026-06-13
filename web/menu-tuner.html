@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en" class="menu-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Menu tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    label {
+      display: block;
+      font-size: 0.72rem;
+      color: #a8b8b4;
+      margin-bottom: 4px;
+    }
+    select {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .field-btn.is-in-mode { border-color: rgba(143, 212, 154, 0.45); }
+    .field-btn:not(.is-in-mode) { opacity: 0.45; }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .btn:hover { filter: brightness(1.08); }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%;
+      min-height: 120px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.7rem;
+      line-height: 1.35;
+      resize: vertical;
+    }
+    .mock-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 24px 16px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+      min-height: 520px;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .menu-tuner-sheet {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    /* Visible hit overlays (game keeps hits transparent) */
+    .menu-tuner-page .tz-menu-plaque__hit {
+      background: rgba(100, 200, 255, 0.28);
+      border: 2px solid rgba(100, 200, 255, 0.85);
+      border-radius: 4px;
+    }
+    .menu-tuner-page .tz-menu-plaque__hit--close {
+      background: rgba(80, 220, 100, 0.38);
+      border-color: #4dff6a;
+    }
+    .menu-tuner-page .tz-menu-plaque__hit.is-tuner-active {
+      border-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+      z-index: 2;
+    }
+    .menu-tuner-page .tz-menu-plaque__hit .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      font-size: clamp(7px, 2.4cqi, 11px);
+      font-weight: 600;
+      line-height: 1.1;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+    .menu-tuner-page .tz-menu-plaque__hit--close .hit-label {
+      color: #e8ffe8;
+    }
+    .menu-tuner-page:not(.is-dev-preview) .tz-menu-plaque__hit--dev-tools,
+    .menu-tuner-page:not(.is-dev-preview) .tz-menu-plaque__hit--force-discovery,
+    .menu-tuner-page:not(.is-dev-preview) .tz-menu-plaque__hit--switch-player {
+      display: none;
+    }
+    .menu-tuner-page.is-dev-preview .tz-menu-plaque__bg--standard { display: none; }
+    .menu-tuner-page.is-dev-preview .tz-menu-plaque__bg--devtools { display: block; }
+    .menu-tuner-page:not(.is-dev-preview) .tz-menu-plaque__bg--devtools { display: none; }
+    .menu-tuner-page .tz-menu-plaque {
+      transform: translateY(var(--tz-menu-offset-y));
+    }
+  </style>
+</head>
+<body>
+  <h1>Menu hit-area tuner</h1>
+  <p class="lead">
+    Colored boxes show each menu link. <strong style="color:#4dff6a">Green</strong> = close (X) — returns to the game.
+    Screenshot this page or use <em>Copy report for chat</em> and paste into Cursor so link positions can be aligned.
+    Saves to <code>data/menu_layout.json</code>. <a href="/dev-player-select.html">Back to player select</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <label for="modeSelect">Menu image</label>
+      <select id="modeSelect">
+        <option value="standard">Menu.png (5 items)</option>
+        <option value="dev">Menu-devtools.png (8 items)</option>
+      </select>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys">
+        <li><strong>Link selected:</strong> Scroll — Y% · Shift+scroll — X% · Ctrl+scroll — width% · Alt+scroll — height%</li>
+        <li><strong>Close (green X):</strong> Scroll — Y · Shift — X · Ctrl — W · Alt — H</li>
+        <li><strong>Menu width selected:</strong> Alt+scroll — stretch wider/narrower · Alt+Shift — move up/down</li>
+        <li>Ctrl+Shift / Alt+Ctrl+scroll — default row size (new links only)</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report for chat</button>
+      </div>
+      <p class="status" id="status"></p>
+      <label for="reportOut">Layout report</label>
+      <textarea id="reportOut" readonly spellcheck="false"></textarea>
+      <label for="jsonOut">Layout JSON</label>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — hit areas visible</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="menu-tuner-sheet">
+          <div class="tz-menu-plaque" id="mockPlaque">
+            <img class="tz-menu-plaque__bg tz-menu-plaque__bg--standard" src="/img/Menu.png" alt="" width="1085" height="1450" />
+            <img class="tz-menu-plaque__bg tz-menu-plaque__bg--devtools" src="/img/Menu-devtools.png" alt="" width="1085" height="1450" />
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--close" data-item="close"><span class="hit-label">X — Close</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--puzzle-info" data-item="puzzle"><span class="hit-label">Puzzle Info</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--found-solutions" data-item="found"><span class="hit-label">Found Solutions</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--stuck" data-item="stuck"><span class="hit-label">I'm Stuck</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--hint-rules" data-item="hint"><span class="hit-label">Hint Rules</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--settings" data-item="settings"><span class="hit-label">Settings</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--dev-tools" data-item="devTools"><span class="hit-label">Dev Tools</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--force-discovery" data-item="forceDiscovery"><span class="hit-label">Force Popup</span></button>
+            <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--switch-player" data-item="switchPlayer"><span class="hit-label">Switch Player</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      MENU_ITEM_DEFS,
+      applyMenuLayout,
+      buildMenuLayoutReport,
+      clearMenuLayoutCache,
+      getMenuDisplayWidth,
+      getMenuItemLayout,
+      loadMenuLayout,
+      mergeMenuLayout,
+    } from './js/menu-layout.js';
+
+    const X_STEP = 0.5;
+    const Y_STEP = 0.4;
+    const BOX_STEP = 0.4;
+    const OFFSET_STEP = 2;
+    const HIT_STEP = 0.5;
+    const W_SCALE_STEP = 0.02;
+    const PLAQUE_ITEM = '__plaque__';
+
+    let workingLayout = mergeMenuLayout(null);
+    let previewMode = 'standard';
+    let currentItem = 'close';
+
+    const els = {};
+
+    function itemsForMode() {
+      return Object.entries(MENU_ITEM_DEFS)
+        .filter(([, def]) => def.modes.includes(previewMode))
+        .map(([key]) => key);
+    }
+
+    function patchClose(patch) {
+      Object.assign(workingLayout.close, patch);
+      refresh();
+    }
+
+    function patchRow(key, patch) {
+      const section = previewMode === 'dev' ? 'dev' : 'standard';
+      if (!workingLayout[section][key]) workingLayout[section][key] = {};
+      Object.assign(workingLayout[section][key], patch);
+      refresh();
+    }
+
+    function patchPlaque(patch) {
+      Object.assign(workingLayout.plaque, patch);
+      refresh();
+    }
+
+    function patchHits(patch) {
+      Object.assign(workingLayout.hits, patch);
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-menu-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Stale dev server — restart: python scripts/server.py');
+          }
+          throw new Error(await res.text() || `HTTP ${res.status}`);
+        }
+        clearMenuLayoutCache();
+        localStorage.setItem('tilezilla:menu-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:menu-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/menu_layout.json'
+          : 'Saved to data/menu_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refreshFieldGrid() {
+      const active = new Set(itemsForMode());
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        const key = btn.dataset.item;
+        btn.classList.toggle('is-active', key === currentItem);
+        btn.classList.toggle('is-in-mode', key === PLAQUE_ITEM || active.has(key));
+      }
+      for (const hit of document.querySelectorAll('.tz-menu-plaque__hit[data-item]')) {
+        hit.classList.toggle('is-tuner-active', hit.dataset.item === currentItem);
+      }
+    }
+
+    function refresh() {
+      applyMenuLayout(workingLayout, document.documentElement);
+      document.documentElement.classList.toggle('is-dev-preview', previewMode === 'dev');
+      document.body.classList.toggle('is-dev-preview', previewMode === 'dev');
+      document.body.classList.toggle('tz-is-dev-user', previewMode === 'dev');
+
+      const meta = MENU_ITEM_DEFS[currentItem];
+      const plaque = workingLayout.plaque;
+
+      let detail = '';
+      if (currentItem === PLAQUE_ITEM) {
+        detail = `width ${getMenuDisplayWidth(plaque)}px (base ${plaque.displayW} × scale ${plaque.wScale ?? 1}) · offset Y ${plaque.offsetY ?? 0}px`;
+      } else if (currentItem === 'close') {
+        const close = workingLayout.close;
+        detail = `x:${close.x}% y:${close.y}% · ${close.w}%×${close.h}%`;
+      } else if (meta?.kind === 'row') {
+        const row = getMenuItemLayout(currentItem, workingLayout, previewMode);
+        detail = `x:${row.x}% y:${row.y}% · ${row.w}%×${row.h}%`;
+      }
+
+      els.readout.innerHTML = `
+        <strong>${currentItem === PLAQUE_ITEM ? 'Menu width / position' : (meta?.label || currentItem)}</strong><br />
+        ${detail}
+      `;
+
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildMenuLayoutReport(workingLayout, previewMode);
+      refreshFieldGrid();
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const meta = MENU_ITEM_DEFS[currentItem];
+
+      if (currentItem === PLAQUE_ITEM) {
+        if (e.altKey && e.shiftKey) {
+          patchPlaque({ offsetY: (workingLayout.plaque.offsetY ?? -50) + dir * OFFSET_STEP });
+          return;
+        }
+        if (e.altKey) {
+          const scale = workingLayout.plaque.wScale ?? 1;
+          patchPlaque({ wScale: Math.round((scale + dir * W_SCALE_STEP) * 100) / 100 });
+          return;
+        }
+        return;
+      }
+
+      if (e.altKey && e.shiftKey) {
+        patchPlaque({ offsetY: (workingLayout.plaque.offsetY ?? -50) + dir * OFFSET_STEP });
+        return;
+      }
+      if (e.altKey && e.ctrlKey) {
+        patchHits({ h: Math.round((workingLayout.hits.h + dir * HIT_STEP) * 10) / 10 });
+        return;
+      }
+      if (e.ctrlKey && e.shiftKey) {
+        patchHits({ w: Math.round((workingLayout.hits.w + dir * HIT_STEP) * 10) / 10 });
+        return;
+      }
+
+      if (currentItem === 'close') {
+        if (e.altKey) {
+          patchClose({ h: Math.round((workingLayout.close.h + dir * BOX_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchClose({ w: Math.round((workingLayout.close.w + dir * BOX_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.shiftKey) {
+          patchClose({ x: Math.round((workingLayout.close.x + dir * BOX_STEP) * 10) / 10 });
+          return;
+        }
+        patchClose({ y: Math.round((workingLayout.close.y + dir * BOX_STEP) * 10) / 10 });
+        return;
+      }
+
+      if (meta?.kind === 'row') {
+        const row = getMenuItemLayout(currentItem, workingLayout, previewMode);
+        if (e.altKey) {
+          patchRow(currentItem, { h: Math.round((row.h + dir * HIT_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchRow(currentItem, { w: Math.round((row.w + dir * HIT_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.shiftKey) {
+          patchRow(currentItem, { x: Math.round((row.x + dir * X_STEP) * 10) / 10 });
+          return;
+        }
+        patchRow(currentItem, { y: Math.round((row.y + dir * Y_STEP) * 10) / 10 });
+      }
+    }
+
+    async function init() {
+      els.modeSelect = document.getElementById('modeSelect');
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.mockStage = document.getElementById('mockStage');
+
+      const plaqueBtn = document.createElement('button');
+      plaqueBtn.type = 'button';
+      plaqueBtn.className = 'field-btn';
+      plaqueBtn.dataset.item = PLAQUE_ITEM;
+      plaqueBtn.textContent = 'Menu width / position';
+      plaqueBtn.style.gridColumn = '1 / -1';
+      plaqueBtn.addEventListener('click', () => {
+        currentItem = PLAQUE_ITEM;
+        refreshFieldGrid();
+        refresh();
+      });
+      els.fieldGrid.appendChild(plaqueBtn);
+
+      for (const [key, def] of Object.entries(MENU_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => {
+          currentItem = key;
+          refreshFieldGrid();
+          refresh();
+        });
+        els.fieldGrid.appendChild(btn);
+
+        document.querySelector(`.tz-menu-plaque__hit[data-item="${key}"]`)?.addEventListener('click', () => {
+          currentItem = key;
+          refresh();
+        });
+      }
+
+      els.modeSelect.addEventListener('change', () => {
+        previewMode = els.modeSelect.value === 'dev' ? 'dev' : 'standard';
+        if (!itemsForMode().includes(currentItem)) {
+          currentItem = previewMode === 'dev' ? 'puzzle' : 'close';
+        }
+        refresh();
+      });
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      els.jsonOut.addEventListener('change', () => {
+        try {
+          workingLayout = mergeMenuLayout(JSON.parse(els.jsonOut.value));
+          refresh();
+        } catch {
+          els.status.textContent = 'Invalid JSON in editor';
+        }
+      });
+
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearMenuLayoutCache();
+        workingLayout = await loadMenuLayout();
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+      document.getElementById('copyReportBtn').addEventListener('click', async () => {
+        const text = buildMenuLayoutReport(workingLayout, previewMode);
+        try {
+          await navigator.clipboard.writeText(text);
+          els.status.textContent = 'Report copied — paste into chat with a screenshot';
+        } catch {
+          els.reportOut.select();
+          els.status.textContent = 'Select report text and copy manually';
+        }
+      });
+
+      try {
+        workingLayout = await loadMenuLayout();
+      } catch {
+        workingLayout = mergeMenuLayout(null);
+      }
+      refresh();
+      els.mockStage.focus();
+    }
+
+    void init();
+  </script>
+</body>
+</html>

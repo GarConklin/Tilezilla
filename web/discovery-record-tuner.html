@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Discovery record tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    label { display: block; font-size: 0.72rem; color: #a8b8b4; margin-bottom: 4px; }
+    select {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .field-btn.is-in-mode { border-color: rgba(143, 212, 154, 0.45); }
+    .field-btn:not(.is-in-mode) { opacity: 0.72; }
+    .copy-field {
+      margin-bottom: 12px;
+    }
+    .copy-field textarea {
+      width: 100%;
+      min-height: 0;
+      margin-top: 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      resize: vertical;
+    }
+    .copy-field textarea:focus {
+      outline: none;
+      border-color: #e8b923;
+    }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+    .mock-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    /*
+     * Crop to the exact in-game discovery box (same vars as .tz-app.is-discovery-record).
+     * Offsets a full 390×844 app so preview-section lands pixel-perfect with the game.
+     */
+    .tuner-discovery-viewport {
+      position: relative;
+      width: var(--tz-discovery-expanded-w);
+      height: var(--tz-discovery-expanded-h);
+      margin: 0 auto;
+      overflow: visible;
+      transform-origin: top center;
+    }
+    .tuner-discovery-viewport .tz-app {
+      position: absolute;
+      left: calc(-1 * var(--tz-discovery-expanded-x));
+      top: calc(-1 * var(--tz-discovery-expanded-top));
+      width: var(--tz-design-width);
+      height: var(--tz-design-height);
+      min-height: 0;
+      display: block;
+    }
+    .tuner-discovery-viewport.is-duplicate-mode {
+      width: var(--tz-discovery-expanded-w-duplicate);
+    }
+    .tuner-discovery-viewport.is-duplicate-mode .tz-app {
+      left: calc(-1 * var(--tz-discovery-expanded-x-duplicate));
+    }
+    .tuner-discovery-fit {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* Tuner: show every field/button so all can be positioned; dim ones not used in current mode */
+    .discovery-tuner-page .tz-discovery-record--new .tz-discovery-record__field--note,
+    .discovery-tuner-page .tz-discovery-record--new .tz-discovery-record__btn--view-found,
+    .discovery-tuner-page .tz-discovery-record--duplicate .tz-discovery-record__field--solution-total,
+    .discovery-tuner-page .tz-discovery-record--duplicate .tz-discovery-record__field--tokens,
+    .discovery-tuner-page .tz-discovery-record--no-advance .tz-discovery-record__btn--advance {
+      opacity: 0.28;
+    }
+    .discovery-tuner-page .tz-discovery-record__field.is-tuner-active,
+    .discovery-tuner-page .tz-discovery-record__btn.is-tuner-active {
+      opacity: 1 !important;
+    }
+    .discovery-tuner-page .tz-discovery-record__btn[hidden],
+    .discovery-tuner-page .tz-discovery-record__field[hidden] {
+      display: block !important;
+    }
+    .discovery-tuner-page .tz-discovery-record__field.is-tuner-in-mode,
+    .discovery-tuner-page .tz-discovery-record__btn.is-tuner-in-mode {
+      opacity: 1;
+    }
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.3);
+      background: rgba(0, 0, 0, 0.35);
+      color: #c8e6c9;
+      font-family: ui-monospace, monospace;
+      font-size: 0.68rem;
+    }
+    .status { margin-top: 8px; font-size: 0.7rem; color: #8fd49a; min-height: 1.2em; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .err { color: #f0a0a0; padding: 12px; border-radius: 8px; background: rgba(80, 20, 20, 0.4); }
+  </style>
+</head>
+<body class="discovery-tuner-page">
+  <h1>Discovery record tuner</h1>
+  <p class="lead">
+    Tune each field on the Records plaque — position, nudge, text size, button size, and overall plaque scale.
+    Uses the same <code>tilezilla-shell.css</code> + <code>discovery_record_layout.json</code> as the game.
+    Preview is cropped to the exact in-game discovery box (390×844 layout).
+    All fields stay visible here so you can place each one; dimmed items are hidden in that mode in the game.
+    Edits auto-save when <code>python scripts/server.py</code> is running.
+    <a href="tilezilla.html">Game</a> · <a href="rank-sublevel-tuner.html">Sublevel tuner</a>
+  </p>
+
+  <div id="root" class="err">Loading…</div>
+
+  <script type="module">
+    import {
+      applyDiscoveryRecordContent,
+      buildPreviewDuplicatePayload,
+      buildPreviewPayload,
+      setDiscoveryRecordTexts,
+      setDiscoveryRecordLayout,
+    } from './js/tilezilla-discovery-record.js';
+    import {
+      DISCOVERY_ITEM_DEFS,
+      applyDiscoveryPopupLayout,
+      clearDiscoveryRecordLayoutCache,
+      getDiscoveryItemLayout,
+      getDiscoveryTexts,
+      getDiscoveryVariantKey,
+      loadDiscoveryRecordLayout,
+      mergeDiscoveryLayout,
+    } from './js/discovery-record-layout.js';
+
+    const MOCK_IDS = {
+      root: 'mockDiscovery',
+      note: 'mockDiscoveryNote',
+      solutionTotal: 'mockDiscoverySolutionTotal',
+      puzzleId: 'mockDiscoveryPuzzleId',
+      solutionFound: 'mockDiscoverySolutionFound',
+      time: 'mockDiscoveryTime',
+      tokens: 'mockDiscoveryTokens',
+      btnContinue: 'mockDiscoveryContinueBtn',
+      btnAdvance: 'mockDiscoveryAdvanceBtn',
+      btnViewFound: 'mockDiscoveryViewFoundBtn',
+      btnBook: 'mockDiscoveryBookBtn',
+    };
+
+    const NUDGE_STEP = 1;
+    const POS_STEP = 0.5;
+    const FONT_STEP = 0.04;
+    const SCALE_STEP = 0.02;
+    const PLAQUE_STEP = 0.02;
+
+    const EL_BY_ITEM = {
+      solutionTotal: 'mockDiscoverySolutionTotal',
+      note: 'mockDiscoveryNote',
+      puzzleId: 'mockDiscoveryPuzzleId',
+      solutionFound: 'mockDiscoverySolutionFound',
+      time: 'mockDiscoveryTime',
+      tokens: 'mockDiscoveryTokens',
+      btnContinue: 'mockDiscoveryContinueBtn',
+      btnAdvance: 'mockDiscoveryAdvanceBtn',
+      btnViewFound: 'mockDiscoveryViewFoundBtn',
+      btnBook: 'mockDiscoveryBookBtn',
+    };
+
+    const NEW_MODE_TEXT = ['solutionTotal', 'puzzleId', 'solutionFound', 'time', 'tokens'];
+    const DUPLICATE_MODE_TEXT = ['note', 'puzzleId', 'solutionFound', 'time'];
+    const BTN_ALWAYS = ['btnContinue', 'btnBook'];
+    const BTN_DUPLICATE = ['btnViewFound'];
+    const BTN_ADVANCE = ['btnAdvance'];
+
+    let workingLayout = null;
+    let currentItem = 'solutionTotal';
+    let previewMode = 'new';
+    let previewChallenge = true;
+    let dirtyItems = new Set();
+    const els = {};
+
+    function cloneLayout(layout) {
+      return JSON.parse(JSON.stringify(layout));
+    }
+
+    function previewVariantKey() {
+      return getDiscoveryVariantKey(previewMode, previewChallenge);
+    }
+
+    function isButtonItem(key) {
+      return DISCOVERY_ITEM_DEFS[key]?.kind === 'btn';
+    }
+
+    function ensureItemEntry(key) {
+      const vk = previewVariantKey();
+      if (!workingLayout.variants) workingLayout.variants = {};
+      if (!workingLayout.variants[vk]) workingLayout.variants[vk] = {};
+      if (!workingLayout.variants[vk][key]) {
+        workingLayout.variants[vk][key] = { ...getDiscoveryItemLayout(key, workingLayout, vk) };
+      }
+      return workingLayout.variants[vk][key];
+    }
+
+    function patchCurrent(patch) {
+      const entry = ensureItemEntry(currentItem);
+      Object.assign(entry, patch);
+      dirtyItems.add(currentItem);
+      scheduleSave();
+      refresh();
+    }
+
+    function patchPlaque(patch) {
+      Object.assign(workingLayout.plaque, patch);
+      dirtyItems.add('__plaque__');
+      scheduleSave();
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-discovery-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 501) {
+            throw new Error(
+              'Stale dev server on port 8080 — stop all python servers, then run: python scripts/server.py'
+            );
+          }
+          const detail = await res.text();
+          throw new Error(detail || `HTTP ${res.status}`);
+        }
+        clearDiscoveryRecordLayoutCache();
+        try {
+          localStorage.setItem('tilezilla:discovery-layout-version', String(Date.now()));
+        } catch {
+          /* ignore quota / private mode */
+        }
+        window.dispatchEvent(new CustomEvent('tilezilla:discovery-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/discovery_record_layout.json'
+          : 'Saved to data/discovery_record_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function modeItems() {
+      const text = previewMode === 'duplicate' ? DUPLICATE_MODE_TEXT : NEW_MODE_TEXT;
+      const btns = [...BTN_ALWAYS];
+      if (previewMode === 'duplicate') btns.push(...BTN_DUPLICATE);
+      if (previewChallenge) btns.push(...BTN_ADVANCE);
+      return [...text, ...btns];
+    }
+
+    function ensureTexts() {
+      if (!workingLayout.texts) {
+        workingLayout.texts = { ...getDiscoveryTexts(workingLayout) };
+      }
+      return workingLayout.texts;
+    }
+
+    function patchTexts(patch) {
+      Object.assign(ensureTexts(), patch);
+      dirtyItems.add('__texts__');
+      applyPreviewContent();
+      els.jsonOut.value = exportJson();
+      scheduleSave();
+      requestAnimationFrame(updatePreviewFit);
+    }
+
+    function syncCopyInputs() {
+      if (document.activeElement === els.duplicateNoteInput
+        || document.activeElement === els.duplicateTitleInput) {
+        return;
+      }
+      const texts = getDiscoveryTexts(workingLayout);
+      if (els.duplicateNoteInput) els.duplicateNoteInput.value = texts.duplicateNote || '';
+      if (els.duplicateTitleInput) els.duplicateTitleInput.value = texts.duplicateTitle || '';
+    }
+
+    function applyPreviewContent() {
+      const texts = getDiscoveryTexts(workingLayout);
+      setDiscoveryRecordTexts(texts);
+      setDiscoveryRecordLayout(workingLayout);
+      const payload = previewMode === 'duplicate'
+        ? buildPreviewDuplicatePayload(texts, previewChallenge)
+        : buildPreviewPayload(previewChallenge);
+      applyDiscoveryRecordContent(payload, MOCK_IDS);
+      markInModeFields();
+    }
+
+    function markInModeFields() {
+      const active = new Set(modeItems());
+      for (const [key, elId] of Object.entries(EL_BY_ITEM)) {
+        const el = document.getElementById(elId);
+        if (!el) continue;
+        el.classList.toggle('is-tuner-in-mode', active.has(key));
+      }
+    }
+
+    function setPreviewMode(mode) {
+      previewMode = mode === 'duplicate' ? 'duplicate' : 'new';
+      if (!modeItems().includes(currentItem)) {
+        currentItem = previewMode === 'duplicate' ? 'note' : 'solutionTotal';
+      }
+      refresh();
+    }
+
+    function setPreviewChallenge(challenge) {
+      previewChallenge = challenge;
+      if (!modeItems().includes(currentItem)) {
+        currentItem = isButtonItem(currentItem) ? 'btnContinue' : currentItem;
+      }
+      refresh();
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        const key = btn.dataset.item;
+        btn.classList.toggle('is-active', key === currentItem);
+        btn.classList.toggle('is-hidden-mode', false);
+        btn.classList.toggle('is-dirty', dirtyItems.has(key));
+        btn.classList.toggle('is-in-mode', modeItems().includes(key));
+      }
+    }
+
+    function highlightActiveField() {
+      for (const [key, elId] of Object.entries(EL_BY_ITEM)) {
+        document.getElementById(elId)?.classList.toggle('is-tuner-active', key === currentItem);
+      }
+    }
+
+    function updatePreviewFit() {
+      const viewport = els.discoveryViewport;
+      const fit = els.discoveryFit;
+      if (!viewport || !fit) return;
+      viewport.style.transform = '';
+      const naturalW = viewport.offsetWidth;
+      const naturalH = viewport.offsetHeight;
+      const maxW = Math.max(200, fit.clientWidth - 8);
+      const scale = Math.min(1, maxW / naturalW);
+      viewport.style.transform = scale < 1 ? `scale(${scale})` : '';
+      fit.style.minHeight = scale < 1 ? `${Math.ceil(naturalH * scale) + 8}px` : `${naturalH + 8}px`;
+    }
+
+    function getGamePlaqueSizeLabel() {
+      const style = getComputedStyle(document.documentElement);
+      const wKey = previewMode === 'duplicate'
+        ? '--tz-discovery-expanded-w-duplicate'
+        : '--tz-discovery-expanded-w';
+      const w = style.getPropertyValue(wKey).trim();
+      const h = style.getPropertyValue('--tz-discovery-expanded-h').trim();
+      return `${w} × ${h} (390×844 game layout)`;
+    }
+
+    function refresh() {
+      const mockRoot = document.getElementById('mockDiscovery');
+      applyDiscoveryPopupLayout(
+        workingLayout,
+        previewVariantKey(),
+        mockRoot || document.documentElement,
+      );
+
+      els.modeSelect.value = previewMode;
+      if (els.challengeSelect) els.challengeSelect.value = previewChallenge ? 'challenge' : 'regular';
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, previewVariantKey());
+      const meta = DISCOVERY_ITEM_DEFS[currentItem];
+      const plaque = workingLayout.plaque;
+      const variantLabel = previewVariantKey();
+
+      els.readout.innerHTML = `
+        <strong>${meta?.label || currentItem}</strong><br />
+        x:${L.x}% y:${L.y}% · nudge ${L.nudgeX}, ${L.nudgeY}
+        ${meta?.kind === 'text' ? ` · font×${L.fontScale}` : ''}
+        ${meta?.kind === 'btn' ? ` · btn ${L.w}%×${L.h}% · scale ${L.wScale}×${L.hScale}` : ''}
+        <br />Variant: ${variantLabel}
+        <br />Plaque scale: ${plaque.wScale}× wide · ${plaque.hScale}× tall
+        ${previewMode === 'duplicate'
+          ? `<br />Already-found width trim: ${plaque.duplicateWScale ?? 0.8}×`
+          : ''}
+        <br />Game box: ${getGamePlaqueSizeLabel()}
+      `;
+
+      els.discoveryViewport?.classList.toggle('is-duplicate-mode', previewMode === 'duplicate');
+      applyPreviewContent();
+      syncCopyInputs();
+      refreshFieldGrid();
+      highlightActiveField();
+      els.jsonOut.value = exportJson();
+      requestAnimationFrame(updatePreviewFit);
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const meta = DISCOVERY_ITEM_DEFS[currentItem];
+      const vk = previewVariantKey();
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
+
+      if (e.altKey && e.shiftKey) {
+        patchPlaque({ hScale: Math.round((workingLayout.plaque.hScale + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100 });
+        return;
+      }
+      if (previewMode === 'duplicate' && e.altKey && e.ctrlKey) {
+        const dup = workingLayout.plaque.duplicateWScale ?? 0.8;
+        patchPlaque({
+          duplicateWScale: Math.round((dup + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100,
+        });
+        return;
+      }
+      if (e.altKey) {
+        patchPlaque({ wScale: Math.round((workingLayout.plaque.wScale + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100 });
+        return;
+      }
+
+      if (meta?.kind === 'btn') {
+        if (e.ctrlKey) {
+          patchCurrent({ hScale: Math.round((L.hScale + (e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP)) * 100) / 100 });
+          return;
+        }
+        if (e.shiftKey) {
+          patchCurrent({ wScale: Math.round((L.wScale + (e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP)) * 100) / 100 });
+          return;
+        }
+      } else if (e.ctrlKey) {
+        patchCurrent({ fontScale: Math.round((L.fontScale + (e.deltaY < 0 ? FONT_STEP : -FONT_STEP)) * 100) / 100 });
+        return;
+      }
+
+      if (e.shiftKey) {
+        patchCurrent({ nudgeX: L.nudgeX + (e.deltaY < 0 ? NUDGE_STEP : -NUDGE_STEP) });
+        return;
+      }
+
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        patchCurrent({ x: Math.round((L.x + (e.deltaX > 0 ? POS_STEP : -POS_STEP)) * 10) / 10 });
+        return;
+      }
+
+      patchCurrent({ nudgeY: L.nudgeY + (e.deltaY > 0 ? NUDGE_STEP : -NUDGE_STEP) });
+    }
+
+    function onKeyDown(e) {
+      if (e.target.matches('select, textarea')) return;
+      const vk = previewVariantKey();
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
+      const meta = DISCOVERY_ITEM_DEFS[currentItem];
+
+      if (e.key === 'ArrowLeft') { patchCurrent({ x: L.x - POS_STEP }); e.preventDefault(); return; }
+      if (e.key === 'ArrowRight') { patchCurrent({ x: L.x + POS_STEP }); e.preventDefault(); return; }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY - NUDGE_STEP });
+        else patchCurrent({ y: L.y - POS_STEP });
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY + NUDGE_STEP });
+        else patchCurrent({ y: L.y + POS_STEP });
+        return;
+      }
+      if (e.key === '[' && meta?.kind === 'text') patchCurrent({ fontScale: Math.max(0.2, L.fontScale - FONT_STEP) });
+      if (e.key === ']' && meta?.kind === 'text') patchCurrent({ fontScale: L.fontScale + FONT_STEP });
+    }
+
+    function buildUi() {
+      const root = document.getElementById('root');
+      root.className = 'layout';
+      root.innerHTML = `
+        <div class="panel">
+          <h2>Field</h2>
+          <label for="modeSelect">Preview mode (matches game)</label>
+          <select id="modeSelect">
+            <option value="new">New discovery (discovery recorded)</option>
+            <option value="duplicate">Already recorded</option>
+          </select>
+          <label for="challengeSelect">Plaque art (challenge = advance path)</label>
+          <select id="challengeSelect">
+            <option value="challenge">Challenge — with Advance Path</option>
+            <option value="regular">Regular — no Advance Path</option>
+          </select>
+          <p class="keys" style="margin-top:0;margin-bottom:12px">Positions are saved per plaque variant (4 layouts). Shared defaults in JSON <code>items</code> apply until you edit a field on that variant. Green border = active in this preview.</p>
+          <h2 style="margin-top:16px">Duplicate copy (saved to JSON)</h2>
+          <div class="copy-field">
+            <label for="duplicateTitleInput">Title (accessibility / dialog)</label>
+            <textarea id="duplicateTitleInput" rows="2" spellcheck="true"></textarea>
+          </div>
+          <div class="copy-field">
+            <label for="duplicateNoteInput">Note (on plaque)</label>
+            <textarea id="duplicateNoteInput" rows="3" spellcheck="true"></textarea>
+          </div>
+          <div class="field-grid" id="fieldGrid"></div>
+          <p class="readout" id="readout">—</p>
+          <ul class="keys">
+            <li>Scroll ↑↓ — nudge Y · ←→ — move X%</li>
+            <li>Shift+scroll — nudge X · Ctrl+scroll — font size (text) or btn H</li>
+            <li>Shift+scroll on btn — btn W scale · Alt+scroll — plaque W · Alt+Shift — plaque H</li>
+            <li>Already-recorded mode: Alt+Ctrl+scroll — trim plaque width (10% each side ≈ 0.8×)</li>
+            <li>Arrows — move · Shift+↑↓ — nudge · [ ] — font size</li>
+          </ul>
+          <div class="btn-row">
+            <button type="button" class="btn" id="reloadBtn">Reload file</button>
+            <button type="button" class="btn" id="saveBtn">Save now</button>
+            <button type="button" class="btn" id="resetItemBtn">Reset field</button>
+          </div>
+          <p class="status" id="status"></p>
+          <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+        </div>
+        <div class="panel">
+          <h2>Preview</h2>
+          <div class="mock-stage" id="mockStage" tabindex="0">
+            <div class="tuner-discovery-fit" id="discoveryFit">
+              <div class="tuner-discovery-viewport" id="discoveryViewport">
+                <div class="tz-app is-discovery-record" id="tunerApp">
+                  <div class="tz-shell">
+                  <section class="tz-preview-section" aria-label="Discovery record preview">
+                    <div class="tz-preview-frame">
+                      <div class="tz-discovery-record tz-discovery-record--new" id="mockDiscovery">
+                        <img class="tz-discovery-record__bg tz-discovery-record__bg--new-advance" src="/img/RecordsPlacqueBase.png" alt="" width="1393" height="1150" />
+                        <img class="tz-discovery-record__bg tz-discovery-record__bg--new-regular" src="/img/RecordsPlacqueBaseNoAdvance.png" alt="" width="1393" height="1150" />
+                        <img class="tz-discovery-record__bg tz-discovery-record__bg--duplicate-advance" src="/img/AlreadyRecordsPlacqueBase.png" alt="" width="1400" height="1123" />
+                        <img class="tz-discovery-record__bg tz-discovery-record__bg--duplicate-regular" src="/img/AlreadyRecordsPlacqueBaseNoADVPth.png" alt="" width="1400" height="1123" />
+                        <span class="tz-discovery-record__field tz-discovery-record__field--note" id="mockDiscoveryNote" hidden></span>
+                        <span class="tz-discovery-record__field tz-discovery-record__field--solution-total" id="mockDiscoverySolutionTotal"></span>
+                        <span class="tz-discovery-record__field tz-discovery-record__field--puzzle-id" id="mockDiscoveryPuzzleId"></span>
+                        <span class="tz-discovery-record__field tz-discovery-record__field--solution-found" id="mockDiscoverySolutionFound"></span>
+                        <span class="tz-discovery-record__field tz-discovery-record__field--time" id="mockDiscoveryTime"></span>
+                        <span class="tz-discovery-record__field tz-discovery-record__field--tokens" id="mockDiscoveryTokens"></span>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--continue" id="mockDiscoveryContinueBtn" aria-label="Continue search"></button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--advance" id="mockDiscoveryAdvanceBtn" aria-label="Advance path"></button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--view-found" id="mockDiscoveryViewFoundBtn" hidden aria-label="View found solve"></button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--book" id="mockDiscoveryBookBtn" aria-label="View found solutions"></button>
+                      </div>
+                    </div>
+                  </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.modeSelect = document.getElementById('modeSelect');
+      els.challengeSelect = document.getElementById('challengeSelect');
+      els.mockStage = document.getElementById('mockStage');
+      els.discoveryViewport = document.getElementById('discoveryViewport');
+      els.discoveryFit = document.getElementById('discoveryFit');
+      els.duplicateTitleInput = document.getElementById('duplicateTitleInput');
+      els.duplicateNoteInput = document.getElementById('duplicateNoteInput');
+
+      els.duplicateTitleInput.addEventListener('input', () => {
+        patchTexts({ duplicateTitle: els.duplicateTitleInput.value });
+      });
+      els.duplicateNoteInput.addEventListener('input', () => {
+        patchTexts({ duplicateNote: els.duplicateNoteInput.value });
+      });
+
+      window.addEventListener('resize', updatePreviewFit);
+
+      for (const [key, meta] of Object.entries(DISCOVERY_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = meta.label;
+        btn.addEventListener('click', () => {
+          currentItem = key;
+          refresh();
+          els.mockStage.focus();
+        });
+        els.fieldGrid.appendChild(btn);
+      }
+
+      els.modeSelect.addEventListener('change', () => setPreviewMode(els.modeSelect.value));
+      els.challengeSelect.addEventListener('change', () => {
+        setPreviewChallenge(els.challengeSelect.value === 'challenge');
+      });
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      document.addEventListener('keydown', onKeyDown);
+
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearDiscoveryRecordLayoutCache();
+        workingLayout = cloneLayout(mergeDiscoveryLayout(await loadDiscoveryRecordLayout()));
+        dirtyItems.clear();
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile({ quiet: false }));
+      document.getElementById('resetItemBtn').addEventListener('click', () => {
+        const vk = previewVariantKey();
+        const defaults = mergeDiscoveryLayout(null);
+        const meta = DISCOVERY_ITEM_DEFS[currentItem];
+        const fallback = meta?.kind === 'btn'
+          ? (defaults.variants?.[vk]?.[currentItem] || defaults.items[currentItem])
+          : defaults.items[currentItem];
+        if (!workingLayout.variants[vk]) workingLayout.variants[vk] = {};
+        workingLayout.variants[vk][currentItem] = { ...fallback };
+        dirtyItems.delete(currentItem);
+        scheduleSave();
+        refresh();
+      });
+
+      setPreviewMode('new');
+      els.mockStage.focus();
+      refresh();
+    }
+
+    async function init() {
+      try {
+        workingLayout = cloneLayout(mergeDiscoveryLayout(await loadDiscoveryRecordLayout()));
+        buildUi();
+        fetch('/api/dev/save-discovery-layout')
+          .then(async (r) => {
+            if (!r.ok) return null;
+            const ct = r.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) return null;
+            return r.json();
+          })
+          .then((data) => {
+            if (data?.writable) els.status.textContent = 'Connected — edits auto-save';
+            else els.status.textContent = 'Stop old servers on port 8080, then run: python scripts/server.py';
+          })
+          .catch(() => { els.status.textContent = 'Run: python scripts/server.py'; });
+      } catch (err) {
+        document.getElementById('root').className = 'err';
+        document.getElementById('root').textContent = String(err.message || err);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

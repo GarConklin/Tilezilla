@@ -1,0 +1,235 @@
+{
+  "plaque": {
+    "wScale": 1.06,
+    "hScale": 0.92,
+    "duplicateWScale": 0.8
+  },
+  "defaults": {
+    "nudgeX": 0,
+    "nudgeY": 0,
+    "fontScale": 1
+  },
+  "texts": {
+    "duplicateNote": "",
+    "duplicateTitle": ""
+  },
+  "items": {
+    "solutionTotal": {
+      "x": 42,
+      "y": 22,
+      "nudgeY": 63,
+      "fontScale": 0.68,
+      "nudgeX": 34
+    },
+    "note": {
+      "x": 50,
+      "y": 28,
+      "nudgeY": 2,
+      "fontScale": 1.08
+    },
+    "puzzleId": {
+      "x": 45,
+      "y": 36,
+      "fontScale": 1.08,
+      "nudgeY": -6,
+      "nudgeX": 18
+    },
+    "solutionFound": {
+      "x": 32,
+      "y": 43,
+      "fontScale": 0.72,
+      "nudgeY": -9,
+      "nudgeX": 126
+    },
+    "time": {
+      "x": 18,
+      "y": 56,
+      "nudgeX": 47,
+      "nudgeY": 6,
+      "fontScale": 0.68
+    },
+    "tokens": {
+      "x": 48,
+      "y": 56,
+      "fontScale": 0.96,
+      "nudgeY": 0,
+      "nudgeX": 30
+    }
+  },
+  "variants": {
+    "newAdvance": {
+      "btnContinue": {
+        "x": 15.5,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.84,
+        "hScale": 0.82,
+        "nudgeY": -48
+      },
+      "btnAdvance": {
+        "x": 24.5,
+        "y": 93,
+        "w": 42,
+        "h": 11,
+        "wScale": 1.22,
+        "hScale": 0.56,
+        "nudgeY": -39
+      },
+      "btnBook": {
+        "x": 69.5,
+        "y": 58,
+        "w": 16,
+        "h": 22,
+        "wScale": 0.74,
+        "hScale": 0.52,
+        "nudgeY": -21
+      },
+      "btnViewFound": {
+        "nudgeX": 0,
+        "nudgeY": -49,
+        "fontScale": 1,
+        "x": 51.5,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.86,
+        "hScale": 0.72
+      }
+    },
+    "newRegular": {
+      "btnContinue": {
+        "x": 15.5,
+        "y": 84,
+        "w": 60,
+        "h": 11,
+        "wScale": 0.52,
+        "hScale": 0.68,
+        "nudgeY": -48
+      },
+      "btnBook": {
+        "x": 69,
+        "y": 58,
+        "w": 16,
+        "h": 22,
+        "wScale": 0.76,
+        "hScale": 0.6,
+        "nudgeY": -24
+      },
+      "btnAdvance": {
+        "nudgeX": 0,
+        "nudgeY": -5,
+        "fontScale": 1,
+        "x": 50,
+        "y": 93,
+        "w": 42,
+        "h": 11,
+        "wScale": -0.06,
+        "hScale": 0.04
+      },
+      "btnViewFound": {
+        "nudgeX": 0,
+        "nudgeY": -47,
+        "fontScale": 1,
+        "x": 52,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.84,
+        "hScale": 0.68
+      }
+    },
+    "duplicateAdvance": {
+      "btnContinue": {
+        "x": 16,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.8,
+        "hScale": 0.68,
+        "nudgeY": -50
+      },
+      "btnViewFound": {
+        "x": 51.5,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.8,
+        "hScale": 0.64,
+        "nudgeY": -50
+      },
+      "btnAdvance": {
+        "x": 27.5,
+        "y": 93,
+        "w": 42,
+        "h": 11,
+        "wScale": 1.02,
+        "hScale": 0.6,
+        "nudgeY": -41
+      },
+      "btnBook": {
+        "x": 70,
+        "y": 58,
+        "w": 16,
+        "h": 22,
+        "wScale": 0.7,
+        "hScale": 0.6,
+        "nudgeY": -24
+      },
+      "solutionFound": {
+        "nudgeX": 101,
+        "nudgeY": -9,
+        "fontScale": 0.72,
+        "x": 32,
+        "y": 43
+      }
+    },
+    "duplicateRegular": {
+      "btnContinue": {
+        "x": 15.5,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.8,
+        "hScale": 0.62,
+        "nudgeY": -49
+      },
+      "btnViewFound": {
+        "x": 51.5,
+        "y": 84,
+        "w": 38,
+        "h": 11,
+        "wScale": 0.8,
+        "hScale": 0.62,
+        "nudgeY": -49
+      },
+      "btnBook": {
+        "x": 69.5,
+        "y": 58,
+        "w": 16,
+        "h": 22,
+        "wScale": 0.74,
+        "hScale": 0.64,
+        "nudgeY": -26
+      },
+      "btnAdvance": {
+        "nudgeX": 0,
+        "nudgeY": -5,
+        "fontScale": 1,
+        "x": 50,
+        "y": 93,
+        "w": 42,
+        "h": 11,
+        "wScale": -0.06,
+        "hScale": 0.08
+      },
+      "solutionFound": {
+        "nudgeX": 102,
+        "nudgeY": -9,
+        "fontScale": 0.72,
+        "x": 32,
+        "y": 43
+      }
+    }
+  }
+}

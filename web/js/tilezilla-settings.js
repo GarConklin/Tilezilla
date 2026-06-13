@@ -6,6 +6,7 @@ export const GAMEPLAY_DEFAULTS = {
   liveEdgeValidation: 'OFF',
   showTileBorders: 'ON',
   usedTileBehavior: 'REMOVE',
+  phonePreview: 'OFF',
 };
 
 const STORAGE_KEY = 'tilezilla-gameplay-settings';
@@ -19,6 +20,7 @@ export function loadGameplaySettings() {
       liveEdgeValidation: parsed.liveEdgeValidation === 'ON' ? 'ON' : 'OFF',
       showTileBorders: parsed.showTileBorders === 'OFF' ? 'OFF' : 'ON',
       usedTileBehavior: parsed.usedTileBehavior === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
+      phonePreview: parsed.phonePreview === 'ON' ? 'ON' : 'OFF',
     };
   } catch {
     return { ...GAMEPLAY_DEFAULTS };
@@ -43,6 +45,7 @@ function readPanel(panel) {
     liveEdgeValidation: read('liveEdgeValidation') === 'ON' ? 'ON' : 'OFF',
     showTileBorders: read('showTileBorders') === 'OFF' ? 'OFF' : 'ON',
     usedTileBehavior: read('usedTileBehavior') === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
+    phonePreview: read('phonePreview') === 'ON' ? 'ON' : 'OFF',
   };
 }
 
@@ -64,31 +67,36 @@ function renderPanel(root, settings) {
   });
 }
 
-export function initSettingsUi({ onChange }) {
-  const menuRoot = document.getElementById('menuRoot');
+export function isPhonePreviewMode() {
+  return document.documentElement.classList.contains('tz-phone-preview');
+}
+
+export function applyPhonePreviewMode(on) {
+  document.documentElement.classList.toggle('tz-phone-preview', on);
+  window.dispatchEvent(new CustomEvent('tilezilla:phone-preview-changed', {
+    detail: { on: Boolean(on) },
+  }));
+}
+
+export function initSettingsUi({ onChange, menuApi }) {
   const settingsRoot = document.getElementById('settingsRoot');
   const gameplayPanel = document.getElementById('settingsGameplay');
-  if (!menuRoot || !settingsRoot || !gameplayPanel) return;
+  if (!settingsRoot || !gameplayPanel) return;
 
   let current = loadGameplaySettings();
   renderPanel(gameplayPanel, current);
 
-  const openMenu = () => {
-    menuRoot.hidden = false;
-    document.body.classList.add('tz-modal-open');
-  };
-  const closeMenu = () => {
-    menuRoot.hidden = true;
-    if (settingsRoot.hidden) document.body.classList.remove('tz-modal-open');
-  };
   const openSettings = () => {
-    menuRoot.hidden = true;
     settingsRoot.hidden = false;
     document.body.classList.add('tz-modal-open');
   };
   const closeSettings = () => {
     settingsRoot.hidden = true;
-    document.body.classList.remove('tz-modal-open');
+    const menuRoot = document.getElementById('menuRoot');
+    const menuPanelRoot = document.getElementById('menuPanelRoot');
+    const menuOpen = menuRoot && !menuRoot.hidden;
+    const panelOpen = menuPanelRoot && !menuPanelRoot.hidden;
+    if (!menuOpen && !panelOpen) document.body.classList.remove('tz-modal-open');
   };
 
   const apply = (next) => {
@@ -100,25 +108,31 @@ export function initSettingsUi({ onChange }) {
 
   bindSegment(gameplayPanel, apply);
 
-  document.querySelector('.tz-menu-btn')?.addEventListener('click', openMenu);
-  document.getElementById('settingsBtn')?.addEventListener('click', openSettings);
-  document.getElementById('menuCloseBtn')?.addEventListener('click', closeMenu);
-  document.getElementById('menuOpenSettingsBtn')?.addEventListener('click', openSettings);
-  document.getElementById('settingsBackBtn')?.addEventListener('click', closeSettings);
-  document.getElementById('settingsCloseBtn')?.addEventListener('click', closeSettings);
+  document.getElementById('settingsBackBtn')?.addEventListener('click', () => {
+    closeSettings();
+    if (menuApi?.settingsEntry?.() === 'menu') menuApi?.openMenu?.();
+  });
+  document.getElementById('settingsCloseBtn')?.addEventListener('click', () => {
+    closeSettings();
+    menuApi?.closeAll?.();
+  });
 
-  menuRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', closeMenu);
-  settingsRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', closeSettings);
+  settingsRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', () => {
+    closeSettings();
+    menuApi?.closeAll?.();
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (!settingsRoot.hidden) closeSettings();
-    else if (!menuRoot.hidden) closeMenu();
+    if (!settingsRoot.hidden) {
+      closeSettings();
+      if (menuApi?.settingsEntry?.() === 'menu') menuApi?.openMenu?.();
+    }
   });
 
   return {
     getSettings: () => ({ ...current }),
     openSettings,
-    openMenu,
+    closeSettings,
   };
 }

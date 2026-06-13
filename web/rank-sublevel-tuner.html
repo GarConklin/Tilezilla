@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Sublevel tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+      color: #e8b923;
+    }
+
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+
+    .lead a { color: #8fd49a; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      color: #a8b8b4;
+      margin-bottom: 4px;
+    }
+
+    select {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+    }
+
+    .mock-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 12px 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+
+    .mock-stage:focus {
+      border-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.25);
+    }
+
+    .mock-stage__hint {
+      margin: 0;
+      font-size: 0.68rem;
+      color: #a8b8b4;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .bubble-mock {
+      /* legacy class removed — use .tuner-rank-shell + game rank panel classes */
+      display: none;
+    }
+
+    /* Exact same rank bubble as tilezilla.html (shell CSS + scaled for tuning) */
+    .tuner-rank-shell {
+      transform: scale(2.4);
+      transform-origin: top center;
+      margin: 0 auto 88px;
+      width: max-content;
+    }
+
+    .tuner-rank-shell .tz-rank-panel {
+      position: relative;
+      margin: 0;
+    }
+
+    .tuner-rank-shell .tz-rank-badge-stack {
+      position: relative;
+    }
+
+    .tuner-rank-shell .tz-rank-panel__lower {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: var(--tz-rank-lower-bottom);
+    }
+
+    .tuner-rank-shell .tz-progress__track {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .bubble-mock__stack,
+    .bubble-mock__badge,
+    .bubble-mock__sub,
+    .bubble-mock__bar {
+      display: none;
+    }
+
+    .readout {
+      margin: 0;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      color: #8fd49a;
+      text-align: center;
+    }
+
+  .readout strong { color: #e8b923; }
+
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .level-btn {
+      padding: 6px 2px;
+      border-radius: 5px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+    }
+
+    .level-btn:hover { border-color: rgba(232, 185, 35, 0.5); }
+
+    .level-btn.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.15);
+    }
+
+    .level-btn.is-dirty::after {
+      content: ' •';
+      color: #8fd49a;
+    }
+
+    .record-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62rem;
+      font-family: ui-monospace, monospace;
+    }
+
+    .record-table th,
+    .record-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: left;
+    }
+
+    .record-table tr.is-active td {
+      background: rgba(232, 185, 35, 0.1);
+      color: #e8b923;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.45);
+      background: rgba(232, 185, 35, 0.12);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .btn:hover { background: rgba(232, 185, 35, 0.22); }
+
+    .btn--ghost {
+      background: transparent;
+      border-color: rgba(196, 163, 90, 0.3);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.3);
+      background: rgba(0, 0, 0, 0.35);
+      color: #c8e6c9;
+      font-family: ui-monospace, monospace;
+      font-size: 0.68rem;
+      resize: vertical;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: #8fd49a;
+      min-height: 1.2em;
+    }
+
+    .err {
+      color: #f0a0a0;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(80, 20, 20, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <h1>Sublevel tuner</h1>
+  <p class="lead">
+    Use the <strong>1–10</strong> buttons (or ← → scroll) to tune each roman numeral.
+    Layout matches the game rank bubble (same <code>tilezilla-shell.css</code> + <code>sublevel_icon_layout.json</code>).
+    Edits auto-save to <code>data/sublevel_icon_layout.json</code> when the dev server is running.
+    <a href="rank-badge-preview.html">Preview</a> · <a href="tilezilla.html">Game</a>
+  </p>
+
+  <div id="root" class="err">Loading…</div>
+
+  <script type="module">
+    import {
+      applySublevelIconElement,
+      clearSublevelLayoutCache,
+      getSublevelIconLayout,
+      loadSublevelIconLayout,
+      normalizeSublevelBadge,
+      romanForSubLevel,
+    } from './js/sublevel-icon.js';
+
+    const NUDGE_STEP = 1;
+    const H_STEP = 0.4;
+    const W_STEP = 0.02;
+
+    let ranks = [];
+    let workingLayout = null;
+    let currentRankId = 1;
+    let currentSubLevel = 1;
+    const dirtyLevels = { gld: new Set(), slvr: new Set() };
+
+    const els = {};
+
+    function cloneLayout(layout) {
+      return JSON.parse(JSON.stringify(layout));
+    }
+
+    function currentRank() {
+      return ranks.find((r) => r.rank_id === currentRankId) || ranks[0];
+    }
+
+    function currentStyle() {
+      return normalizeSublevelBadge(currentRank()?.sublevel_badge);
+    }
+
+    function levelKey(cat, n) {
+      return `${cat}:${n}`;
+    }
+
+    function ensureLevelEntry(cat, n) {
+      if (!workingLayout.levels[cat]) workingLayout.levels[cat] = {};
+      const key = String(n);
+      if (!workingLayout.levels[cat][key]) {
+        workingLayout.levels[cat][key] = { ...getSublevelIconLayout(n, cat, workingLayout) };
+      }
+      return workingLayout.levels[cat][key];
+    }
+
+    function patchCurrent(patch) {
+      const cat = currentStyle();
+      const entry = ensureLevelEntry(cat, currentSubLevel);
+      Object.assign(entry, patch);
+      dirtyLevels[cat].add(currentSubLevel);
+      scheduleSaveToFile();
+      refresh();
+    }
+
+    function setSubLevel(n) {
+      currentSubLevel = Math.max(1, Math.min(10, n));
+      refresh();
+    }
+
+    function cloneLayoutFromFile(layout) {
+      const out = cloneLayout(layout);
+      if (!out.levels) out.levels = { gld: {}, slvr: {} };
+      return out;
+    }
+
+    async function reloadLayoutFromFile() {
+      clearSublevelLayoutCache();
+      const base = await loadSublevelIconLayout();
+      workingLayout = cloneLayoutFromFile(base);
+      dirtyLevels.gld.clear();
+      dirtyLevels.slvr.clear();
+      refresh();
+      els.status.textContent = 'Reloaded from data/sublevel_icon_layout.json';
+    }
+
+    function pruneLevelEntry(layout, cat, n) {
+      const catDefaults = { ...layout.defaults };
+      const entry = layout.levels?.[cat]?.[String(n)];
+      if (!entry) return;
+      const merged = { ...catDefaults, ...entry };
+      const pruned = {};
+      for (const k of ['h', 'nudgeX', 'nudgeY', 'wScale']) {
+        if (merged[k] !== catDefaults[k]) pruned[k] = merged[k];
+      }
+      if (Object.keys(pruned).length) {
+        layout.levels[cat][String(n)] = pruned;
+      } else {
+        delete layout.levels[cat][String(n)];
+      }
+    }
+
+    function exportLayoutObject() {
+      const out = cloneLayout(workingLayout);
+      if (!out.levels) out.levels = {};
+      for (const cat of ['gld', 'slvr']) {
+        if (!out.levels[cat]) continue;
+        for (let n = 1; n <= 10; n += 1) pruneLevelEntry(out, cat, n);
+        if (!Object.keys(out.levels[cat]).length) delete out.levels[cat];
+      }
+      return out;
+    }
+
+    function exportLayoutJson() {
+      return JSON.stringify(exportLayoutObject(), null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+    let serverSaveOk = null;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) {
+        saveQueued = true;
+        return false;
+      }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-sublevel-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportLayoutJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 501) {
+            throw new Error(
+              'Stale dev server on port 8080 — stop all python servers, then run: python scripts/server.py'
+            );
+          }
+          const detail = await res.text();
+          throw new Error(detail || `HTTP ${res.status}`);
+        }
+        serverSaveOk = true;
+        clearSublevelLayoutCache();
+        window.dispatchEvent(new CustomEvent('tilezilla:sublevel-layout-saved'));
+        if (!quiet) {
+          els.status.textContent = 'Saved to data/sublevel_icon_layout.json';
+        } else {
+          els.status.textContent = 'Auto-saved to data/sublevel_icon_layout.json';
+        }
+        return true;
+      } catch (err) {
+        serverSaveOk = false;
+        const msg = String(err.message || err);
+        if (!quiet || !msg.includes('Stale dev server')) {
+          els.status.textContent = msg.includes('Stale dev server')
+            ? msg
+            : `Save failed — ${msg}`;
+        }
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) {
+          saveQueued = false;
+          void saveToFile({ quiet: true });
+        }
+      }
+    }
+
+    function scheduleSaveToFile() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refresh() {
+      const rank = currentRank();
+      const cat = currentStyle();
+      const L = getSublevelIconLayout(currentSubLevel, cat, workingLayout);
+
+      els.rankSelect.value = String(rank.rank_id);
+      els.styleBadge.textContent = cat;
+      els.rankName.textContent = rank.rank_name;
+
+      applySublevelIconElement(els.mockSub, currentSubLevel, cat, workingLayout);
+      els.mockBadge.src = rank.badge_image;
+
+      els.readout.innerHTML = `
+        <strong>${romanForSubLevel(currentSubLevel)}</strong> (${currentSubLevel})
+        · h:${L.h} · x:${L.nudgeX} · y:${L.nudgeY} · w:${L.wScale}
+      `;
+
+      for (const btn of els.levelGrid.querySelectorAll('.level-btn')) {
+        const n = Number(btn.dataset.level);
+        btn.classList.toggle('is-active', n === currentSubLevel);
+        btn.classList.toggle('is-dirty', dirtyLevels[cat].has(n));
+        btn.textContent = `${n} ${romanForSubLevel(n)}`;
+      }
+
+      for (const row of els.recordBody.querySelectorAll('tr')) {
+        const n = Number(row.dataset.level);
+        row.classList.toggle('is-active', n === currentSubLevel);
+        const rowL = getSublevelIconLayout(n, cat, workingLayout);
+        row.cells[1].textContent = rowL.h;
+        row.cells[2].textContent = rowL.nudgeX;
+        row.cells[3].textContent = rowL.nudgeY;
+        row.cells[4].textContent = rowL.wScale;
+      }
+
+      els.jsonOut.value = exportLayoutJson();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+
+      if (absX > absY) {
+        setSubLevel(currentSubLevel + (e.deltaX > 0 ? 1 : -1));
+        return;
+      }
+
+      if (e.altKey) {
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ wScale: Math.round((L.wScale + (e.deltaY < 0 ? W_STEP : -W_STEP)) * 100) / 100 });
+        return;
+      }
+
+      if (e.ctrlKey) {
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ h: Math.round((L.h + (e.deltaY < 0 ? H_STEP : -H_STEP)) * 10) / 10 });
+        return;
+      }
+
+      if (e.shiftKey) {
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ nudgeX: L.nudgeX + (e.deltaY < 0 ? NUDGE_STEP : -NUDGE_STEP) });
+        return;
+      }
+
+      const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+      patchCurrent({ nudgeY: L.nudgeY + (e.deltaY > 0 ? NUDGE_STEP : -NUDGE_STEP) });
+    }
+
+    function onKeyDown(e) {
+      if (e.target.matches('select, textarea')) return;
+
+      if (e.key === 'ArrowLeft') { e.preventDefault(); setSubLevel(currentSubLevel - 1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); setSubLevel(currentSubLevel + 1); }
+      else if (e.key === 'ArrowUp' && e.shiftKey) {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ nudgeX: L.nudgeX - NUDGE_STEP });
+      } else if (e.key === 'ArrowDown' && e.shiftKey) {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ nudgeX: L.nudgeX + NUDGE_STEP });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ nudgeY: L.nudgeY - NUDGE_STEP });
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ nudgeY: L.nudgeY + NUDGE_STEP });
+      } else if (e.key === '[') {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ h: Math.round((L.h - H_STEP) * 10) / 10 });
+      } else if (e.key === ']') {
+        e.preventDefault();
+        const L = getSublevelIconLayout(currentSubLevel, currentStyle(), workingLayout);
+        patchCurrent({ h: Math.round((L.h + H_STEP) * 10) / 10 });
+      }
+    }
+
+    function buildUi() {
+      const root = document.getElementById('root');
+      root.className = 'layout';
+      root.innerHTML = `
+        <div class="panel">
+          <h2>Badge</h2>
+          <label for="rankSelect">Adventure rank</label>
+          <select id="rankSelect"></select>
+          <p style="margin:0 0 12px;font-size:0.75rem">
+            <span id="rankName"></span> · style: <strong id="styleBadge"></strong>
+          </p>
+          <div class="mock-stage" id="mockStage" tabindex="0" aria-label="Scroll here to tune sublevel">
+            <p class="mock-stage__hint">
+              ← → scroll / keys: change sublevel (I–X)<br>
+              ↑ ↓ scroll / keys: nudge Y<br>
+              Shift + ↑ ↓: nudge X · Ctrl + wheel: height · Alt + wheel: width scale
+            </p>
+            <div class="tuner-rank-shell">
+              <article class="tz-panel tz-rank-panel" aria-label="Rank preview">
+                <div class="tz-rank-panel__body">
+                  <div class="tz-rank-badge-stack" id="rankSubLevel">
+                    <img id="mockBadge" class="tz-rank-badge__img" alt="" />
+                    <img id="mockSub" class="tz-rank-sublevel__img" alt="" />
+                  </div>
+                  <div class="tz-rank-panel__lower">
+                    <div class="tz-progress">
+                      <div class="tz-progress__track">
+                        <div class="tz-progress__fill" style="width:35%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <p class="readout" id="readout"></p>
+          </div>
+          <ul class="keys">
+            <li>[ ] — height · Edits auto-save to file (via dev server)</li>
+          </ul>
+          <div class="level-grid" id="levelGrid"></div>
+          <div class="actions">
+            <button type="button" class="btn" id="saveBtn">Save to file</button>
+            <button type="button" class="btn" id="copyBtn">Copy JSON</button>
+            <button type="button" class="btn" id="downloadBtn">Download JSON</button>
+            <button type="button" class="btn btn--ghost" id="resetLevelBtn">Reset this level</button>
+            <button type="button" class="btn btn--ghost" id="resetStyleBtn">Reset style</button>
+            <button type="button" class="btn btn--ghost" id="reloadBtn">Reload file</button>
+          </div>
+          <p class="status" id="status"></p>
+        </div>
+        <div class="panel">
+          <h2>Recorded — <span id="recordStyle"></span></h2>
+          <table class="record-table">
+            <thead>
+              <tr><th>Lvl</th><th>h</th><th>x</th><th>y</th><th>w</th></tr>
+            </thead>
+            <tbody id="recordBody"></tbody>
+          </table>
+          <textarea id="jsonOut" readonly aria-label="Exported layout JSON"></textarea>
+        </div>
+      `;
+
+      els.rankSelect = document.getElementById('rankSelect');
+      els.rankName = document.getElementById('rankName');
+      els.styleBadge = document.getElementById('styleBadge');
+      els.recordStyle = document.getElementById('recordStyle');
+      els.mockStage = document.getElementById('mockStage');
+      els.mockBadge = document.getElementById('mockBadge');
+      els.mockSub = document.getElementById('mockSub');
+      els.readout = document.getElementById('readout');
+      els.levelGrid = document.getElementById('levelGrid');
+      els.recordBody = document.getElementById('recordBody');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.status = document.getElementById('status');
+
+      for (const rank of ranks) {
+        const opt = document.createElement('option');
+        opt.value = String(rank.rank_id);
+        opt.textContent = `${rank.rank_name} (${normalizeSublevelBadge(rank.sublevel_badge)})`;
+        els.rankSelect.append(opt);
+      }
+
+      for (let n = 1; n <= 10; n += 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'level-btn';
+        btn.dataset.level = String(n);
+        btn.addEventListener('click', () => setSubLevel(n));
+        els.levelGrid.append(btn);
+
+        const row = document.createElement('tr');
+        row.dataset.level = String(n);
+        row.innerHTML = `<td>${n}</td><td></td><td></td><td></td><td></td>`;
+        row.addEventListener('click', () => setSubLevel(n));
+        els.recordBody.append(row);
+      }
+
+      els.rankSelect.addEventListener('change', () => {
+        currentRankId = Number(els.rankSelect.value);
+        els.recordStyle.textContent = currentStyle();
+        refresh();
+      });
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('keydown', onKeyDown);
+
+      document.getElementById('saveBtn').addEventListener('click', () => {
+        void saveToFile();
+      });
+
+      document.getElementById('copyBtn').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(exportLayoutJson());
+        els.status.textContent = 'JSON copied — paste into data/sublevel_icon_layout.json';
+      });
+
+      document.getElementById('downloadBtn').addEventListener('click', () => {
+        const blob = new Blob([exportLayoutJson()], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'sublevel_icon_layout.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        els.status.textContent = 'Downloaded sublevel_icon_layout.json';
+      });
+
+      document.getElementById('resetLevelBtn').addEventListener('click', () => {
+        const cat = currentStyle();
+        if (workingLayout.levels[cat]) delete workingLayout.levels[cat][String(currentSubLevel)];
+        dirtyLevels[cat].delete(currentSubLevel);
+        scheduleSaveToFile();
+        refresh();
+        els.status.textContent = `Reset level ${currentSubLevel} (${cat})`;
+      });
+
+      document.getElementById('resetStyleBtn').addEventListener('click', () => {
+        const cat = currentStyle();
+        if (workingLayout.levels[cat]) delete workingLayout.levels[cat];
+        dirtyLevels[cat].clear();
+        scheduleSaveToFile();
+        refresh();
+        els.status.textContent = `Reset all ${cat} levels`;
+      });
+
+      document.getElementById('reloadBtn').addEventListener('click', () => {
+        void reloadLayoutFromFile();
+      });
+
+      els.mockStage.focus();
+      els.recordStyle.textContent = currentStyle();
+      refresh();
+    }
+
+    async function init() {
+      try {
+        const [ranksRes, baseLayout] = await Promise.all([
+          fetch('/data/adventure_ranks.json'),
+          loadSublevelIconLayout(),
+        ]);
+        if (!ranksRes.ok) throw new Error('Failed to load adventure_ranks.json');
+        ranks = await ranksRes.json();
+        ranks.sort((a, b) => a.display_order - b.display_order);
+        workingLayout = cloneLayoutFromFile(baseLayout);
+        try { localStorage.removeItem('tilezilla_sublevel_layout_draft_v1'); } catch { /* ignore */ }
+        buildUi();
+        fetch('/api/dev/save-sublevel-layout')
+          .then(async (r) => {
+            if (!r.ok) return null;
+            const ct = r.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) return null;
+            return r.json();
+          })
+          .then((data) => {
+            if (data?.writable) {
+              els.status.textContent = 'Connected — edits auto-save to data/sublevel_icon_layout.json';
+            } else {
+              els.status.textContent = 'Stop old servers on port 8080, then run: python scripts/server.py';
+            }
+          })
+          .catch(() => {
+            els.status.textContent = 'Start python scripts/server.py for auto-save to file';
+          });
+      } catch (err) {
+        const root = document.getElementById('root');
+        root.className = 'err';
+        root.textContent = String(err.message || err);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

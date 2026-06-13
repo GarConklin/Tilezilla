@@ -4,6 +4,7 @@
     "rank_code": "L1",
     "rank_name": "Wanderer",
     "badge_image": "/img/ranks/Wanderer.png",
+    "sublevel_badge": "gld",
     "display_order": 1
   },
   {
@@ -11,48 +12,63 @@
     "rank_code": "L2",
     "rank_name": "Pathfinder",
     "badge_image": "/img/ranks/Pathfinder.png",
+    "sublevel_badge": "gld",
     "display_order": 2
   },
   {
     "rank_id": 3,
     "rank_code": "L3",
-    "rank_name": "Trailblazer",
-    "badge_image": "/img/ranks/Trailblazer.png",
+    "rank_name": "Explorer",
+    "badge_image": "/img/ranks/Explorer.png",
+    "sublevel_badge": "slvr",
     "display_order": 3
   },
   {
     "rank_id": 4,
     "rank_code": "L4",
-    "rank_name": "Navigator",
-    "badge_image": "/img/ranks/Navigator.png",
+    "rank_name": "Trailblazer",
+    "badge_image": "/img/ranks/Trailblazer.png",
+    "sublevel_badge": "gld",
     "display_order": 4
   },
   {
     "rank_id": 5,
     "rank_code": "L5",
-    "rank_name": "Waymaker",
-    "badge_image": "/img/ranks/Waymaker.png",
+    "rank_name": "Voyager",
+    "badge_image": "/img/ranks/Voyager.png",
+    "sublevel_badge": "slvr",
     "display_order": 5
   },
   {
     "rank_id": 6,
     "rank_code": "L6",
-    "rank_name": "Route Master",
-    "badge_image": "/img/ranks/RouteMaster.png",
+    "rank_name": "Expeditioner",
+    "badge_image": "/img/ranks/Expeditioner.png",
+    "sublevel_badge": "gld",
     "display_order": 6
   },
   {
     "rank_id": 7,
     "rank_code": "L7",
-    "rank_name": "Grand Cartographer",
-    "badge_image": "/img/ranks/GrandCartographer.png",
+    "rank_name": "Adventurer",
+    "badge_image": "/img/ranks/Adventurer.png",
+    "sublevel_badge": "gld",
     "display_order": 7
   },
   {
     "rank_id": 8,
     "rank_code": "L8",
-    "rank_name": "Vaultwalker",
-    "badge_image": "/img/ranks/Vaultwalker.png",
+    "rank_name": "Pioneer",
+    "badge_image": "/img/ranks/Pioneer.png",
+    "sublevel_badge": "gld",
     "display_order": 8
+  },
+  {
+    "rank_id": 9,
+    "rank_code": "L9",
+    "rank_name": "Legend",
+    "badge_image": "/img/ranks/Legend.png",
+    "sublevel_badge": "gld",
+    "display_order": 9
   }
 ]

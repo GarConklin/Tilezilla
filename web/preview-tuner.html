@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" class="preview-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Preview tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%;
+      min-height: 100px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.7rem;
+      resize: vertical;
+    }
+    .mock-stage {
+      padding: 24px 16px 40px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .preview-tuner-mock {
+      width: min(100%, var(--tz-w-preview));
+      margin: 0 auto;
+    }
+    .preview-tuner-page .tz-preview-frame {
+      position: relative;
+      width: var(--tz-w-preview);
+      height: var(--tz-h-preview);
+      margin: 0 auto;
+      overflow: visible;
+      background: var(--tz-img-preview-frame) top center / 100% 100% no-repeat;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+    }
+    .preview-tuner-page .tuner-box {
+      background: rgba(100, 200, 255, 0.28) !important;
+      border: 2px solid rgba(100, 200, 255, 0.85) !important;
+      border-radius: 4px;
+      z-index: 3;
+    }
+    .preview-tuner-page .tuner-box.is-tuner-active {
+      border-color: #e8b923 !important;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+      z-index: 4;
+    }
+    .preview-tuner-page .tuner-box .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      font-size: clamp(7px, 2.5cqi, 11px);
+      font-weight: 600;
+      line-height: 1.1;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+    .preview-tuner-page .tz-preview-renderer.activePad {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.65rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Preview frame tuner</h1>
+  <p class="lead">
+    Align invisible click targets on <strong>preview tile Area bubble.png</strong>.
+    Colored boxes show hit areas; the game uses the same positions without the overlay.
+    Saves to <code>data/preview_layout.json</code>.
+    <a href="/dev-player-select.html">Back to player select</a>
+    · <a href="/tilezilla.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys">
+        <li>Scroll — move X (art px) · Shift+scroll — move Y</li>
+        <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+        <li>Click a box on the preview to select it</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report for chat</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false" aria-label="Layout report"></textarea>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — hit areas visible</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="preview-tuner-mock">
+          <div class="tz-preview-frame" id="mockFrame">
+            <div class="tz-preview-renderer activePad tuner-box" data-item="renderer">
+              <span class="hit-label">Tile slot</span>
+            </div>
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--ccw tuner-box" data-item="rotateCcw">
+              <span class="hit-label">Rotate L</span>
+            </button>
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--cw tuner-box" data-item="rotateCw">
+              <span class="hit-label">Rotate R</span>
+            </button>
+            <p class="tz-preview-tile__dir tuner-box" data-item="tileDir" aria-hidden="true">
+              <span class="hit-label">0°</span>
+            </p>
+            <button type="button" class="tz-img-btn tz-img-btn--hint tuner-box" data-item="hint">
+              <span class="hit-label">Hint</span>
+            </button>
+            <button type="button" class="tz-preview-hit tz-preview-hit--undo tuner-box" data-item="undo">
+              <span class="hit-label">Undo</span>
+            </button>
+            <button type="button" class="tz-preview-hit tz-preview-hit--reset tuner-box" data-item="reset">
+              <span class="hit-label">Reset</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      PREVIEW_ITEM_DEFS,
+      applyPreviewLayout,
+      buildPreviewLayoutReport,
+      clearPreviewLayoutCache,
+      getPreviewItemLayout,
+      loadPreviewLayout,
+      mergePreviewLayout,
+      stashPreviewLayoutDraft,
+      clearPreviewLayoutDraft,
+    } from './js/preview-layout.js';
+
+    const POS_STEP = 4;
+    const SIZE_STEP = 4;
+
+    let workingLayout = mergePreviewLayout(null);
+    let currentItem = 'undo';
+
+    const els = {};
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-preview-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Stale dev server — restart: python scripts/server.py');
+          }
+          throw new Error(await res.text() || `HTTP ${res.status}`);
+        }
+        clearPreviewLayoutCache();
+        clearPreviewLayoutDraft();
+        localStorage.setItem('tilezilla:preview-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:preview-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/preview_layout.json'
+          : 'Saved to data/preview_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser — refresh game tab`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      }
+    }
+
+    function refresh() {
+      applyPreviewLayout(workingLayout, document.documentElement);
+      const box = getPreviewItemLayout(currentItem, workingLayout);
+      const def = PREVIEW_ITEM_DEFS[currentItem];
+      els.readout.innerHTML = `
+        <strong>${def?.label || currentItem}</strong><br />
+        x: ${box.x} · y: ${box.y}<br />
+        w: ${box.w} · h: ${box.h} (art px)
+      `;
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildPreviewLayoutReport(workingLayout);
+      stashPreviewLayoutDraft(workingLayout);
+      refreshFieldGrid();
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const box = getPreviewItemLayout(currentItem, workingLayout);
+
+      if (e.altKey && e.ctrlKey) {
+        patchItem(currentItem, { h: Math.max(8, box.h + dir * SIZE_STEP) });
+        return;
+      }
+      if (e.ctrlKey) {
+        patchItem(currentItem, { w: Math.max(8, box.w + dir * SIZE_STEP) });
+        return;
+      }
+      if (e.shiftKey) {
+        patchItem(currentItem, { y: Math.max(0, box.y + dir * POS_STEP) });
+        return;
+      }
+      patchItem(currentItem, { x: Math.max(0, box.x + dir * POS_STEP) });
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.mockStage = document.getElementById('mockStage');
+
+      for (const [key, def] of Object.entries(PREVIEW_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+
+        document.querySelector(`.tuner-box[data-item="${key}"]`)?.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          currentItem = key;
+          refresh();
+        });
+      }
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearPreviewLayoutCache();
+        workingLayout = await loadPreviewLayout({ force: true });
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+      document.getElementById('copyReportBtn').addEventListener('click', async () => {
+        const text = buildPreviewLayoutReport(workingLayout);
+        try {
+          await navigator.clipboard.writeText(text);
+          els.status.textContent = 'Report copied — paste into chat with a screenshot';
+        } catch {
+          els.reportOut.select();
+          els.status.textContent = 'Select report text and copy manually';
+        }
+      });
+
+      try {
+        workingLayout = await loadPreviewLayout();
+      } catch {
+        workingLayout = mergePreviewLayout(null);
+      }
+      refresh();
+      els.mockStage.focus();
+    }
+
+    void init();
+  </script>
+</body>
+</html>
