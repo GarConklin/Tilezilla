@@ -8,6 +8,7 @@ import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
 import { initPuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
+import { initInvalidSolve, isInvalidSolveShowing } from './tilezilla-invalid-solve.js';
 import {
   applyDiscoveryPopupLayout,
   applyDiscoveryRecordLayout,
@@ -33,6 +34,31 @@ import {
   loadPreviewLayout,
   reloadPreviewLayout,
 } from './preview-layout.js';
+import {
+  applyPuzzleInfoLayout,
+  clearPuzzleInfoLayoutCache,
+  loadPuzzleInfoLayout,
+  reloadPuzzleInfoLayout,
+} from './puzzle-info-layout.js';
+import {
+  applyHintRulesLayout,
+  clearHintRulesLayoutCache,
+  loadHintRulesLayout,
+  reloadHintRulesLayout,
+} from './hint-rules-layout.js';
+import {
+  applyJournalLayout,
+  clearJournalLayoutCache,
+  loadJournalLayout,
+  reloadJournalLayout,
+} from './journal-layout.js';
+import {
+  applyTilebagLayout,
+  clearTilebagLayoutCache,
+  loadTilebagLayout,
+  reloadTilebagLayout,
+} from './tilebag-layout.js';
+import { initJournalUi } from './tilezilla-journal.js';
 import { resetDevPlayerProgress } from './dev-player-reset.js';
 import { setDiscoveryRecordTexts, setDiscoveryRecordLayout } from './tilezilla-discovery-record.js';
 import { initDevTools } from './tilezilla-dev-tools.js';
@@ -43,6 +69,16 @@ import {
   loadSublevelIconLayout,
   romanForSubLevel,
 } from './sublevel-icon.js';
+import {
+  buildAdventureMeta,
+  buildAdventureMetaForLevel,
+  findNextUnsolved,
+  getRankPanelState,
+  isAdventurePuzzleComplete,
+  isPuzzleSatisfied,
+  loadAdventurePath,
+  resolveAdventureResume,
+} from './adventure-path.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -60,18 +96,29 @@ const TZ_CELL_PX = 55;
 const TZ_MAX_BOARD_COLS = 5;
 const TZ_MAX_BOARD_ROWS = 6;
 
+function viewportSize() {
+  const vp = window.visualViewport;
+  return {
+    vw: vp?.width ?? window.innerWidth,
+    vh: vp?.height ?? window.innerHeight,
+  };
+}
+
 function applyUiScale() {
   const phonePreview = document.documentElement.classList.contains('tz-phone-preview');
-  const vw = phonePreview ? Math.min(TZ_DESIGN_WIDTH, window.innerWidth) : window.innerWidth;
-  const vh = window.innerHeight;
+  const { vw: layoutVw, vh } = viewportSize();
+  const vw = phonePreview ? Math.min(TZ_DESIGN_WIDTH, layoutVw) : layoutVw;
+  const isDesktop = !phonePreview && vw >= TZ_DESKTOP_MIN_WIDTH;
+  const scaleW = vw / TZ_DESIGN_WIDTH;
+  const scaleH = vh / TZ_DESIGN_HEIGHT;
   let scale = 1;
-  if (!phonePreview && vw >= TZ_DESKTOP_MIN_WIDTH) {
-    scale = TZ_DESKTOP_SCALE;
-  } else if (vw < TZ_DESIGN_WIDTH) {
-    scale = vw / TZ_DESIGN_WIDTH;
+
+  if (isDesktop) {
+    scale = Math.min(TZ_DESKTOP_SCALE, scaleH);
+  } else {
+    /* Fit full 844px artboard (nav + tile bag) on screen; width gaps use .tz-bg stretch */
+    scale = Math.min(scaleW, scaleH);
   }
-  // Keep the full 844px artboard on screen (2× desktop scale can clip bottom nav).
-  scale = Math.min(scale, vh / TZ_DESIGN_HEIGHT);
 
   const stage = document.querySelector('.tz-stage');
   if (stage) {
@@ -79,12 +126,19 @@ function applyUiScale() {
     if (!('zoom' in stage.style)) {
       stage.style.transform = scale === 1 ? '' : `scale(${scale})`;
       stage.style.transformOrigin = 'top center';
+    } else {
+      stage.style.transform = '';
     }
   }
 
   document.documentElement.dataset.uiScale = String(scale);
   document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
   return scale;
+}
+
+function wireUiScaleListeners() {
+  window.visualViewport?.addEventListener('resize', applyUiScale);
+  window.visualViewport?.addEventListener('scroll', applyUiScale);
 }
 
 function designCanvasWidth() {
@@ -151,74 +205,14 @@ async function resolveDailyChallenge(app) {
   };
 }
 
-let adventureMapCache = null;
-
-function parseAdventureMap(csvText) {
-  const lines = String(csvText || '').split(/\r?\n/).filter(Boolean);
-  if (!lines.length) return [];
-  const header = lines[0].split(',');
-  const levelIdx = header.indexOf('level_id');
-  const advIdx = header.indexOf('Adv_ID');
-  const totalIdx = header.indexOf('total_unique_solutions');
-  const rows = [];
-  for (let i = 1; i < lines.length; i += 1) {
-    const cols = lines[i].split(',');
-    const levelId = (cols[levelIdx] || '').trim();
-    if (!levelId) continue;
-    rows.push({
-      advId: Number(cols[advIdx]) || i,
-      levelId,
-      totalSolutions: Number(cols[totalIdx]) || 0,
-    });
-  }
-  rows.sort((a, b) => a.advId - b.advId);
-  return rows;
-}
-
-async function loadAdventureMap() {
-  if (adventureMapCache) return adventureMapCache;
-  try {
-    const csv = await fetch('/data/adventure_solution_distribution.csv').then((r) => r.text());
-    adventureMapCache = parseAdventureMap(csv);
-  } catch (e) {
-    console.warn('Adventure map unavailable', e);
-    adventureMapCache = [];
-  }
-  return adventureMapCache;
-}
-
 async function loadAdventureLevelOrder() {
-  const map = await loadAdventureMap();
-  return map.map((r) => r.levelId);
+  const path = await loadAdventurePath();
+  return path.flat.map((p) => p.levelId).concat(path.postgame.map((p) => p.levelId));
 }
 
 async function resolveAdventurePuzzle(app) {
-  const map = await loadAdventureMap();
-  if (!map.length) return { level: null, meta: null };
-
-  const profile = resolveDevAdventureProfile(app.state?.userId);
-  let stepIndex = profile.adventureStep ?? 0;
-
-  const currentId = app.state.currentLevel?.id;
-  const currentIdx = map.findIndex((r) => r.levelId === currentId);
-  const screen = document.querySelector('.tz-app')?.dataset?.screen;
-  if (screen === 'adventure' && currentIdx >= 0) {
-    stepIndex = currentIdx;
-  }
-
-  stepIndex = Math.max(0, Math.min(stepIndex, map.length - 1));
-  const row = map[stepIndex];
-  const level = app.state.allLevels?.find((l) => l.id === row.levelId);
-  return {
-    level,
-    meta: {
-      screen: 'adventure',
-      advStep: stepIndex + 1,
-      advTotal: map.length,
-      levelId: row.levelId,
-      totalSolutions: row.totalSolutions || level?.totalUniqueSolutions || 0,
-    },
-  };
+  const { level, meta } = await resolveAdventureResume(app);
+  return { level, meta };
 }
 
 function resetPreviewAfterSolve() {
@@ -228,6 +222,29 @@ function resetPreviewAfterSolve() {
   if (checkPanel) checkPanel.setAttribute('aria-hidden', 'true');
   const title = $('previewTitle');
   if (title) title.textContent = 'Preview Tile';
+  window.__invalidSolve?.hide?.();
+}
+
+async function undoLastPlacedTile(app) {
+  const tiles = app.state.tiles || [];
+  if (!tiles.length) return false;
+
+  let last = null;
+  for (let i = tiles.length - 1; i >= 0; i -= 1) {
+    if (!app.isHintTile?.(tiles[i])) {
+      last = tiles[i];
+      break;
+    }
+  }
+  if (!last) return false;
+
+  app.removeTileById(last.id);
+  app.state.selectedTileId = null;
+  app.rebuildOccFromTiles();
+  await app.renderTiles();
+  if (!(app.state.tiles || []).length) resetPuzzleTimer();
+  dismissDiscoveryForBoardEdit();
+  return true;
 }
 
 async function continueDiscoverySearch(app) {
@@ -243,19 +260,38 @@ async function continueDiscoverySearch(app) {
   return true;
 }
 
+async function refreshAdventureChrome(app) {
+  if (document.querySelector('.tz-app')?.dataset?.screen !== 'adventure') return;
+  const path = await loadAdventurePath();
+  const level = app?.state?.currentLevel;
+  if (level?.id) {
+    const meta = buildAdventureMetaForLevel(path, level.id, app?.progress);
+    if (meta) {
+      window.__adventureMeta = meta;
+      updateChallengePanel(level, meta);
+    }
+  }
+  await updateRankPanel(app);
+}
+
 async function advanceAdventurePath(app) {
-  const map = await loadAdventureMap();
-  const order = map.map((r) => r.levelId);
+  const path = await loadAdventurePath();
+  const progress = app?.progress || window.__app?.progress;
   const currentId = app.state.currentLevel?.id;
-  const idx = order.indexOf(currentId);
-  const nextId = idx >= 0 ? order[idx + 1] : order[0];
-  if (!nextId) {
+
+  if (currentId && !isAdventurePuzzleComplete(progress, path, currentId)) {
+    showGameMessage('Find all solutions for this challenge before advancing.', 'warn');
+    return;
+  }
+
+  const location = findNextUnsolved(progress, path, { afterLevelId: currentId });
+  if (!location?.puzzle) {
     showGameMessage('Adventure path complete!', 'success');
     return;
   }
-  const level = app.state.allLevels?.find((l) => l.id === nextId);
+  const level = app.state.allLevels?.find((l) => l.id === location.puzzle.levelId);
   if (!level) {
-    showGameMessage(`Next adventure puzzle (${nextId}) is not in the catalog yet.`, 'warn');
+    showGameMessage(`Next adventure puzzle (${location.puzzle.levelId}) is not in the catalog yet.`, 'warn');
     return;
   }
   applyResponsiveBoard(app);
@@ -268,19 +304,10 @@ async function advanceAdventurePath(app) {
   updateValidationState(app);
   app.renderActivePreview?.();
 
-  const nextIdx = order.indexOf(level.id);
-  const meta = {
-    screen: 'adventure',
-    advStep: nextIdx >= 0 ? nextIdx + 1 : 1,
-    advTotal: map.length,
-    levelId: level.id,
-    totalSolutions: map[nextIdx]?.totalSolutions || level?.totalUniqueSolutions || 0,
-  };
+  const meta = buildAdventureMeta(path, location, progress);
   window.__adventureMeta = meta;
   updateChallengePanel(level, meta);
-
-  const profile = resolveDevAdventureProfile(app.state?.userId);
-  if (profile && nextIdx >= 0) profile.adventureStep = nextIdx;
+  await updateRankPanel(app);
 
   showGameMessage(`Advanced to ${level.id}`, 'info');
 }
@@ -335,6 +362,12 @@ function updateTileBagCount(app) {
   syncTileBagExpandAvailability(app);
 }
 
+function formatStepPercent(completed, total) {
+  const safeTotal = Math.max(1, total || 1);
+  const safeDone = Math.max(0, Math.min(completed || 0, safeTotal));
+  return Math.round((safeDone / safeTotal) * 100);
+}
+
 function updateChallengePanel(level, meta) {
   const screen = meta?.screen
     || document.querySelector('.tz-app')?.dataset?.screen
@@ -350,12 +383,10 @@ function updateChallengePanel(level, meta) {
   if (dateEl) {
     if (screen === 'adventure') {
       dateEl.removeAttribute('datetime');
-      const step = meta?.advStep;
-      const total = meta?.advTotal;
-      dateEl.textContent = step && total
-        ? `Step ${step.toLocaleString()} of ${total.toLocaleString()}`
-        : '—';
+      dateEl.textContent = '';
+      dateEl.hidden = true;
     } else {
+      dateEl.hidden = false;
       dateEl.dateTime = meta?.date || '';
       dateEl.textContent = meta?.date ? formatDateLabel(meta.date) : '—';
     }
@@ -379,13 +410,6 @@ function updatePreviewDir() {
 const HINT_BOARD_TOOLTIP =
   'Hints may only be used on an empty board or a board containing only hint tiles.';
 
-/** Dev adventure rank display — maps to DB player_progress + adventure_rank later. */
-const DEV_PLAYER_ADVENTURE = {
-  gar: { rankId: 1, subLevel: 1, stepProgress: 0, stepTotal: 1000, adventureStep: 0 },
-  Arn: { rankId: 4, subLevel: 1, stepProgress: 0, stepTotal: 1000, adventureStep: 1141 },
-  dev: { rankId: 1, subLevel: 1, stepProgress: 0, stepTotal: 1000, adventureStep: 0 },
-};
-
 let adventureRanksCache = null;
 
 async function loadAdventureRanks() {
@@ -397,25 +421,22 @@ async function loadAdventureRanks() {
   return adventureRanksCache;
 }
 
-function resolveDevAdventureProfile(userId) {
-  const key = userId || 'gar';
-  return DEV_PLAYER_ADVENTURE[key] || DEV_PLAYER_ADVENTURE.gar;
-}
-
 async function updateRankPanel(app) {
-  const profile = resolveDevAdventureProfile(app?.state?.userId);
+  const path = await loadAdventurePath();
+  const rankState = getRankPanelState(app?.progress || window.__app?.progress, path);
   const ranks = await loadAdventureRanks();
-  const rank = ranks.find((r) => r.rank_id === profile.rankId) || ranks[0];
-  const total = Math.max(1, profile.stepTotal || 1000);
-  const current = Math.max(0, Math.min(profile.stepProgress || 0, total));
-  const pct = (current / total) * 100;
+  const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
+  const total = Math.max(1, rankState.stepTotal || 1);
+  const current = Math.max(0, Math.min(rankState.stepProgress || 0, total));
+  const pct = formatStepPercent(current, total);
 
   const badge = $('rankBadgeImg');
   const subLevelEl = $('rankSubLevel');
   const subIcon = $('rankSubLevelIcon');
   const fill = $('rankProgressFill');
   const text = $('rankProgressText');
-  const roman = romanForSubLevel(profile.subLevel);
+  const progressTrack = document.querySelector('.tz-rank-panel .tz-progress__track');
+  const roman = romanForSubLevel(rankState.subLevel);
 
   if (badge) {
     badge.src = rank.badge_image;
@@ -424,16 +445,23 @@ async function updateRankPanel(app) {
   if (subIcon) {
     try {
       const layout = await loadSublevelIconLayout();
-      applySublevelIconElement(subIcon, profile.subLevel, rank.sublevel_badge, layout);
+      applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, layout);
     } catch (err) {
       console.warn('Sublevel icon layout:', err);
-      applySublevelIconElement(subIcon, profile.subLevel, rank.sublevel_badge, null);
+      applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, null);
     }
     subIcon.alt = `Sublevel ${roman}`;
   }
   if (subLevelEl) subLevelEl.setAttribute('aria-label', `Sublevel ${roman}`);
   if (fill) fill.style.width = `${pct}%`;
-  if (text) text.textContent = `${current} / ${total}`;
+  if (text) text.textContent = `${pct}%`;
+  if (progressTrack) {
+    progressTrack.setAttribute('role', 'progressbar');
+    progressTrack.setAttribute('aria-valuemin', '0');
+    progressTrack.setAttribute('aria-valuemax', '100');
+    progressTrack.setAttribute('aria-valuenow', String(pct));
+    progressTrack.setAttribute('aria-label', `Sublevel progress ${pct}%`);
+  }
 }
 
 function formatHintTokenLabel(app) {
@@ -605,6 +633,16 @@ function updateValidationState(app) {
   const checkPanel = $('previewCheckSolve');
   if (!root || !app.state.currentLevel) return;
 
+  if (isInvalidSolveShowing()) {
+    root.dataset.validation = 'invalid';
+    if (checkPanel) checkPanel.setAttribute('aria-hidden', 'false');
+    if (title) title.textContent = 'Invalid Solve';
+    if (checkBtn) checkBtn.disabled = false;
+    updateHintButtonState(app);
+    updateGlobalHintCount(app);
+    return;
+  }
+
   const mismatch = app.getInventoryMismatch(app.state.levelTileCounts, app.state.tiles);
   const allPlaced = !mismatch;
   root.dataset.validation = allPlaced ? 'ready' : '';
@@ -615,6 +653,20 @@ function updateValidationState(app) {
   if (checkBtn) checkBtn.disabled = !allPlaced;
   updateHintButtonState(app);
   updateGlobalHintCount(app);
+}
+
+function dismissDiscoveryForBoardEdit() {
+  window.__discoveryRecord?.hide?.();
+}
+
+function syncBoardChrome(app) {
+  if (!app) return;
+  updateTileBagCount(app);
+  updateValidationState(app);
+  updatePreviewDir();
+  requestAnimationFrame(() => {
+    $('tileBagTrack')?.dispatchEvent(new Event('scroll'));
+  });
 }
 
 function showGameMessage(msg, kind = '') {
@@ -931,6 +983,8 @@ function wireBottomNav(getApp) {
         await loadDailyPuzzle(app);
       } else if (screen === 'adventure') {
         await loadAdventurePuzzle(app);
+      } else if (screen === 'library') {
+        window.__journalApi?.openJournal?.({ mode: 'library' });
       } else {
         showGameMessage(`${BOTTOM_NAV_LABELS[screen] || screen} — coming soon`, 'info');
       }
@@ -943,35 +997,25 @@ function wireActions(app) {
     if (app.boardHasHintTiles?.() && !confirm('Remove hint tiles from the board?')) return;
     await app.clearBoard();
     resetPuzzleTimer();
-    updateTileBagCount(app);
-    updateValidationState(app);
+    dismissDiscoveryForBoardEdit();
+    syncBoardChrome(app);
     showGameMessage('Board reset.', 'info');
   });
 
   $('undoBtn')?.addEventListener('click', async () => {
-    const tiles = app.state.tiles || [];
-    if (!tiles.length) {
-      showGameMessage('Nothing to undo.', 'info');
+    const removed = await undoLastPlacedTile(app);
+    if (!removed) {
+      showGameMessage(
+        (app.state.tiles || []).length
+          ? 'Nothing to undo (hint tiles cannot be removed).'
+          : 'Nothing to undo.',
+        'info',
+      );
       return;
     }
-    let last = null;
-    for (let i = tiles.length - 1; i >= 0; i--) {
-      if (!app.isHintTile?.(tiles[i])) {
-        last = tiles[i];
-        break;
-      }
-    }
-    if (!last) {
-      showGameMessage('Nothing to undo (hint tiles cannot be removed).', 'info');
-      return;
-    }
-    app.removeTileById(last.id);
-    app.state.selectedTileId = null;
-    app.rebuildOccFromTiles();
-    await app.renderTiles();
-    if (!(app.state.tiles || []).length) resetPuzzleTimer();
-    updateTileBagCount(app);
-    updateValidationState(app);
+    syncBoardChrome(app);
+    app.syncPreviewFromBoardSelection?.({ preferLastPlaced: true });
+    app.renderActivePreview?.();
     showGameMessage('Last tile removed.', 'info');
   });
 
@@ -1013,14 +1057,7 @@ function wirePreviewSync() {
 function wirePaletteHooks(app) {
   const palette = $('palette');
   if (!palette) return;
-  const refresh = () => {
-    updateTileBagCount(app);
-    updateValidationState(app);
-    updatePreviewDir();
-    requestAnimationFrame(() => {
-      $('tileBagTrack')?.dispatchEvent(new Event('scroll'));
-    });
-  };
+  const refresh = () => syncBoardChrome(app);
   palette.addEventListener('click', () => setTimeout(refresh, 0));
   new MutationObserver(refresh).observe(palette, { childList: true, subtree: true, attributes: true });
 }
@@ -1028,11 +1065,7 @@ function wirePaletteHooks(app) {
 function wireBoardHooks(app) {
   const board = $('board');
   if (!board) return;
-  board.addEventListener('click', () => setTimeout(() => {
-    updateTileBagCount(app);
-    updateValidationState(app);
-    updatePreviewDir();
-  }, 0));
+  board.addEventListener('click', () => setTimeout(() => syncBoardChrome(app), 0));
 }
 
 function formatPuzzleTimer(sec) {
@@ -1174,7 +1207,16 @@ async function loadAdventurePuzzle(app) {
       await new Promise((r) => setTimeout(r, 50));
     }
 
-    const { level, meta } = await resolveAdventurePuzzle(app);
+    let { level, meta, location, path } = await resolveAdventureResume(app);
+    const progress = app?.progress || window.__app?.progress;
+
+    while (level && location?.puzzle && isPuzzleSatisfied(progress, location.puzzle)) {
+      location = findNextUnsolved(progress, path, { afterLevelId: level.id });
+      if (!location?.puzzle) break;
+      level = app.state.allLevels?.find((l) => l.id === location.puzzle.levelId);
+      meta = level ? buildAdventureMeta(path, location, progress) : null;
+    }
+
     if (!level) throw new Error('No adventure puzzle available');
 
     applyResponsiveBoard(app);
@@ -1184,6 +1226,7 @@ async function loadAdventurePuzzle(app) {
     window.__adventureMeta = meta;
     await refreshPaletteIfReady(app);
     updateChallengePanel(level, meta);
+    await updateRankPanel(app);
     updateTileBagCount(app);
     updateValidationState(app);
     showGameMessage(`Adventure puzzle loaded: ${level.id}`, 'info');
@@ -1240,12 +1283,18 @@ async function applyShellLayouts() {
   } catch (err) {
     console.warn('Preview layout:', err);
   }
+  try {
+    applyTilebagLayout(await loadTilebagLayout());
+  } catch (err) {
+    console.warn('Tile bag layout:', err);
+  }
 }
 
 async function init() {
   const settings = loadGameplaySettings();
   applyPhonePreviewMode(settings.phonePreview === 'ON');
   applyUiScale();
+  wireUiScaleListeners();
   await applyShellLayouts();
   const syncBagScroll = wireBagScroll();
   let appRef = null;
@@ -1254,6 +1303,7 @@ async function init() {
 
   const app = await waitForApp();
   appRef = app;
+  app.onBoardStateChanged = () => syncBoardChrome(app);
   wireBottomNav(() => appRef);
   updateGlobalHintCount(app);
   wirePuzzleTimer(app);
@@ -1266,14 +1316,41 @@ async function init() {
     openStuckFlow,
   });
   initStuckPopup({ getApp: () => appRef, menuApi });
-  initPuzzleInfoPopup({ getApp: () => appRef, menuApi });
+  const journalApi = initJournalUi({ getApp: () => appRef, menuApi });
+  window.__journalApi = journalApi;
+
+  initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
   initHintRules({ menuApi });
   initDiscoveryRecord({
     getApp: () => appRef,
     onContinueSearch: () => continueDiscoverySearch(appRef),
     onAdvancePath: () => advanceAdventurePath(appRef),
+    onAdventureProgress: () => refreshAdventureChrome(appRef),
     onViewFoundSolve: (solutionIndex) => menuApi?.openFoundSolutionAt?.(solutionIndex),
-    onOpenFoundSolutions: () => menuApi?.openPanel?.('found-solutions'),
+    onOpenFoundSolutions: () => {
+      void journalApi?.openJournal?.({
+        mode: 'record',
+        levelId: appRef?.state?.currentLevel?.id,
+      });
+    },
+    onResumeBoardEdit: () => {
+      resetPreviewAfterSolve();
+      if (appRef) syncBoardChrome(appRef);
+    },
+  });
+  initInvalidSolve({
+    getApp: () => appRef,
+    onDismiss: async () => {
+      const app = appRef;
+      if (!app) return;
+      const removed = await undoLastPlacedTile(app);
+      app.clearActivePreviewSelection?.();
+      syncBoardChrome(app);
+      await app.renderActivePreview?.();
+      if (removed) {
+        showGameMessage('Last tile removed.', 'info');
+      }
+    },
   });
   const settingsApi = initSettingsUi({
     menuApi,
@@ -1301,6 +1378,7 @@ async function init() {
     onForceDiscovery: forceDiscoveryPreview,
   });
   syncDevUserUi(app.state?.userId);
+  window.__refreshAdventureChrome = () => refreshAdventureChrome(appRef);
 
   try {
     const discoveryLayout = await loadDiscoveryRecordLayout();
@@ -1315,6 +1393,24 @@ async function init() {
     applyMenuLayout(await loadMenuLayout());
   } catch (err) {
     console.warn('Menu layout:', err);
+  }
+
+  try {
+    applyPuzzleInfoLayout(await loadPuzzleInfoLayout());
+  } catch (err) {
+    console.warn('Puzzle info layout:', err);
+  }
+
+  try {
+    applyHintRulesLayout(await loadHintRulesLayout());
+  } catch (err) {
+    console.warn('Hint rules layout:', err);
+  }
+
+  try {
+    applyJournalLayout(await loadJournalLayout());
+  } catch (err) {
+    console.warn('Journal layout:', err);
   }
 
   $('previewCheckSolBtn')?.addEventListener('click', () => {
@@ -1445,6 +1541,96 @@ window.addEventListener('storage', (e) => {
 
 window.addEventListener('focus', () => {
   void refreshDiscoveryLayoutFromDisk();
+});
+
+async function refreshPuzzleInfoLayoutFromDisk() {
+  clearPuzzleInfoLayoutCache();
+  try {
+    applyPuzzleInfoLayout(await reloadPuzzleInfoLayout());
+  } catch (err) {
+    console.warn('Puzzle info layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:puzzle-info-layout-saved', () => {
+  void refreshPuzzleInfoLayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'tilezilla:puzzle-info-layout-version') {
+    void refreshPuzzleInfoLayoutFromDisk();
+  }
+});
+
+window.addEventListener('focus', () => {
+  void refreshPuzzleInfoLayoutFromDisk();
+});
+
+async function refreshHintRulesLayoutFromDisk() {
+  clearHintRulesLayoutCache();
+  try {
+    applyHintRulesLayout(await reloadHintRulesLayout());
+  } catch (err) {
+    console.warn('Hint rules layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:hint-rules-layout-saved', () => {
+  void refreshHintRulesLayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'tilezilla:hint-rules-layout-version') {
+    void refreshHintRulesLayoutFromDisk();
+  }
+});
+
+window.addEventListener('focus', () => {
+  void refreshHintRulesLayoutFromDisk();
+});
+
+async function refreshJournalLayoutFromDisk() {
+  clearJournalLayoutCache();
+  try {
+    applyJournalLayout(await reloadJournalLayout());
+  } catch (err) {
+    console.warn('Journal layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:journal-layout-saved', () => {
+  void refreshJournalLayoutFromDisk();
+});
+
+async function refreshTilebagLayoutFromDisk() {
+  clearTilebagLayoutCache();
+  try {
+    applyTilebagLayout(await reloadTilebagLayout());
+    const container = $('tileBagContainer');
+    if (container && tileBagExpanded) {
+      applyTileBagExpandedLayout(container, true);
+    }
+  } catch (err) {
+    console.warn('Tile bag layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:tilebag-layout-saved', () => {
+  void refreshTilebagLayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'tilezilla:journal-layout-version') {
+    void refreshJournalLayoutFromDisk();
+  }
+  if (e.key === 'tilezilla:tilebag-layout-version') {
+    void refreshTilebagLayoutFromDisk();
+  }
+});
+
+window.addEventListener('focus', () => {
+  void refreshJournalLayoutFromDisk();
+  void refreshTilebagLayoutFromDisk();
 });
 
 window.addEventListener('tilezilla:sublevel-layout-saved', () => {

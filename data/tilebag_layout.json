@@ -1,0 +1,61 @@
+{
+  "container": { "yNudge": 25 },
+  "collapsed": {
+    "track": { "left": 18, "width": 345, "nudgeX": 0, "nudgeY": 0 },
+    "arrowPrev": { "left": 0, "width": 15, "nudgeX": 0, "nudgeY": 0 },
+    "arrowNext": { "left": 366, "width": 15, "nudgeX": 0, "nudgeY": 0 }
+  },
+  "expanded": {
+    "track": { "left": 18, "width": 345, "nudgeX": 0, "nudgeY": 0 },
+    "arrowPrev": { "left": 0, "width": 15, "nudgeX": 0, "nudgeY": 0, "hidden": true },
+    "arrowNext": { "left": 366, "width": 15, "nudgeX": 0, "nudgeY": 0, "hidden": true }
+  },
+  "handle": {
+    "countX": 213,
+    "countY": 1,
+    "countW": 60,
+    "countH": 16,
+    "countNudgeX": -3,
+    "countExpandedNudgeY": -3,
+    "handleXOffset": -55,
+    "handleYGap": 1,
+    "handleNudgeX": 24,
+    "handleNudgeY": -4,
+    "handleW": 32,
+    "handleHitH": 12,
+    "handleExpandedXOffset": -55,
+    "handleExpandedYGap": 1,
+    "handleExpandedNudgeX": -8,
+    "handleExpandedNudgeY": -1,
+    "titleOffsetX": -70,
+    "titleNudgeX": 10,
+    "titleNudgeY": 0,
+    "titleExpandedNudgeX": 0,
+    "titleExpandedNudgeY": 0
+  },
+  "tiles": {
+    "cell": 34,
+    "gap": 5,
+    "thumbHScale": 0.92,
+    "fitInsetY": 6,
+    "vNudge": -8
+  },
+  "glow": {
+    "ring": 2,
+    "blur": 10,
+    "spread": 0,
+    "r": 232,
+    "g": 185,
+    "b": 35,
+    "alpha": 0.55
+  },
+  "expandedLayout": {
+    "maxRows": 3,
+    "growScale": 1.65,
+    "heightTrim": 40,
+    "maxOverlap": 72,
+    "frameCollapsedH": 94,
+    "trackCollapsedH": 48,
+    "trackExpandedNudgeY": 0
+  }
+}

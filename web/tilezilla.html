@@ -49,7 +49,7 @@
                   <div class="tz-progress__track">
                     <div class="tz-progress__fill" id="rankProgressFill" style="width:0%"></div>
                   </div>
-                  <span class="tz-progress__text" id="rankProgressText">0 / 1000</span>
+                  <span class="tz-progress__text" id="rankProgressText">0%</span>
                 </div>
               </div>
             </div>
@@ -149,19 +149,36 @@
             <button class="tz-preview-rotate tz-preview-rotate--cw" type="button" id="rotateCW" aria-label="Rotate right"></button>
             <p class="tz-preview-tile__dir" id="previewDir" aria-label="Tile rotation">0°</p>
             <div class="tz-preview-check-solve" id="previewCheckSolve" aria-hidden="true">
-              <img
-                class="tz-preview-check-solve__panel"
-                src="/img/Check Solve nb.png"
-                alt="All tiles placed — ready to check solution"
-              />
-              <button
-                type="button"
-                class="tz-preview-check-solve__btn"
-                id="previewCheckSolBtn"
-                aria-label="Check solution"
-              >
-                <img src="/img/Check Solve Button.png" alt="" />
-              </button>
+              <div class="tz-preview-check-solve__ready">
+                <img
+                  class="tz-preview-check-solve__panel"
+                  src="/img/Check Solve nb.png"
+                  alt="All tiles placed — ready to check solution"
+                />
+                <button
+                  type="button"
+                  class="tz-preview-check-solve__btn"
+                  id="previewCheckSolBtn"
+                  aria-label="Check solution"
+                >
+                  <img src="/img/Check Solve Button.png" alt="" />
+                </button>
+              </div>
+              <div class="tz-preview-check-solve__invalid" aria-hidden="true">
+                <img
+                  class="tz-preview-check-solve__panel"
+                  src="/img/Invalid Solve.png"
+                  alt="This is not a valid solve"
+                />
+                <button
+                  type="button"
+                  class="tz-preview-invalid-solve__btn"
+                  id="previewInvalidOkayBtn"
+                  aria-label="Okay — undo last tile and return to preview"
+                >
+                  <span class="tz-sr-only">OKAY</span>
+                </button>
+              </div>
             </div>
             <div class="tz-preview-actions" aria-label="Game actions">
               <button class="tz-img-btn tz-img-btn--hint" type="button" id="hintBtn" aria-label="Use hint">
@@ -365,7 +382,7 @@
             <ul class="tz-found-list" id="menuFoundList" role="list"></ul>
             <div class="tz-route-preview-wrap" id="menuFoundPreviewWrap" hidden>
               <p class="tz-route-preview__label" id="menuFoundPreviewLabel">Route preview</p>
-              <canvas class="tz-route-preview" id="menuFoundPreview" width="300" height="300" aria-label="Route shape preview"></canvas>
+              <canvas class="tz-route-preview tz-route-preview--clickable" id="menuFoundPreview" width="300" height="300" aria-label="Route preview — click to load on board"></canvas>
             </div>
           </section>
 
@@ -502,6 +519,100 @@
         <button type="button" class="tz-pinfo-dialog__close-x" id="puzzleInfoCloseX" aria-label="Close">
           <img src="/img/exit-btn.png" alt="" />
         </button>
+        <button type="button" class="tz-pinfo-dialog__close-journal" id="puzzleInfoCloseJournal" aria-label="View journal"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-journal-root" id="journalRoot" hidden>
+    <button type="button" class="tz-journal-root__backdrop" id="journalBackdrop" aria-label="Close"></button>
+    <div class="tz-journal-dialog" role="dialog" aria-modal="true" aria-label="Puzzle Journal">
+      <div class="tz-journal-dialog__frame">
+        <img class="tz-journal-dialog__bg" src="/img/NewPuzzleJournalBlank.png" alt="" width="933" height="1686" />
+        <div class="tz-journal-dialog__art" id="journalArtLayers" aria-hidden="true">
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="recordTop" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="libraryTop" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabPuzzle" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabStats" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabFilter" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabRecords" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="bottomBar" alt="" hidden />
+        </div>
+
+        <div class="tz-journal-record-top" id="journalRecordTop">
+          <dl class="tz-journal-stats">
+            <div class="tz-journal-stat tz-journal-field--id"><dt>Puzzle ID</dt><dd id="journalFieldId">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--type"><dt>Puzzle Type</dt><dd id="journalFieldType">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--size"><dt>Board Size</dt><dd id="journalFieldSize">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--total"><dt>Total Known Solutions</dt><dd id="journalFieldTotal">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--found"><dt>Solutions Found</dt><dd id="journalFieldFound">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--first"><dt>First Solved Date</dt><dd id="journalFieldFirst">—</dd></div>
+            <div class="tz-journal-stat tz-journal-field--last"><dt>Last Played Date</dt><dd id="journalFieldLast">—</dd></div>
+          </dl>
+          <div class="tz-journal-progress tz-journal-field--progress" id="journalProgressBar">
+            <div class="tz-journal-progress__fill" id="journalProgressFill"></div>
+            <span class="tz-journal-progress__label" id="journalProgressLabel">—</span>
+          </div>
+        </div>
+
+        <div class="tz-journal-pane tz-journal-pane--top">
+          <div class="tz-journal-library-top" id="journalLibraryTop" hidden>
+            <div class="tz-journal-library-selectors">
+              <div class="tz-journal-selector tz-journal-field--selector-size">
+                <h3 class="tz-journal-selector__title">Board Size</h3>
+                <div class="tz-journal-selector__btns" id="journalSizeFilters"></div>
+              </div>
+              <div class="tz-journal-selector tz-journal-field--selector-type">
+                <h3 class="tz-journal-selector__title">Puzzle Type</h3>
+                <div class="tz-journal-selector__btns" id="journalTypeFilters"></div>
+              </div>
+              <div class="tz-journal-selector tz-journal-field--selector-status">
+                <h3 class="tz-journal-selector__title">Status</h3>
+                <div class="tz-journal-selector__btns" id="journalStatusFilters"></div>
+                <button type="button" class="tz-journal-show-btn" id="journalShowPuzzlesBtn">Show Puzzles</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="tz-journal-pane-title tz-journal-field--title-found" id="journalTitleFound">YOUR FOUND SOLUTIONS</p>
+        <p class="tz-journal-pane-title tz-journal-field--title-recorded" id="journalTitleRecorded" hidden>RECORDED PUZZLES</p>
+
+        <div class="tz-journal-pane tz-journal-pane--bl">
+          <div class="tz-journal-list-scroll" id="journalListScroll">
+            <div class="tz-journal-list" id="journalList"></div>
+          </div>
+          <div class="tz-journal-list-scroller is-hidden" id="journalListScroller" aria-hidden="true">
+            <img class="tz-journal-list-scroller__track" id="journalListScrollerTrack" src="/img/FancyScrollerBar.png" alt="" width="22" height="352" />
+            <button type="button" class="tz-journal-list-scroller__pin" id="journalListScrollerPin" aria-label="Scroll list">
+              <img src="/img/FancyScrollerPin.png" alt="" width="22" height="36" />
+            </button>
+          </div>
+        </div>
+
+        <div class="tz-journal-pane tz-journal-pane--br">
+          <div class="tz-journal-preview-wrap tz-journal-field--preview" id="journalPreviewWrap" hidden>
+            <canvas class="tz-journal-preview-canvas tz-journal-preview-canvas--clickable" id="journalPreviewCanvas" width="280" height="280" tabindex="0"></canvas>
+          </div>
+        </div>
+
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-puzzle" id="journalTabPuzzle" aria-label="Puzzle tab"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-stats" id="journalTabStats" aria-label="Stats tab"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-filter" id="journalTabFilter" aria-label="Filter tab"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-records" id="journalTabRecords" aria-label="Records tab"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-filter" id="journalBtnFilter" aria-label="Filter"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-stats" id="journalBtnStats" aria-label="Stats"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-prev" id="journalBtnPrev" aria-label="Previous"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-next" id="journalBtnNext" aria-label="Next"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-exit" id="journalBtnExit" aria-label="Exit"></button>
+
+        <div class="tz-journal-load-confirm" id="journalLoadConfirm" hidden>
+          <p class="tz-journal-load-confirm__msg">Load solution to board?</p>
+          <div class="tz-journal-load-confirm__actions">
+            <button type="button" class="tz-journal-load-confirm__btn" id="journalLoadCancel">Cancel</button>
+            <button type="button" class="tz-journal-load-confirm__btn tz-journal-load-confirm__btn--load" id="journalLoadConfirmBtn">Load</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -572,6 +683,19 @@
           src="/img/DT-Hint%20Rules.png"
           alt="Hint Rules"
         />
+      </div>
+      <div class="tz-hint-rules-scroller is-hidden" id="hintRulesScroller" aria-hidden="true">
+        <img
+          class="tz-hint-rules-scroller__track"
+          id="hintRulesScrollerTrack"
+          src="/img/FancyScrollerBar.png"
+          alt=""
+          width="22"
+          height="352"
+        />
+        <button type="button" class="tz-hint-rules-scroller__pin" id="hintRulesScrollerPin" aria-label="Scroll hint rules">
+          <img src="/img/FancyScrollerPin.png" alt="" width="22" height="36" />
+        </button>
       </div>
       <button type="button" class="tz-hint-rules__exit tz-hint-rules__exit--bottom" id="hintRulesExitBottom" aria-label="Close">
         <img src="/img/exit-btn.png" alt="" />

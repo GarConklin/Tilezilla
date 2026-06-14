@@ -1,0 +1,99 @@
+{
+  "dialog": {
+    "artW": 1120,
+    "artH": 1157,
+    "displayPad": 32,
+    "maxDesignWidth": 390
+  },
+  "typography": {
+    "fieldColor": "#2d4f6e",
+    "fieldFont": "calc(0.72rem + 5px)",
+    "fieldFontLg": "calc(0.95rem + 5px)"
+  },
+  "defaults": {
+    "nudgeX": 0,
+    "nudgeY": 0
+  },
+  "items": {
+    "rank": {
+      "x": 10.4,
+      "y": 16.8,
+      "w": 26.6,
+      "romanY": 78,
+      "romanNudgeY": 2
+    },
+    "id": {
+      "x": 62.4,
+      "y": 22,
+      "w": 27.2,
+      "nudgeX": 8,
+      "nudgeY": -8
+    },
+    "size": {
+      "x": 66.4,
+      "y": 30.5,
+      "w": 11.6,
+      "nudgeX": 15,
+      "nudgeY": -12
+    },
+    "type": {
+      "x": 59.6,
+      "y": 35,
+      "w": 35.6,
+      "nudgeX": -5,
+      "nudgeY": 4
+    },
+    "bar": {
+      "x": 8.4,
+      "y": 44.9,
+      "w": 36,
+      "h": 3.6,
+      "nudgeX": 26,
+      "nudgeY": 31
+    },
+    "found": {
+      "x": 10,
+      "y": 55.4,
+      "w": 36,
+      "nudgeX": 20,
+      "nudgeY": 7
+    },
+    "hints": {
+      "x": 74.4,
+      "y": 54.2,
+      "w": 9.6,
+      "nudgeX": 8,
+      "nudgeY": 7
+    },
+    "best": {
+      "x": 19.6,
+      "y": 70.4,
+      "w": 22.4,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "solved": {
+      "x": 63.6,
+      "y": 70.4,
+      "w": 32.8,
+      "nudgeX": -12,
+      "nudgeY": 3
+    },
+    "closeX": {
+      "x": 86.7,
+      "y": 2.6,
+      "w": 7.9,
+      "h": 8,
+      "nudgeX": 26,
+      "nudgeY": -1
+    },
+    "closeJournal": {
+      "x": 51,
+      "y": 87.8,
+      "w": 35.8,
+      "h": 8.8,
+      "nudgeX": -5,
+      "nudgeY": -20
+    }
+  }
+}

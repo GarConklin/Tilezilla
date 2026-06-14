@@ -5,7 +5,7 @@ Adv_ID,CH-lvl,size,level_id,name,tier,snakes,path_mode,path_count,total_unique_s
 4,,2x4,2x4-0C-AAC,AAC,0C,1,single,1,1,2x4-0C-AAC.json,1,E2_ET_SH_SZ,"{""E2"": 1, ""ET"": 1, ""SH"": 1, ""SZ"": 1}"
 5,,2x4,2x4-0A-AAB,AAB,0A,1,single,1,1,2x4-0A-AAB.json,1,ET_SH_VL,"{""ET"": 1, ""SH"": 1, ""VL"": 1}"
 6,,2x4,2x4-0C-AAB,AAB,0C,1,single,1,1,2x4-0C-AAB.json,1,E1_ET_LC_SH,"{""E1"": 1, ""ET"": 1, ""LC"": 1, ""SH"": 1}"
-7,,2x4,2x4-0A-AAA,AAA,0A,1,single,1,1,2x4-0A-AAA.json,2,ET_HL_SH_UT,"{""ET"": 1, ""HL"": 1, ""SH"": 1, ""UT"": 1}"
+7,,2x4,2x4-0A-AAA,AAA,0A,1,single,1,1,2x4-0A-AAA.json,1,ET_HL_SH_UT,"{""ET"": 1, ""HL"": 1, ""SH"": 1, ""UT"": 1}"
 8,,2x4,2x4-0B-AAA,AAA,0B,1,single,1,1,2x4-0B-AAA.json,1,ET_SH_SZ,"{""ET"": 1, ""SH"": 1, ""SZ"": 1}"
 9,,2x4,2x4-0C-AAA,AAA,0C,1,single,1,1,2x4-0C-AAA.json,1,E2_ET_RC_SH,"{""E2"": 1, ""ET"": 1, ""RC"": 1, ""SH"": 1}"
 10,,3x3,3x3-0A-AAF,AAF,0A,1,single,1,1,3x3-0A-AAF.json,1,ET_LRx2_SH,"{""ET"": 1, ""LR"": 2, ""SH"": 1}"

@@ -1,5 +1,5 @@
 size,level_id,name,tier,snakes,path_mode,path_count,total_unique_solutions,solves_file,solve_count,tilebag_key,tiles_json
-2x4,2x4-0A-AAA,AAA,0A,1,single,1,2,2x4-0A-AAA.json,2,ET_HL_SH_UT,"{""ET"": 1, ""HL"": 1, ""SH"": 1, ""UT"": 1}"
+2x4,2x4-0A-AAA,AAA,0A,1,single,1,1,2x4-0A-AAA.json,1,ET_HL_SH_UT,"{""ET"": 1, ""HL"": 1, ""SH"": 1, ""UT"": 1}"
 2x4,2x4-0A-AAB,AAB,0A,1,single,1,1,2x4-0A-AAB.json,1,ET_SH_VL,"{""ET"": 1, ""SH"": 1, ""VL"": 1}"
 2x4,2x4-0A-AAC,AAC,0A,1,single,1,1,2x4-0A-AAC.json,1,ET_LC_SH,"{""ET"": 1, ""LC"": 1, ""SH"": 1}"
 2x4,2x4-0B-AAA,AAA,0B,1,single,1,1,2x4-0B-AAA.json,1,ET_SH_SZ,"{""ET"": 1, ""SH"": 1, ""SZ"": 1}"

@@ -24,6 +24,10 @@ MENU_LAYOUT_PATH = ROOT / "data" / "menu_layout.json"
 BOTTOM_NAV_LAYOUT_PATH = ROOT / "data" / "bottom_nav_layout.json"
 PREVIEW_LAYOUT_PATH = ROOT / "data" / "preview_layout.json"
 STUCK_REVEAL_LAYOUT_PATH = ROOT / "data" / "stuck_reveal_layout.json"
+PUZZLE_INFO_LAYOUT_PATH = ROOT / "data" / "puzzle_info_layout.json"
+HINT_RULES_LAYOUT_PATH = ROOT / "data" / "hint_rules_layout.json"
+JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
+TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 LAYOUT_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
 DISCOVERY_TEXT_KEYS = ("x", "y", "nudgeX", "nudgeY", "fontScale")
 DISCOVERY_BTN_KEYS = ("x", "y", "nudgeX", "nudgeY", "w", "h", "wScale", "hScale")
@@ -141,6 +145,46 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-puzzle-info-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/puzzle_info_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-hint-rules-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/hint_rules_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-journal-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/journal_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-tilebag-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/tilebag_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         return super().do_GET()
 
     def do_POST(self) -> None:
@@ -162,6 +206,18 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-stuck-reveal-layout":
             self._save_json_layout(parsed, STUCK_REVEAL_LAYOUT_PATH, validate_stuck_reveal_layout)
+            return
+        if parsed.path == "/api/dev/save-puzzle-info-layout":
+            self._save_json_layout(parsed, PUZZLE_INFO_LAYOUT_PATH, validate_puzzle_info_layout)
+            return
+        if parsed.path == "/api/dev/save-hint-rules-layout":
+            self._save_json_layout(parsed, HINT_RULES_LAYOUT_PATH, validate_hint_rules_layout)
+            return
+        if parsed.path == "/api/dev/save-journal-layout":
+            self._save_json_layout(parsed, JOURNAL_LAYOUT_PATH, validate_journal_layout)
+            return
+        if parsed.path == "/api/dev/save-tilebag-layout":
+            self._save_json_layout(parsed, TILEBAG_LAYOUT_PATH, validate_tilebag_layout)
             return
         self.send_error(404, "Not found")
 
@@ -258,6 +314,98 @@ def validate_stuck_reveal_layout(payload: object) -> str | None:
     return validate_preview_layout(payload)
 
 
+PINFO_ITEM_KEYS = (
+    "rank",
+    "id",
+    "size",
+    "type",
+    "bar",
+    "found",
+    "hints",
+    "best",
+    "solved",
+    "closeJournal",
+    "closeX",
+)
+
+
+def validate_puzzle_info_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("dialog", "typography", "defaults", "items"):
+        val = payload.get(key)
+        if val is not None and not isinstance(val, dict):
+            return f"{key} must be an object"
+    items = payload.get("items")
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in PINFO_ITEM_KEYS and key != "close":
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+    return None
+
+
+def validate_hint_rules_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("window", "exit", "scroller"):
+        val = payload.get(key)
+        if val is not None and not isinstance(val, dict):
+            return f"{key} must be an object"
+    return None
+
+
+JOURNAL_ITEM_KEYS = tuple(
+    k for k in (
+        "paneTop", "paneBottomLeft", "paneBottomRight",
+        "titleFoundSolutions", "titleRecordedPuzzles", "listScroller",
+        "fieldPuzzleId", "fieldPuzzleType", "fieldBoardSize",
+        "fieldTotalKnown", "fieldSolutionsFound", "fieldFirstSolved", "fieldLastPlayed",
+        "progressBar", "solutionPreview",
+        "selectorBoardSize", "selectorPuzzleType", "selectorStatus",
+        "tabPuzzle", "tabStats", "tabFilter", "tabRecords",
+        "btnFilter", "btnStats", "btnPrev", "btnNext", "btnExit",
+    )
+)
+
+
+JOURNAL_OVERLAY_KEYS = (
+    "shellBlank", "recordTop", "libraryTop",
+    "tabPuzzle", "tabStats", "tabFilter", "tabRecords", "bottomBar",
+)
+
+
+def validate_journal_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("dialog", "typography", "items", "overlays"):
+        val = payload.get(key)
+        if val is not None and not isinstance(val, dict):
+            return f"{key} must be an object"
+    items = payload.get("items")
+    if isinstance(items, dict):
+        for key in items:
+            if key not in JOURNAL_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+    overlays = payload.get("overlays")
+    if isinstance(overlays, dict):
+        for key in overlays:
+            if key not in JOURNAL_OVERLAY_KEYS:
+                return f"Unknown overlay key: {key}"
+    return None
+
+
+def validate_tilebag_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("container", "collapsed", "expanded", "handle", "tiles", "glow", "expandedLayout"):
+        val = payload.get(key)
+        if val is not None and not isinstance(val, dict):
+            return f"{key} must be an object"
+    return None
+
+
 def validate_menu_layout(payload: object) -> str | None:
     if not isinstance(payload, dict):
         return "Root must be a JSON object"
@@ -326,6 +474,10 @@ def main() -> None:
     print("Bottom nav tuner save API: POST /api/dev/save-bottom-nav-layout")
     print("Preview tuner save API: POST /api/dev/save-preview-layout")
     print("Stuck reveal tuner save API: POST /api/dev/save-stuck-reveal-layout")
+    print("Puzzle info tuner save API: POST /api/dev/save-puzzle-info-layout")
+    print("Hint Rules tuner save API: POST /api/dev/save-hint-rules-layout")
+    print("Journal tuner save API: POST /api/dev/save-journal-layout")
+    print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
     server.serve_forever()
 
 

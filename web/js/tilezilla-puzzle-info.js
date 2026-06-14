@@ -9,24 +9,13 @@
 
 
 import { romanForSubLevel } from './sublevel-icon.js';
-
-
-
-const DEV_PLAYER_ADVENTURE = {
-
-  gar: { rankId: 1, subLevel: 1 },
-
-  Arn: { rankId: 4, subLevel: 1 },
-
-  dev: { rankId: 1, subLevel: 1 },
-
-};
-
-
+import { applyPuzzleInfoLayout, loadPuzzleInfoLayout } from './puzzle-info-layout.js';
+import { getRankPanelState, loadAdventurePath } from './adventure-path.js';
 
 let getApp = () => null;
-
 let menuApi = null;
+
+let journalApi = null;
 
 let ranksCache = null;
 
@@ -53,16 +42,6 @@ async function loadAdventureRanks() {
   }
 
   return ranksCache;
-
-}
-
-
-
-function resolveDevAdventureProfile(userId) {
-
-  const key = userId || 'gar';
-
-  return DEV_PLAYER_ADVENTURE[key] || DEV_PLAYER_ADVENTURE.gar;
 
 }
 
@@ -212,11 +191,13 @@ async function refreshPuzzleInfoFields() {
 
   try {
 
-    const profile = resolveDevAdventureProfile(app?.state?.userId);
+    const path = await loadAdventurePath();
+
+    const rankState = getRankPanelState(app?.progress, path);
 
     const ranks = await loadAdventureRanks();
 
-    const rank = ranks.find((r) => r.rank_id === profile.rankId) || ranks[0];
+    const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
 
     if (badge && rank?.badge_image) {
 
@@ -228,7 +209,7 @@ async function refreshPuzzleInfoFields() {
 
     }
 
-    if (roman) roman.textContent = romanForSubLevel(profile.subLevel);
+    if (roman) roman.textContent = romanForSubLevel(rankState.subLevel);
 
   } catch {
 
@@ -296,6 +277,12 @@ function closePuzzleInfoPopup() {
 
 export async function openPuzzleInfo() {
 
+  try {
+    applyPuzzleInfoLayout(await loadPuzzleInfoLayout());
+  } catch (err) {
+    console.warn('Puzzle info layout:', err);
+  }
+
   await refreshPuzzleInfoFields();
 
   openPuzzleInfoPopup();
@@ -304,11 +291,13 @@ export async function openPuzzleInfo() {
 
 
 
-export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu }) {
+export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu, journalApi: journal }) {
 
   getApp = getAppFn || (() => null);
 
   menuApi = menu || null;
+
+  journalApi = journal || null;
 
 
 
@@ -319,6 +308,12 @@ export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu }) {
 
 
   $('puzzleInfoCloseX')?.addEventListener('click', closePuzzleInfoPopup);
+
+  $('puzzleInfoCloseJournal')?.addEventListener('click', () => {
+    const levelId = getApp()?.state?.currentLevel?.id;
+    closePuzzleInfoPopup();
+    journalApi?.openJournal?.({ mode: 'record', levelId });
+  });
 
   $('puzzleInfoBackdrop')?.addEventListener('click', closePuzzleInfoPopup);
 

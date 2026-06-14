@@ -4,6 +4,7 @@
 
 import { openPuzzleInfo } from './tilezilla-puzzle-info.js';
 import { refreshDevToolsPanel } from './tilezilla-dev-tools.js';
+import { openJournal } from './tilezilla-journal.js';
 
 const PANELS = {
   'found-solutions': {
@@ -22,7 +23,10 @@ let getApp = () => null;
 let openStuckFlow = () => {};
 let settingsEntry = 'toolbar';
 let activePanel = null;
-let selectedFoundIndex = null;
+let selectedFoundEntry = null;
+let closePanelFn = () => {};
+let closeMenuFn = () => {};
+let openPanelFn = async () => {};
 
 function $(id) {
   return document.getElementById(id);
@@ -34,7 +38,7 @@ async function renderRoutePreview(canvas, level, placements, app) {
 }
 
 async function refreshFoundSolutions() {
-  selectedFoundIndex = null;
+  selectedFoundEntry = null;
   $('menuFoundPreviewWrap').hidden = true;
 
   const app = getApp();
@@ -72,9 +76,9 @@ async function refreshFoundSolutions() {
 }
 
 async function selectFoundSolution(entry, level, app) {
-  selectedFoundIndex = entry.index;
+  selectedFoundEntry = entry;
   $('menuFoundPreviewWrap').hidden = false;
-  $('menuFoundPreviewLabel').textContent = entry.label;
+  $('menuFoundPreviewLabel').textContent = `${entry.label} — click preview to load on board`;
   await renderRoutePreview($('menuFoundPreview'), level, entry.placements, app);
 
   $('menuFoundList').querySelectorAll('.tz-found-list__item').forEach((btn) => {
@@ -82,11 +86,24 @@ async function selectFoundSolution(entry, level, app) {
   });
 }
 
+async function loadSelectedFoundToBoard(app, { closeMenuAfter = true } = {}) {
+  const entry = selectedFoundEntry;
+  if (!entry?.placements?.length || !app?.applyPlacementsToBoard) return false;
+  const ok = await app.applyPlacementsToBoard(entry.placements, {
+    message: `Loaded ${entry.label} onto the board.`,
+  });
+  if (ok && closeMenuAfter) {
+    closePanelFn();
+    closeMenuFn();
+  }
+  return ok;
+}
+
 async function openFoundSolutionAt(solutionIndex) {
   const app = getApp();
   const data = app ? await app.getMenuFoundSolutions() : { entries: [], level: null };
   const entry = data.entries.find((e) => e.index === solutionIndex);
-  await openPanel('found-solutions');
+  await openPanelFn('found-solutions');
   if (entry && data.level) {
     await selectFoundSolution(entry, data.level, app);
   }
@@ -126,10 +143,14 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     if (!anySheetOpen()) setModalOpen(false);
   };
 
+  closeMenuFn = closeMenu;
+  closePanelFn = closePanel;
+
   const openPanel = async (panelId) => {
     const panel = PANELS[panelId];
     if (!panel) return;
 
+    window.__discoveryRecord?.hide?.();
     menuRoot.hidden = true;
     menuPanelRoot.hidden = false;
     activePanel = panelId;
@@ -143,6 +164,8 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     setModalOpen(true);
     await panel.refresh();
   };
+
+  openPanelFn = openPanel;
 
   const backFromPanel = () => {
     closePanel();
@@ -164,7 +187,13 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     closeMenu();
     void openPuzzleInfo();
   });
-  $('menuFoundSolutionsBtn')?.addEventListener('click', () => openPanel('found-solutions'));
+  $('menuFoundSolutionsBtn')?.addEventListener('click', () => {
+    closeMenu();
+    void openJournal({
+      mode: 'record',
+      levelId: getApp()?.state?.currentLevel?.id,
+    });
+  });
   $('menuStuckBtn')?.addEventListener('click', () => {
     closeAll();
     void openStuckFlow();
@@ -186,6 +215,20 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
   $('menuPanelBackBtn')?.addEventListener('click', backFromPanel);
   $('menuPanelCloseBtn')?.addEventListener('click', closeAll);
   menuPanelRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', closeAll);
+
+  const previewCanvas = $('menuFoundPreview');
+  previewCanvas?.classList.add('tz-route-preview--clickable');
+  previewCanvas?.setAttribute('role', 'button');
+  previewCanvas?.setAttribute('tabindex', '0');
+  previewCanvas?.setAttribute('title', 'Load this solution on the board');
+  previewCanvas?.addEventListener('click', () => {
+    void loadSelectedFoundToBoard(getApp());
+  });
+  previewCanvas?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    void loadSelectedFoundToBoard(getApp());
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;

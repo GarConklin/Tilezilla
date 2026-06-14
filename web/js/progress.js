@@ -91,6 +91,40 @@ export class Progress {
     return earliest;
   }
 
+  getLevelMeta(levelId) {
+    return this.data[levelId]?.meta || null;
+  }
+
+  getLastPlayedAt(levelId) {
+    return this.getLevelMeta(levelId)?.lastPlayedAt || null;
+  }
+
+  /**
+   * Record that the player opened/played a level (journal + session tracking).
+   * @param {string} levelId
+   * @param {{ journalSource?: string }} meta
+   */
+  touchLevelPlayed(levelId, meta = {}) {
+    if (!levelId) return;
+    if (!this.data[levelId]) this.data[levelId] = { found: [] };
+    const prev = this.data[levelId].meta || {};
+    this.data[levelId].meta = {
+      ...prev,
+      lastPlayedAt: new Date().toISOString(),
+      playCount: (Number(prev.playCount) || 0) + 1,
+      journalSource: meta.journalSource ?? prev.journalSource ?? null,
+    };
+    this.save();
+  }
+
+  /** Level has any journal entry (played or has found solutions). */
+  hasJournalEntry(levelId) {
+    const entry = this.data[levelId];
+    if (!entry) return false;
+    if (entry.meta?.lastPlayedAt) return true;
+    return (entry.found?.length || 0) > 0;
+  }
+
   // -- Canonical form --
 
   /**

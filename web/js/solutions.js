@@ -312,6 +312,7 @@ export class Solutions {
 
     rebuildOccFromTiles();
     await renderTiles();
+    this.app.onBoardStateChanged?.();
   }
 }
 

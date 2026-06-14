@@ -1,0 +1,26 @@
+{
+  "window": {
+    "topVh": 10,
+    "heightVh": 80,
+    "maxDesignWidth": 390,
+    "nudgeX": 0,
+    "nudgeY": 0,
+    "scale": 1.1
+  },
+  "scroller": {
+    "right": 1.5,
+    "top": 4,
+    "height": 88,
+    "trackScale": 1,
+    "pinScale": 1,
+    "nudgeX": 0,
+    "nudgeY": 0
+  },
+  "exit": {
+    "right": 6,
+    "bottom": 6,
+    "size": 48,
+    "nudgeX": 0,
+    "nudgeY": 0
+  }
+}

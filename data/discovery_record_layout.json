@@ -95,6 +95,13 @@
         "h": 11,
         "wScale": 0.86,
         "hScale": 0.72
+      },
+      "solutionTotal": {
+        "nudgeX": 34,
+        "nudgeY": 66,
+        "fontScale": 0.68,
+        "x": 42,
+        "y": 22
       }
     },
     "newRegular": {

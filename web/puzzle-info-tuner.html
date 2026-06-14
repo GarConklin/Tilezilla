@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en" class="tz-phone-preview puzzle-info-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Puzzle Info tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%;
+      min-height: 100px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.7rem;
+      resize: vertical;
+    }
+    .mock-stage {
+      padding: 24px 16px 40px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .puzzle-info-tuner-page .mock-pinfo-wrap {
+      width: var(--tz-design-width);
+      margin: 0 auto;
+    }
+    .puzzle-info-tuner-page .tz-pinfo-root {
+      position: relative;
+      inset: auto;
+      display: block;
+      width: 100%;
+    }
+    .puzzle-info-tuner-page .tz-pinfo-root__backdrop { display: none; }
+    .puzzle-info-tuner-page .tz-pinfo-dialog {
+      width: 100%;
+      margin: 0;
+    }
+    .puzzle-info-tuner-page [data-tuner-item] {
+      outline: 2px solid rgba(100, 200, 255, 0.75);
+      outline-offset: -1px;
+      cursor: pointer;
+    }
+    .puzzle-info-tuner-page [data-tuner-item].is-tuner-active {
+      outline-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.55);
+      z-index: 2;
+    }
+    .puzzle-info-tuner-page .tz-pinfo-dialog__close-journal[data-tuner-item] {
+      background: rgba(80, 220, 100, 0.28) !important;
+    }
+    .puzzle-info-tuner-page .tz-pinfo-dialog__close-x[data-tuner-item] {
+      background: rgba(255, 100, 100, 0.2);
+      outline: 2px solid rgba(255, 120, 120, 0.85);
+    }
+    .puzzle-info-tuner-page .tz-pinfo-field[data-tuner-item]::after {
+      content: attr(data-tuner-label);
+      position: absolute;
+      left: 0;
+      top: -1.1em;
+      font-size: 8px;
+      font-weight: 700;
+      color: #e8b923;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+    .puzzle-info-tuner-page .tz-pinfo-dialog__close-journal .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(7px, 2.4cqi, 11px);
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Puzzle Info field tuner</h1>
+  <p class="lead">
+    Preview matches in-game width (390px). <strong>Close X</strong> uses exit-btn.png over the art. Each text field is tuned independently.
+    Saves to <code>data/puzzle_info_layout.json</code>.
+    <a href="/dev-player-select.html">Back to player select</a>
+    · <a href="/tilezilla.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys">
+        <li>Scroll — Y% · Shift+scroll — X% · Ctrl+scroll — width% (or height for bar / Close Journal)</li>
+        <li>Alt+scroll — nudge X px · Alt+Shift+scroll — nudge Y px</li>
+        <li><strong>Rank:</strong> Alt — roman Y% · Alt+Shift — roman nudge Y px</li>
+        <li><strong>Close Journal:</strong> invisible click hit over art label — green box in tuner only</li>
+        <li><strong>Dialog:</strong> Alt — max width px · Alt+Shift — vertical display pad px</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report for chat</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false" aria-label="Layout report"></textarea>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — 390px dialog</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-pinfo-wrap">
+          <div class="tz-pinfo-root" id="mockPinfoRoot">
+            <div class="tz-pinfo-dialog" role="dialog" aria-label="Puzzle Info preview">
+              <div class="tz-pinfo-dialog__frame">
+                <img
+                  src="/img/Puzzle-Info-Blank.png"
+                  alt=""
+                  class="tz-pinfo-dialog__bg"
+                  width="1120"
+                  height="1157"
+                />
+
+                <div class="tz-pinfo-dialog__rank-wrap" data-tuner-item="rank">
+                  <img
+                    class="tz-pinfo-dialog__rank"
+                    src="/img/ranks/Wanderer.png"
+                    alt=""
+                  />
+                  <span class="tz-pinfo-dialog__rank-roman" aria-hidden="true">III</span>
+                </div>
+
+                <span class="tz-pinfo-field tz-pinfo-field--id" data-tuner-item="id" data-tuner-label="ID">5x6-0A-AUA</span>
+                <span class="tz-pinfo-field tz-pinfo-field--size" data-tuner-item="size" data-tuner-label="Size">5 × 6</span>
+                <span class="tz-pinfo-field tz-pinfo-field--type" data-tuner-item="type" data-tuner-label="Type">Adventure</span>
+
+                <div class="tz-pinfo-solutions-bar" id="mockSolutionsBar" data-tuner-item="bar" aria-hidden="true"></div>
+                <span class="tz-pinfo-field tz-pinfo-field--found" data-tuner-item="found">3 of 12</span>
+                <span class="tz-pinfo-field tz-pinfo-field--hints" data-tuner-item="hints">2</span>
+                <span class="tz-pinfo-field tz-pinfo-field--best" data-tuner-item="best">4:32</span>
+                <span class="tz-pinfo-field tz-pinfo-field--solved" data-tuner-item="solved">Jun 7, 2026</span>
+
+                <button type="button" class="tz-pinfo-dialog__close-x" data-tuner-item="closeX" aria-label="Close">
+                  <img src="/img/exit-btn.png" alt="" />
+                </button>
+                <button type="button" class="tz-pinfo-dialog__close-journal" data-tuner-item="closeJournal" aria-label="Close journal">
+                  <span class="hit-label">Close Journal hit</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      PINFO_ITEM_DEFS,
+      applyPuzzleInfoLayout,
+      buildPuzzleInfoLayoutReport,
+      clearPuzzleInfoLayoutCache,
+      clearPuzzleInfoLayoutDraft,
+      getPuzzleInfoItemLayout,
+      loadPuzzleInfoLayout,
+      mergePuzzleInfoLayout,
+      stashPuzzleInfoLayoutDraft,
+    } from './js/puzzle-info-layout.js';
+
+    const POS_STEP = 0.4;
+    const SIZE_STEP = 0.4;
+    const NUDGE_STEP = 1;
+    const DIALOG_ITEM = '__dialog__';
+
+    let workingLayout = mergePuzzleInfoLayout(null);
+    let currentItem = 'id';
+
+    const els = {};
+
+    function renderMockBar() {
+      const bar = document.getElementById('mockSolutionsBar');
+      if (!bar) return;
+      bar.replaceChildren();
+      const total = 12;
+      const filled = 3;
+      for (let i = 0; i < total; i += 1) {
+        const sq = document.createElement('span');
+        sq.className = `tz-pinfo-sq${i < filled ? ' tz-pinfo-sq--filled' : ''}`;
+        bar.appendChild(sq);
+      }
+    }
+
+    function cloneLayout(layout) {
+      return JSON.parse(JSON.stringify(layout));
+    }
+
+    function patchItem(key, patch) {
+      workingLayout.items[key] = {
+        ...(workingLayout.items[key] || {}),
+        ...patch,
+      };
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-puzzle-info-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Stale dev server — restart: python scripts/server.py');
+          }
+          if (res.status === 400 && errText.includes('Unknown item key')) {
+            throw new Error('Stale dev server (layout API) — restart: python scripts/server.py');
+          }
+          throw new Error(errText || `HTTP ${res.status}`);
+        }
+        clearPuzzleInfoLayoutCache();
+        clearPuzzleInfoLayoutDraft();
+        localStorage.setItem('tilezilla:puzzle-info-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:puzzle-info-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/puzzle_info_layout.json'
+          : 'Saved to data/puzzle_info_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const node of document.querySelectorAll('[data-tuner-item]')) {
+        node.classList.toggle('is-tuner-active', node.dataset.tunerItem === currentItem);
+      }
+    }
+
+    function formatItemReadout(key) {
+      if (key === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        return `maxDesignWidth ${d.maxDesignWidth ?? 390}px · displayPad ${d.displayPad ?? 32}px`;
+      }
+      const item = getPuzzleInfoItemLayout(key, workingLayout);
+      const meta = PINFO_ITEM_DEFS[key];
+      const parts = [`x:${item.x}%`, `y:${item.y}%`];
+      if (item.w != null) parts.push(`w:${item.w}%`);
+      if (item.h != null) parts.push(`h:${item.h}%`);
+      if (item.nudgeX) parts.push(`nudgeX:${item.nudgeX}px`);
+      if (item.nudgeY) parts.push(`nudgeY:${item.nudgeY}px`);
+      if (key === 'rank') {
+        parts.push(`romanY:${item.romanY ?? 78}%`);
+        if (item.romanNudgeY) parts.push(`romanNudgeY:${item.romanNudgeY}px`);
+      }
+      return `<strong>${meta?.label || key}</strong><br />${parts.join(' · ')}`;
+    }
+
+    function refresh() {
+      applyPuzzleInfoLayout(workingLayout, document.documentElement);
+      els.readout.innerHTML = formatItemReadout(currentItem);
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildPuzzleInfoLayoutReport(workingLayout);
+      stashPuzzleInfoLayoutDraft(workingLayout);
+      refreshFieldGrid();
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+
+      if (currentItem === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        if (e.altKey && e.shiftKey) {
+          patchDialog({ displayPad: (d.displayPad ?? 32) + dir * 2 });
+          return;
+        }
+        if (e.altKey) {
+          patchDialog({ maxDesignWidth: Math.max(280, (d.maxDesignWidth ?? 390) + dir * 4) });
+        }
+        return;
+      }
+
+      const item = getPuzzleInfoItemLayout(currentItem, workingLayout);
+      const meta = PINFO_ITEM_DEFS[currentItem];
+
+      if (e.altKey && e.shiftKey) {
+        if (currentItem === 'rank') {
+          patchItem('rank', { romanNudgeY: (item.romanNudgeY ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP });
+        return;
+      }
+      if (e.altKey) {
+        if (currentItem === 'rank') {
+          patchItem('rank', { romanY: Math.round(((item.romanY ?? 78) + dir * POS_STEP) * 10) / 10 });
+          return;
+        }
+        patchItem(currentItem, { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP });
+        return;
+      }
+      if (e.ctrlKey) {
+        if (meta?.kind === 'bar' || meta?.kind === 'btn') {
+          patchItem(currentItem, { h: Math.round(((item.h ?? 5) + dir * SIZE_STEP) * 10) / 10 });
+        } else {
+          patchItem(currentItem, { w: Math.round(((item.w ?? 30) + dir * SIZE_STEP) * 10) / 10 });
+        }
+        return;
+      }
+      if (e.shiftKey) {
+        patchItem(currentItem, { x: Math.round(((item.x ?? 0) + dir * POS_STEP) * 10) / 10 });
+        return;
+      }
+      patchItem(currentItem, { y: Math.round(((item.y ?? 0) + dir * POS_STEP) * 10) / 10 });
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.mockStage = document.getElementById('mockStage');
+
+      const dialogBtn = document.createElement('button');
+      dialogBtn.type = 'button';
+      dialogBtn.className = 'field-btn';
+      dialogBtn.dataset.item = DIALOG_ITEM;
+      dialogBtn.textContent = 'Dialog size / pad';
+      dialogBtn.style.gridColumn = '1 / -1';
+      dialogBtn.addEventListener('click', () => {
+        currentItem = DIALOG_ITEM;
+        refresh();
+      });
+      els.fieldGrid.appendChild(dialogBtn);
+
+      for (const [key, def] of Object.entries(PINFO_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => {
+          currentItem = key;
+          refresh();
+        });
+        els.fieldGrid.appendChild(btn);
+
+        document.querySelector(`[data-tuner-item="${key}"]`)?.addEventListener('click', () => {
+          currentItem = key;
+          refresh();
+        });
+      }
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      els.jsonOut.addEventListener('change', () => {
+        try {
+          workingLayout = cloneLayout(mergePuzzleInfoLayout(JSON.parse(els.jsonOut.value)));
+          refresh();
+        } catch {
+          els.status.textContent = 'Invalid JSON in editor';
+        }
+      });
+
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearPuzzleInfoLayoutCache();
+        clearPuzzleInfoLayoutDraft();
+        workingLayout = cloneLayout(await loadPuzzleInfoLayout({ force: true }));
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+      document.getElementById('copyReportBtn').addEventListener('click', async () => {
+        const text = buildPuzzleInfoLayoutReport(workingLayout);
+        try {
+          await navigator.clipboard.writeText(text);
+          els.status.textContent = 'Report copied — paste into chat with a screenshot';
+        } catch {
+          els.reportOut.select();
+          els.status.textContent = 'Select report text and copy manually';
+        }
+      });
+
+      renderMockBar();
+      try {
+        workingLayout = cloneLayout(await loadPuzzleInfoLayout());
+      } catch {
+        workingLayout = mergePuzzleInfoLayout(null);
+      }
+      refresh();
+      els.mockStage.focus();
+    }
+
+    void init();
+  </script>
+</body>
+</html>

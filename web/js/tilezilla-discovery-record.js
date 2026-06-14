@@ -9,6 +9,10 @@ import {
   getDiscoveryVariantKey,
   resolveShowAdvance,
 } from './discovery-record-layout.js';
+import {
+  isAdventurePuzzleComplete,
+  loadAdventurePath,
+} from './adventure-path.js';
 
 function $(id) {
   return document.getElementById(id);
@@ -19,10 +23,16 @@ let onContinueSearch = async () => {};
 let onAdvancePath = async () => {};
 let onViewFoundSolve = async () => {};
 let onOpenFoundSolutions = async () => {};
+let onResumeBoardEdit = () => {};
+let onAdventureProgress = async () => {};
 let pendingViewFoundIndex = null;
 
 function isDailyChallengeScreen() {
   return document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+}
+
+function isAdventureScreen() {
+  return document.querySelector('.tz-app')?.dataset?.screen === 'adventure';
 }
 
 function formatTime(sec) {
@@ -159,6 +169,16 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     if (viewFoundBtn) {
       viewFoundBtn.hidden = !Number.isFinite(payload.solutionIndex);
     }
+
+    const advanceBtn = fieldEl('btnAdvance', ids);
+    if (advanceBtn && ids === DISCOVERY_RECORD_IDS) {
+      advanceBtn.setAttribute(
+        'aria-label',
+        showAdvance && isAdventureScreen()
+          ? 'Adventure path — next puzzle'
+          : 'Advance path',
+      );
+    }
   } else {
     const titleEl = fieldEl('title', ids);
     if (titleEl) titleEl.textContent = 'Discovery recorded';
@@ -173,24 +193,45 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     if (advanceBtn && ids === DISCOVERY_RECORD_IDS) {
       advanceBtn.setAttribute(
         'aria-label',
-        isDailyChallengeScreen() ? 'Advance path — next adventure puzzle' : 'Advance path',
+        isDailyChallengeScreen() || isAdventureScreen()
+          ? 'Advance path — next adventure puzzle'
+          : 'Advance path',
       );
     }
   }
 }
 
+/** Adventure duplicate/new plaques: advance art only when this path step is fully cleared. */
+async function enrichAdventurePayload(payload) {
+  if (!isAdventureScreen()) return payload;
+  const levelId = payload?.levelId;
+  if (!levelId || levelId === '—') return payload;
+
+  const app = getApp();
+  const path = await loadAdventurePath();
+  const stepComplete = isAdventurePuzzleComplete(app?.progress, path, levelId);
+
+  return { ...payload, showAdvancePath: stepComplete };
+}
+
 function showDiscoveryRecord(payload) {
+  void showDiscoveryRecordAsync(payload);
+}
+
+async function showDiscoveryRecordAsync(payload) {
   const root = $('discoveryRecord');
   if (!root) return;
 
-  applyDiscoveryRecordContent(payload);
-  pendingViewFoundIndex = payload?.mode === 'duplicate' && Number.isFinite(payload.solutionIndex)
-    ? payload.solutionIndex
+  const enriched = await enrichAdventurePayload(payload);
+  applyDiscoveryRecordContent(enriched);
+  pendingViewFoundIndex = enriched?.mode === 'duplicate' && Number.isFinite(enriched.solutionIndex)
+    ? enriched.solutionIndex
     : null;
 
   root.hidden = false;
   root.setAttribute('aria-hidden', 'false');
   document.querySelector('.tz-app')?.classList.add('is-discovery-record');
+  void onAdventureProgress();
 }
 
 function hideDiscoveryRecord() {
@@ -202,13 +243,21 @@ function hideDiscoveryRecord() {
   pendingViewFoundIndex = null;
 }
 
+/** Player picked up a board tile while the plaque is open — restore preview + tile bag. */
+function resumeForBoardEdit() {
+  if (!document.querySelector('.tz-app')?.classList.contains('is-discovery-record')) return false;
+  hideDiscoveryRecord();
+  onResumeBoardEdit();
+  return true;
+}
+
 async function handleContinueSearch() {
   if (await onContinueSearch() === false) return;
   hideDiscoveryRecord();
 }
 
 async function handleAdvancePath() {
-  if (isDailyChallengeScreen()) {
+  if (isDailyChallengeScreen() || isAdventureScreen()) {
     await onAdvancePath();
   } else if (await onContinueSearch() === false) {
     return;
@@ -235,9 +284,14 @@ function buildChallengeProgress(foundCount, totalKnown) {
 }
 
 function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
+  let showAdvancePath = isDailyChallengeScreen();
+  if (isAdventureScreen()) {
+    /* Resolved in enrichAdventurePayload — Records vs RecordsNoAdvance, or Already vs AlreadyNoADVPth. */
+    showAdvancePath = false;
+  }
   return {
     mode: 'new',
-    showAdvancePath: isDailyChallengeScreen(),
+    showAdvancePath,
     levelId: level?.id || '—',
     challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     solutionNumber: solutionLabel(res),
@@ -249,7 +303,8 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
 function buildDuplicatePayload(level, res) {
   return {
     mode: 'duplicate',
-    showAdvancePath: isDailyChallengeScreen(),
+    /** Adventure: enriched on show — NoADVPth until step complete, then AlreadyRecordsPlacqueBase. */
+    showAdvancePath: false,
     title: duplicateTitle(res),
     note: discoveryTexts.duplicateNote,
     levelId: level?.id || '—',
@@ -292,6 +347,8 @@ export function initDiscoveryRecord(options = {}) {
   onAdvancePath = options.onAdvancePath || onAdvancePath;
   onViewFoundSolve = options.onViewFoundSolve || onViewFoundSolve;
   onOpenFoundSolutions = options.onOpenFoundSolutions || onOpenFoundSolutions;
+  onResumeBoardEdit = options.onResumeBoardEdit || onResumeBoardEdit;
+  onAdventureProgress = options.onAdventureProgress || onAdventureProgress;
 
   $('discoveryContinueBtn')?.addEventListener('click', () => { void handleContinueSearch(); });
   $('discoveryAdvanceBtn')?.addEventListener('click', () => { void handleAdvancePath(); });
@@ -301,6 +358,7 @@ export function initDiscoveryRecord(options = {}) {
   window.__discoveryRecord = {
     show: showDiscoveryRecord,
     hide: hideDiscoveryRecord,
+    resumeForBoardEdit,
     buildPayload: buildNewPayload,
     buildDuplicatePayload,
     showPreview: () => showDiscoveryRecord(buildPreviewPayload()),
@@ -311,6 +369,7 @@ export function initDiscoveryRecord(options = {}) {
 export {
   showDiscoveryRecord,
   hideDiscoveryRecord,
+  resumeForBoardEdit,
   buildChallengeProgress,
   formatTime,
   formatDateTime,

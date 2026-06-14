@@ -210,6 +210,8 @@ const state = {
   rotatedCache: new Map(), // key: tileName|deg -> dataURL
   blockerCells: new Set(), // keys: 'r,c'
   blockerTypeByCell: new Map(), // key: 'r,c' -> tile id (B1/B2)
+  /** Fixed blockers as placements — anchor r,c,deg like playable tiles. */
+  blockerPlacements: [],
   blockerEditMode: false, // toolbar: click cells to place/remove blockers (sandbox only)
   foundListEntries: [], // [{label, placements, kind}]
   hintsUsedThisPuzzle: 0,
@@ -377,6 +379,44 @@ function isBlockerTile(tileRef){
   return id === 'B1' || id === 'B2' || id === 'SB';
 }
 
+function parseBlockerEntry(raw, defaultType = 'B1') {
+  if (!Array.isArray(raw) || raw.length < 2) return null;
+  const r = Number(raw[0]);
+  const c = Number(raw[1]);
+  if (!Number.isFinite(r) || !Number.isFinite(c)) return null;
+  const tile = (typeof raw[2] === 'string' && raw[2]) ? raw[2] : defaultType;
+  const deg = raw.length >= 4 ? (Number(raw[3]) || 0) : 0;
+  return {
+    tile,
+    r: r | 0,
+    c: c | 0,
+    deg: ((deg % 360) + 360) % 360,
+  };
+}
+
+function resetBlockerState() {
+  state.blockerCells = new Set();
+  state.blockerTypeByCell = new Map();
+  state.blockerPlacements = [];
+}
+
+function addBlockerPlacement({ tile, r, c, deg = 0 }) {
+  const bt = tile || 'B1';
+  const rot = ((deg % 360) + 360) % 360;
+  const cells = cellsForTile(bt, r, c, rot);
+  if (!cells.length) return;
+  for (const [rr, cc] of cells) {
+    const ck = cellKey(rr, cc);
+    state.blockerCells.add(ck);
+    state.blockerTypeByCell.set(ck, bt);
+  }
+  state.blockerPlacements.push({ tile: bt, r, c, deg: rot });
+}
+
+function blockerAtAnchor(r, c) {
+  return (state.blockerPlacements || []).find((bp) => bp.r === r && bp.c === c) || null;
+}
+
 function isSandboxLevel(){
   const id = state.currentLevel?.id || '';
   const name = state.currentLevel?.name || '';
@@ -415,12 +455,23 @@ function toggleBlockerAtCell(r, c){
     return false;
   }
   if(state.blockerCells.has(ck)){
-    state.blockerCells.delete(ck);
-    state.blockerTypeByCell.delete(ck);
+    const anchor = blockerAtAnchor(r, c)
+      || (state.blockerPlacements || []).find((bp) =>
+        cellsForTile(bp.tile, bp.r, bp.c, bp.deg).some(([rr, cc]) => cellKey(rr, cc) === ck));
+    if (anchor) {
+      for (const [rr, cc] of cellsForTile(anchor.tile, anchor.r, anchor.c, anchor.deg)) {
+        const k = cellKey(rr, cc);
+        state.blockerCells.delete(k);
+        state.blockerTypeByCell.delete(k);
+      }
+      state.blockerPlacements = (state.blockerPlacements || []).filter((bp) => bp !== anchor);
+    } else {
+      state.blockerCells.delete(ck);
+      state.blockerTypeByCell.delete(ck);
+    }
     status(`Removed blocker at (${r},${c})`);
   }else{
-    state.blockerCells.add(ck);
-    state.blockerTypeByCell.set(ck, 'B1');
+    addBlockerPlacement({ tile: 'B1', r, c, deg: 0 });
     status(`Blocker at (${r},${c})`);
   }
   return true;
@@ -575,9 +626,11 @@ function buildGrid(){
       const ck = cellKey(r,c);
       if(state.blockerCells.has(ck)){
         cell.classList.add('blocked');
-        const bt = state.blockerTypeByCell.get(ck) || 'B1';
-        const blockerAsset = resolveTileAsset(bt);
-        cell.style.backgroundImage = `url('/img/${blockerAsset}')`;
+        const anchor = blockerAtAnchor(r, c);
+        if (anchor && tileCellCount(anchor.tile) === 1) {
+          const blockerAsset = resolveTileAsset(anchor.tile);
+          cell.style.backgroundImage = `url('/img/${blockerAsset}')`;
+        }
       }
       boardEl.appendChild(cell);
     }
@@ -1201,9 +1254,43 @@ async function drawTileCanvas(tileName, deg, canvas){
   drawEdgesOnTile(ctx, tileName, rot);
 }
 
+async function renderBlockers() {
+  for (const el of [...boardEl.querySelectorAll('.tile--blocker')]) el.remove();
+  for (const bp of state.blockerPlacements || []) {
+    if (tileCellCount(bp.tile) <= 1) continue;
+
+    const tileEl = document.createElement('div');
+    tileEl.className = 'tile tile--blocker';
+    tileEl.dataset.tile = bp.tile;
+    tileEl.setAttribute('aria-hidden', 'true');
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'tileCanvas';
+    tileEl.appendChild(canvas);
+    boardEl.appendChild(tileEl);
+
+    const cells = cellsForTile(bp.tile, bp.r, bp.c, bp.deg);
+    const rows = cells.map((x) => x[0]);
+    const cols = cells.map((x) => x[1]);
+    const rMin = Math.min(...rows);
+    const cMin = Math.min(...cols);
+    const rMax = Math.max(...rows);
+    const cMax = Math.max(...cols);
+
+    tileEl.style.left = `${cMin * CONFIG.cellPx}px`;
+    tileEl.style.top = `${rMin * CONFIG.cellPx}px`;
+    tileEl.style.width = `${(cMax - cMin + 1) * CONFIG.cellPx}px`;
+    tileEl.style.height = `${(rMax - rMin + 1) * CONFIG.cellPx}px`;
+
+    await drawTileCanvas(bp.tile, bp.deg, canvas);
+  }
+}
+
 async function renderTiles(){
   // Remove existing tile elements
   for(const el of [...boardEl.querySelectorAll('.tile')]) el.remove();
+
+  await renderBlockers();
 
   for(const t of state.tiles){
     const tileEl=document.createElement('div');
@@ -1241,6 +1328,7 @@ async function renderTiles(){
       }
       const removed = removeTileById(t.id);
       if(!removed) return;
+      window.__discoveryRecord?.resumeForBoardEdit?.();
       state.selectedTileId = null;
       syncActionButtons();
       state.selectedPal = removed.instanceId || null;
@@ -1252,6 +1340,7 @@ async function renderTiles(){
       rebuildOccFromTiles();
       await renderTiles();
       clearHover();
+      window.__app?.onBoardStateChanged?.();
       status(`Picked up ${removed.tile}`);
     });
 	await drawTileCanvas(t.tile, t.deg, canvas);
@@ -1306,6 +1395,17 @@ function syncPreviewFromBoardSelection({ preferLastPlaced = false } = {}) {
   markPaletteSelected(null);
   if (rotHud) rotHud.textContent = String(state.deg);
   return true;
+}
+
+/** Empty preview slot — no palette or board tile selected. */
+function clearActivePreviewSelection() {
+  state.selectedPal = null;
+  state.previewTile = null;
+  state.selectedTileId = null;
+  state.deg = 0;
+  markPaletteSelected(null);
+  syncActionButtons();
+  if (rotHud) rotHud.textContent = '0';
 }
 
 async function renderActivePreview(){
@@ -2347,6 +2447,7 @@ async function placeSelectedPaletteTileAt(r, c) {
   if (typeof window.__app?.onManualTilePlaced === 'function') {
     window.__app.onManualTilePlaced(t);
   }
+  window.__app?.onBoardStateChanged?.();
   return true;
 }
 
@@ -2592,9 +2693,29 @@ function inferBlockersFromSolveDoc(doc, defaultType='B1'){
     const r = Number(p?.r);
     const c = Number(p?.c);
     if(!Number.isFinite(r) || !Number.isFinite(c)) continue;
-    out.push([r|0, c|0, t || defaultType]);
+    const deg = Number(p?.deg) || 0;
+    out.push([r|0, c|0, t || defaultType, deg]);
   }
-  return blockersForSig(out, defaultType);
+  out.sort((a, b) => a[0] - b[0] || a[1] - b[1] || String(a[2]).localeCompare(String(b[2])));
+  return out;
+}
+
+/** Collapse 180° (or C4 on squares) rotation duplicates — matches progress.equivalenceKey. */
+function dedupeKnownSolutionsForLevel(solutions, level){
+  if(!Array.isArray(solutions) || solutions.length < 2) return solutions;
+  const rows = level?.board?.rows;
+  const cols = level?.board?.cols;
+  if(!rows || !cols || !progress) return solutions;
+  const kept = [];
+  const seen = new Set();
+  for(const sol of solutions){
+    const pl = progress.playablePlacements(sol?.placements || []);
+    const key = progress.equivalenceKey(pl, rows, cols);
+    if(seen.has(key)) continue;
+    seen.add(key);
+    kept.push(sol);
+  }
+  return kept.length < solutions.length ? kept : solutions;
 }
 
 async function loadKnownSolutionsForLevel(level){
@@ -2604,13 +2725,14 @@ async function loadKnownSolutionsForLevel(level){
     return [];
   }
   if(solveDocCache.has(file)){
-    const sols = solveDocCache.get(file);
+    const sols = dedupeKnownSolutionsForLevel(solveDocCache.get(file), level);
     if(level?.id) state.solutionCountByLevelId[level.id] = Array.isArray(sols) ? sols.length : 0;
     return sols;
   }
   try{
     const doc = await loadJson(`/solves/${file}`);
-    const sols = Array.isArray(doc?.solutions) ? doc.solutions : [];
+    const raw = Array.isArray(doc?.solutions) ? doc.solutions : [];
+    const sols = dedupeKnownSolutionsForLevel(raw, level);
     solveDocCache.set(file, sols);
     if(level?.id) state.solutionCountByLevelId[level.id] = sols.length;
     return sols;
@@ -2727,6 +2849,14 @@ async function applyKnownSolutionToBoard(solutionIndex) {
   return true;
 }
 
+async function applyPlacementsToBoard(placements, { message } = {}) {
+  if (!solutions?.apply || !Array.isArray(placements) || !placements.length) return false;
+  window.__discoveryRecord?.hide?.();
+  await solutions.apply(placements);
+  if (message) setCheckMessage(message, 'checkSuccess');
+  return true;
+}
+
 async function loadFirstValidKnownSolution() {
   if (!solutions?.apply || !state.currentLevel) return false;
   const known = await loadKnownSolutionsForLevel(state.currentLevel);
@@ -2760,25 +2890,20 @@ function previewPlacementSortRank(tileRef) {
 }
 
 function blockersForPreviewLevel(level) {
-  if (state.currentLevel?.id === level?.id && state.blockerCells?.size) {
-    return [...state.blockerCells].map((ck) => {
-      const [r, c] = ck.split(',').map(Number);
-      return {
-        r,
-        c,
-        bt: state.blockerTypeByCell.get(ck) || 'B1',
-      };
-    });
+  if (state.currentLevel?.id === level?.id && state.blockerPlacements?.length) {
+    return state.blockerPlacements.map((bp) => ({
+      r: bp.r,
+      c: bp.c,
+      bt: bp.tile,
+      deg: bp.deg || 0,
+    }));
   }
   const out = [];
   const defaultBlockerType = (typeof level?.blockerType === 'string' && level.blockerType) ? level.blockerType : 'B1';
   for (const b of (level?.blockers || [])) {
-    if (!Array.isArray(b) || b.length < 2) continue;
-    const br = Number(b[0]);
-    const bc = Number(b[1]);
-    if (!Number.isFinite(br) || !Number.isFinite(bc)) continue;
-    const bt = (typeof b[2] === 'string' && b[2]) ? b[2] : defaultBlockerType;
-    out.push({ r: br, c: bc, bt });
+    const parsed = parseBlockerEntry(b, defaultBlockerType);
+    if (!parsed) continue;
+    out.push({ r: parsed.r, c: parsed.c, bt: parsed.tile, deg: parsed.deg });
   }
   return out;
 }
@@ -2838,9 +2963,15 @@ async function renderSolutionPreview(targetCanvas, placements, { level, tileset 
   state.showEdges = false;
   try {
     for (const blocker of blockersForPreviewLevel(lv)) {
-      const asset = resolveTileAsset(blocker.bt, previewTileset);
-      const img = await loadImageElement(`img/${asset}`);
-      ctx.drawImage(img, blocker.c * cellPx, blocker.r * cellPx, cellPx, cellPx);
+      await drawPreviewTileOnBoard(
+        ctx,
+        blocker.bt,
+        blocker.deg || 0,
+        blocker.c * cellPx,
+        blocker.r * cellPx,
+        cellPx,
+        previewTileset,
+      );
     }
 
     const sorted = [...placements].sort(
@@ -3240,7 +3371,7 @@ function splitSnakeAndBlockerPlacements(placements){
   for(const p of placements || []){
     const t = tileId(p?.tile) || p?.tile;
     if(t === 'B1' || t === 'B2'){
-      blk.push([p.r | 0, p.c | 0, t]);
+      blk.push([p.r | 0, p.c | 0, t, p.deg | 0]);
     }else{
       snake.push(p);
     }
@@ -3486,8 +3617,7 @@ async function applyLevel(level){
   if(!level || !level.board) return;
   state.currentLevel = level;
   state.levelTileCounts = (level.tiles && typeof level.tiles === 'object') ? normalizeLevelTiles(level.tiles) : null;
-  state.blockerCells = new Set();
-  state.blockerTypeByCell = new Map();
+  resetBlockerState();
   const defaultBlockerType = (typeof level.blockerType === 'string' && level.blockerType) ? level.blockerType : 'B1';
   let blockers = Array.isArray(level.blockers) ? level.blockers : [];
   const hasBlockerTilesInInventory = !!(state.levelTileCounts?.B1 || state.levelTileCounts?.B2);
@@ -3499,15 +3629,9 @@ async function applyLevel(level){
       console.info(`Inferred ${inferred.length} blocker(s) from ${level?.solvesFile} for ${level?.id || '(unknown level)'}.`);
     }
   }
-  for(const b of blockers){
-    if(!Array.isArray(b) || b.length < 2) continue;
-    const br = Number(b[0]);
-    const bc = Number(b[1]);
-    if(!Number.isFinite(br) || !Number.isFinite(bc)) continue;
-    const bt = (typeof b[2] === 'string' && b[2]) ? b[2] : defaultBlockerType;
-    const ck = cellKey(br, bc);
-    state.blockerCells.add(ck);
-    state.blockerTypeByCell.set(ck, bt);
+  for (const b of blockers) {
+    const parsed = parseBlockerEntry(b, defaultBlockerType);
+    if (parsed) addBlockerPlacement(parsed);
   }
   CONFIG.rows = Number(level.board.rows);
   CONFIG.cols = Number(level.board.cols);
@@ -3524,6 +3648,12 @@ async function applyLevel(level){
   state.tileCatalog = state.levelTileCounts ? Object.keys(state.levelTileCounts) : Object.keys(state.liveEdges).filter(k => !k.startsWith('_'));
   state.paletteInstances = buildPaletteInstances();
   if(levelHud) levelHud.textContent = level.name || level.id;
+  const screen = document.querySelector('.tz-app')?.dataset?.screen;
+  if (progress && level?.id) {
+    progress.touchLevelPlayed(level.id, {
+      journalSource: ['adventure', 'daily-challenge', 'random'].includes(screen) ? screen : null,
+    });
+  }
   const knownSolutions = await loadKnownSolutionsForLevel(level);
   renderFoundList(level.id, knownSolutions);
   setCheckMessage('');
@@ -3664,6 +3794,7 @@ async function init(){
       const knownSolutions = await loadKnownSolutionsForLevel(lv);
       const placements = currentPortablePlacements();
       if(!v.ok){
+        window.__invalidSolve?.show?.();
         setCheckMessage(v.msg || 'Board is not valid yet.', 'checkError');
         return;
       }
@@ -3882,7 +4013,7 @@ async function init(){
   // Solver + Solutions modules
   window.__app = {
     CONFIG, state, targetCells, cellsForTile, validateBoard, renderTiles, setPaletteUsed,
-    renderActivePreview, syncPreviewFromBoardSelection, edgesFor, logSolver, canPlaceNew,
+    renderActivePreview, syncPreviewFromBoardSelection, clearActivePreviewSelection, edgesFor, logSolver, canPlaceNew,
     updateTilePlacement, removeTileById,
     claimCells, clearTileFromOcc, rebuildOccFromTiles, occ, occIdx, resolveTileAsset, tileId,
     applySolveDocObject, applyLevel, buildGrid, setCssCell, clearBoard, totalKnownForLevel,
@@ -3893,13 +4024,16 @@ async function init(){
     boardHasHintTiles,
     getMenuPuzzleInfo, getMenuFoundSolutions, getDevKnownSolutions: getMenuDevKnownSolutions,
     getExampleRoutePlacements, selectSolutionForReveal, getRevealSolutionPlacements,
-    applyKnownSolutionToBoard, loadFirstValidKnownSolution,
+    applyKnownSolutionToBoard, loadFirstValidKnownSolution, applyPlacementsToBoard,
     clearBoard, setCheckMessage, isDevUser,
     canAffordExampleRoute, getExampleRouteTokenCost, purchaseExampleRoute,
     hasViewedExampleRoute, hasLeaderboardForfeit, hasHintCompletionRewardForfeit,
     renderSolutionPreview, findClosestSolutionPlacements,
+    loadKnownSolutionsForLevel,
     onManualTilePlaced: null,
+    onBoardStateChanged: null,
     currentPortablePlacements, displayDimsForBoard,
+    progress: null,
   };
 
   solver = new Solver(window.__app, document.getElementById('speed'));
@@ -3959,6 +4093,7 @@ async function init(){
   });
 
   progress = new Progress(window.__app);
+  window.__app.progress = progress;
   const savedUser = localStorage.getItem('snake_active_user_v1');
   state.userId = (savedUser && typeof savedUser === 'string') ? savedUser : 'gar';
   state.hintTokens = loadGlobalHintTokens();
@@ -3980,6 +4115,7 @@ async function init(){
       if(lv) renderFoundList(lv.id, knownSolutions);
       else updateProgressHud(null);
       refreshLevelSelectOptionTexts();
+      window.__refreshAdventureChrome?.();
       setCheckMessage(`Active user: ${state.userId}`, 'checkWarn');
     });
   }
