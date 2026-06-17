@@ -84,6 +84,140 @@
       outline: none;
       border-color: #e8b923;
     }
+    .btn-size-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .btn-size-grid label,
+    .button-art-row label {
+      font-size: 0.68rem;
+      color: #a8b8b4;
+      margin-bottom: 2px;
+    }
+    .btn-size-grid input,
+    .button-art-row input {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+    }
+    .btn-size-grid input:focus,
+    .button-art-row input:focus {
+      outline: none;
+      border-color: #e8b923;
+    }
+    .button-art-row {
+      margin-bottom: 8px;
+    }
+    .button-art-row input {
+      font-family: ui-monospace, monospace;
+      font-size: 0.68rem;
+    }
+    .panel-section[hidden] { display: none !important; }
+    .mode-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(196, 163, 90, 0.3);
+    }
+    .mode-badge {
+      font-family: ui-monospace, monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #142c28;
+      background: #e8b923;
+      padding: 6px 14px;
+      border-radius: 6px;
+      min-width: 5.5rem;
+      text-align: center;
+    }
+    .mode-badge[data-mode="plaque"] { background: #8fd49a; }
+    .mode-badge[data-mode="font"] { background: #9ec8e8; }
+    .mode-btn {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.25);
+      color: #c8e6c9;
+      font: inherit;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .mode-btn.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.2);
+      color: #f4ecd8;
+    }
+    .mode-hint {
+      flex: 1 1 100%;
+      margin: 0;
+      font-size: 0.68rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .mock-stage[data-edit-mode="move"] { cursor: default; }
+    .mock-stage[data-edit-mode="width"],
+    .mock-stage[data-edit-mode="height"] { cursor: crosshair; }
+    .mock-stage[data-edit-mode="font"],
+    .mock-stage[data-edit-mode="plaque"] { cursor: ns-resize; }
+    .tuner-selection-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+    .tuner-selection-box {
+      position: absolute;
+      box-sizing: border-box;
+      border: 2px solid #e8b923;
+      pointer-events: none;
+      display: none;
+    }
+    .tuner-selection-box.is-visible { display: block; }
+    .tuner-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      margin: -5px 0 0 -5px;
+      background: #e8b923;
+      border: 1px solid #142c28;
+      border-radius: 2px;
+      pointer-events: auto;
+      z-index: 2;
+    }
+    .tuner-handle--e { top: 50%; left: 100%; cursor: ew-resize; }
+    .tuner-handle--s { top: 100%; left: 50%; cursor: ns-resize; }
+    .tuner-handle--se { top: 100%; left: 100%; cursor: nwse-resize; }
+    .tuner-handle--move {
+      inset: 0;
+      width: auto;
+      height: auto;
+      margin: 0;
+      background: transparent;
+      border: none;
+      cursor: move;
+      pointer-events: auto;
+    }
+    .discovery-tuner-page .tz-discovery-record__field,
+    .discovery-tuner-page .tz-discovery-record__btn {
+      cursor: pointer;
+    }
+    .discovery-tuner-page .tz-discovery-record__field.is-tuner-active,
+    .discovery-tuner-page .tz-discovery-record__btn.is-tuner-active {
+      cursor: move;
+    }
     .readout {
       margin: 0 0 10px;
       font-family: ui-monospace, monospace;
@@ -197,7 +331,8 @@
 <body class="discovery-tuner-page">
   <h1>Discovery record tuner</h1>
   <p class="lead">
-    Tune each field on the Records plaque — position, nudge, text size, button size, and overall plaque scale.
+    Tune each field on the Records plaque — drag to move, edge handles to resize buttons, mode keys for wheel actions.
+    No Ctrl+Alt+wheel combos — press <strong>M/W/H/F/P</strong> to choose what the wheel does.
     Uses the same <code>tilezilla-shell.css</code> + <code>discovery_record_layout.json</code> as the game.
     Preview is cropped to the exact in-game discovery box (390×844 layout).
     All fields stay visible here so you can place each one; dimmed items are hidden in that mode in the game.
@@ -219,6 +354,7 @@
       DISCOVERY_ITEM_DEFS,
       applyDiscoveryPopupLayout,
       clearDiscoveryRecordLayoutCache,
+      getDiscoveryButtonArt,
       getDiscoveryItemLayout,
       getDiscoveryTexts,
       getDiscoveryVariantKey,
@@ -240,11 +376,32 @@
       btnBook: 'mockDiscoveryBookBtn',
     };
 
-    const NUDGE_STEP = 1;
-    const POS_STEP = 0.5;
-    const FONT_STEP = 0.04;
-    const SCALE_STEP = 0.02;
-    const PLAQUE_STEP = 0.02;
+    const NUDGE_FINE = 1;
+    const NUDGE_MED = 2;
+    const NUDGE_LARGE = 4;
+    const POS_FINE = 0.25;
+    const POS_MED = 0.5;
+    const POS_LARGE = 1;
+    const FONT_FINE = 0.02;
+    const FONT_MED = 0.04;
+    const FONT_LARGE = 0.08;
+    const DIM_FINE = 0.25;
+    const DIM_MED = 0.5;
+    const DIM_LARGE = 2;
+    const SCALE_FINE = 0.01;
+    const SCALE_MED = 0.02;
+    const SCALE_LARGE = 0.05;
+    const PLAQUE_FINE = 0.01;
+    const PLAQUE_MED = 0.02;
+    const PLAQUE_LARGE = 0.05;
+
+    const EDIT_MODES = {
+      move: { key: 'M', label: 'MOVE', hint: 'Drag to move · Arrows = position · Shift+arrows = nudge px · Wheel = Y% · Shift+wheel = nudge X' },
+      width: { key: 'W', label: 'WIDTH', hint: 'Wheel = box width · Shift+wheel = width scale · Drag right edge · Height unchanged' },
+      height: { key: 'H', label: 'HEIGHT', hint: 'Wheel = box height · Shift+wheel = height scale · Drag bottom edge · Width unchanged' },
+      font: { key: 'F', label: 'FONT', hint: 'Wheel = font size (text fields) · [ ] also works' },
+      plaque: { key: 'P', label: 'PLAQUE', hint: 'Wheel = plaque height · Shift+wheel = plaque width · Ctrl+wheel = duplicate trim (already-found)' },
+    };
 
     const EL_BY_ITEM = {
       solutionTotal: 'mockDiscoverySolutionTotal',
@@ -264,13 +421,172 @@
     const BTN_ALWAYS = ['btnContinue', 'btnBook'];
     const BTN_DUPLICATE = ['btnViewFound'];
     const BTN_ADVANCE = ['btnAdvance'];
+    const BTN_KEYS = ['btnContinue', 'btnAdvance', 'btnViewFound', 'btnBook'];
+    const BUTTON_ART_KEYS = [
+      ['btnContinue', 'Continue search'],
+      ['btnAdvance', 'Advance path'],
+      ['btnViewFound', 'View solve'],
+      ['btnChess', 'Chess piece (new discovery)'],
+      ['btnBook', 'Book (already found)'],
+    ];
 
     let workingLayout = null;
     let currentItem = 'solutionTotal';
     let previewMode = 'new';
     let previewChallenge = true;
+    let editMode = 'move';
     let dirtyItems = new Set();
     const els = {};
+
+    let dragState = null;
+
+    function stepForEvent(e, fine, medium, large) {
+      if (e.shiftKey) return fine;
+      if (e.ctrlKey || e.metaKey) return large;
+      return medium;
+    }
+
+    function wheelDir(e) {
+      return e.deltaY < 0 ? 1 : -1;
+    }
+
+    function setEditMode(mode) {
+      if (!EDIT_MODES[mode]) return;
+      editMode = mode;
+      els.mockStage?.setAttribute('data-edit-mode', mode);
+      for (const btn of els.modeBar?.querySelectorAll('.mode-btn') || []) {
+        btn.classList.toggle('is-active', btn.dataset.mode === mode);
+      }
+      if (els.modeBadge) {
+        els.modeBadge.textContent = `[${EDIT_MODES[mode].label}]`;
+        els.modeBadge.dataset.mode = mode;
+      }
+      if (els.modeHint) els.modeHint.textContent = EDIT_MODES[mode].hint;
+      updateSelectionOverlay();
+    }
+
+    function itemKeyFromElement(el) {
+      if (!el) return null;
+      for (const [key, id] of Object.entries(EL_BY_ITEM)) {
+        if (el.id === id || el.closest(`#${id}`)) return key;
+      }
+      return null;
+    }
+
+    function selectItem(key) {
+      if (!key || !DISCOVERY_ITEM_DEFS[key]) return;
+      currentItem = key;
+      refresh();
+      els.mockStage?.focus();
+    }
+
+    function cycleItem(backward = false) {
+      const items = modeItems();
+      const idx = items.indexOf(currentItem);
+      const next = backward
+        ? items[(idx - 1 + items.length) % items.length]
+        : items[(idx + 1) % items.length];
+      selectItem(next);
+    }
+
+    function cloneItemToAllVariants() {
+      const vk = previewVariantKey();
+      const source = { ...getDiscoveryItemLayout(currentItem, workingLayout, vk) };
+      if (!workingLayout.variants) workingLayout.variants = {};
+      for (const variantKey of ['newAdvance', 'newRegular', 'duplicateAdvance', 'duplicateRegular']) {
+        if (!workingLayout.variants[variantKey]) workingLayout.variants[variantKey] = {};
+        workingLayout.variants[variantKey][currentItem] = { ...source };
+      }
+      dirtyItems.add(currentItem);
+      scheduleSave();
+      refresh();
+      els.status.textContent = `Cloned ${DISCOVERY_ITEM_DEFS[currentItem]?.label || currentItem} to all 4 variants`;
+    }
+
+    function resetCurrentItem() {
+      const vk = previewVariantKey();
+      const defaults = mergeDiscoveryLayout(null);
+      const meta = DISCOVERY_ITEM_DEFS[currentItem];
+      const fallback = meta?.kind === 'btn'
+        ? (defaults.variants?.[vk]?.[currentItem] || defaults.variants?.newAdvance?.[currentItem])
+        : defaults.items[currentItem];
+      if (!workingLayout.variants[vk]) workingLayout.variants[vk] = {};
+      workingLayout.variants[vk][currentItem] = { ...fallback };
+      dirtyItems.delete(currentItem);
+      scheduleSave();
+      refresh();
+    }
+
+    function getDiscoveryRoot() {
+      return document.getElementById('mockDiscovery');
+    }
+
+    function getSelectedElement() {
+      return document.getElementById(EL_BY_ITEM[currentItem]);
+    }
+
+    function effectiveBtnWidth(L) {
+      return (Number(L.w) || 0) * Math.max(0.05, Number(L.wScale) || 1);
+    }
+
+    function effectiveBtnHeight(L) {
+      return (Number(L.h) || 0) * Math.max(0.05, Number(L.hScale) || 1);
+    }
+
+    function setBtnEffectiveWidth(L, targetW) {
+      const w = Math.max(1, targetW);
+      const scale = Math.max(0.05, Number(L.wScale) || 1);
+      return { w: Math.round((w / scale) * 10) / 10 };
+    }
+
+    function setBtnEffectiveHeight(L, targetH) {
+      const h = Math.max(1, targetH);
+      const scale = Math.max(0.05, Number(L.hScale) || 1);
+      return { h: Math.round((h / scale) * 10) / 10 };
+    }
+
+    function updateSelectionOverlay() {
+      const layer = els.selectionLayer;
+      const box = els.selectionBox;
+      const root = getDiscoveryRoot();
+      const el = getSelectedElement();
+      if (!layer || !box || !root || !el) return;
+
+      const rootRect = root.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      if (!rootRect.width || !elRect.width) {
+        box.classList.remove('is-visible');
+        return;
+      }
+
+      const left = elRect.left - rootRect.left;
+      const top = elRect.top - rootRect.top;
+      box.style.left = `${left}px`;
+      box.style.top = `${top}px`;
+      box.style.width = `${elRect.width}px`;
+      box.style.height = `${elRect.height}px`;
+      box.classList.add('is-visible');
+
+      const showResize = isButtonItem(currentItem) && editMode !== 'font';
+      for (const h of box.querySelectorAll('.tuner-handle--e, .tuner-handle--s, .tuner-handle--se')) {
+        h.hidden = !showResize;
+      }
+    }
+
+    function ensureButtons() {
+      if (!workingLayout.buttons) {
+        workingLayout.buttons = { ...getDiscoveryButtonArt(workingLayout) };
+      }
+      return workingLayout.buttons;
+    }
+
+    function patchButtons(patch) {
+      Object.assign(ensureButtons(), patch);
+      dirtyItems.add('__buttons__');
+      applyPreviewContent();
+      els.jsonOut.value = exportJson();
+      scheduleSave();
+    }
 
     function cloneLayout(layout) {
       return JSON.parse(JSON.stringify(layout));
@@ -394,6 +710,40 @@
       if (els.duplicateTitleInput) els.duplicateTitleInput.value = texts.duplicateTitle || '';
     }
 
+    function syncButtonArtInputs() {
+      const art = getDiscoveryButtonArt(workingLayout);
+      for (const [key] of BUTTON_ART_KEYS) {
+        const input = els.buttonArtInputs?.[key];
+        if (!input || document.activeElement === input) continue;
+        input.value = art[key] || '';
+      }
+    }
+
+    function syncBtnSizeInputs() {
+      if (!isButtonItem(currentItem)) {
+        els.btnSizePanel?.setAttribute('hidden', '');
+        return;
+      }
+      els.btnSizePanel?.removeAttribute('hidden');
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, previewVariantKey());
+      const fields = [
+        ['btnW', 'w'],
+        ['btnH', 'h'],
+        ['btnWScale', 'wScale'],
+        ['btnHScale', 'hScale'],
+      ];
+      for (const [elKey, prop] of fields) {
+        const input = els[elKey];
+        if (!input || document.activeElement === input) continue;
+        input.value = String(L[prop] ?? '');
+      }
+      if (els.btnEffective) {
+        const w = (Number(L.w) || 0) * Math.max(0.05, Number(L.wScale) || 1);
+        const h = (Number(L.h) || 0) * Math.max(0.05, Number(L.hScale) || 1);
+        els.btnEffective.textContent = `Effective box: ${Math.round(w * 10) / 10}% × ${Math.round(h * 10) / 10}%`;
+      }
+    }
+
     function applyPreviewContent() {
       const texts = getDiscoveryTexts(workingLayout);
       setDiscoveryRecordTexts(texts);
@@ -403,6 +753,8 @@
         : buildPreviewPayload(previewChallenge);
       applyDiscoveryRecordContent(payload, MOCK_IDS);
       markInModeFields();
+      syncButtonArtInputs();
+      syncBtnSizeInputs();
     }
 
     function markInModeFields() {
@@ -488,7 +840,10 @@
         <strong>${meta?.label || currentItem}</strong><br />
         x:${L.x}% y:${L.y}% · nudge ${L.nudgeX}, ${L.nudgeY}
         ${meta?.kind === 'text' ? ` · font×${L.fontScale}` : ''}
-        ${meta?.kind === 'btn' ? ` · btn ${L.w}%×${L.h}% · scale ${L.wScale}×${L.hScale}` : ''}
+        ${meta?.kind === 'btn' ? ` · box ${L.w}%×${L.h}% · scale ${L.wScale}×${L.hScale}` : ''}
+        ${meta?.kind === 'btn'
+          ? ` · effective ${Math.round((Number(L.w) || 0) * Math.max(0.05, Number(L.wScale) || 1) * 10) / 10}%×${Math.round((Number(L.h) || 0) * Math.max(0.05, Number(L.hScale) || 1) * 10) / 10}%`
+          : ''}
         <br />Variant: ${variantLabel}
         <br />Plaque scale: ${plaque.wScale}× wide · ${plaque.hScale}× tall
         ${previewMode === 'duplicate'
@@ -503,80 +858,256 @@
       refreshFieldGrid();
       highlightActiveField();
       els.jsonOut.value = exportJson();
-      requestAnimationFrame(updatePreviewFit);
+      requestAnimationFrame(() => {
+        updatePreviewFit();
+        updateSelectionOverlay();
+      });
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      const root = getDiscoveryRoot();
+      if (!root) return;
+      const rect = root.getBoundingClientRect();
+      const vk = previewVariantKey();
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
+      const dxPct = (dxPx / rect.width) * 100;
+      const dyPct = (dyPx / rect.height) * 100;
+      patchCurrent({
+        x: Math.round((L.x + dxPct) * 10) / 10,
+        y: Math.round((L.y + dyPct) * 10) / 10,
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      const root = getDiscoveryRoot();
+      if (!root || !isButtonItem(currentItem)) return;
+      const rect = root.getBoundingClientRect();
+      const vk = previewVariantKey();
+      const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
+      const patch = {};
+      if (edges.e || edges.se) {
+        const dw = (dxPx / rect.width) * 100;
+        const nextW = effectiveBtnWidth(L) + dw;
+        Object.assign(patch, setBtnEffectiveWidth(L, nextW));
+      }
+      if (edges.s || edges.se) {
+        const dh = (dyPx / rect.height) * 100;
+        const nextH = effectiveBtnHeight(L) + dh;
+        Object.assign(patch, setBtnEffectiveHeight(L, nextH));
+      }
+      if (Object.keys(patch).length) patchCurrent(patch);
+    }
+
+    function onPointerDown(e) {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const fieldEl = e.target.closest('.tz-discovery-record__field, .tz-discovery-record__btn');
+      const root = getDiscoveryRoot();
+
+      if (handle?.classList.contains('tuner-handle--move')) {
+        e.preventDefault();
+        handle.setPointerCapture?.(e.pointerId);
+        dragState = {
+          kind: 'move',
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY,
+          lastX: e.clientX,
+          lastY: e.clientY,
+        };
+        setEditMode('move');
+        return;
+      }
+
+      if (handle && !handle.classList.contains('tuner-handle--move')) {
+        e.preventDefault();
+        handle.setPointerCapture?.(e.pointerId);
+        dragState = {
+          kind: 'resize',
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY,
+          edges: {
+            e: handle.classList.contains('tuner-handle--e') || handle.classList.contains('tuner-handle--se'),
+            s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se'),
+            se: handle.classList.contains('tuner-handle--se'),
+          },
+        };
+        setEditMode(handle.classList.contains('tuner-handle--se') ? 'width' : handle.classList.contains('tuner-handle--s') ? 'height' : 'width');
+        return;
+      }
+
+      if (fieldEl && root?.contains(fieldEl)) {
+        e.preventDefault();
+        const key = itemKeyFromElement(fieldEl);
+        if (key) selectItem(key);
+        fieldEl.setPointerCapture?.(e.pointerId);
+        dragState = {
+          kind: 'move',
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY,
+          lastX: e.clientX,
+          lastY: e.clientY,
+        };
+        setEditMode('move');
+        return;
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!dragState) return;
+      if (dragState.kind === 'move') {
+        const dx = e.clientX - dragState.lastX;
+        const dy = e.clientY - dragState.lastY;
+        dragState.lastX = e.clientX;
+        dragState.lastY = e.clientY;
+        if (dx || dy) applyMoveDelta(dx, dy);
+      } else if (dragState.kind === 'resize') {
+        const dx = e.clientX - dragState.startX;
+        const dy = e.clientY - dragState.startY;
+        dragState.startX = e.clientX;
+        dragState.startY = e.clientY;
+        applyResizeDelta(dx, dy, dragState.edges);
+      }
+    }
+
+    function onPointerUp(e) {
+      if (dragState?.pointerId != null && e.pointerId !== dragState.pointerId) return;
+      dragState = null;
     }
 
     function onWheel(e) {
+      if (e.target.matches('textarea, input')) return;
       e.preventDefault();
       const meta = DISCOVERY_ITEM_DEFS[currentItem];
       const vk = previewVariantKey();
       const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
+      const dir = wheelDir(e);
 
-      if (e.altKey && e.shiftKey) {
-        patchPlaque({ hScale: Math.round((workingLayout.plaque.hScale + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100 });
-        return;
-      }
-      if (previewMode === 'duplicate' && e.altKey && e.ctrlKey) {
-        const dup = workingLayout.plaque.duplicateWScale ?? 0.8;
-        patchPlaque({
-          duplicateWScale: Math.round((dup + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100,
-        });
-        return;
-      }
-      if (e.altKey) {
-        patchPlaque({ wScale: Math.round((workingLayout.plaque.wScale + (e.deltaY < 0 ? PLAQUE_STEP : -PLAQUE_STEP)) * 100) / 100 });
-        return;
-      }
-
-      if (meta?.kind === 'btn') {
-        if (e.ctrlKey) {
-          patchCurrent({ hScale: Math.round((L.hScale + (e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP)) * 100) / 100 });
+      if (editMode === 'plaque') {
+        const step = stepForEvent(e, PLAQUE_FINE, PLAQUE_MED, PLAQUE_LARGE);
+        if (e.ctrlKey && previewMode === 'duplicate') {
+          const dup = workingLayout.plaque.duplicateWScale ?? 0.8;
+          patchPlaque({ duplicateWScale: Math.round((dup + dir * step) * 100) / 100 });
           return;
         }
         if (e.shiftKey) {
-          patchCurrent({ wScale: Math.round((L.wScale + (e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP)) * 100) / 100 });
+          patchPlaque({ wScale: Math.round((workingLayout.plaque.wScale + dir * step) * 100) / 100 });
           return;
         }
-      } else if (e.ctrlKey) {
-        patchCurrent({ fontScale: Math.round((L.fontScale + (e.deltaY < 0 ? FONT_STEP : -FONT_STEP)) * 100) / 100 });
+        patchPlaque({ hScale: Math.round((workingLayout.plaque.hScale + dir * step) * 100) / 100 });
         return;
       }
 
+      if (editMode === 'font') {
+        if (meta?.kind !== 'text') return;
+        const step = stepForEvent(e, FONT_FINE, FONT_MED, FONT_LARGE);
+        patchCurrent({ fontScale: Math.max(0.2, Math.round((L.fontScale + dir * step) * 100) / 100) });
+        return;
+      }
+
+      if (editMode === 'width') {
+        if (meta?.kind !== 'btn') return;
+        const step = stepForEvent(e, DIM_FINE, DIM_MED, DIM_LARGE);
+        const scaleStep = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+        if (e.shiftKey) {
+          patchCurrent({
+            wScale: Math.max(0.05, Math.round((L.wScale + dir * scaleStep) * 100) / 100),
+          });
+          return;
+        }
+        const next = effectiveBtnWidth(L) + dir * step;
+        patchCurrent(setBtnEffectiveWidth(L, next));
+        return;
+      }
+
+      if (editMode === 'height') {
+        if (meta?.kind !== 'btn') return;
+        const step = stepForEvent(e, DIM_FINE, DIM_MED, DIM_LARGE);
+        const scaleStep = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+        if (e.shiftKey) {
+          patchCurrent({
+            hScale: Math.max(0.05, Math.round((L.hScale + dir * scaleStep) * 100) / 100),
+          });
+          return;
+        }
+        const next = effectiveBtnHeight(L) + dir * step;
+        patchCurrent(setBtnEffectiveHeight(L, next));
+        return;
+      }
+
+      /* MOVE mode */
+      const posStep = stepForEvent(e, POS_FINE, POS_MED, POS_LARGE);
       if (e.shiftKey) {
-        patchCurrent({ nudgeX: L.nudgeX + (e.deltaY < 0 ? NUDGE_STEP : -NUDGE_STEP) });
+        patchCurrent({ x: Math.round((L.x + dir * posStep) * 10) / 10 });
         return;
       }
-
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        patchCurrent({ x: Math.round((L.x + (e.deltaX > 0 ? POS_STEP : -POS_STEP)) * 10) / 10 });
+        patchCurrent({ x: Math.round((L.x + (e.deltaX > 0 ? posStep : -posStep)) * 10) / 10 });
         return;
       }
-
-      patchCurrent({ nudgeY: L.nudgeY + (e.deltaY > 0 ? NUDGE_STEP : -NUDGE_STEP) });
+      patchCurrent({ y: Math.round((L.y + dir * posStep) * 10) / 10 });
     }
 
     function onKeyDown(e) {
-      if (e.target.matches('select, textarea')) return;
+      if (e.target.matches('select, textarea, input')) return;
+
+      const modeKey = e.key.toLowerCase();
+      if (modeKey === 'm') { setEditMode('move'); e.preventDefault(); return; }
+      if (modeKey === 'w') { setEditMode('width'); e.preventDefault(); return; }
+      if (modeKey === 'h') { setEditMode('height'); e.preventDefault(); return; }
+      if (modeKey === 'f') { setEditMode('font'); e.preventDefault(); return; }
+      if (modeKey === 'p') { setEditMode('plaque'); e.preventDefault(); return; }
+      if (e.key === 'Escape') { setEditMode('move'); e.preventDefault(); return; }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        cycleItem(e.shiftKey);
+        return;
+      }
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        resetCurrentItem();
+        return;
+      }
+      if (modeKey === 'c' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        cloneItemToAllVariants();
+        return;
+      }
+
+      if (editMode !== 'move') return;
+
       const vk = previewVariantKey();
       const L = getDiscoveryItemLayout(currentItem, workingLayout, vk);
       const meta = DISCOVERY_ITEM_DEFS[currentItem];
+      const posStep = stepForEvent(e, POS_FINE, POS_MED, POS_LARGE);
+      const nudgeStep = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
 
-      if (e.key === 'ArrowLeft') { patchCurrent({ x: L.x - POS_STEP }); e.preventDefault(); return; }
-      if (e.key === 'ArrowRight') { patchCurrent({ x: L.x + POS_STEP }); e.preventDefault(); return; }
+      if (e.key === 'ArrowLeft') { patchCurrent({ x: L.x - posStep }); e.preventDefault(); return; }
+      if (e.key === 'ArrowRight') { patchCurrent({ x: L.x + posStep }); e.preventDefault(); return; }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY - NUDGE_STEP });
-        else patchCurrent({ y: L.y - POS_STEP });
+        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY - nudgeStep });
+        else patchCurrent({ y: L.y - posStep });
         return;
       }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY + NUDGE_STEP });
-        else patchCurrent({ y: L.y + POS_STEP });
+        if (e.shiftKey) patchCurrent({ nudgeY: L.nudgeY + nudgeStep });
+        else patchCurrent({ y: L.y + posStep });
         return;
       }
-      if (e.key === '[' && meta?.kind === 'text') patchCurrent({ fontScale: Math.max(0.2, L.fontScale - FONT_STEP) });
-      if (e.key === ']' && meta?.kind === 'text') patchCurrent({ fontScale: L.fontScale + FONT_STEP });
+      if (e.key === '[' && meta?.kind === 'text') {
+        const step = stepForEvent(e, FONT_FINE, FONT_MED, FONT_LARGE);
+        patchCurrent({ fontScale: Math.max(0.2, L.fontScale - step) });
+        e.preventDefault();
+      }
+      if (e.key === ']' && meta?.kind === 'text') {
+        const step = stepForEvent(e, FONT_FINE, FONT_MED, FONT_LARGE);
+        patchCurrent({ fontScale: L.fontScale + step });
+        e.preventDefault();
+      }
     }
 
     function buildUi() {
@@ -605,14 +1136,48 @@
             <label for="duplicateNoteInput">Note (on plaque)</label>
             <textarea id="duplicateNoteInput" rows="3" spellcheck="true"></textarea>
           </div>
+          <h2 style="margin-top:16px">Button images (global)</h2>
+          <p class="keys" style="margin-top:0;margin-bottom:8px">PNG paths under <code>/img/</code> — saved to JSON <code>buttons</code>. Chess shows on new discovery; book on already found (same button slot).</p>
+          <div id="buttonArtPanel"></div>
+          <div class="panel-section" id="btnSizePanel" hidden>
+            <h2 style="margin-top:16px">Button size (this variant)</h2>
+            <p class="keys" style="margin-top:0;margin-bottom:8px">W/H = box % on plaque · W/H scale = extra multiplier · Art stretches to fill the box (not letterboxed).</p>
+            <div class="btn-size-grid">
+              <div>
+                <label for="btnW">Width %</label>
+                <input type="number" id="btnW" step="0.5" min="1" max="100" />
+              </div>
+              <div>
+                <label for="btnH">Height %</label>
+                <input type="number" id="btnH" step="0.5" min="1" max="100" />
+              </div>
+              <div>
+                <label for="btnWScale">Width scale</label>
+                <input type="number" id="btnWScale" step="0.02" min="0.05" max="3" />
+              </div>
+              <div>
+                <label for="btnHScale">Height scale</label>
+                <input type="number" id="btnHScale" step="0.02" min="0.05" max="3" />
+              </div>
+            </div>
+            <p class="keys" id="btnEffective" style="margin-top:0">—</p>
+          </div>
           <div class="field-grid" id="fieldGrid"></div>
+          <div class="mode-bar" id="modeBar">
+            <span class="mode-badge" id="modeBadge" data-mode="move">[MOVE]</span>
+            <button type="button" class="mode-btn is-active" data-mode="move" title="Move (M)">M Move</button>
+            <button type="button" class="mode-btn" data-mode="width" title="Width (W)">W Width</button>
+            <button type="button" class="mode-btn" data-mode="height" title="Height (H)">H Height</button>
+            <button type="button" class="mode-btn" data-mode="font" title="Font (F)">F Font</button>
+            <button type="button" class="mode-btn" data-mode="plaque" title="Plaque (P)">P Plaque</button>
+            <p class="mode-hint" id="modeHint">Drag to move · Arrows = position · Shift+arrows = nudge · Wheel = Y · Shift+wheel = X</p>
+          </div>
           <p class="readout" id="readout">—</p>
           <ul class="keys">
-            <li>Scroll ↑↓ — nudge Y · ←→ — move X%</li>
-            <li>Shift+scroll — nudge X · Ctrl+scroll — font size (text) or btn H</li>
-            <li>Shift+scroll on btn — btn W scale · Alt+scroll — plaque W · Alt+Shift — plaque H</li>
-            <li>Already-recorded mode: Alt+Ctrl+scroll — trim plaque width (10% each side ≈ 0.8×)</li>
-            <li>Arrows — move · Shift+↑↓ — nudge · [ ] — font size</li>
+            <li><strong>Click preview</strong> to select · <strong>Drag</strong> object to move · <strong>Drag edges</strong> on buttons to resize</li>
+            <li><strong>M</strong> move · <strong>W</strong> width · <strong>H</strong> height · <strong>F</strong> font · <strong>P</strong> plaque · <strong>Esc</strong> → move</li>
+            <li><strong>Tab</strong> cycle objects · <strong>Delete</strong> reset field · <strong>C</strong> clone to all 4 variants</li>
+            <li><strong>Shift</strong> = fine step · <strong>Ctrl</strong> = large step (wheel &amp; arrows)</li>
           </ul>
           <div class="btn-row">
             <button type="button" class="btn" id="reloadBtn">Reload file</button>
@@ -624,7 +1189,7 @@
         </div>
         <div class="panel">
           <h2>Preview</h2>
-          <div class="mock-stage" id="mockStage" tabindex="0">
+          <div class="mock-stage" id="mockStage" tabindex="0" data-edit-mode="move">
             <div class="tuner-discovery-fit" id="discoveryFit">
               <div class="tuner-discovery-viewport" id="discoveryViewport">
                 <div class="tz-app is-discovery-record" id="tunerApp">
@@ -642,10 +1207,26 @@
                         <span class="tz-discovery-record__field tz-discovery-record__field--solution-found" id="mockDiscoverySolutionFound"></span>
                         <span class="tz-discovery-record__field tz-discovery-record__field--time" id="mockDiscoveryTime"></span>
                         <span class="tz-discovery-record__field tz-discovery-record__field--tokens" id="mockDiscoveryTokens"></span>
-                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--continue" id="mockDiscoveryContinueBtn" aria-label="Continue search"></button>
-                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--advance" id="mockDiscoveryAdvanceBtn" aria-label="Advance path"></button>
-                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--view-found" id="mockDiscoveryViewFoundBtn" hidden aria-label="View found solve"></button>
-                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--book" id="mockDiscoveryBookBtn" aria-label="View found solutions"></button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--continue" id="mockDiscoveryContinueBtn" aria-label="Continue search">
+                          <img src="/img/ContinueSearch-btn.png" alt="" />
+                        </button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--advance" id="mockDiscoveryAdvanceBtn" aria-label="Advance path">
+                          <img src="/img/AdvancePath-btn.png" alt="" />
+                        </button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--view-found" id="mockDiscoveryViewFoundBtn" hidden aria-label="View found solve">
+                          <img src="/img/ViewSolve-btn.png" alt="" />
+                        </button>
+                        <button type="button" class="tz-discovery-record__btn tz-discovery-record__btn--book" id="mockDiscoveryBookBtn" aria-label="Journal">
+                          <img src="/img/Chess-Btn.png" alt="" data-tuner-book-img />
+                        </button>
+                        <div class="tuner-selection-layer" id="selectionLayer" aria-hidden="true">
+                          <div class="tuner-selection-box" id="selectionBox">
+                            <div class="tuner-handle tuner-handle--move" title="Drag to move"></div>
+                            <div class="tuner-handle tuner-handle--e" title="Drag width"></div>
+                            <div class="tuner-handle tuner-handle--s" title="Drag height"></div>
+                            <div class="tuner-handle tuner-handle--se" title="Drag size"></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </section>
@@ -668,6 +1249,59 @@
       els.discoveryFit = document.getElementById('discoveryFit');
       els.duplicateTitleInput = document.getElementById('duplicateTitleInput');
       els.duplicateNoteInput = document.getElementById('duplicateNoteInput');
+      els.btnSizePanel = document.getElementById('btnSizePanel');
+      els.btnW = document.getElementById('btnW');
+      els.btnH = document.getElementById('btnH');
+      els.btnWScale = document.getElementById('btnWScale');
+      els.btnHScale = document.getElementById('btnHScale');
+      els.btnEffective = document.getElementById('btnEffective');
+      els.buttonArtPanel = document.getElementById('buttonArtPanel');
+      els.buttonArtInputs = {};
+      els.modeBar = document.getElementById('modeBar');
+      els.modeBadge = document.getElementById('modeBadge');
+      els.modeHint = document.getElementById('modeHint');
+      els.selectionLayer = document.getElementById('selectionLayer');
+      els.selectionBox = document.getElementById('selectionBox');
+
+      for (const [mode, meta] of Object.entries(EDIT_MODES)) {
+        const btn = els.modeBar.querySelector(`.mode-btn[data-mode="${mode}"]`);
+        btn?.addEventListener('click', () => {
+          setEditMode(mode);
+          els.mockStage.focus();
+        });
+      }
+
+      for (const [key, label] of BUTTON_ART_KEYS) {
+        const row = document.createElement('div');
+        row.className = 'button-art-row';
+        const labelEl = document.createElement('label');
+        labelEl.textContent = label;
+        labelEl.setAttribute('for', `buttonArt-${key}`);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `buttonArt-${key}`;
+        input.spellcheck = false;
+        input.addEventListener('input', () => {
+          patchButtons({ [key]: input.value.trim() });
+        });
+        row.appendChild(labelEl);
+        row.appendChild(input);
+        els.buttonArtPanel.appendChild(row);
+        els.buttonArtInputs[key] = input;
+      }
+
+      function bindBtnSizeInput(input, prop, min = 0.05) {
+        input?.addEventListener('change', () => {
+          if (!isButtonItem(currentItem)) return;
+          const val = Number(input.value);
+          if (!Number.isFinite(val)) return;
+          patchCurrent({ [prop]: prop.endsWith('Scale') ? Math.max(min, val) : val });
+        });
+      }
+      bindBtnSizeInput(els.btnW, 'w', 1);
+      bindBtnSizeInput(els.btnH, 'h', 1);
+      bindBtnSizeInput(els.btnWScale, 'wScale');
+      bindBtnSizeInput(els.btnHScale, 'hScale');
 
       els.duplicateTitleInput.addEventListener('input', () => {
         patchTexts({ duplicateTitle: els.duplicateTitleInput.value });
@@ -698,6 +1332,18 @@
       });
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });
       document.addEventListener('keydown', onKeyDown);
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
+      getDiscoveryRoot()?.addEventListener('pointerdown', onPointerDown);
+
+      for (const [key, id] of Object.entries(EL_BY_ITEM)) {
+        document.getElementById(id)?.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectItem(key);
+        });
+      }
 
       document.getElementById('reloadBtn').addEventListener('click', async () => {
         clearDiscoveryRecordLayoutCache();
@@ -708,21 +1354,10 @@
       });
 
       document.getElementById('saveBtn').addEventListener('click', () => void saveToFile({ quiet: false }));
-      document.getElementById('resetItemBtn').addEventListener('click', () => {
-        const vk = previewVariantKey();
-        const defaults = mergeDiscoveryLayout(null);
-        const meta = DISCOVERY_ITEM_DEFS[currentItem];
-        const fallback = meta?.kind === 'btn'
-          ? (defaults.variants?.[vk]?.[currentItem] || defaults.items[currentItem])
-          : defaults.items[currentItem];
-        if (!workingLayout.variants[vk]) workingLayout.variants[vk] = {};
-        workingLayout.variants[vk][currentItem] = { ...fallback };
-        dirtyItems.delete(currentItem);
-        scheduleSave();
-        refresh();
-      });
+      document.getElementById('resetItemBtn').addEventListener('click', () => resetCurrentItem());
 
       setPreviewMode('new');
+      setEditMode('move');
       els.mockStage.focus();
       refresh();
     }

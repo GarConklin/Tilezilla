@@ -1,7 +1,7 @@
 import {
   JOURNAL_ITEM_DEFS,
   JOURNAL_OVERLAY_DEFS,
-  applyJournalLayout,
+  applyJournalLayoutEverywhere,
   applyJournalOverlays,
   buildJournalLayoutReport,
   clearJournalLayoutCache,
@@ -13,11 +13,54 @@ import {
 } from './journal-layout.js';
 import { initFancyScroller } from './fancy-scroller.js';
 
-const POS_STEP = 0.4;
-const SIZE_STEP = 0.4;
-const NUDGE_STEP = 1;
-const PCT_STEP = 0.5;
-const SCALE_STEP = 0.02;
+const POS_FINE = 0.2;
+const POS_MED = 0.4;
+const POS_LARGE = 1;
+const SIZE_FINE = 0.2;
+const SIZE_MED = 0.4;
+const SIZE_LARGE = 1.5;
+const NUDGE_FINE = 1;
+const NUDGE_MED = 2;
+const NUDGE_LARGE = 4;
+const PCT_FINE = 0.25;
+const PCT_MED = 0.5;
+const PCT_LARGE = 1.5;
+const SCALE_FINE = 0.02;
+const SCALE_MED = 0.05;
+const SCALE_LARGE = 0.12;
+const DIALOG_FINE = 2;
+const DIALOG_MED = 4;
+const DIALOG_LARGE = 12;
+const TRACK_BASE_PX = 22;
+
+const EDIT_MODES = {
+  move: {
+    key: 'M',
+    label: 'MOVE',
+    hint: 'Wheel = Y% · Shift+wheel = X% · Arrows move · Shift+arrows nudge px · Drag to move',
+  },
+  width: {
+    key: 'W',
+    label: 'WIDTH',
+    hint: 'Wheel = width% (fields) or trackScale (scroll bar; thin ≈ 0.15–0.25) · Drag right edge',
+  },
+  height: {
+    key: 'H',
+    label: 'HEIGHT',
+    hint: 'Wheel = height% (fields + scroll bar track length) or trackScale (scroll bar width) · Drag bottom edge',
+  },
+  pin: {
+    key: 'I',
+    label: 'PIN',
+    hint: 'Wheel = scroll pin size (scroll bar only) · Shift = fine step',
+  },
+  dialog: {
+    key: 'P',
+    label: 'DIALOG',
+    hint: 'Wheel = max width px · Shift+wheel = display pad px · Select Dialog item or press P',
+  },
+};
+
 const DIALOG_ITEM = '__dialog__';
 
 let workingLayout = mergeJournalLayout(null);
@@ -25,6 +68,7 @@ let currentItem = 'fieldPuzzleId';
 let previewMode = 'record';
 let previewTab = 'puzzle';
 let hideMockLabels = false;
+let editMode = 'move';
 let dragState = null;
 let listScroller = null;
 
@@ -87,6 +131,60 @@ function syncPreviewModeUi() {
   document.getElementById('modeLibraryBtn')?.classList.toggle('is-active', !isRecord);
 }
 
+function stepForEvent(e, fine, medium, large) {
+  if (e.shiftKey) return fine;
+  if (e.ctrlKey || e.metaKey) return large;
+  return medium;
+}
+
+function wheelDir(e) {
+  return e.deltaY < 0 ? 1 : -1;
+}
+
+function setEditMode(mode) {
+  if (!EDIT_MODES[mode]) return;
+  editMode = mode;
+  if (els.modeBar) {
+    els.mockStage?.setAttribute('data-edit-mode', mode);
+    for (const btn of els.modeBar.querySelectorAll('.mode-btn')) {
+      btn.classList.toggle('is-active', btn.dataset.mode === mode);
+    }
+  }
+  if (els.modeBadge) {
+    els.modeBadge.textContent = `[${EDIT_MODES[mode].label}]`;
+    els.modeBadge.dataset.mode = mode;
+  }
+  if (els.modeHint) els.modeHint.textContent = EDIT_MODES[mode].hint;
+  updateKeysHelp();
+}
+
+function tunerItemOrder() {
+  const keys = [DIALOG_ITEM];
+  for (const btn of els.fieldGrid?.querySelectorAll('.field-btn[data-item]') || []) {
+    const key = btn.dataset.item;
+    if (key && key !== DIALOG_ITEM) keys.push(key);
+  }
+  return keys;
+}
+
+function cycleItem(backward = false) {
+  const items = tunerItemOrder().filter((key) => key === DIALOG_ITEM || isItemVisibleInPreview(key));
+  const idx = items.indexOf(currentItem);
+  const next = items[(idx + (backward ? -1 : 1) + items.length) % items.length];
+  currentItem = next;
+  if (next === DIALOG_ITEM) setEditMode('dialog');
+  refresh();
+  els.mockStage?.focus({ preventScroll: true });
+}
+
+function selectItem(key) {
+  if (key === DIALOG_ITEM || JOURNAL_ITEM_DEFS[key]) {
+    currentItem = key;
+    refresh();
+    els.mockStage?.focus({ preventScroll: true });
+  }
+}
+
 function itemSupportsHeight(meta) {
   return meta && meta.kind !== 'label' && meta.kind !== 'scroller';
 }
@@ -94,38 +192,13 @@ function itemSupportsHeight(meta) {
 function updateKeysHelp() {
   const ul = document.getElementById('keysList');
   if (!ul) return;
-
-  if (currentItem === DIALOG_ITEM) {
-    ul.innerHTML = [
-      '<li><strong>Dialog</strong> — shared by Record &amp; Library</li>',
-      '<li>Alt+scroll — max width px · Alt+Shift+scroll — display pad px</li>',
-      '<li>Scroll on preview only (click preview first)</li>',
-    ].join('');
-    return;
-  }
-
-  const meta = JOURNAL_ITEM_DEFS[currentItem];
-  if (meta?.kind === 'scroller') {
-    ul.innerHTML = [
-      '<li><strong>List scroll bar</strong> — <em>one item</em>: the narrow PNG track + pin (no separate yellow box)</li>',
-      '<li>Blue outline on other fields; scroll bar gets gold outline when selected</li>',
-      '<li>Drag the bar to move · bottom handle or Ctrl+scroll — height · Alt — track width · Alt+Shift — pin size</li>',
-      '<li>Scroll on preview: top/right% · Shift+scroll — right%</li>',
-      '<li>Pin drag is disabled while tuning — scroll the list area on the left to preview scrolling</li>',
-    ].join('');
-    return;
-  }
-
-  const sizeLine = itemSupportsHeight(meta)
-    ? '<li><strong>Size:</strong> Ctrl+scroll — width% · Alt+scroll — height%</li>'
-    : '<li><strong>Size:</strong> Ctrl+scroll — width%</li>';
-
   ul.innerHTML = [
-    '<li><strong>Position</strong> — click preview, then scroll (not the left field list)</li>',
-    '<li>Scroll ↑↓ — nudge Y px · Shift+scroll — nudge X px</li>',
-    '<li>Arrows — move X/Y% · Shift+↑↓ — nudge px · [ ] — width% · , . — height%</li>',
-    sizeLine,
-    '<li>Drag yellow box to move · drag right/bottom/corner handles to resize W, H, or both</li>',
+    '<li><strong>M</strong> move · <strong>W</strong> width · <strong>H</strong> height · <strong>I</strong> pin (scroll bar) · <strong>P</strong> dialog · <strong>Esc</strong> → move</li>',
+    '<li><strong>Tab</strong> cycle items · Click preview before wheel · Shift/Ctrl = fine/large step</li>',
+    '<li>Scroll bar: <strong>W</strong> = track width · <strong>H</strong> = track length (h%) · <strong>I</strong> = pin · <strong>M</strong> = move on art</li>',
+    '<li>List content (puzzle rows): <strong>M</strong> = move in pane · <strong>W/H</strong> = box size · Shift+wheel = pixel nudge</li>',
+    '<li>List rows (both modes): <strong>W</strong> = font · <strong>H</strong> = row padding · <strong>I</strong> = side padding · <strong>M</strong> + wheel = gap between rows</li>',
+    '<li>Solution preview: inside lower-right pane — <strong>M/W/H</strong> move and resize · solution centers in box</li>',
   ].join('');
 }
 
@@ -133,7 +206,37 @@ function ensureCurrentItemInMode() {
   if (currentItem === DIALOG_ITEM) return;
   if (isItemVisibleInPreview(currentItem)) return;
   if (previewMode === 'record') currentItem = 'fieldPuzzleId';
-  else currentItem = 'selectorBoardSize';
+  else currentItem = 'paneBottomLeft';
+}
+
+function syncTunerMockVisibility() {
+  const artTab = previewTab === 'stats' || previewTab === 'records';
+  const showPreview = !artTab && (previewMode === 'record' || currentItem === 'solutionPreview');
+  document.getElementById('mockPreviewWrap')?.toggleAttribute('hidden', !showPreview);
+
+  const showRecordTop = !artTab && (
+    previewMode === 'record'
+    || (currentItem !== DIALOG_ITEM && RECORD_ONLY_ITEMS.has(currentItem))
+  );
+  document.getElementById('mockRecordTop')?.toggleAttribute('hidden', !showRecordTop);
+
+  const showLibraryTop = !artTab && (
+    previewMode === 'library'
+    || (currentItem !== DIALOG_ITEM && LIBRARY_ONLY_ITEMS.has(currentItem))
+  );
+  document.getElementById('mockLibraryTop')?.toggleAttribute('hidden', !showLibraryTop);
+
+  document.getElementById('mockListTitleBar')?.toggleAttribute('hidden', artTab || previewMode === 'record');
+
+  for (const sel of ['.tz-journal-pane--top', '.tz-journal-pane--bl', '.tz-journal-pane--br']) {
+    document.getElementById('mockJournalFrame')?.querySelector(sel)?.toggleAttribute('hidden', artTab);
+  }
+
+  document.getElementById('mockTitleFound')?.toggleAttribute('hidden', true);
+  document.getElementById('mockTitleRecorded')?.toggleAttribute(
+    'hidden',
+    !(previewMode === 'library' || currentItem === 'titleRecordedPuzzles' || currentItem === 'listRow'),
+  );
 }
 
 const els = {};
@@ -146,8 +249,10 @@ function wireFieldGrid() {
     });
     btn.addEventListener('click', () => {
       currentItem = btn.dataset.item;
+      if (currentItem === 'listScroller' && editMode === 'move') setEditMode('width');
+      if (currentItem === 'solutionPreview' && editMode === 'dialog') setEditMode('move');
+      if (currentItem === 'listRow' && editMode === 'dialog') setEditMode('width');
       refresh();
-      updateKeysHelp();
       els.mockStage?.focus({ preventScroll: true });
     });
   }
@@ -157,13 +262,91 @@ function cloneLayout(layout) {
   return JSON.parse(JSON.stringify(layout));
 }
 
+function getTunerDragRect(key) {
+  if (key === 'listScroller' || key === 'listContent' || key === 'listTitleBar') {
+    const pane = document.querySelector('[data-tuner-item="paneBottomLeft"]');
+    if (pane) return pane.getBoundingClientRect();
+  }
+  if (key === 'titleFoundSolutions' || key === 'titleRecordedPuzzles') {
+    const titleBar = document.querySelector('[data-tuner-item="listTitleBar"]');
+    if (titleBar) return titleBar.getBoundingClientRect();
+  }
+  if (key === 'solutionPreview') {
+    const pane = document.querySelector('[data-tuner-item="paneBottomRight"]');
+    if (pane) return pane.getBoundingClientRect();
+  }
+  const frame = document.getElementById('mockJournalFrame');
+  return frame?.getBoundingClientRect() ?? { width: 1, height: 1 };
+}
+
 function patchItem(key, patch, { live = false } = {}) {
   workingLayout.items[key] = {
     ...(workingLayout.items[key] || {}),
     ...patch,
   };
+  if (key === 'listScroller') {
+    const normalized = getJournalItemLayout(key, workingLayout);
+    workingLayout.items[key] = {
+      space: 'pane',
+      x: normalized.x,
+      y: normalized.y,
+      h: normalized.h,
+      trackScale: normalized.trackScale,
+      pinScale: normalized.pinScale,
+      nudgeX: normalized.nudgeX ?? 0,
+      nudgeY: normalized.nudgeY ?? 0,
+    };
+  }
+  if (key === 'listContent') {
+    const normalized = getJournalItemLayout(key, workingLayout);
+    workingLayout.items[key] = {
+      space: 'pane',
+      x: normalized.x,
+      y: normalized.y,
+      w: normalized.w,
+      h: normalized.h,
+      nudgeX: normalized.nudgeX ?? 0,
+      nudgeY: normalized.nudgeY ?? 0,
+    };
+  }
+  if (key === 'listTitleBar') {
+    const normalized = getJournalItemLayout(key, workingLayout);
+    workingLayout.items[key] = {
+      space: 'pane',
+      x: normalized.x,
+      y: normalized.y,
+      w: normalized.w,
+      h: normalized.h,
+      nudgeX: normalized.nudgeX ?? 0,
+      nudgeY: normalized.nudgeY ?? 0,
+    };
+  }
+  if (key === 'titleFoundSolutions' || key === 'titleRecordedPuzzles') {
+    const normalized = getJournalItemLayout(key, workingLayout);
+    workingLayout.items[key] = {
+      space: 'titleBar',
+      x: normalized.x,
+      y: normalized.y,
+      w: normalized.w,
+      h: normalized.h,
+      nudgeX: normalized.nudgeX ?? 0,
+      nudgeY: normalized.nudgeY ?? 0,
+    };
+  }
+  if (key === 'solutionPreview') {
+    const normalized = getJournalItemLayout(key, workingLayout);
+    workingLayout.items[key] = {
+      space: 'pane',
+      x: normalized.x,
+      y: normalized.y,
+      w: normalized.w,
+      h: normalized.h,
+      nudgeX: normalized.nudgeX ?? 0,
+      nudgeY: normalized.nudgeY ?? 0,
+    };
+  }
   if (live) {
-    applyJournalLayout(workingLayout, document.documentElement);
+    applyJournalLayoutEverywhere(workingLayout);
     els.readout.innerHTML = formatItemReadout(currentItem);
     const ov = document.querySelector(`.tuner-overlay[data-item="${key}"]`);
     if (ov) Object.assign(ov.style, overlayStyleForItem(key));
@@ -208,9 +391,14 @@ async function saveToFile({ quiet = false } = {}) {
     clearJournalLayoutDraft();
     localStorage.setItem('tilezilla:journal-layout-version', String(Date.now()));
     window.dispatchEvent(new CustomEvent('tilezilla:journal-layout-saved'));
+    workingLayout = cloneLayout(await loadJournalLayout({ force: true }));
+    applyJournalLayoutEverywhere(workingLayout);
+    syncPreviewModeUi();
+    els.jsonOut.value = exportJson();
+    els.reportOut.value = buildJournalLayoutReport(workingLayout);
     els.status.textContent = quiet
-      ? 'Auto-saved to data/journal_layout.json'
-      : 'Saved to data/journal_layout.json';
+      ? 'Auto-saved to data/journal_layout.json — hard-refresh the game to pick up changes'
+      : 'Saved to data/journal_layout.json — hard-refresh the game (Ctrl+Shift+R)';
     return true;
   } catch (err) {
     els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
@@ -228,16 +416,6 @@ function scheduleSave() {
 
 function overlayStyleForItem(key) {
   const item = getJournalItemLayout(key, workingLayout);
-  const meta = JOURNAL_ITEM_DEFS[key];
-  if (meta?.kind === 'scroller') {
-    return {
-      right: `calc(${item.right ?? 2}% + ${item.nudgeX ?? 0}px)`,
-      top: `calc(${item.top ?? 8}% + ${item.nudgeY ?? 0}px)`,
-      width: `${Math.max(4, (item.trackScale ?? 1) * 5)}%`,
-      height: `${item.height ?? 84}%`,
-      left: 'auto',
-    };
-  }
   return {
     left: `calc(${item.x ?? 0}% + ${item.nudgeX ?? 0}px)`,
     top: `calc(${item.y ?? 0}% + ${item.nudgeY ?? 0}px)`,
@@ -252,8 +430,8 @@ function renderOverlays() {
   layer.replaceChildren();
   for (const [key, def] of Object.entries(JOURNAL_ITEM_DEFS)) {
     if (!isItemVisibleInPreview(key)) continue;
-    // Scroll bar is tuned on the real PNG element — no duplicate yellow overlay.
-    if (def.kind === 'scroller') continue;
+    // Scroll bar, list/title areas, preview, and list rows tune the real element — no duplicate yellow overlay.
+    if (def.kind === 'scroller' || def.kind === 'listArea' || def.kind === 'titleBarChild' || def.kind === 'preview' || def.kind === 'list') continue;
     const ov = document.createElement('div');
     ov.className = 'tuner-overlay';
     ov.dataset.item = key;
@@ -304,8 +482,7 @@ function onOverlayPointerDown(e, key, resizeMode = null) {
   e.preventDefault();
   e.stopPropagation();
 
-  const frame = document.getElementById('mockJournalFrame');
-  const rect = frame.getBoundingClientRect();
+  const rect = getTunerDragRect(key);
   const item = getJournalItemLayout(key, workingLayout);
 
   dragState = {
@@ -328,14 +505,19 @@ function onOverlayPointerMove(e) {
   const meta = JOURNAL_ITEM_DEFS[key];
 
   if (meta?.kind === 'scroller') {
-    if (resizeMode === 'h') {
+    if (resizeMode === 'w' || resizeMode === 'wh') {
+      const scale = item.trackScale ?? 1;
+      const newScale = Math.max(0.04, scale + dx / TRACK_BASE_PX);
+      patchItem(key, { trackScale: Math.round(newScale * 100) / 100 }, { live: true });
+    }
+    if (resizeMode === 'h' || resizeMode === 'wh') {
       patchItem(key, {
-        height: Math.round(Math.max(10, (item.height ?? 84) + (dy / frameH) * 100) * 10) / 10,
+        h: Math.round(Math.max(2, (item.h ?? 30) + (dy / frameH) * 100) * 10) / 10,
       }, { live: true });
     } else if (!resizeMode) {
       patchItem(key, {
-        top: Math.round(Math.max(0, (item.top ?? 8) + (dy / frameH) * 100) * 10) / 10,
-        right: Math.round(Math.max(0, (item.right ?? 2) - (dx / frameW) * 100) * 10) / 10,
+        x: Math.round(((item.x ?? 0) + (dx / frameW) * 100) * 10) / 10,
+        y: Math.round(((item.y ?? 0) + (dy / frameH) * 100) * 10) / 10,
       }, { live: true });
     }
     dragState.item = getJournalItemLayout(key, workingLayout);
@@ -451,12 +633,6 @@ function setPreviewMode(mode) {
   previewMode = mode;
   const isRecord = mode === 'record';
 
-  document.getElementById('mockRecordTop').hidden = !isRecord;
-  document.getElementById('mockLibraryTop').hidden = isRecord;
-  document.getElementById('mockTitleFound').hidden = !isRecord;
-  document.getElementById('mockTitleRecorded').hidden = isRecord;
-  document.getElementById('mockPreviewWrap').hidden = !isRecord;
-
   if (mode === 'library') previewTab = 'filter';
   else if (previewTab === 'filter') previewTab = 'puzzle';
 
@@ -465,6 +641,7 @@ function setPreviewMode(mode) {
   syncTabToggleUi();
   renderMockList();
   syncPreviewOverlays();
+  syncTunerMockVisibility();
   renderOverlays();
   refreshFieldGrid();
   els.readout.innerHTML = formatItemReadout(currentItem);
@@ -477,6 +654,7 @@ function setPreviewTab(tab) {
   else {
     syncTabToggleUi();
     syncPreviewOverlays();
+    syncTunerMockVisibility();
   }
 }
 
@@ -492,10 +670,51 @@ function applyArtOnlyPreview() {
   document.getElementById('mockRecordTop')?.classList.toggle('is-art-only', artOnly);
 }
 
+function syncListContentTuningUi() {
+  const el = document.getElementById('mockListScroll');
+  if (!el) return;
+  el.classList.toggle('is-list-content-tuning', currentItem === 'listContent');
+}
+
 function syncScrollerTuningUi() {
   const el = document.getElementById('mockListScroller');
   if (!el) return;
   el.classList.toggle('is-scroller-tuning', currentItem === 'listScroller');
+}
+
+function syncPreviewTuningUi() {
+  const el = document.getElementById('mockPreviewWrap');
+  if (!el) return;
+  el.classList.toggle('is-preview-tuning', currentItem === 'solutionPreview');
+}
+
+function syncListRowTuningUi() {
+  const el = document.getElementById('mockList');
+  if (!el) return;
+  el.classList.toggle('is-list-row-tuning', currentItem === 'listRow');
+}
+
+function wireListContentTuning() {
+  const el = document.getElementById('mockListScroll');
+  if (!el || el.dataset.listContentTunerWired) return;
+  el.dataset.listContentTunerWired = '1';
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest('.tz-journal-list__row')) return;
+
+    if (currentItem !== 'listContent') {
+      currentItem = 'listContent';
+      if (editMode === 'dialog') setEditMode('move');
+      refreshFieldGrid();
+      updateKeysHelp();
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    const resizeMode = e.target?.dataset?.resize || null;
+    onOverlayPointerDown(e, 'listContent', resizeMode);
+  });
 }
 
 function wireScrollerTuning() {
@@ -509,6 +728,7 @@ function wireScrollerTuning() {
 
     if (currentItem !== 'listScroller') {
       currentItem = 'listScroller';
+      if (editMode === 'move') setEditMode('width');
       refreshFieldGrid();
       updateKeysHelp();
     }
@@ -520,6 +740,29 @@ function wireScrollerTuning() {
   });
 }
 
+function wirePreviewTuning() {
+  const el = document.getElementById('mockPreviewWrap');
+  if (!el || el.dataset.previewTunerWired) return;
+  el.dataset.previewTunerWired = '1';
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+
+    if (currentItem !== 'solutionPreview') {
+      currentItem = 'solutionPreview';
+      if (editMode === 'dialog') setEditMode('move');
+      syncTunerMockVisibility();
+      refreshFieldGrid();
+      updateKeysHelp();
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    const resizeMode = e.target?.dataset?.resize || null;
+    onOverlayPointerDown(e, 'solutionPreview', resizeMode);
+  });
+}
+
 function wireTunerItemClicks() {
   document.querySelectorAll('[data-tuner-item]').forEach((node) => {
     node.addEventListener('click', (e) => {
@@ -527,6 +770,9 @@ function wireTunerItemClicks() {
       const key = node.dataset.tunerItem;
       if (!JOURNAL_ITEM_DEFS[key]) return;
       currentItem = key;
+      if (key === 'listScroller' && editMode === 'move') setEditMode('width');
+      if (key === 'solutionPreview' && editMode === 'dialog') setEditMode('move');
+      if (key === 'listRow' && editMode === 'dialog') setEditMode('width');
       refresh();
     });
   });
@@ -551,6 +797,9 @@ function refreshFieldGrid() {
     ov.classList.toggle('is-active', ov.dataset.item === currentItem);
   }
   syncScrollerTuningUi();
+  syncListContentTuningUi();
+  syncPreviewTuningUi();
+  syncListRowTuningUi();
 }
 
 function formatItemReadout(key) {
@@ -562,15 +811,32 @@ function formatItemReadout(key) {
   if (key === DIALOG_ITEM) {
     const d = workingLayout.dialog;
     return `<strong>Dialog</strong><br />maxDesignWidth ${d.maxDesignWidth ?? 390}px · displayPad ${d.displayPad ?? 16}px`
+      + ` · topNudge ${d.topNudge ?? 0}px (aligns with main board)`
+      + `<br /><em>Wheel = width · Shift+wheel = pad · Alt+wheel = top nudge</em>`
       + `${modeLine} · shared by Record &amp; Library`;
   }
   const item = getJournalItemLayout(key, workingLayout);
   const meta = JOURNAL_ITEM_DEFS[key];
+  if (meta?.kind === 'listArea' || meta?.kind === 'preview') {
+    return `<strong>${meta.label}</strong><br />`
+      + `pane x ${item.x}% · y ${item.y}% · w ${item.w}% · h ${item.h}%`
+      + (item.nudgeX ? ` · nudgeX ${item.nudgeX}px` : '')
+      + (item.nudgeY ? ` · nudgeY ${item.nudgeY}px` : '')
+      + `<br /><em>M = move left/right/up/down · W = width · H = height · Shift+wheel = pixel nudge</em>`
+      + modeLine + modeWarn;
+  }
   if (meta?.kind === 'scroller') {
     return `<strong>${meta.label}</strong><br />`
-      + `right ${item.right}% · top ${item.top}% · height ${item.height}%<br />`
-      + `trackScale ${item.trackScale} · pinScale ${item.pinScale}`
-      + `<br /><em>One item — tune the PNG bar directly (gold outline). List area left is separate content scroll.</em>`
+      + `pane x ${item.x}% · y ${item.y}% · h ${item.h}% (track length)<br />`
+      + `trackScale ${item.trackScale} (≈${Math.round(TRACK_BASE_PX * (item.trackScale ?? 1))}px wide)`
+      + ` · pinScale ${item.pinScale}`
+      + `<br /><em>W = track width · thin pencil line ≈ 0.15–0.25 · H = length% · I = pin · M = move on journal art</em>`
+      + modeLine + modeWarn;
+  }
+  if (meta?.kind === 'list') {
+    return `<strong>${meta.label}</strong><br />`
+      + `fontScale ${item.fontScale ?? 1} · pad ${item.padY ?? 6}px×${item.padX ?? 8}px · gap ${item.gap ?? 4}px`
+      + `<br /><em>W = font · H = vertical pad · I = horizontal pad · M + wheel = row gap (Record &amp; Library)</em>`
       + modeLine + modeWarn;
   }
   const parts = [`x:${item.x}%`, `y:${item.y}%`, `w:${item.w}%`];
@@ -581,8 +847,9 @@ function formatItemReadout(key) {
 }
 
 function refresh() {
-  applyJournalLayout(workingLayout, document.documentElement);
+  applyJournalLayoutEverywhere(workingLayout);
   syncPreviewModeUi();
+  syncTunerMockVisibility();
   els.readout.innerHTML = formatItemReadout(currentItem);
   els.jsonOut.value = exportJson();
   els.reportOut.value = buildJournalLayoutReport(workingLayout);
@@ -605,160 +872,213 @@ function tuningInputBlocked(target) {
 function wheelShouldTune(e) {
   if (tuningInputBlocked(e.target)) return false;
   if (!e.target.closest('#mockStage')) return false;
-  if (currentItem !== 'listScroller' && e.target.closest('.tz-journal-list-scroll')) return false;
+  if (currentItem === 'listScroller' || currentItem === 'listContent' || currentItem === 'listRow') return true;
+  if (e.target.closest('.tz-journal-list-scroll')) return false;
   return true;
 }
 
 function onWheel(e) {
   if (!wheelShouldTune(e)) return;
+  e.preventDefault();
+  e.stopPropagation();
 
-  const dir = e.deltaY < 0 ? 1 : -1;
+  const dir = wheelDir(e);
   const live = { live: true };
 
-  if (currentItem === DIALOG_ITEM) {
-    e.preventDefault();
+  if (editMode === 'dialog' || currentItem === DIALOG_ITEM) {
     const d = workingLayout.dialog;
-    if (e.altKey && e.shiftKey) {
-      patchDialog({ displayPad: Math.max(0, (d.displayPad ?? 16) + dir * 2) });
-      return;
-    }
+    const step = stepForEvent(e, DIALOG_FINE, DIALOG_MED, DIALOG_LARGE);
     if (e.altKey) {
-      patchDialog({ maxDesignWidth: Math.max(280, (d.maxDesignWidth ?? 390) + dir * 4) });
-    }
-    return;
-  }
-
-  const item = getJournalItemLayout(currentItem, workingLayout);
-  const meta = JOURNAL_ITEM_DEFS[currentItem];
-  if (!meta) return;
-
-  e.preventDefault();
-
-  if (meta.kind === 'scroller') {
-    if (e.ctrlKey && e.altKey && e.shiftKey) {
-      patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP }, live);
-      return;
-    }
-    if (e.ctrlKey && e.altKey) {
-      patchItem(currentItem, { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP }, live);
-      return;
-    }
-    if (e.altKey && e.shiftKey) {
-      patchItem(currentItem, {
-        pinScale: Math.round(Math.max(0.4, (item.pinScale ?? 1) + dir * SCALE_STEP) * 100) / 100,
-      }, live);
-      return;
-    }
-    if (e.altKey) {
-      patchItem(currentItem, {
-        trackScale: Math.round(Math.max(0.4, (item.trackScale ?? 1) + dir * SCALE_STEP) * 100) / 100,
-      }, live);
-      return;
-    }
-    if (e.ctrlKey) {
-      patchItem(currentItem, {
-        height: Math.round(Math.max(10, (item.height ?? 84) + dir * PCT_STEP) * 10) / 10,
-      }, live);
+      patchDialog({ topNudge: Math.round((d.topNudge ?? 0) + dir * step) });
       return;
     }
     if (e.shiftKey) {
+      patchDialog({ displayPad: Math.max(0, (d.displayPad ?? 16) + dir * step) });
+      return;
+    }
+    patchDialog({ maxDesignWidth: Math.max(280, (d.maxDesignWidth ?? 390) + dir * step) });
+    return;
+  }
+
+  const meta = JOURNAL_ITEM_DEFS[currentItem];
+  if (!meta) return;
+
+  const item = getJournalItemLayout(currentItem, workingLayout);
+
+  if (meta.kind === 'list') {
+    if (editMode === 'width') {
+      const step = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
       patchItem(currentItem, {
-        right: Math.round(Math.max(0, (item.right ?? 2) + dir * PCT_STEP) * 10) / 10,
+        fontScale: Math.round(Math.max(0.5, (item.fontScale ?? 1) + dir * step) * 100) / 100,
+      }, live);
+      return;
+    }
+    if (editMode === 'height') {
+      const step = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
+      patchItem(currentItem, {
+        padY: Math.max(1, Math.round((item.padY ?? 6) + dir * step)),
+      }, live);
+      return;
+    }
+    if (editMode === 'pin') {
+      const step = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
+      patchItem(currentItem, {
+        padX: Math.max(1, Math.round((item.padX ?? 8) + dir * step)),
+      }, live);
+      return;
+    }
+    /* MOVE — row gap */
+    const step = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
+    patchItem(currentItem, {
+      gap: Math.max(0, Math.round((item.gap ?? 4) + dir * step)),
+    }, live);
+    return;
+  }
+
+  if (meta.kind === 'scroller') {
+    if (editMode === 'width') {
+      const step = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+      patchItem(currentItem, {
+        trackScale: Math.round(Math.max(0.04, (item.trackScale ?? 1) + dir * step) * 100) / 100,
+      }, live);
+      return;
+    }
+    if (editMode === 'height') {
+      const step = stepForEvent(e, PCT_FINE, PCT_MED, PCT_LARGE);
+      patchItem(currentItem, {
+        h: Math.round(Math.max(2, (item.h ?? 30) + dir * step) * 10) / 10,
+      }, live);
+      return;
+    }
+    if (editMode === 'pin') {
+      const step = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+      patchItem(currentItem, {
+        pinScale: Math.round(Math.max(0.15, (item.pinScale ?? 1) + dir * step) * 100) / 100,
+      }, live);
+      return;
+    }
+    /* MOVE */
+    const posStep = stepForEvent(e, PCT_FINE, PCT_MED, PCT_LARGE);
+    if (e.shiftKey) {
+      patchItem(currentItem, {
+        x: Math.round(((item.x ?? 0) + dir * posStep) * 10) / 10,
+      }, live);
+      return;
+    }
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      patchItem(currentItem, {
+        x: Math.round(((item.x ?? 0) + (e.deltaX > 0 ? posStep : -posStep)) * 10) / 10,
       }, live);
       return;
     }
     patchItem(currentItem, {
-      top: Math.round(Math.max(0, (item.top ?? 8) + dir * PCT_STEP) * 10) / 10,
+      y: Math.round(((item.y ?? 0) + dir * posStep) * 10) / 10,
     }, live);
     return;
   }
 
-  if (e.ctrlKey && !e.shiftKey) {
+  if (editMode === 'width') {
+    const step = stepForEvent(e, SIZE_FINE, SIZE_MED, SIZE_LARGE);
     patchItem(currentItem, {
-      w: Math.round(Math.max(2, (item.w ?? 10) + dir * SIZE_STEP) * 10) / 10,
+      w: Math.round(Math.max(2, (item.w ?? 10) + dir * step) * 10) / 10,
     }, live);
     return;
   }
 
-  if (e.altKey && !e.shiftKey && itemSupportsHeight(meta)) {
+  if (editMode === 'height' && itemSupportsHeight(meta)) {
+    const step = stepForEvent(e, SIZE_FINE, SIZE_MED, SIZE_LARGE);
     patchItem(currentItem, {
-      h: Math.round(Math.max(2, (item.h ?? 5) + dir * SIZE_STEP) * 10) / 10,
+      h: Math.round(Math.max(2, (item.h ?? 5) + dir * step) * 10) / 10,
     }, live);
     return;
   }
 
-  // Scroll = pixel nudge (discovery tuner); arrows = position %
+  if (editMode === 'pin') return;
+
+  /* MOVE */
+  const posStep = stepForEvent(e, POS_FINE, POS_MED, POS_LARGE);
+  const nudgeStep = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
   if (e.shiftKey) {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      patchItem(currentItem, { nudgeX: (item.nudgeX ?? 0) + (e.deltaX > 0 ? nudgeStep : -nudgeStep) }, live);
+    } else {
+      patchItem(currentItem, {
+        x: Math.round(((item.x ?? 0) + dir * posStep) * 10) / 10,
+      }, live);
+    }
+    return;
+  }
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
     patchItem(currentItem, {
-      nudgeX: (item.nudgeX ?? 0) + (e.deltaY < 0 ? NUDGE_STEP : -NUDGE_STEP),
+      x: Math.round(((item.x ?? 0) + (e.deltaX > 0 ? posStep : -posStep)) * 10) / 10,
     }, live);
     return;
   }
-
   patchItem(currentItem, {
-    nudgeY: (item.nudgeY ?? 0) + (e.deltaY > 0 ? NUDGE_STEP : -NUDGE_STEP),
+    y: Math.round(((item.y ?? 0) + dir * posStep) * 10) / 10,
   }, live);
 }
 
 function onKeyDown(e) {
   if (tuningInputBlocked(e.target)) return;
 
-  const live = { live: true };
+  const modeKey = e.key.toLowerCase();
+  if (modeKey === 'm') { setEditMode('move'); e.preventDefault(); return; }
+  if (modeKey === 'w') { setEditMode('width'); e.preventDefault(); return; }
+  if (modeKey === 'h') { setEditMode('height'); e.preventDefault(); return; }
+  if (modeKey === 'i') { setEditMode('pin'); e.preventDefault(); return; }
+  if (modeKey === 'p') { setEditMode('dialog'); currentItem = DIALOG_ITEM; refresh(); e.preventDefault(); return; }
+  if (e.key === 'Escape') { setEditMode('move'); e.preventDefault(); return; }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    cycleItem(e.shiftKey);
+    return;
+  }
 
+  if (editMode !== 'move') return;
+
+  const live = { live: true };
   if (currentItem === DIALOG_ITEM) return;
 
   const item = getJournalItemLayout(currentItem, workingLayout);
   const meta = JOURNAL_ITEM_DEFS[currentItem];
   if (!meta) return;
 
+  const posStep = stepForEvent(e, POS_FINE, POS_MED, POS_LARGE);
+  const nudgeStep = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
+
   if (meta.kind === 'scroller') {
     if (e.key === 'ArrowLeft') {
-      patchItem(currentItem, { right: Math.round(((item.right ?? 2) + POS_STEP) * 10) / 10 }, live);
+      patchItem(currentItem, { right: Math.round(((item.right ?? 2) + posStep) * 10) / 10 }, live);
       e.preventDefault();
     } else if (e.key === 'ArrowRight') {
-      patchItem(currentItem, { right: Math.round(Math.max(0, (item.right ?? 2) - POS_STEP) * 10) / 10 }, live);
+      patchItem(currentItem, { right: Math.round(Math.max(0, (item.right ?? 2) - posStep) * 10) / 10 }, live);
       e.preventDefault();
     } else if (e.key === 'ArrowUp') {
-      patchItem(currentItem, {
-        top: Math.round(Math.max(0, (item.top ?? 8) - (e.shiftKey ? 0 : POS_STEP)) * 10) / 10,
-        ...(e.shiftKey ? { nudgeY: (item.nudgeY ?? 0) - NUDGE_STEP } : {}),
-      }, live);
       e.preventDefault();
+      if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) - nudgeStep }, live);
+      else patchItem(currentItem, { top: Math.round(Math.max(0, (item.top ?? 8) - posStep) * 10) / 10 }, live);
     } else if (e.key === 'ArrowDown') {
-      patchItem(currentItem, {
-        top: Math.round(((item.top ?? 8) + (e.shiftKey ? 0 : POS_STEP)) * 10) / 10,
-        ...(e.shiftKey ? { nudgeY: (item.nudgeY ?? 0) + NUDGE_STEP } : {}),
-      }, live);
       e.preventDefault();
+      if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) + nudgeStep }, live);
+      else patchItem(currentItem, { top: Math.round(((item.top ?? 8) + posStep) * 10) / 10 }, live);
     }
     return;
   }
 
   if (e.key === 'ArrowLeft') {
-    patchItem(currentItem, { x: Math.round(((item.x ?? 0) - POS_STEP) * 10) / 10 }, live);
+    patchItem(currentItem, { x: Math.round(((item.x ?? 0) - posStep) * 10) / 10 }, live);
     e.preventDefault();
   } else if (e.key === 'ArrowRight') {
-    patchItem(currentItem, { x: Math.round(((item.x ?? 0) + POS_STEP) * 10) / 10 }, live);
+    patchItem(currentItem, { x: Math.round(((item.x ?? 0) + posStep) * 10) / 10 }, live);
     e.preventDefault();
   } else if (e.key === 'ArrowUp') {
-    if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) - NUDGE_STEP }, live);
-    else patchItem(currentItem, { y: Math.round(((item.y ?? 0) - POS_STEP) * 10) / 10 }, live);
+    if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) - nudgeStep }, live);
+    else patchItem(currentItem, { y: Math.round(((item.y ?? 0) - posStep) * 10) / 10 }, live);
     e.preventDefault();
   } else if (e.key === 'ArrowDown') {
-    if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) + NUDGE_STEP }, live);
-    else patchItem(currentItem, { y: Math.round(((item.y ?? 0) + POS_STEP) * 10) / 10 }, live);
-    e.preventDefault();
-  } else if (e.key === '[') {
-    patchItem(currentItem, { w: Math.round(Math.max(2, (item.w ?? 10) - SIZE_STEP) * 10) / 10 }, live);
-    e.preventDefault();
-  } else if (e.key === ']') {
-    patchItem(currentItem, { w: Math.round(((item.w ?? 10) + SIZE_STEP) * 10) / 10 }, live);
-    e.preventDefault();
-  } else if (itemSupportsHeight(meta) && e.key === ',') {
-    patchItem(currentItem, { h: Math.round(Math.max(2, (item.h ?? 5) - SIZE_STEP) * 10) / 10 }, live);
-    e.preventDefault();
-  } else if (itemSupportsHeight(meta) && e.key === '.') {
-    patchItem(currentItem, { h: Math.round(((item.h ?? 5) + SIZE_STEP) * 10) / 10 }, live);
+    if (e.shiftKey) patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) + nudgeStep }, live);
+    else patchItem(currentItem, { y: Math.round(((item.y ?? 0) + posStep) * 10) / 10 }, live);
     e.preventDefault();
   }
 }
@@ -771,6 +1091,18 @@ async function init() {
   els.reportOut = document.getElementById('reportOut');
   els.mockStage = document.getElementById('mockStage');
   els.modeSelect = document.getElementById('modeSelect');
+  els.modeBar = document.getElementById('modeBar');
+  els.modeBadge = document.getElementById('modeBadge');
+  els.modeHint = document.getElementById('modeHint');
+
+  for (const [mode] of Object.entries(EDIT_MODES)) {
+    els.modeBar?.querySelector(`.mode-btn[data-mode="${mode}"]`)?.addEventListener('click', () => {
+      setEditMode(mode);
+      if (mode === 'dialog') currentItem = DIALOG_ITEM;
+      refresh();
+      els.mockStage?.focus({ preventScroll: true });
+    });
+  }
 
   if (!els.fieldGrid || !els.readout || !els.mockStage) {
     throw new Error('Tuner markup missing — hard refresh journal-tuner.html');
@@ -790,7 +1122,9 @@ async function init() {
   });
 
   wireTunerItemClicks();
+  wireListContentTuning();
   wireScrollerTuning();
+  wirePreviewTuning();
 
   listScroller = initFancyScroller({
     scrollEl: document.getElementById('mockListScroll'),
@@ -800,7 +1134,7 @@ async function init() {
   });
 
   document.addEventListener('keydown', onKeyDown, { capture: true });
-  els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+  els.mockStage.addEventListener('wheel', onWheel, { passive: false, capture: true });
   els.mockStage.addEventListener('click', () => els.mockStage.focus({ preventScroll: true }));
   document.getElementById('tunerOverlayLayer')?.addEventListener('pointermove', onOverlayPointerMove);
   document.getElementById('tunerOverlayLayer')?.addEventListener('pointerup', onOverlayPointerUp);
@@ -843,9 +1177,16 @@ async function init() {
     workingLayout = mergeJournalLayout(null);
   }
   setPreviewMode('record');
+  setEditMode('move');
+  updateKeysHelp();
   refresh();
   els.mockStage.focus();
-  if (els.status) els.status.textContent = 'Ready — select a layout item above';
+  if (els.status) {
+    const resumedDraft = localStorage.getItem('tilezilla:layouts:journal:pending') === '1';
+    els.status.textContent = resumedDraft
+      ? 'Resumed browser draft — use Reload from file to match game, or Save now after edits'
+      : 'Ready — Record mode matches game layout in data/journal_layout.json';
+  }
 }
 
 init().catch((err) => {

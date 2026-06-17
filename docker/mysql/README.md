@@ -39,6 +39,20 @@ docker compose exec mysql mysql -utilegame -p tilegame
 
 ## Populate `levels` and daily schedule
 
+If import fails with **Host is not allowed to connect**, the MySQL volume may be missing the `tilegame` database/user. Fix:
+
+```powershell
+.\scripts\bootstrap-mysql-tilegame.ps1
+```
+
+Import scripts auto-run bootstrap when needed.
+
+Sync CSVs first (normalizes daily dates, validates adventure map):
+
+```powershell
+docker compose run --rm web python scripts/sync-daily-adventure-data.py
+```
+
 From repo root (MySQL must be running; `solves/` populated or `solves.zip` extracted):
 
 ```powershell
@@ -48,7 +62,11 @@ From repo root (MySQL must be running; `solves/` populated or `solves.zip` extra
 This upserts:
 
 - **`levels`** — all rows from `data/levels/levels.json` (`total_unique_solutions` from `solves/*.json`)
-- **`daily_challenges`** — from `data/daily_challenges_import.csv` (strips `.json` from level ids)
+- **`daily_challenges`** — from `data/daily_challenges_import.csv` (ISO dates; strips `.json` from level ids)
+
+Source for daily edits: `data/daily_challenges_import-org.csv` (re-run sync script after changes).
+
+Optional Workbench SQL: `python scripts/generate-daily-challenges-workbench-sql.py` → `data/daily_challenges_workbench.sql`
 
 Canonical **solve layouts** stay in `solves/*.json` — MySQL V1 does not store placements.
 
@@ -68,9 +86,9 @@ Get-Content docker\mysql\init\03-adventure-schema.sql -Raw | docker compose exec
 .\scripts\import-adventure-map.ps1
 ```
 
-Authoritative CSV: `data/adventure_solution_distribution.csv` — puzzle map, step boundaries (`CH-lvl=T`), and progression counts.
+Authoritative CSV: `data/adventure_solution_distribution.csv` — puzzle map, step boundaries (`CH-lvl=T`), and progression counts. Step puzzle counts: `data/LevelSystem.csv`.
 
-`import-adventure-map.ps1` loads `adventure_rank`, `adventure_progression`, `adventure_puzzle`, and `adventure_postgame_puzzle` (levels after L8-10).
+`import-adventure-map.ps1` loads `adventure_rank`, `adventure_progression`, `adventure_puzzle`, and `adventure_postgame_puzzle` (levels after the last ranked step).
 
 Existing MySQL volume without postgame table:
 

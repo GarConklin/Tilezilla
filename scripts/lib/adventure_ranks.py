@@ -6,12 +6,16 @@ import json
 from pathlib import Path
 from typing import List, TypedDict
 
+ADVENTURE_RANK_COUNT = 9
+
 
 class AdventureRank(TypedDict):
     rank_id: int
     rank_code: str
     rank_name: str
+    rank_description: str
     badge_image: str
+    sublevel_badge: str
     display_order: int
 
 
@@ -24,6 +28,8 @@ def load_adventure_ranks(repo_root: Path | None = None) -> List[AdventureRank]:
     path = adventure_ranks_path(repo_root)
     with path.open(encoding="utf-8") as f:
         rows = json.load(f)
-    if len(rows) != 8:
-        raise ValueError(f"Expected 8 adventure ranks in {path}, got {len(rows)}")
+    if len(rows) != ADVENTURE_RANK_COUNT:
+        raise ValueError(
+            f"Expected {ADVENTURE_RANK_COUNT} adventure ranks in {path}, got {len(rows)}"
+        )
     return rows

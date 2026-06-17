@@ -12,6 +12,7 @@ import { initInvalidSolve, isInvalidSolveShowing } from './tilezilla-invalid-sol
 import {
   applyDiscoveryPopupLayout,
   applyDiscoveryRecordLayout,
+  applyDiscoveryButtonArt,
   getDiscoveryTexts,
   getDiscoveryVariantKey,
   loadDiscoveryRecordLayout,
@@ -47,7 +48,8 @@ import {
   reloadHintRulesLayout,
 } from './hint-rules-layout.js';
 import {
-  applyJournalLayout,
+  applyJournalLayoutEverywhere,
+  applyJournalOverlays,
   clearJournalLayoutCache,
   loadJournalLayout,
   reloadJournalLayout,
@@ -70,9 +72,11 @@ import {
   romanForSubLevel,
 } from './sublevel-icon.js';
 import {
+  adventureLevelContext,
   buildAdventureMeta,
   buildAdventureMetaForLevel,
   findNextUnsolved,
+  getPuzzleRequirement,
   getRankPanelState,
   isAdventurePuzzleComplete,
   isPuzzleSatisfied,
@@ -133,6 +137,8 @@ function applyUiScale() {
 
   document.documentElement.dataset.uiScale = String(scale);
   document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
+  window.__journalApi?.syncJournalDialogTop?.();
+  window.__journalApi?.syncJournalLayoutHits?.();
   return scale;
 }
 
@@ -263,9 +269,10 @@ async function continueDiscoverySearch(app) {
 async function refreshAdventureChrome(app) {
   if (document.querySelector('.tz-app')?.dataset?.screen !== 'adventure') return;
   const path = await loadAdventurePath();
+  const levelContext = adventureLevelContext(app);
   const level = app?.state?.currentLevel;
   if (level?.id) {
-    const meta = buildAdventureMetaForLevel(path, level.id, app?.progress);
+    const meta = buildAdventureMetaForLevel(path, level.id, app?.progress, levelContext);
     if (meta) {
       window.__adventureMeta = meta;
       updateChallengePanel(level, meta);
@@ -277,14 +284,21 @@ async function refreshAdventureChrome(app) {
 async function advanceAdventurePath(app) {
   const path = await loadAdventurePath();
   const progress = app?.progress || window.__app?.progress;
+  const levelContext = adventureLevelContext(app);
   const currentId = app.state.currentLevel?.id;
 
-  if (currentId && !isAdventurePuzzleComplete(progress, path, currentId)) {
-    showGameMessage('Find all solutions for this challenge before advancing.', 'warn');
+  if (currentId && !isAdventurePuzzleComplete(progress, path, currentId, levelContext)) {
+    const required = getPuzzleRequirement(path, currentId, levelContext);
+    showGameMessage(
+      required > 1
+        ? 'Find all solutions for this challenge before advancing.'
+        : 'Record a solution before advancing.',
+      'warn',
+    );
     return;
   }
 
-  const location = findNextUnsolved(progress, path, { afterLevelId: currentId });
+  const location = findNextUnsolved(progress, path, { afterLevelId: currentId, levelContext });
   if (!location?.puzzle) {
     showGameMessage('Adventure path complete!', 'success');
     return;
@@ -304,7 +318,7 @@ async function advanceAdventurePath(app) {
   updateValidationState(app);
   app.renderActivePreview?.();
 
-  const meta = buildAdventureMeta(path, location, progress);
+  const meta = buildAdventureMeta(path, location, progress, levelContext);
   window.__adventureMeta = meta;
   updateChallengePanel(level, meta);
   await updateRankPanel(app);
@@ -423,7 +437,11 @@ async function loadAdventureRanks() {
 
 async function updateRankPanel(app) {
   const path = await loadAdventurePath();
-  const rankState = getRankPanelState(app?.progress || window.__app?.progress, path);
+  const rankState = getRankPanelState(
+    app?.progress || window.__app?.progress,
+    path,
+    adventureLevelContext(app),
+  );
   const ranks = await loadAdventureRanks();
   const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
   const total = Math.max(1, rankState.stepTotal || 1);
@@ -1209,12 +1227,13 @@ async function loadAdventurePuzzle(app) {
 
     let { level, meta, location, path } = await resolveAdventureResume(app);
     const progress = app?.progress || window.__app?.progress;
+    const levelContext = adventureLevelContext(app);
 
-    while (level && location?.puzzle && isPuzzleSatisfied(progress, location.puzzle)) {
-      location = findNextUnsolved(progress, path, { afterLevelId: level.id });
+    while (level && location?.puzzle && isPuzzleSatisfied(progress, location.puzzle, levelContext)) {
+      location = findNextUnsolved(progress, path, { afterLevelId: level.id, levelContext });
       if (!location?.puzzle) break;
       level = app.state.allLevels?.find((l) => l.id === location.puzzle.levelId);
-      meta = level ? buildAdventureMeta(path, location, progress) : null;
+      meta = level ? buildAdventureMeta(path, location, progress, levelContext) : null;
     }
 
     if (!level) throw new Error('No adventure puzzle available');
@@ -1385,6 +1404,7 @@ async function init() {
     applyDiscoveryRecordLayout(discoveryLayout);
     setDiscoveryRecordLayout(discoveryLayout);
     setDiscoveryRecordTexts(getDiscoveryTexts(discoveryLayout));
+    applyDiscoveryButtonArt(discoveryLayout, document.getElementById('discoveryRecord'), 'new');
   } catch (err) {
     console.warn('Discovery record layout:', err);
   }
@@ -1408,7 +1428,14 @@ async function init() {
   }
 
   try {
-    applyJournalLayout(await loadJournalLayout());
+    if (window.__journalApi?.applyLayoutFromDisk) {
+      await window.__journalApi.applyLayoutFromDisk();
+    } else {
+      const layout = await loadJournalLayout();
+      applyJournalLayoutEverywhere(layout);
+      const frame = document.querySelector('#journalRoot .tz-journal-dialog__frame');
+      if (frame) applyJournalOverlays(layout, frame);
+    }
   } catch (err) {
     console.warn('Journal layout:', err);
   }
@@ -1513,10 +1540,11 @@ async function refreshDiscoveryLayoutFromDisk() {
     applyDiscoveryRecordLayout(layout);
     setDiscoveryRecordLayout(layout);
     setDiscoveryRecordTexts(getDiscoveryTexts(layout));
-
     const root = document.getElementById('discoveryRecord');
+    const mode = root?.classList.contains('tz-discovery-record--duplicate') ? 'duplicate' : 'new';
+    applyDiscoveryButtonArt(layout, root, mode);
+
     if (root && !root.hidden) {
-      const mode = root.classList.contains('tz-discovery-record--duplicate') ? 'duplicate' : 'new';
       const showAdvance = root.classList.contains('tz-discovery-record--with-advance');
       applyDiscoveryPopupLayout(
         layout,
@@ -1592,7 +1620,16 @@ window.addEventListener('focus', () => {
 async function refreshJournalLayoutFromDisk() {
   clearJournalLayoutCache();
   try {
-    applyJournalLayout(await reloadJournalLayout());
+    if (window.__journalApi?.applyLayoutFromDisk) {
+      await window.__journalApi.applyLayoutFromDisk({ force: true });
+      return;
+    }
+    const layout = await reloadJournalLayout();
+    applyJournalLayoutEverywhere(layout);
+    const frame = document.querySelector('#journalRoot .tz-journal-dialog__frame');
+    if (frame) {
+      applyJournalOverlays(layout, frame);
+    }
   } catch (err) {
     console.warn('Journal layout reload:', err);
   }

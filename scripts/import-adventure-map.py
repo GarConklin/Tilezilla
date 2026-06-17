@@ -3,13 +3,13 @@
 
 Authoritative source: data/adventure_solution_distribution.csv
   Adv_ID     → global adventure sequence
-  CH-lvl=T   → ends an adventure step (challenge puzzle); 80 steps total
+  CH-lvl=T   → ends an adventure step (challenge puzzle)
   level_id   → FK target in levels
 
-Step identity (L1-1 … L8-10) is derived from challenge order in the CSV:
-  step 1 → L1-1, step 10 → L1-10, step 11 → L2-1, … step 80 → L8-10
+Step identity (L1-1 … L9-10) follows data/LevelSystem.csv (90 steps, 6739 ranked puzzles when fully mapped).
+Puzzle level_id assignments come from this CSV via CH-lvl=T step boundaries (currently 82 steps through L9-2).
 
-Rows after the last CH-lvl=T → adventure_postgame_puzzle (play after L8-10).
+Rows after the last CH-lvl=T → adventure_postgame_puzzle.
 
 Populates:
   adventure_rank, adventure_progression, adventure_puzzle, adventure_postgame_puzzle
@@ -34,8 +34,8 @@ except ImportError:
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.adventure_ranks import load_adventure_ranks
+from lib.level_system import derive_progression_from_level_system, load_level_system_steps
 
-RANK_COUNT = 8
 STEPS_PER_RANK = 10
 
 
@@ -54,19 +54,12 @@ def connect():
 
 
 def step_to_rank_sub(step_index: int) -> Tuple[int, int]:
-    """Map 0-based step index to (rank_id, sub_level) for L1-1 … L8-10."""
+    """Map 0-based step index to (rank_id, sub_level) e.g. L1-1 … L9-2."""
     rank_id = step_index // STEPS_PER_RANK + 1
     sub_level = step_index % STEPS_PER_RANK + 1
-    if rank_id < 1 or rank_id > RANK_COUNT:
-        raise ValueError(f"Step index {step_index} out of range for 8 ranks")
+    if rank_id < 1:
+        raise ValueError(f"Step index {step_index} invalid")
     return rank_id, sub_level
-
-
-def required_solution_count(entry: dict) -> int:
-    if entry["is_challenge"]:
-        req = entry["total_unique_solutions"] or entry["solve_count"] or 1
-        return max(req, 1)
-    return 1
 
 
 def load_map_entries(map_path: Path) -> List[dict]:
@@ -83,8 +76,6 @@ def load_map_entries(map_path: Path) -> List[dict]:
                     "line": line_no,
                     "level_id": level_id,
                     "is_challenge": (raw.get("CH-lvl") or "").strip().upper() == "T",
-                    "total_unique_solutions": int(raw.get("total_unique_solutions") or 0),
-                    "solve_count": int(raw.get("solve_count") or 0),
                 }
             )
     entries.sort(key=lambda e: (e["adv_id"], e["line"]))
@@ -93,17 +84,16 @@ def load_map_entries(map_path: Path) -> List[dict]:
 
 def build_adventure_rows(
     entries: List[dict],
-) -> Tuple[List[dict], List[dict], List[dict], List[str]]:
+    level_system_steps: List[dict] | None = None,
+) -> Tuple[List[dict], List[dict], List[str]]:
     challenge_adv = sorted(e["adv_id"] for e in entries if e["is_challenge"])
-    if len(challenge_adv) != 80:
-        raise SystemExit(f"Expected 80 CH-lvl=T rows, got {len(challenge_adv)}")
+    if not challenge_adv:
+        raise SystemExit("No CH-lvl=T rows found in adventure CSV")
 
     warnings: List[str] = []
-    progression: List[dict] = []
     puzzles: List[dict] = []
     postgame: List[dict] = []
     prev_adv = 0
-    cumulative = 0
 
     for step_idx, end_adv in enumerate(challenge_adv):
         rank_id, sub_level = step_to_rank_sub(step_idx)
@@ -122,15 +112,19 @@ def build_adventure_rows(
             )
 
         actual = len(step_entries)
-        cumulative += actual
-        progression.append(
-            {
-                "rank_id": rank_id,
-                "sub_level": sub_level,
-                "levels_required": actual,
-                "cumulative_levels_required": cumulative,
-            }
-        )
+        if level_system_steps and step_idx < len(level_system_steps):
+            ls = level_system_steps[step_idx]
+            expect = ls["levels_required"]
+            if actual != expect:
+                warnings.append(
+                    f"L{rank_id}-{sub_level}: map has {actual} puzzles, "
+                    f"LevelSystem pzzle_amt={expect}"
+                )
+            if ls["rank_id"] != rank_id or ls["sub_level"] != sub_level:
+                warnings.append(
+                    f"Step index {step_idx + 1}: map L{rank_id}-{sub_level} != "
+                    f"LevelSystem L{ls['rank_id']}-{ls['sub_level']}"
+                )
 
         for order, entry in enumerate(step_entries, start=1):
             puzzles.append(
@@ -140,38 +134,57 @@ def build_adventure_rows(
                     "puzzle_order": order,
                     "level_id": entry["level_id"],
                     "is_challenge": entry["is_challenge"],
-                    "required_solution_count": required_solution_count(entry),
                 }
             )
 
         prev_adv = end_adv
 
+    if level_system_steps and len(challenge_adv) < len(level_system_steps):
+        last_mapped = challenge_adv[-1]
+        pending = level_system_steps[len(challenge_adv) :]
+        first_pending = pending[0]
+        planned_total = sum(s["levels_required"] for s in level_system_steps)
+        warnings.append(
+            f"LevelSystem defines {len(level_system_steps)} steps ({planned_total} ranked puzzles) "
+            f"but map CSV has {len(challenge_adv)} CH-lvl=T markers (through Adv_ID {last_mapped}); "
+            f"next planned step L{first_pending['rank_id']}-{first_pending['sub_level']} "
+            f"(Adv_ID_Start {first_pending['adv_id_start']}) has no puzzles yet"
+        )
+
     trailing = [e for e in entries if e["adv_id"] > prev_adv]
     trailing.sort(key=lambda e: (e["adv_id"], e["line"]))
-    for order, entry in enumerate(trailing, start=1):
+    seen_adv: set[int] = set()
+    for entry in trailing:
+        if entry["adv_id"] in seen_adv:
+            warnings.append(
+                f"postgame: skipped duplicate Adv_ID {entry['adv_id']} "
+                f"({entry['level_id']}, csv line {entry['line']})"
+            )
+            continue
+        seen_adv.add(entry["adv_id"])
         postgame.append(
             {
-                "puzzle_order": order,
+                "puzzle_order": len(postgame) + 1,
                 "adv_id": entry["adv_id"],
                 "level_id": entry["level_id"],
                 "is_challenge": entry["is_challenge"],
-                "required_solution_count": required_solution_count(entry),
             }
         )
 
-    return progression, puzzles, postgame, warnings
+    return puzzles, postgame, warnings
 
 
 def upsert_ranks(cur, repo_root: Path) -> None:
     sql = """
         INSERT INTO adventure_rank (
-            rank_id, rank_code, rank_name, badge_name, badge_image,
+            rank_id, rank_code, rank_name, rank_description, badge_name, badge_image,
             badge_locked_image, badge_color, unlock_title, unlock_message,
             display_order, is_active
-        ) VALUES (%s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, TRUE)
+        ) VALUES (%s, %s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, TRUE)
         ON DUPLICATE KEY UPDATE
             rank_code = VALUES(rank_code),
             rank_name = VALUES(rank_name),
+            rank_description = VALUES(rank_description),
             badge_name = VALUES(badge_name),
             badge_image = VALUES(badge_image),
             display_order = VALUES(display_order),
@@ -184,6 +197,7 @@ def upsert_ranks(cur, repo_root: Path) -> None:
                 row["rank_id"],
                 row["rank_code"],
                 row["rank_name"],
+                row["rank_description"],
                 row["rank_name"],
                 row["badge_image"],
                 row["display_order"],
@@ -216,9 +230,8 @@ def replace_puzzles(cur, rows: List[dict]) -> None:
     cur.execute("DELETE FROM adventure_puzzle")
     sql = """
         INSERT INTO adventure_puzzle (
-            rank_id, sub_level, puzzle_order, level_id,
-            is_challenge, required_solution_count
-        ) VALUES (%s, %s, %s, %s, %s, %s)
+            rank_id, sub_level, puzzle_order, level_id, is_challenge
+        ) VALUES (%s, %s, %s, %s, %s)
     """
     for row in rows:
         cur.execute(
@@ -229,7 +242,6 @@ def replace_puzzles(cur, rows: List[dict]) -> None:
                 row["puzzle_order"],
                 row["level_id"],
                 row["is_challenge"],
-                row["required_solution_count"],
             ),
         )
 
@@ -238,8 +250,8 @@ def replace_postgame(cur, rows: List[dict]) -> None:
     cur.execute("DELETE FROM adventure_postgame_puzzle")
     sql = """
         INSERT INTO adventure_postgame_puzzle (
-            puzzle_order, adv_id, level_id, is_challenge, required_solution_count
-        ) VALUES (%s, %s, %s, %s, %s)
+            puzzle_order, adv_id, level_id, is_challenge
+        ) VALUES (%s, %s, %s, %s)
     """
     for row in rows:
         cur.execute(
@@ -249,7 +261,6 @@ def replace_postgame(cur, rows: List[dict]) -> None:
                 row["adv_id"],
                 row["level_id"],
                 row["is_challenge"],
-                row["required_solution_count"],
             ),
         )
 
@@ -261,6 +272,11 @@ def main() -> None:
         default="data/adventure_solution_distribution.csv",
         help="Adventure puzzle map CSV path",
     )
+    ap.add_argument(
+        "--level-system",
+        default="data/LevelSystem.csv",
+        help="Step progression CSV (levels_required per Lx-y)",
+    )
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -269,20 +285,42 @@ def main() -> None:
     if not map_path.exists():
         raise SystemExit(f"CSV not found: {map_path}")
 
-    entries = load_map_entries(map_path)
-    progression, puzzles, postgame, warnings = build_adventure_rows(entries)
+    ls_path = (root / args.level_system).resolve()
+    if not ls_path.exists():
+        raise SystemExit(f"LevelSystem CSV not found: {ls_path}")
 
-    print(f"CSV: {map_path}")
+    ranks = load_adventure_ranks(root)
+    max_rank_id = max(r["rank_id"] for r in ranks)
+    progression = derive_progression_from_level_system(ls_path, max_rank_id=max_rank_id)
+    level_system_steps = load_level_system_steps(ls_path)
+
+    entries = load_map_entries(map_path)
+    puzzles, postgame, warnings = build_adventure_rows(entries, level_system_steps)
+
+    print(f"Map CSV: {map_path}")
+    print(f"LevelSystem: {ls_path}")
     print(f"CSV rows: {len(entries)}")
-    print(f"progression steps: {len(progression)}")
-    print(f"progression puzzles: {len(puzzles)}")
-    print(f"postgame puzzles (after L8-10): {len(postgame)}")
-    print(f"total imported: {len(puzzles) + len(postgame)}")
-    print(f"challenges: {sum(1 for p in puzzles if p['is_challenge'])}")
-    print(
-        f"cumulative at L8-10: {progression[-1]['cumulative_levels_required']} "
-        f"(levels_required={progression[-1]['levels_required']})"
+    print(f"LevelSystem progression steps: {len(progression)}")
+    print(f"mapped progression puzzles: {len(puzzles)}")
+    last_step = progression[-1] if progression else None
+    last_label = (
+        f"L{last_step['rank_id']}-{last_step['sub_level']}" if last_step else "?"
     )
+    mapped_steps = len({(p['rank_id'], p['sub_level']) for p in puzzles})
+    last_mapped = progression[mapped_steps - 1] if mapped_steps else None
+    last_mapped_label = (
+        f"L{last_mapped['rank_id']}-{last_mapped['sub_level']}" if last_mapped else "?"
+    )
+    print(f"mapped steps in CSV: {mapped_steps} (through {last_mapped_label})")
+    print(f"postgame puzzles (after {last_mapped_label}): {len(postgame)}")
+    print(f"total puzzle rows: {len(puzzles) + len(postgame)}")
+    print(f"challenges in map: {sum(1 for p in puzzles if p['is_challenge'])}")
+    if progression:
+        print(
+            f"LevelSystem cumulative at {last_label}: "
+            f"{progression[-1]['cumulative_levels_required']} "
+            f"(levels_required={progression[-1]['levels_required']})"
+        )
     if postgame:
         print(
             f"postgame Adv_ID range: {postgame[0]['adv_id']}..{postgame[-1]['adv_id']}"

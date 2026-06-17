@@ -236,26 +236,34 @@
                 class="tz-discovery-record__btn tz-discovery-record__btn--continue"
                 id="discoveryContinueBtn"
                 aria-label="Continue search"
-              ></button>
+              >
+                <img src="/img/ContinueSearch-btn.png" alt="" />
+              </button>
               <button
                 type="button"
                 class="tz-discovery-record__btn tz-discovery-record__btn--advance"
                 id="discoveryAdvanceBtn"
                 aria-label="Advance path"
-              ></button>
+              >
+                <img src="/img/AdvancePath-btn.png" alt="" />
+              </button>
               <button
                 type="button"
                 class="tz-discovery-record__btn tz-discovery-record__btn--view-found"
                 id="discoveryViewFoundBtn"
                 hidden
                 aria-label="View found solve"
-              ></button>
+              >
+                <img src="/img/ViewSolve-btn.png" alt="" />
+              </button>
               <button
                 type="button"
                 class="tz-discovery-record__btn tz-discovery-record__btn--book"
                 id="discoveryFoundBookBtn"
                 aria-label="View found solutions"
-              ></button>
+              >
+                <img src="/img/Chess-Btn.png" alt="" />
+              </button>
             </div>
           </div>
         </section>
@@ -532,10 +540,8 @@
         <div class="tz-journal-dialog__art" id="journalArtLayers" aria-hidden="true">
           <img class="tz-journal-dialog__overlay" data-journal-overlay="recordTop" alt="" hidden />
           <img class="tz-journal-dialog__overlay" data-journal-overlay="libraryTop" alt="" hidden />
-          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabPuzzle" alt="" hidden />
-          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabStats" alt="" hidden />
-          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabFilter" alt="" hidden />
-          <img class="tz-journal-dialog__overlay" data-journal-overlay="tabRecords" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="statsScreen" alt="" hidden />
+          <img class="tz-journal-dialog__overlay" data-journal-overlay="recordsScreen" alt="" hidden />
           <img class="tz-journal-dialog__overlay" data-journal-overlay="bottomBar" alt="" hidden />
         </div>
 
@@ -575,10 +581,11 @@
           </div>
         </div>
 
-        <p class="tz-journal-pane-title tz-journal-field--title-found" id="journalTitleFound">YOUR FOUND SOLUTIONS</p>
-        <p class="tz-journal-pane-title tz-journal-field--title-recorded" id="journalTitleRecorded" hidden>RECORDED PUZZLES</p>
-
         <div class="tz-journal-pane tz-journal-pane--bl">
+          <div class="tz-journal-list-title-bar" id="journalListTitleBar">
+            <p class="tz-journal-pane-title tz-journal-field--title-found" id="journalTitleFound">Your Found Solutions</p>
+            <p class="tz-journal-pane-title tz-journal-field--title-recorded" id="journalTitleRecorded" hidden>Recorded Puzzles</p>
+          </div>
           <div class="tz-journal-list-scroll" id="journalListScroll">
             <div class="tz-journal-list" id="journalList"></div>
           </div>
@@ -596,10 +603,18 @@
           </div>
         </div>
 
-        <button type="button" class="tz-journal-hit tz-journal-field--tab-puzzle" id="journalTabPuzzle" aria-label="Puzzle tab"></button>
-        <button type="button" class="tz-journal-hit tz-journal-field--tab-stats" id="journalTabStats" aria-label="Stats tab"></button>
-        <button type="button" class="tz-journal-hit tz-journal-field--tab-filter" id="journalTabFilter" aria-label="Filter tab"></button>
-        <button type="button" class="tz-journal-hit tz-journal-field--tab-records" id="journalTabRecords" aria-label="Records tab"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-puzzle" id="journalTabPuzzle" data-journal-tab="puzzle" aria-label="Puzzle tab" aria-pressed="false">
+          <img class="tz-journal-tab__art" alt="" />
+        </button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-stats" id="journalTabStats" data-journal-tab="stats" aria-label="Stats tab" aria-pressed="false">
+          <img class="tz-journal-tab__art" alt="" />
+        </button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-filter" id="journalTabFilter" data-journal-tab="filter" aria-label="Filter tab" aria-pressed="false">
+          <img class="tz-journal-tab__art" alt="" />
+        </button>
+        <button type="button" class="tz-journal-hit tz-journal-field--tab-records" id="journalTabRecords" data-journal-tab="records" aria-label="Records tab" aria-pressed="false">
+          <img class="tz-journal-tab__art" alt="" />
+        </button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-filter" id="journalBtnFilter" aria-label="Filter"></button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-stats" id="journalBtnStats" aria-label="Stats"></button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-prev" id="journalBtnPrev" aria-label="Previous"></button>

@@ -1,5 +1,6 @@
 -- Adventure progression schema (Tilezilla Adventure)
 -- Progression + puzzle map from data/adventure_solution_distribution.csv
+-- Step sizes reference: data/LevelSystem.csv
 
 USE tilegame;
 
@@ -12,6 +13,8 @@ CREATE TABLE IF NOT EXISTS adventure_rank (
     rank_code VARCHAR(10) NOT NULL,
 
     rank_name VARCHAR(50) NOT NULL,
+
+    rank_description VARCHAR(255) NULL,
 
     badge_name VARCHAR(100) NULL,
 
@@ -76,8 +79,9 @@ CREATE TABLE IF NOT EXISTS adventure_reward (
 
 -- ---------------------------------------------------------------------------
 -- adventure_puzzle
--- Maps catalog levels to adventure steps (L1-1 … L8-10).
+-- Maps catalog levels to adventure steps (L1-1 … L9-10; step count follows map CSV).
 -- Exactly one is_challenge row per (rank_id, sub_level) — the final puzzle.
+-- Completion: normal puzzles need 1 discovery; challenges need all known solutions for level_id.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS adventure_puzzle (
     adventure_puzzle_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -92,8 +96,6 @@ CREATE TABLE IF NOT EXISTS adventure_puzzle (
 
     is_challenge BOOLEAN NOT NULL DEFAULT FALSE,
 
-    required_solution_count INT NOT NULL DEFAULT 1,
-
     FOREIGN KEY (rank_id)
         REFERENCES adventure_rank(rank_id),
 
@@ -107,8 +109,7 @@ CREATE TABLE IF NOT EXISTS adventure_puzzle (
 
 -- ---------------------------------------------------------------------------
 -- adventure_postgame_puzzle
--- Levels after L8-10 (Adv_ID > final CH-lvl=T). Still adventure play;
--- unlocked once progression rank/sub is complete — does not change rank.
+-- Levels after the final ranked step (Adv_ID > last CH-lvl=T).
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS adventure_postgame_puzzle (
     postgame_puzzle_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,8 +121,6 @@ CREATE TABLE IF NOT EXISTS adventure_postgame_puzzle (
     level_id VARCHAR(32) NOT NULL,
 
     is_challenge BOOLEAN NOT NULL DEFAULT FALSE,
-
-    required_solution_count INT NOT NULL DEFAULT 1,
 
     FOREIGN KEY (level_id)
         REFERENCES levels(level_id),

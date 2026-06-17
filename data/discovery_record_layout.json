@@ -1,8 +1,8 @@
 {
   "plaque": {
     "wScale": 1.06,
-    "hScale": 0.92,
-    "duplicateWScale": 0.8
+    "hScale": 0.96,
+    "duplicateWScale": 1
   },
   "defaults": {
     "nudgeX": 0,
@@ -12,6 +12,13 @@
   "texts": {
     "duplicateNote": "",
     "duplicateTitle": ""
+  },
+  "buttons": {
+    "btnContinue": "/img/ContinueSearch-btn.png",
+    "btnAdvance": "/img/AdvancePath-btn.png",
+    "btnViewFound": "/img/ViewSolve-btn.png",
+    "btnChess": "/img/Chess-Btn.png",
+    "btnBook": "/img/SolutionsJournal-Book-btn.png"
   },
   "items": {
     "solutionTotal": {
@@ -59,28 +66,28 @@
   "variants": {
     "newAdvance": {
       "btnContinue": {
-        "x": 15.5,
-        "y": 84,
-        "w": 38,
-        "h": 11,
-        "wScale": 0.84,
-        "hScale": 0.82,
-        "nudgeY": -48
+        "x": 14.6,
+        "y": 84.9,
+        "w": 38.8,
+        "h": 9.1,
+        "wScale": 0.87,
+        "hScale": 1.23,
+        "nudgeY": -58
       },
       "btnAdvance": {
-        "x": 24.5,
-        "y": 93,
-        "w": 42,
-        "h": 11,
-        "wScale": 1.22,
-        "hScale": 0.56,
-        "nudgeY": -39
+        "x": 22.6,
+        "y": 93.3,
+        "w": 39.1,
+        "h": 11.4,
+        "wScale": 1.37,
+        "hScale": 0.91,
+        "nudgeY": -47
       },
       "btnBook": {
-        "x": 69.5,
-        "y": 58,
-        "w": 16,
-        "h": 22,
+        "x": 67,
+        "y": 56.7,
+        "w": 20.9,
+        "h": 26.2,
         "wScale": 0.74,
         "hScale": 0.52,
         "nudgeY": -21
@@ -89,36 +96,57 @@
         "nudgeX": 0,
         "nudgeY": -49,
         "fontScale": 1,
-        "x": 51.5,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 50.3,
+        "y": 81.3,
+        "w": 40.3,
+        "h": 16.8,
         "wScale": 0.86,
         "hScale": 0.72
       },
       "solutionTotal": {
         "nudgeX": 34,
-        "nudgeY": 66,
-        "fontScale": 0.68,
-        "x": 42,
+        "nudgeY": 65,
+        "fontScale": 0.78,
+        "x": 42.2,
         "y": 22
+      },
+      "time": {
+        "nudgeX": 47,
+        "nudgeY": 6,
+        "fontScale": 1.16,
+        "x": 23.4,
+        "y": 55.3
+      },
+      "tokens": {
+        "nudgeX": 30,
+        "nudgeY": 0,
+        "fontScale": 1.28,
+        "x": 47.6,
+        "y": 55.8
+      },
+      "puzzleId": {
+        "nudgeX": 18,
+        "nudgeY": -6,
+        "fontScale": 1.16,
+        "x": 46.9,
+        "y": 36.5
       }
     },
     "newRegular": {
       "btnContinue": {
-        "x": 15.5,
-        "y": 84,
-        "w": 60,
-        "h": 11,
+        "x": 14.6,
+        "y": 81,
+        "w": 65,
+        "h": 17.6,
         "wScale": 0.52,
         "hScale": 0.68,
         "nudgeY": -48
       },
       "btnBook": {
-        "x": 69,
-        "y": 58,
-        "w": 16,
-        "h": 22,
+        "x": 67.9,
+        "y": 57.2,
+        "w": 19.9,
+        "h": 24.9,
         "wScale": 0.76,
         "hScale": 0.6,
         "nudgeY": -24
@@ -138,83 +166,132 @@
         "nudgeX": 0,
         "nudgeY": -47,
         "fontScale": 1,
-        "x": 52,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 50,
+        "y": 80.6,
+        "w": 42.3,
+        "h": 17.9,
         "wScale": 0.84,
         "hScale": 0.68
+      },
+      "solutionTotal": {
+        "nudgeX": 34,
+        "nudgeY": 63,
+        "fontScale": 0.76,
+        "x": 41.8,
+        "y": 22.5
+      },
+      "puzzleId": {
+        "nudgeX": 18,
+        "nudgeY": -6,
+        "fontScale": 1.16,
+        "x": 47,
+        "y": 36
+      },
+      "solutionFound": {
+        "nudgeX": 126,
+        "nudgeY": -9,
+        "fontScale": 0.76,
+        "x": 32,
+        "y": 43
+      },
+      "time": {
+        "nudgeX": 47,
+        "nudgeY": 6,
+        "fontScale": 1.08,
+        "x": 23.1,
+        "y": 55.3
+      },
+      "tokens": {
+        "nudgeX": 30,
+        "nudgeY": 0,
+        "fontScale": 1.2,
+        "x": 47.6,
+        "y": 56
       }
     },
     "duplicateAdvance": {
       "btnContinue": {
-        "x": 16,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 14.5,
+        "y": 81.7,
+        "w": 41.4,
+        "h": 15.3,
         "wScale": 0.8,
         "hScale": 0.68,
         "nudgeY": -50
       },
       "btnViewFound": {
-        "x": 51.5,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 49,
+        "y": 81.8,
+        "w": 44.6,
+        "h": 17,
         "wScale": 0.8,
         "hScale": 0.64,
         "nudgeY": -50
       },
       "btnAdvance": {
-        "x": 27.5,
-        "y": 93,
-        "w": 42,
-        "h": 11,
+        "x": 25.8,
+        "y": 90.2,
+        "w": 45.6,
+        "h": 17.7,
         "wScale": 1.02,
         "hScale": 0.6,
         "nudgeY": -41
       },
       "btnBook": {
-        "x": 70,
-        "y": 58,
-        "w": 16,
-        "h": 22,
-        "wScale": 0.7,
-        "hScale": 0.6,
+        "x": 68.9,
+        "y": 57.2,
+        "w": 20,
+        "h": 22.7,
+        "wScale": 0.68,
+        "hScale": 0.68,
         "nudgeY": -24
       },
       "solutionFound": {
         "nudgeX": 101,
         "nudgeY": -9,
         "fontScale": 0.72,
-        "x": 32,
-        "y": 43
+        "x": 37.5,
+        "y": 43.5
+      },
+      "puzzleId": {
+        "nudgeX": 18,
+        "nudgeY": -6,
+        "fontScale": 1.24,
+        "x": 46.5,
+        "y": 36.5
+      },
+      "time": {
+        "nudgeX": 47,
+        "nudgeY": 6,
+        "fontScale": 0.68,
+        "x": 20.6,
+        "y": 56
       }
     },
     "duplicateRegular": {
       "btnContinue": {
-        "x": 15.5,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 14.3,
+        "y": 81.4,
+        "w": 41.8,
+        "h": 16.7,
         "wScale": 0.8,
         "hScale": 0.62,
         "nudgeY": -49
       },
       "btnViewFound": {
-        "x": 51.5,
-        "y": 84,
-        "w": 38,
-        "h": 11,
+        "x": 49.8,
+        "y": 81.1,
+        "w": 42.6,
+        "h": 17.9,
         "wScale": 0.8,
         "hScale": 0.62,
         "nudgeY": -49
       },
       "btnBook": {
-        "x": 69.5,
+        "x": 68.3,
         "y": 58,
-        "w": 16,
-        "h": 22,
+        "w": 19.1,
+        "h": 24.7,
         "wScale": 0.74,
         "hScale": 0.64,
         "nudgeY": -26
@@ -233,9 +310,23 @@
       "solutionFound": {
         "nudgeX": 102,
         "nudgeY": -9,
-        "fontScale": 0.72,
-        "x": 32,
-        "y": 43
+        "fontScale": 0.76,
+        "x": 37,
+        "y": 43.5
+      },
+      "puzzleId": {
+        "nudgeX": 18,
+        "nudgeY": -6,
+        "fontScale": 1.28,
+        "x": 46.9,
+        "y": 36.5
+      },
+      "time": {
+        "nudgeX": 47,
+        "nudgeY": 6,
+        "fontScale": 0.68,
+        "x": 20.4,
+        "y": 56.5
       }
     }
   }

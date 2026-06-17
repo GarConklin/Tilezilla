@@ -10,7 +10,7 @@ export const DISCOVERY_ITEM_DEFS = {
   btnContinue: { cssKey: 'btn-continue', kind: 'btn', label: 'Continue button' },
   btnAdvance: { cssKey: 'btn-advance', kind: 'btn', label: 'Advance button' },
   btnViewFound: { cssKey: 'btn-view-found', kind: 'btn', label: 'View found button' },
-  btnBook: { cssKey: 'btn-book', kind: 'btn', label: 'Book — found solutions list' },
+  btnBook: { cssKey: 'btn-book', kind: 'btn', label: 'Journal button (chess / book)' },
 };
 
 export const DISCOVERY_VARIANT_KEYS = [
@@ -23,6 +23,15 @@ export const DISCOVERY_VARIANT_KEYS = [
 export const DEFAULT_DISCOVERY_TEXTS = {
   duplicateNote: 'You have already discovered this solution.',
   duplicateTitle: 'SOLUTION ALREADY DISCOVERED',
+};
+
+/** Default button PNG paths — override via layout JSON `buttons`. */
+export const DEFAULT_DISCOVERY_BUTTON_ART = {
+  btnContinue: '/img/ContinueSearch-btn.png',
+  btnAdvance: '/img/AdvancePath-btn.png',
+  btnViewFound: '/img/ViewSolve-btn.png',
+  btnChess: '/img/Chess-Btn.png',
+  btnBook: '/img/SolutionsJournal-Book-btn.png',
 };
 
 /** Four plaque arts — challenge (advance path) vs regular. */
@@ -44,6 +53,7 @@ export const DEFAULT_DISCOVERY_LAYOUT = {
   plaque: { wScale: 1.28, hScale: 0.86, duplicateWScale: 0.8 },
   defaults: { nudgeX: 0, nudgeY: 0, fontScale: 1 },
   texts: { ...DEFAULT_DISCOVERY_TEXTS },
+  buttons: { ...DEFAULT_DISCOVERY_BUTTON_ART },
   items: {
     solutionTotal: { x: 42, y: 22 },
     note: { x: 50, y: 28 },
@@ -127,6 +137,9 @@ export function mergeDiscoveryLayout(raw) {
   if (raw.texts && typeof raw.texts === 'object') {
     base.texts = { ...base.texts, ...raw.texts };
   }
+  if (raw.buttons && typeof raw.buttons === 'object') {
+    base.buttons = { ...base.buttons, ...raw.buttons };
+  }
   if (raw.items && typeof raw.items === 'object') {
     for (const [key, val] of Object.entries(raw.items)) {
       if (!DISCOVERY_ITEM_DEFS[key] || typeof val !== 'object') continue;
@@ -154,7 +167,8 @@ export function getDiscoveryVariantKey(mode, showAdvance) {
 
 export function resolveShowAdvance(payload) {
   if (payload?.showAdvancePath != null) return Boolean(payload.showAdvancePath);
-  return document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+  const screen = document.querySelector('.tz-app')?.dataset?.screen;
+  return screen === 'daily-challenge' || screen === 'adventure';
 }
 
 export function getDiscoveryTexts(layout) {
@@ -164,6 +178,43 @@ export function getDiscoveryTexts(layout) {
     duplicateNote: texts.duplicateNote ?? DEFAULT_DISCOVERY_TEXTS.duplicateNote,
     duplicateTitle: texts.duplicateTitle ?? DEFAULT_DISCOVERY_TEXTS.duplicateTitle,
   };
+}
+
+export function getDiscoveryButtonArt(layout) {
+  const merged = mergeDiscoveryLayout(layout);
+  return { ...DEFAULT_DISCOVERY_BUTTON_ART, ...(merged.buttons || {}) };
+}
+
+export function discoveryRecordModeFromVariant(variantKey) {
+  return String(variantKey || '').startsWith('duplicate') ? 'duplicate' : 'new';
+}
+
+/** PNG path for a button — journal slot uses chess (new) vs book (already found). */
+export function getDiscoveryButtonSrc(itemKey, layout, mode = 'new') {
+  const art = getDiscoveryButtonArt(layout);
+  if (itemKey === 'btnBook') {
+    return mode === 'duplicate'
+      ? (art.btnBook || DEFAULT_DISCOVERY_BUTTON_ART.btnBook)
+      : (art.btnChess || DEFAULT_DISCOVERY_BUTTON_ART.btnChess);
+  }
+  return art[itemKey] || DEFAULT_DISCOVERY_BUTTON_ART[itemKey] || '';
+}
+
+function btnClassSuffix(cssKey) {
+  return cssKey.replace(/^btn-/, '');
+}
+
+/** Set button PNG src from layout — call on discovery record root after markup exists. */
+export function applyDiscoveryButtonArt(layout, root, mode = 'new') {
+  if (!root) return;
+  for (const [itemKey, meta] of Object.entries(DISCOVERY_ITEM_DEFS)) {
+    if (meta.kind !== 'btn') continue;
+    const src = getDiscoveryButtonSrc(itemKey, layout, mode);
+    if (!src) continue;
+    const btn = root.querySelector(`.tz-discovery-record__btn--${btnClassSuffix(meta.cssKey)}`);
+    const img = btn?.querySelector('img');
+    if (img && img.getAttribute('src') !== src) img.setAttribute('src', src);
+  }
 }
 
 export function getDiscoveryItemLayout(itemKey, layout, variantKey = null) {
@@ -199,8 +250,8 @@ function applyItemVars(item, meta, target) {
   if (kind === 'text') {
     target.style.setProperty(varName(cssKey, 'font-scale'), String(item.fontScale ?? 1));
   } else if (kind === 'btn') {
-    const wScale = Number(item.wScale) || 1;
-    const hScale = Number(item.hScale) || 1;
+    const wScale = Math.max(0.05, Number(item.wScale) || 1);
+    const hScale = Math.max(0.05, Number(item.hScale) || 1);
     target.style.setProperty(varName(cssKey, 'w'), `${(Number(item.w) || 0) * wScale}%`);
     target.style.setProperty(varName(cssKey, 'h'), `${(Number(item.h) || 0) * hScale}%`);
   }
@@ -230,10 +281,9 @@ export function applyDiscoveryTextLayout(
   }
 }
 
-/** Text fields + plaque scale — applied once at load (bootstrap / tuner init). */
+/** Plaque box scale on :root — text/button positions apply when the popup opens (per variant). */
 export function applyDiscoveryRecordLayout(layout, target = document.documentElement) {
   applyDiscoveryPlaqueLayout(layout, target);
-  applyDiscoveryTextLayout(layout, target);
 }
 
 /** Button positions for the active plaque variant — applied when popup opens. */
@@ -255,6 +305,7 @@ export function applyDiscoveryPopupLayout(
   applyDiscoveryPlaqueLayout(layout, plaqueTarget);
   applyDiscoveryTextLayout(layout, root, variantKey);
   applyDiscoveryVariantLayout(layout, variantKey, root);
+  applyDiscoveryButtonArt(layout, root, discoveryRecordModeFromVariant(variantKey));
 }
 
 export function applyDiscoveryVariantClasses(root, mode, showAdvance) {

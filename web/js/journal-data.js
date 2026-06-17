@@ -12,14 +12,18 @@ function boardSizeLabel(level) {
   const rows = Number(level?.board?.rows);
   const cols = Number(level?.board?.cols);
   if (!Number.isFinite(rows) || !Number.isFinite(cols)) return '—';
-  return `${cols} × ${rows}`;
+  const a = Math.min(rows, cols);
+  const b = Math.max(rows, cols);
+  return `${a}x${b}`;
 }
 
 function boardSizeKey(level) {
   const rows = Number(level?.board?.rows);
   const cols = Number(level?.board?.cols);
   if (!Number.isFinite(rows) || !Number.isFinite(cols)) return null;
-  return `${cols}x${rows}`;
+  const a = Math.min(rows, cols);
+  const b = Math.max(rows, cols);
+  return `${a}x${b}`;
 }
 
 function formatDate(iso) {
@@ -97,7 +101,7 @@ export async function getJournalRecord(app, levelId) {
   return {
     level,
     levelId: level.id,
-    puzzleId: level.name || level.id,
+    puzzleId: level.id || level.name,
     puzzleType: puzzleTypeForLevel(level, progress, screen),
     boardSize: boardSizeLabel(level),
     totalKnown: total,
@@ -180,10 +184,10 @@ export async function getJournalLibraryIndex(app, filters = {}) {
 
   const sizeCounts = [...sizeCountsMap.entries()]
     .map(([key, count]) => {
-      const [cols, rows] = key.split('x').map(Number);
+      const [small, large] = key.split('x').map(Number);
       return {
         key,
-        label: `${cols}×${rows}`,
+        label: `${small}x${large}`,
         count,
       };
     })

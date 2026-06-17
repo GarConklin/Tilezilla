@@ -135,6 +135,12 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
   if (note) note.hidden = mode !== 'duplicate';
   if (viewFoundBtn) viewFoundBtn.hidden = mode !== 'duplicate';
   if (bookBtn) bookBtn.hidden = false;
+  if (bookBtn) {
+    bookBtn.setAttribute(
+      'aria-label',
+      mode === 'duplicate' ? 'View found solutions' : 'Chess piece — journal',
+    );
+  }
   if (advanceBtn) advanceBtn.hidden = !showAdvance;
 }
 
@@ -167,7 +173,9 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
 
     const viewFoundBtn = fieldEl('btnViewFound', ids);
     if (viewFoundBtn) {
-      viewFoundBtn.hidden = !Number.isFinite(payload.solutionIndex);
+      const canView = Number.isFinite(payload.solutionIndex);
+      viewFoundBtn.disabled = !canView;
+      viewFoundBtn.setAttribute('aria-disabled', canView ? 'false' : 'true');
     }
 
     const advanceBtn = fieldEl('btnAdvance', ids);
@@ -176,7 +184,7 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
         'aria-label',
         showAdvance && isAdventureScreen()
           ? 'Adventure path — next puzzle'
-          : 'Advance path',
+          : 'Advance path — next adventure puzzle',
       );
     }
   } else {
@@ -223,14 +231,18 @@ async function showDiscoveryRecordAsync(payload) {
   if (!root) return;
 
   const enriched = await enrichAdventurePayload(payload);
+
+  // Expand the preview shell first — same geometry as discovery-record-tuner.html.
+  root.hidden = false;
+  root.setAttribute('aria-hidden', 'false');
+  document.querySelector('.tz-app')?.classList.add('is-discovery-record');
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
   applyDiscoveryRecordContent(enriched);
   pendingViewFoundIndex = enriched?.mode === 'duplicate' && Number.isFinite(enriched.solutionIndex)
     ? enriched.solutionIndex
     : null;
 
-  root.hidden = false;
-  root.setAttribute('aria-hidden', 'false');
-  document.querySelector('.tz-app')?.classList.add('is-discovery-record');
   void onAdventureProgress();
 }
 
@@ -286,7 +298,7 @@ function buildChallengeProgress(foundCount, totalKnown) {
 function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
   let showAdvancePath = isDailyChallengeScreen();
   if (isAdventureScreen()) {
-    /* Resolved in enrichAdventurePayload — Records vs RecordsNoAdvance, or Already vs AlreadyNoADVPth. */
+    /* Resolved in enrichAdventurePayload when the step is fully cleared. */
     showAdvancePath = false;
   }
   return {
@@ -303,8 +315,8 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
 function buildDuplicatePayload(level, res) {
   return {
     mode: 'duplicate',
-    /** Adventure: enriched on show — NoADVPth until step complete, then AlreadyRecordsPlacqueBase. */
-    showAdvancePath: false,
+    /** Adventure: enriched on show. Daily: always offer advance + continue. */
+    showAdvancePath: isDailyChallengeScreen() ? true : false,
     title: duplicateTitle(res),
     note: discoveryTexts.duplicateNote,
     levelId: level?.id || '—',

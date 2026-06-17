@@ -1647,7 +1647,7 @@
       "solvesFile": "6x6-0B-ACP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 8
+      "totalUniqueSolutions": 2
     },
     {
       "id": "6x6-0B-ACQ",
@@ -1695,7 +1695,7 @@
       "solvesFile": "6x6-0B-ACR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 96
+      "totalUniqueSolutions": 24
     },
     {
       "id": "6x6-0B-ACS",
@@ -1719,7 +1719,7 @@
       "solvesFile": "6x6-0B-ACS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 144
+      "totalUniqueSolutions": 36
     },
     {
       "id": "6x6-0B-ACT",
@@ -1838,7 +1838,7 @@
       "solvesFile": "6x6-0B-ACX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 16
+      "totalUniqueSolutions": 4
     },
     {
       "id": "6x6-0B-ACY",
@@ -1862,7 +1862,7 @@
       "solvesFile": "6x6-0B-ACY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 188
+      "totalUniqueSolutions": 47
     },
     {
       "id": "6x6-0B-ACZ",

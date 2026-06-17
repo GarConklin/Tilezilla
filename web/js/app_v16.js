@@ -2939,7 +2939,7 @@ function drawPreviewStartEndMarkers(ctx, placements, cellPx) {
  * Render a solution using the normal tile artwork, then scale for menu preview.
  * Preview mode hides edges, grid, outlines, and metadata — route + start/end only.
  */
-async function renderSolutionPreview(targetCanvas, placements, { level, tileset } = {}) {
+async function renderSolutionPreview(targetCanvas, placements, { level, tileset, maxPx } = {}) {
   const lv = level || state.currentLevel;
   if (!targetCanvas || !lv?.board || !Array.isArray(placements) || !placements.length) return false;
 
@@ -2992,7 +2992,8 @@ async function renderSolutionPreview(targetCanvas, placements, { level, tileset 
     state.showEdges = prevShowEdges;
   }
 
-  const scale = Math.min(ROUTE_PREVIEW_MAX_PX / boardW, ROUTE_PREVIEW_MAX_PX / boardH);
+  const cap = maxPx ?? ROUTE_PREVIEW_MAX_PX;
+  const scale = Math.min(cap / boardW, cap / boardH);
   const outW = Math.max(1, Math.round(boardW * scale));
   const outH = Math.max(1, Math.round(boardH * scale));
 
@@ -3710,6 +3711,10 @@ async function init(){
   state.liveEdges = await loadJson(CONFIG.liveEdgesUrl);
   try { state.tileSets = await loadJson(CONFIG.tileSetsUrl); } catch(e) { console.warn('tilesets unavailable', e); }
   state.activeTileset = state.tileSets?.activeTileset || 'gray-backs';
+  const qsTileset = new URLSearchParams(location.search).get('tileset');
+  if (qsTileset && state.tileSets?.tilesets?.[qsTileset]) {
+    state.activeTileset = qsTileset;
+  }
   state.tileAssetById = {};
   for (const k of Object.keys(state.liveEdges || {})) {
     if (k.startsWith('_')) continue;

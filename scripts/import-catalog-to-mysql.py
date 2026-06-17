@@ -69,16 +69,38 @@ def level_row(root: Path, lv: dict) -> Tuple:
     )
 
 
+def parse_challenge_date(raw: str) -> str:
+    s = (raw or "").strip()
+    if not s:
+        raise ValueError("empty challenge_date")
+    if len(s) == 10 and s[4] == "-" and s[7] == "-":
+        return s
+    from datetime import datetime
+
+    for fmt in ("%d-%b-%y", "%d-%b-%Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(s, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    raise ValueError(f"Unrecognized challenge_date: {s!r}")
+
+
 def load_daily_rows(root: Path) -> List[Tuple]:
     csv_path = root / "data" / "daily_challenges_import.csv"
+    if not csv_path.exists():
+        org = root / "data" / "daily_challenges_import-org.csv"
+        if org.exists():
+            csv_path = org
+        else:
+            raise SystemExit(f"Missing {csv_path}")
     rows: List[Tuple] = []
-    with csv_path.open(encoding="utf-8", newline="") as f:
+    with csv_path.open(encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             lid = str(row.get("level_id", "")).strip().replace(".json", "")
             notes = (row.get("notes") or "").strip() or None
             rows.append(
                 (
-                    row["challenge_date"],
+                    parse_challenge_date(row.get("challenge_date", "")),
                     lid,
                     int(row["total_solutions"]),
                     notes,
@@ -175,8 +197,13 @@ def main() -> None:
     args = ap.parse_args()
 
     root = Path(__file__).resolve().parents[1]
+    sync_only = (
+        args.sync_daily_eligible
+        and not args.daily_only
+        and not args.levels_only
+    )
 
-    if args.sync_daily_eligible:
+    if sync_only:
         if args.dry_run:
             conn = connect()
             try:
@@ -223,6 +250,9 @@ def main() -> None:
         level_rows.append(level_row(root, lv))
 
     daily_rows = load_daily_rows(root)
+    catalog_by_id: Dict[str, dict] = {
+        str(lv.get("id", "")): lv for lv in catalog_levels if lv.get("id")
+    }
 
     print(f"catalog levels: {len(level_rows)}")
     print(f"missing solve files: {missing_solves}")
@@ -237,14 +267,31 @@ def main() -> None:
             if not args.daily_only:
                 upsert_levels(cur, level_rows)
                 print(f"upserted levels: {len(level_rows)}")
+            elif daily_rows:
+                daily_level_rows = [
+                    level_row(root, catalog_by_id[lid])
+                    for lid in {r[1] for r in daily_rows}
+                    if lid in catalog_by_id
+                ]
+                missing_daily = sorted(
+                    {r[1] for r in daily_rows} - set(catalog_by_id.keys())
+                )
+                if missing_daily:
+                    print(
+                        f"WARN: {len(missing_daily)} daily level ids not in catalog "
+                        f"(first: {missing_daily[:5]})"
+                    )
+                if daily_level_rows:
+                    upsert_levels(cur, daily_level_rows)
+                    print(f"upserted levels for daily schedule: {len(daily_level_rows)}")
             if not args.levels_only:
                 upsert_daily(cur, daily_rows)
                 print(f"upserted daily_challenges: {len(daily_rows)}")
-            if not args.levels_only or args.daily_only:
+            if args.sync_daily_eligible or args.daily_only:
                 cleared, flagged = sync_daily_eligible_from_challenges(cur)
+                print(f"daily_eligible cleared on {cleared} levels")
                 print(
-                    f"daily_eligible: {flagged} levels reserved for daily "
-                    f"(excluded from adventure)"
+                    f"daily_eligible set TRUE on {flagged} levels (adventure excludes these)"
                 )
         conn.commit()
         with conn.cursor() as cur:

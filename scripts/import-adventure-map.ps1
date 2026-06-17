@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Reads data/adventure_solution_distribution.csv (single authoritative source).
-  CH-lvl=T marks step boundaries; steps map in order to L1-1 … L8-10.
+  CH-lvl=T marks step boundaries; progression steps from data/LevelSystem.csv.
 
   Populates adventure_rank, adventure_progression, and adventure_puzzle.
 
@@ -29,15 +29,14 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
   $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+. (Join-Path $PSScriptRoot "lib\Mysql-Docker.ps1")
+
 function Write-Step([string]$Message) {
   Write-Host ""
   Write-Host "==> $Message" -ForegroundColor Cyan
 }
 
-$mysqlStatus = & docker compose -f (Join-Path $RepoRoot "docker-compose.yml") ps mysql --format json 2>$null | ConvertFrom-Json
-if (-not $mysqlStatus -or $mysqlStatus.State -ne "running") {
-  throw "MySQL is not running. Start it with: docker compose up -d mysql"
-}
+Ensure-MySqlTilegameReady -RepoRoot $RepoRoot
 
 $pyArgs = @(
   "scripts/import-adventure-map.py",

@@ -42,6 +42,7 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
 }
 
 . (Join-Path $PSScriptRoot "lib\Docker-Web.ps1")
+. (Join-Path $PSScriptRoot "lib\Mysql-Docker.ps1")
 
 function Write-Step([string]$Message) {
   Write-Host ""
@@ -78,10 +79,7 @@ if (-not (Test-DockerCompose -RepoRoot $RepoRoot)) {
   throw "docker compose not available"
 }
 
-$mysqlStatus = & docker compose -f (Join-Path $RepoRoot "docker-compose.yml") ps mysql --format json 2>$null | ConvertFrom-Json
-if ($mysqlStatus.State -ne "running") {
-  throw "MySQL is not running. Start it with: docker compose up -d mysql"
-}
+Ensure-MySqlTilegameReady -RepoRoot $RepoRoot
 
 Ensure-SolvesFolder -Root $RepoRoot
 

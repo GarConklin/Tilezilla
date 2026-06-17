@@ -359,7 +359,7 @@ def validate_hint_rules_layout(payload: object) -> str | None:
 JOURNAL_ITEM_KEYS = tuple(
     k for k in (
         "paneTop", "paneBottomLeft", "paneBottomRight",
-        "titleFoundSolutions", "titleRecordedPuzzles", "listScroller",
+        "titleFoundSolutions", "titleRecordedPuzzles", "listScroller", "listContent", "listRow",
         "fieldPuzzleId", "fieldPuzzleType", "fieldBoardSize",
         "fieldTotalKnown", "fieldSolutionsFound", "fieldFirstSolved", "fieldLastPlayed",
         "progressBar", "solutionPreview",
@@ -371,15 +371,16 @@ JOURNAL_ITEM_KEYS = tuple(
 
 
 JOURNAL_OVERLAY_KEYS = (
-    "shellBlank", "recordTop", "libraryTop",
-    "tabPuzzle", "tabStats", "tabFilter", "tabRecords", "bottomBar",
+    "shellBlank", "recordTop", "libraryTop", "bottomBar",
 )
+
+JOURNAL_TAB_KEYS = ("puzzle", "stats", "filter", "records")
 
 
 def validate_journal_layout(payload: object) -> str | None:
     if not isinstance(payload, dict):
         return "Root must be a JSON object"
-    for key in ("dialog", "typography", "items", "overlays"):
+    for key in ("dialog", "typography", "items", "overlays", "tabs"):
         val = payload.get(key)
         if val is not None and not isinstance(val, dict):
             return f"{key} must be an object"
@@ -393,6 +394,11 @@ def validate_journal_layout(payload: object) -> str | None:
         for key in overlays:
             if key not in JOURNAL_OVERLAY_KEYS:
                 return f"Unknown overlay key: {key}"
+    tabs = payload.get("tabs")
+    if isinstance(tabs, dict):
+        for key in tabs:
+            if key not in JOURNAL_TAB_KEYS:
+                return f"Unknown tab key: {key}"
     return None
 
 

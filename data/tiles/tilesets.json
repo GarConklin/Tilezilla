@@ -1,6 +1,32 @@
 {
   "activeTileset": "gray-backs",
   "tilesets": {
+    "gar-gr": {
+      "CR": "_gar-tiles-extract/CR-Snake-Gr-Tile.png",
+      "CT": "_gar-tiles-extract/CT-Snake-Gr-Tile.png",
+      "CQ": "_gar-tiles-extract/CQ-Snake-Gr-Tile.png",
+      "DB": "_gar-tiles-extract/DB-Snake-Gr-Tile.png",
+      "DC": "_gar-tiles-extract/DC-Snake-Gr-Tile.png",
+      "DS": "_gar-tiles-extract/DS-Snake-Gr-Tile.png",
+      "ET": "_gar-tiles-extract/ET-Snake-Gr-Tile.png",
+      "ES": "_gar-tiles-extract/ES-Snake-Gr-Tile.png",
+      "HL": "_gar-tiles-extract/HL-Snake-Gr-Tile.png",
+      "LC": "_gar-tiles-extract/LC-Snake-Gr-Tile.png",
+      "LL": "_gar-tiles-extract/LL-Snake-Gr-Tile.png",
+      "LR": "_gar-tiles-extract/LR-Snake-Gr-Tile.png",
+      "QC": "_gar-tiles-extract/QC-Snake-Gr-Tile.png",
+      "QS": "_gar-tiles-extract/QS-Snake-Gr-Tile.png",
+      "RC": "_gar-tiles-extract/RC-Snake-Gr-Tile.png",
+      "SH": "_gar-tiles-extract/SH-Snake-Gr-Tile.png",
+      "SS": "_gar-tiles-extract/SS-Snake-Gr-Tile.png",
+      "SZ": "_gar-tiles-extract/SZ-Snake-Gr-Tile.png",
+      "UT": "_gar-tiles-extract/UT-Snake-Gr-Tile.png",
+      "VL": "_gar-tiles-extract/VL-Snake-Gr-Tile.png",
+      "B1": "_gar-tiles-extract/B1-Blocker-Gr-Tile.png",
+      "B2": "_gar-tiles-extract/B2-Blocker-Gr-Tile.png",
+      "E1": "_gar-tiles-extract/E1-Blank-Gr-Tile.png",
+      "E2": "_gar-tiles-extract/E2-Blank-Gr-Tile.png"
+    },
     "gray-backs": {
       "CR": "CR-Snake-G-Tile.png",
       "CT": "CT-Snake-G-Tile.png",

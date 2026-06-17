@@ -1,0 +1,199 @@
+{
+  "generatedAt": "2026-06-14T19:14:17.114Z",
+  "batchFile": "data/tilepz solves 6x6 need-enumeration.txt",
+  "totalNeedingEnumeration": 38,
+  "withSeedInBatch": 38,
+  "skippedNoSeed": [],
+  "levels": [
+    {
+      "id": "6x6-0A-AAA",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 27
+    },
+    {
+      "id": "6x6-0A-AAB",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAC",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAD",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAE",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAY",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-AAZ",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABA",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABB",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABC",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABD",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABE",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABF",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0A-ABG",
+      "reason": "jun13-batch-not-in-catalog",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0B-AAA",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 15
+    },
+    {
+      "id": "6x6-0B-AAB",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 420
+    },
+    {
+      "id": "6x6-0B-AAS",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0B-AAT",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0B-AAU",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0B-AAV",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0B-AAW",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAA",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAC",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 3
+    },
+    {
+      "id": "6x6-0C-AAD",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAE",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 2
+    },
+    {
+      "id": "6x6-0C-AAF",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 2
+    },
+    {
+      "id": "6x6-0C-AAG",
+      "reason": "partial-without-enumerator-meta",
+      "storedSolutions": 2
+    },
+    {
+      "id": "6x6-0C-AAH",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAI",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAJ",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAK",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAL",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAM",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAN",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAO",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAP",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAQ",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    },
+    {
+      "id": "6x6-0C-AAR",
+      "reason": "seed-only",
+      "storedSolutions": 1
+    }
+  ]
+}

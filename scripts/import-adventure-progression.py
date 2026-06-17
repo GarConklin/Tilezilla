@@ -1,31 +1,23 @@
 #!/usr/bin/env python3
-"""Import Adventure rank + progression from CSV into MySQL.
+"""Import Adventure rank + progression from LevelSystem.csv into MySQL.
 
-Authoritative source: data/adventure_solution_distribution-fn.csv
-  Base_Lvl  → rank_id (L1 → 1)
-  Sub_Lvl   → sub_level
-  pzzle_amt → cumulative puzzle index within rank
+Authoritative source: data/LevelSystem.csv
+  Base_Lvl / Sub_Lvl → rank_id / sub_level
+  pzzle_amt          → levels_required (puzzles in that Lx-y step)
+  Adv_ID_Start       → reference only (puzzle map uses adventure_solution_distribution.csv)
 
-Derived (not hardcoded in app code):
-  levels_required            = pzzle_amt (puzzles in that Lx-y step)
-  cumulative_levels_required = running sum of levels_required across all steps
-
-Prefer import-adventure-map.py when the full puzzle map CSV is available.
+Puzzle slots (level_id per Adv_ID) come from import-adventure-map.py.
 
   python scripts/import-adventure-progression.py
   python scripts/import-adventure-progression.py --dry-run
-  python scripts/import-adventure-progression.py --csv data/adventure_solution_distribution-fn.csv
 """
 
 from __future__ import annotations
 
 import argparse
-import csv
 import os
-import re
 import sys
 from pathlib import Path
-from typing import List
 
 try:
     import pymysql
@@ -34,6 +26,7 @@ except ImportError:
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.adventure_ranks import load_adventure_ranks
+from lib.level_system import derive_progression_from_level_system, level_system_path
 
 
 def connect():
@@ -50,68 +43,17 @@ def connect():
     )
 
 
-def parse_rank_code(base_lvl: str) -> int:
-    m = re.match(r"^L(\d+)$", str(base_lvl).strip(), re.I)
-    if not m:
-        raise ValueError(f"Invalid Base_Lvl: {base_lvl!r}")
-    return int(m.group(1))
-
-
-def load_progression_rows(csv_path: Path) -> List[dict]:
-    rows: List[dict] = []
-    with csv_path.open(encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for raw in reader:
-            base = (raw.get("Base_Lvl") or raw.get("base_lvl") or "").strip()
-            sub = (raw.get("Sub_Lvl") or raw.get("sub_lvl") or "").strip()
-            amt = (raw.get("pzzle_amt") or raw.get("Pzzle_amt") or "").strip()
-            if not base or not sub or not amt:
-                continue
-            rows.append(
-                {
-                    "rank_id": parse_rank_code(base),
-                    "sub_level": int(sub),
-                    "pzzle_amt": int(amt),
-                }
-            )
-    rows.sort(key=lambda r: (r["rank_id"], r["sub_level"]))
-    if len(rows) != 80:
-        raise SystemExit(f"Expected 80 progression rows, got {len(rows)} from {csv_path}")
-    return rows
-
-
-def derive_progression(rows: List[dict]) -> List[dict]:
-    cumulative = 0
-    out: List[dict] = []
-    for row in rows:
-        levels_required = row["pzzle_amt"]
-        if levels_required <= 0:
-            raise SystemExit(
-                f"Non-positive levels_required at L{row['rank_id']}-{row['sub_level']}: "
-                f"pzzle_amt={levels_required}"
-            )
-        cumulative += levels_required
-        out.append(
-            {
-                "rank_id": row["rank_id"],
-                "sub_level": row["sub_level"],
-                "levels_required": levels_required,
-                "cumulative_levels_required": cumulative,
-            }
-        )
-    return out
-
-
 def upsert_ranks(cur, repo_root: Path) -> None:
     sql = """
         INSERT INTO adventure_rank (
-            rank_id, rank_code, rank_name, badge_name, badge_image,
+            rank_id, rank_code, rank_name, rank_description, badge_name, badge_image,
             badge_locked_image, badge_color, unlock_title, unlock_message,
             display_order, is_active
-        ) VALUES (%s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, TRUE)
+        ) VALUES (%s, %s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, TRUE)
         ON DUPLICATE KEY UPDATE
             rank_code = VALUES(rank_code),
             rank_name = VALUES(rank_name),
+            rank_description = VALUES(rank_description),
             badge_name = VALUES(badge_name),
             badge_image = VALUES(badge_image),
             display_order = VALUES(display_order),
@@ -124,6 +66,7 @@ def upsert_ranks(cur, repo_root: Path) -> None:
                 row["rank_id"],
                 row["rank_code"],
                 row["rank_name"],
+                row["rank_description"],
                 row["rank_name"],
                 row["badge_image"],
                 row["display_order"],
@@ -131,7 +74,7 @@ def upsert_ranks(cur, repo_root: Path) -> None:
         )
 
 
-def upsert_progression(cur, rows: List[dict]) -> None:
+def upsert_progression(cur, rows: list) -> None:
     sql = """
         INSERT INTO adventure_progression (
             rank_id, sub_level, levels_required, cumulative_levels_required
@@ -153,11 +96,11 @@ def upsert_progression(cur, rows: List[dict]) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Import adventure progression from CSV.")
+    ap = argparse.ArgumentParser(description="Import adventure progression from LevelSystem.csv.")
     ap.add_argument(
         "--csv",
-        default="data/adventure_solution_distribution-fn.csv",
-        help="Progression CSV path",
+        default="data/LevelSystem.csv",
+        help="LevelSystem CSV path",
     )
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -167,15 +110,18 @@ def main() -> None:
     if not csv_path.exists():
         raise SystemExit(f"CSV not found: {csv_path}")
 
-    raw_rows = load_progression_rows(csv_path)
-    prog_rows = derive_progression(raw_rows)
+    ranks = load_adventure_ranks(root)
+    max_rank_id = max(r["rank_id"] for r in ranks)
+    prog_rows = derive_progression_from_level_system(csv_path, max_rank_id=max_rank_id)
 
     print(f"CSV: {csv_path}")
-    print(f"ranks: 8")
+    print(f"ranks: {len(ranks)}")
     print(f"progression steps: {len(prog_rows)}")
+    last = prog_rows[-1]
     print(
-        f"cumulative at L8-10: {prog_rows[-1]['cumulative_levels_required']} "
-        f"(levels_required={prog_rows[-1]['levels_required']})"
+        f"cumulative at L{last['rank_id']}-{last['sub_level']}: "
+        f"{last['cumulative_levels_required']} "
+        f"(levels_required={last['levels_required']})"
     )
     print("sample L1-1:", prog_rows[0])
     print("sample L2-1:", next(r for r in prog_rows if r["rank_id"] == 2 and r["sub_level"] == 1))

@@ -13,6 +13,7 @@
  *   node scripts/audit-solve-dedup.js --summary           # one line per affected file
  *   node scripts/audit-solve-dedup.js --report-out data/solver-runs/rotation-dedup-audit.json
  *   node scripts/audit-solve-dedup.js --fix               # remove duplicates in-place
+ *   node scripts/audit-solve-dedup.js --sizes 2x4,3x3,4x4 # limit by board size prefix
  */
 
 const fs = require('fs');
@@ -30,6 +31,21 @@ const reportOut =
   reportOutIdx >= 0 && process.argv[reportOutIdx + 1]
     ? path.resolve(ROOT, process.argv[reportOutIdx + 1])
     : null;
+const sizesIdx = process.argv.indexOf('--sizes');
+const sizeFilter =
+  sizesIdx >= 0 && process.argv[sizesIdx + 1]
+    ? new Set(
+        process.argv[sizesIdx + 1]
+          .split(',')
+          .map(s => s.trim().toLowerCase())
+          .filter(Boolean)
+      )
+    : null;
+
+function boardSizeFromFilename(fileName) {
+  const m = /^(\d+x\d+)-/.exec(path.basename(fileName));
+  return m ? m[1].toLowerCase() : null;
+}
 
 function edgesFor(tileName, deg, which) {
   const def = tileData[tileName];
@@ -179,7 +195,7 @@ const fileArgs = [];
 for (let i = 2; i < process.argv.length; i++) {
   const a = process.argv[i];
   if (a.startsWith('--')) {
-    if (a === '--report-out') i++;
+    if (a === '--report-out' || a === '--sizes') i++;
     continue;
   }
   fileArgs.push(path.resolve(a));
@@ -190,8 +206,13 @@ if (fileArgs.length) {
 } else {
   files = fs.readdirSync(SOLVES_DIR)
     .filter(f => f.endsWith('.json') && !f.startsWith('.'))
+    .filter(f => !sizeFilter || sizeFilter.has(boardSizeFromFilename(f)))
     .sort()
     .map(f => path.join(SOLVES_DIR, f));
+}
+
+if (sizeFilter) {
+  console.log(`Size filter: ${[...sizeFilter].sort().join(', ')} (${files.length} files)`);
 }
 
 let totalDups = 0;

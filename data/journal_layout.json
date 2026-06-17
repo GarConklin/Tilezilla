@@ -3,7 +3,8 @@
     "artW": 933,
     "artH": 1686,
     "displayPad": 16,
-    "maxDesignWidth": 390
+    "maxDesignWidth": 394,
+    "topNudge": 0
   },
   "typography": {
     "fieldColor": "#3d2e1a",
@@ -15,139 +16,183 @@
     "shellBlank": "/img/NewPuzzleJournalBlank.png",
     "recordTop": "",
     "libraryTop": "",
-    "tabPuzzle": "",
-    "tabStats": "",
-    "tabFilter": "",
-    "tabRecords": "",
+    "statsScreen": "/img/PuzzleJournal-Stats.png",
+    "recordsScreen": "/img/PuzzleJournal-Records.png",
     "bottomBar": ""
+  },
+  "tabs": {
+    "puzzle": {
+      "idle": "/img/PuzzleTab-W.png",
+      "active": "/img/PuzzleTab-G.png"
+    },
+    "stats": {
+      "idle": "/img/StatsTab-W.png",
+      "active": "/img/StatsTab-G.png"
+    },
+    "filter": {
+      "idle": "/img/FilterTab-W.png",
+      "active": "/img/FilterTab-G.png"
+    },
+    "records": {
+      "idle": "/img/RecordsTab-W.png",
+      "active": "/img/RecordsTab-G.png"
+    }
   },
   "items": {
     "paneTop": {
-      "x": 10.7,
-      "y": 3.7,
+      "x": 9.1,
+      "y": 2.3,
       "w": 74.8,
       "h": 43.6,
       "nudgeX": 0,
       "nudgeY": 8
     },
     "paneBottomLeft": {
-      "x": 8,
-      "y": 51.8,
-      "w": 48.4,
-      "h": 34.8,
-      "nudgeX": 12,
+      "x": 3.4,
+      "y": 50.5,
+      "w": 38.1,
+      "h": 36.4,
+      "nudgeX": 17,
       "nudgeY": 40
     },
     "paneBottomRight": {
-      "x": 53,
-      "y": 52,
-      "w": 31.8,
-      "h": 32,
+      "x": 48.9,
+      "y": 50.7,
+      "w": 35.6,
+      "h": 35.9,
       "nudgeX": 0,
       "nudgeY": 43
     },
+    "listTitleBar": {
+      "space": "pane",
+      "x": 2,
+      "y": 1,
+      "w": 96,
+      "h": 10,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
     "titleFoundSolutions": {
-      "x": 10,
-      "y": 53.5,
-      "w": 40,
-      "h": 3,
+      "space": "titleBar",
+      "x": 3,
+      "y": 8,
+      "w": 94,
+      "h": 84,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "titleRecordedPuzzles": {
-      "x": 10,
-      "y": 53.5,
-      "w": 40,
-      "h": 3,
+      "space": "titleBar",
+      "x": 3,
+      "y": 8,
+      "w": 94,
+      "h": 84,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "listScroller": {
-      "right": 59.5,
-      "top": 7,
-      "height": 86,
-      "trackScale": 4.98,
-      "pinScale": 0.98,
-      "nudgeX": -3,
-      "nudgeY": 0
+      "space": "pane",
+      "x": 0,
+      "y": 2,
+      "h": 96,
+      "trackScale": 0.34,
+      "pinScale": 0.66,
+      "nudgeX": -18,
+      "nudgeY": 10
+    },
+    "listContent": {
+      "space": "pane",
+      "x": 9,
+      "y": 2,
+      "w": 89,
+      "h": 96,
+      "nudgeX": -18,
+      "nudgeY": 10
+    },
+    "listRow": {
+      "fontScale": 0.62,
+      "padX": 4,
+      "padY": 2,
+      "gap": 1
     },
     "fieldPuzzleId": {
-      "x": 26.6,
-      "y": 7.9,
-      "w": 56.8,
-      "h": 4.5,
-      "nudgeX": 2,
-      "nudgeY": -3
+      "x": 23,
+      "y": 7,
+      "w": 48,
+      "h": 5,
+      "nudgeX": 14,
+      "nudgeY": 0
     },
     "fieldPuzzleType": {
-      "x": 12.4,
-      "y": 15,
-      "w": 63.6,
-      "h": 4.5,
-      "nudgeX": -5,
-      "nudgeY": -10
+      "x": 10,
+      "y": 14,
+      "w": 28,
+      "h": 5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "fieldBoardSize": {
-      "x": 10.4,
-      "y": 7.4,
-      "w": 13.6,
-      "h": 4.5,
+      "x": 10,
+      "y": 7,
+      "w": 13,
+      "h": 5,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldTotalKnown": {
-      "x": 12,
-      "y": 20.5,
-      "w": 25.2,
-      "h": 4.5,
+      "x": 10,
+      "y": 20,
+      "w": 28,
+      "h": 5,
       "nudgeX": 0,
-      "nudgeY": -11
+      "nudgeY": 0
     },
     "fieldSolutionsFound": {
-      "x": 41.6,
-      "y": 18.3,
-      "w": 28.8,
-      "h": 4.5,
+      "x": 42,
+      "y": 20,
+      "w": 34,
+      "h": 5,
       "nudgeX": 0,
-      "nudgeY": 5
+      "nudgeY": 0
     },
     "fieldFirstSolved": {
-      "x": 12,
-      "y": 29.5,
-      "w": 44,
-      "h": 4.5,
-      "nudgeX": 52,
-      "nudgeY": 40
+      "x": 22,
+      "y": 29,
+      "w": 56,
+      "h": 5,
+      "nudgeX": 0,
+      "nudgeY": 12
     },
     "fieldLastPlayed": {
-      "x": 10.8,
-      "y": 38,
-      "w": 43.2,
-      "h": 4.5,
-      "nudgeX": 57,
-      "nudgeY": 16
+      "x": 22,
+      "y": 37,
+      "w": 56,
+      "h": 5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "progressBar": {
-      "x": 43.1,
-      "y": 16.6,
-      "w": 35.2,
+      "x": 42,
+      "y": 16,
+      "w": 34,
       "h": 2.5,
-      "nudgeX": -5,
-      "nudgeY": 57
+      "nudgeX": 0,
+      "nudgeY": 58
     },
     "solutionPreview": {
-      "x": 55,
-      "y": 55,
-      "w": 36.2,
-      "h": 34.8,
-      "nudgeX": -24,
-      "nudgeY": 18
+      "space": "pane",
+      "x": 4,
+      "y": 4,
+      "w": 92,
+      "h": 92,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "selectorBoardSize": {
-      "x": 10,
-      "y": 8,
+      "x": 10.6,
+      "y": 8.1,
       "w": 38,
-      "h": 32,
+      "h": 31.8,
       "nudgeX": 0,
       "nudgeY": 0
     },
@@ -160,44 +205,44 @@
       "nudgeY": 0
     },
     "selectorStatus": {
-      "x": 10,
-      "y": 42,
+      "x": 8.5,
+      "y": 40.1,
       "w": 78,
-      "h": 8,
+      "h": 11.1,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "tabPuzzle": {
-      "x": 92,
-      "y": 6,
-      "w": 9.6,
-      "h": 14.8,
-      "nudgeX": -12,
-      "nudgeY": 12
+      "x": 89.5,
+      "y": 17.8,
+      "w": 10.5,
+      "h": 11.5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "tabStats": {
-      "x": 92,
-      "y": 18,
-      "w": 9.2,
-      "h": 14.8,
-      "nudgeX": -11,
-      "nudgeY": 40
+      "x": 89.5,
+      "y": 30.4,
+      "w": 10.5,
+      "h": 11.5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "tabFilter": {
-      "x": 92,
-      "y": 29.9,
-      "w": 8.4,
-      "h": 13.2,
-      "nudgeX": -9,
-      "nudgeY": 71
+      "x": 89.5,
+      "y": 5.2,
+      "w": 10.5,
+      "h": 11.5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "tabRecords": {
-      "x": 92,
-      "y": 42,
-      "w": 8.8,
-      "h": 14.4,
-      "nudgeX": -8,
-      "nudgeY": 91
+      "x": 89.5,
+      "y": 43,
+      "w": 10.5,
+      "h": 11.5,
+      "nudgeX": 0,
+      "nudgeY": 0
     },
     "btnFilter": {
       "x": 8,

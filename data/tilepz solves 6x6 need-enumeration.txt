@@ -1,0 +1,5318 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 4,
+    "RC": 4,
+    "LL": 2,
+    "LR": 2,
+    "HL": 1,
+    "VL": 1,
+    "DB": 2
+  },
+  "levelId": "6x6-0A-AAA",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAA solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 4,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DB": 2,
+    "ET": 1,
+    "HL": 2,
+    "LC": 1,
+    "LL": 1,
+    "LR": 1,
+    "RC": 3,
+    "SH": 1,
+    "UT": 4,
+    "VL": 2
+  },
+  "levelId": "6x6-0A-AAB",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAB solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 4,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 1,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DB": 2,
+    "ET": 1,
+    "HL": 1,
+    "LC": 1,
+    "LL": 1,
+    "LR": 1,
+    "RC": 3,
+    "SH": 1,
+    "UT": 5,
+    "VL": 2
+  },
+  "levelId": "6x6-0A-AAC",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAC solver 1",
+      "placements": [
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 4,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 2,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 5,
+    "HL": 3,
+    "LL": 3,
+    "LR": 1,
+    "RC": 1,
+    "LC": 1,
+    "SH": 1,
+    "ET": 1,
+    "DB": 2
+  },
+  "levelId": "6x6-0A-AAD",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAD solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 5,
+    "HL": 1,
+    "LR": 2,
+    "LC": 2,
+    "SH": 1,
+    "LL": 2,
+    "DB": 1,
+    "ET": 1,
+    "RC": 2,
+    "VL": 1
+  },
+  "levelId": "6x6-0A-AAE",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAE solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 2,
+          "deg": 180
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 2,
+    "SH": 1,
+    "SS": 2,
+    "SZ": 2,
+    "UT": 4,
+    "VL": 4
+  },
+  "levelId": "6x6-0A-AAY",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAY solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 2,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 4,
+    "VL": 4
+  },
+  "levelId": "6x6-0A-AAZ",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-AAZ solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 2,
+    "UT": 1,
+    "VL": 4
+  },
+  "levelId": "6x6-0A-ABA",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABA solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 3,
+    "UT": 4,
+    "VL": 3
+  },
+  "levelId": "6x6-0A-ABB",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABB solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 4,
+    "VL": 2
+  },
+  "levelId": "6x6-0A-ABC",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABC solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 4,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 2,
+    "UT": 4,
+    "VL": 1
+  },
+  "levelId": "6x6-0A-ABD",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABD solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 1,
+    "RC": 2,
+    "SH": 1,
+    "SS": 2,
+    "SZ": 2,
+    "UT": 5,
+    "VL": 2
+  },
+  "levelId": "6x6-0A-ABE",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABE solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 1,
+    "RC": 2,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 4
+  },
+  "levelId": "6x6-0A-ABF",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABF solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 1,
+    "RC": 3,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 2
+  },
+  "levelId": "6x6-0A-ABG",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABG solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 6,
+    "RC": 3,
+    "LL": 2,
+    "LR": 2,
+    "HL": 1,
+    "VL": 1,
+    "DS": 1
+  },
+  "levelId": "6x6-0B-AAA",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAA solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 1,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "DS",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 3,
+    "RC": 3,
+    "DB": 2,
+    "LC": 2,
+    "LL": 1,
+    "LR": 1,
+    "HL": 1,
+    "VL": 1,
+    "SS": 1,
+    "SZ": 1
+  },
+  "levelId": "6x6-0B-AAB",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAB solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 1,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 4,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 3,
+    "HL": 3,
+    "LL": 3,
+    "ET": 1,
+    "SZ": 1,
+    "SS": 2,
+    "LC": 2,
+    "SH": 1,
+    "LR": 2
+  },
+  "levelId": "6x6-0B-AAS",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAS solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "HL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 4,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 3,
+    "HL": 2,
+    "LL": 3,
+    "ET": 1,
+    "SZ": 1,
+    "SS": 2,
+    "LC": 2,
+    "SH": 1,
+    "LR": 1,
+    "DC": 1,
+    "DB": 1
+  },
+  "levelId": "6x6-0B-AAT",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAT solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DC": 1,
+    "LR": 1,
+    "LL": 3,
+    "HL": 1,
+    "DB": 1,
+    "SH": 1,
+    "ET": 1,
+    "QC": 1,
+    "UT": 3,
+    "SZ": 1,
+    "VL": 2,
+    "LC": 1,
+    "DS": 1
+  },
+  "levelId": "6x6-0B-AAU",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAU solver 1",
+      "placements": [
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "DS",
+          "r": 4,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "LR": 1,
+    "LL": 3,
+    "HL": 2,
+    "QC": 1,
+    "UT": 3,
+    "SZ": 1,
+    "VL": 2,
+    "LC": 1,
+    "DS": 1,
+    "SH": 1,
+    "ET": 1,
+    "RC": 1
+  },
+  "levelId": "6x6-0B-AAV",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAV solver 1",
+      "placements": [
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "DS",
+          "r": 4,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SH",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 4,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "VL": 2,
+    "LL": 4,
+    "SH": 1,
+    "ET": 1,
+    "UT": 7,
+    "HL": 2,
+    "DC": 1
+  },
+  "levelId": "6x6-0B-AAW",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0B-AAW solver 1",
+      "placements": [
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "SH",
+          "r": 2,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "DC",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 2,
+          "c": 0,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 6,
+    "ET": 1,
+    "E1": 2,
+    "DB": 3,
+    "HL": 2,
+    "LL": 1,
+    "CT": 1,
+    "DS": 1,
+    "SH": 1,
+    "VL": 1
+  },
+  "levelId": "6x6-0C-AAA",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAA solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "E1",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "DB",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "DS",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "E1",
+          "r": 4,
+          "c": 5,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 4,
+    "HL": 2,
+    "LL": 2,
+    "CT": 1,
+    "DB": 2,
+    "DS": 1,
+    "SH": 1,
+    "VL": 2,
+    "RC": 1,
+    "ET": 1,
+    "CR": 1
+  },
+  "levelId": "6x6-0C-AAC",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAC solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "DB",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "DS",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 4,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 6,
+    "HL": 3,
+    "LL": 3,
+    "CR": 2,
+    "ET": 1,
+    "SH": 1,
+    "SS": 1,
+    "E2": 1
+  },
+  "levelId": "6x6-0C-AAD",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAD solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 4,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "E2",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 5,
+    "HL": 3,
+    "LL": 3,
+    "CR": 2,
+    "LR": 1,
+    "RC": 1,
+    "LC": 1,
+    "SH": 1,
+    "ET": 1
+  },
+  "levelId": "6x6-0C-AAE",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAE solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 4,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 3,
+    "HL": 2,
+    "LL": 3,
+    "ET": 1,
+    "SZ": 1,
+    "SS": 2,
+    "LC": 2,
+    "SH": 1,
+    "LR": 1,
+    "DC": 1,
+    "CR": 1
+  },
+  "levelId": "6x6-0C-AAF",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAF solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "CR",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "CR": 1,
+    "DC": 1,
+    "LR": 1,
+    "LL": 3,
+    "SH": 1,
+    "SS": 2,
+    "LC": 2,
+    "SZ": 1,
+    "UT": 2,
+    "ET": 1,
+    "HL": 2,
+    "QS": 1
+  },
+  "levelId": "6x6-0C-AAG",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAG solver 1",
+      "placements": [
+        {
+          "tile": "CR",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "CR": 1,
+    "DC": 1,
+    "LR": 2,
+    "LL": 3,
+    "SH": 1,
+    "SS": 1,
+    "UT": 2,
+    "ET": 1,
+    "HL": 1,
+    "QS": 1,
+    "LC": 1,
+    "VL": 1,
+    "QC": 1,
+    "E1": 2
+  },
+  "levelId": "6x6-0C-AAH",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAH solver 1",
+      "placements": [
+        {
+          "tile": "CR",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QC",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DC": 1,
+    "LR": 2,
+    "LL": 3,
+    "SH": 1,
+    "SS": 1,
+    "UT": 2,
+    "ET": 1,
+    "HL": 1,
+    "QS": 1,
+    "LC": 1,
+    "VL": 1,
+    "QC": 1,
+    "E1": 2,
+    "DB": 1
+  },
+  "levelId": "6x6-0C-AAI",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAI solver 1",
+      "placements": [
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QC",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DC": 1,
+    "LR": 2,
+    "LL": 2,
+    "HL": 1,
+    "E1": 2,
+    "DB": 1,
+    "SH": 1,
+    "ET": 1,
+    "QC": 1,
+    "UT": 2,
+    "LC": 1,
+    "RC": 1,
+    "SZ": 1,
+    "SS": 1,
+    "VL": 1
+  },
+  "levelId": "6x6-0C-AAJ",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAJ solver 1",
+      "placements": [
+        {
+          "tile": "DC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "E1",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "DB",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 1,
+    "HL": 1,
+    "LR": 1,
+    "LC": 2,
+    "LL": 3,
+    "RC": 3,
+    "CT": 1,
+    "CQ": 1,
+    "SH": 1,
+    "ET": 1,
+    "VL": 1,
+    "QS": 1,
+    "SS": 1
+  },
+  "levelId": "6x6-0C-AAK",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAK solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "CQ",
+          "r": 3,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 3,
+    "HL": 1,
+    "LR": 1,
+    "LC": 2,
+    "LL": 4,
+    "RC": 1,
+    "CT": 1,
+    "CQ": 1,
+    "QS": 1,
+    "ET": 1,
+    "SH": 1,
+    "DB": 1
+  },
+  "levelId": "6x6-0C-AAL",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAL solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "CQ",
+          "r": 3,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LL",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "UT": 4,
+    "HL": 1,
+    "LR": 2,
+    "LC": 3,
+    "CT": 1,
+    "CQ": 1,
+    "LL": 2,
+    "QS": 1,
+    "SH": 1,
+    "DB": 1,
+    "ET": 1
+  },
+  "levelId": "6x6-0C-AAM",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAM solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 5,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "CQ",
+          "r": 3,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "CQ": 1,
+    "DB": 2,
+    "DC": 1,
+    "ET": 1,
+    "HL": 1,
+    "LC": 2,
+    "LL": 1,
+    "LR": 1,
+    "QC": 1,
+    "RC": 1,
+    "SH": 1,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 1
+  },
+  "levelId": "6x6-0C-AAN",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAN solver 1",
+      "placements": [
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "CQ",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 1,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "DC",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "DB",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "LC",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 4,
+    "LR": 1,
+    "HL": 2,
+    "LC": 2,
+    "RC": 2,
+    "SS": 1,
+    "VL": 2,
+    "LL": 1,
+    "CR": 1
+  },
+  "levelId": "6x6-0C-AAO",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAO solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 3,
+    "LR": 1,
+    "HL": 2,
+    "LC": 1,
+    "RC": 2,
+    "SS": 1,
+    "VL": 2,
+    "LL": 2,
+    "CR": 1,
+    "CT": 1
+  },
+  "levelId": "6x6-0C-AAP",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAP solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LC",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 3,
+    "LR": 1,
+    "HL": 2,
+    "RC": 2,
+    "SS": 2,
+    "LL": 2,
+    "CR": 1,
+    "CT": 1,
+    "LC": 1,
+    "E2": 1
+  },
+  "levelId": "6x6-0C-AAQ",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAQ solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LL",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "HL",
+          "r": 3,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "CR",
+          "r": 1,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "CT",
+          "r": 3,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LL",
+          "r": 3,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "E2",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "CQ": 1,
+    "DB": 1,
+    "ET": 1,
+    "HL": 1,
+    "LC": 1,
+    "LL": 2,
+    "RC": 4,
+    "SH": 1,
+    "UT": 4,
+    "VL": 2
+  },
+  "levelId": "6x6-0C-AAR",
+  "totalUniqueSolutions": 1,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAR solver 1",
+      "placements": [
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "HL",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 4,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SH",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LC",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "CQ",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "LL",
+          "r": 1,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 3,
+          "deg": 270
+        }
+      ]
+    }
+  ]
+}

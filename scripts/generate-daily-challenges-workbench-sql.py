@@ -16,7 +16,7 @@ def main() -> None:
     )
     by_id = {L["id"]: L for L in levels_doc.get("levels", [])}
 
-    rows = list(csv.DictReader(csv_path.open(encoding="utf-8")))
+    rows = list(csv.DictReader(csv_path.open(encoding="utf-8-sig")))
     clean_csv = root / "data" / "daily_challenges_import_clean.csv"
     sql_path = root / "data" / "daily_challenges_workbench.sql"
 

@@ -12,20 +12,22 @@ SET @arn_hash = '$2y$10$nwtUdak2Z0GlP0NtvKk0r.H7.EXmMyHTmRdC2iDA7l29Gs7QTkrEW';
 
 -- adventure_rank rows with badge paths (canonical: data/adventure_ranks.json)
 INSERT INTO adventure_rank (
-    rank_id, rank_code, rank_name, badge_name, badge_image,
+    rank_id, rank_code, rank_name, rank_description, badge_name, badge_image,
     display_order, is_active
 ) VALUES
-(1, 'L1', 'Wanderer', 'Wanderer', '/img/ranks/Wanderer.png', 1, TRUE),
-(2, 'L2', 'Pathfinder', 'Pathfinder', '/img/ranks/Pathfinder.png', 2, TRUE),
-(3, 'L3', 'Trailblazer', 'Trailblazer', '/img/ranks/Trailblazer.png', 3, TRUE),
-(4, 'L4', 'Navigator', 'Navigator', '/img/ranks/Navigator.png', 4, TRUE),
-(5, 'L5', 'Waymaker', 'Waymaker', '/img/ranks/Waymaker.png', 5, TRUE),
-(6, 'L6', 'Route Master', 'Route Master', '/img/ranks/RouteMaster.png', 6, TRUE),
-(7, 'L7', 'Grand Cartographer', 'Grand Cartographer', '/img/ranks/GrandCartographer.png', 7, TRUE),
-(8, 'L8', 'Vaultwalker', 'Vaultwalker', '/img/ranks/Vaultwalker.png', 8, TRUE)
+(1, 'L1', 'Wanderer',     'Every great journey begins with a single step.',              'Wanderer',     '/img/ranks/Wanderer.png',     1, TRUE),
+(2, 'L2', 'Pathfinder',   'The first routes emerge from the wilderness.',                'Pathfinder',   '/img/ranks/Pathfinder.png',   2, TRUE),
+(3, 'L3', 'Explorer',     'Curiosity reveals paths others overlook.',                    'Explorer',     '/img/ranks/Explorer.png',     3, TRUE),
+(4, 'L4', 'Trailblazer',  'New trails are forged through determination.',                  'Trailblazer',  '/img/ranks/Trailblazer.png',  4, TRUE),
+(5, 'L5', 'Voyager',      'The horizon expands with every discovery.',                     'Voyager',      '/img/ranks/Voyager.png',      5, TRUE),
+(6, 'L6', 'Expeditioner', 'No challenge is too distant or difficult.',                     'Expeditioner', '/img/ranks/Expeditioner.png', 6, TRUE),
+(7, 'L7', 'Adventurer',   'The unknown becomes opportunity.',                              'Adventurer',   '/img/ranks/Adventurer.png',   7, TRUE),
+(8, 'L8', 'Pioneer',      'A leader among those who seek new routes.',                     'Pioneer',      '/img/ranks/Pioneer.png',      8, TRUE),
+(9, 'L9', 'Legend',       'Your name is etched among the greatest explorers.',             'Legend',       '/img/ranks/Legend.png',       9, TRUE)
 ON DUPLICATE KEY UPDATE
     rank_code = VALUES(rank_code),
     rank_name = VALUES(rank_name),
+    rank_description = VALUES(rank_description),
     badge_name = VALUES(badge_name),
     badge_image = VALUES(badge_image),
     display_order = VALUES(display_order),
