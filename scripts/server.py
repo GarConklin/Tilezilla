@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
+SCRIPTS = ROOT / "scripts"
 PORT = int(os.environ.get("PORT", "8080"))
 SUBLEVEL_LAYOUT_PATH = ROOT / "data" / "sublevel_icon_layout.json"
 DISCOVERY_LAYOUT_PATH = ROOT / "data" / "discovery_record_layout.json"
@@ -44,6 +45,23 @@ DISCOVERY_ITEM_KEYS = (
     "btnViewFound",
     "btnBook",
 )
+
+
+import sys
+
+sys.path.insert(0, str(SCRIPTS))
+from lib.adventure_path_build import load_adventure_path_from_mysql  # noqa: E402
+
+
+def adventure_path_api_response() -> tuple[int, dict]:
+    path = load_adventure_path_from_mysql(ROOT)
+    if path and path.get("flat"):
+        return 200, {"ok": True, "source": "mysql", "path": path}
+    return 503, {
+        "ok": False,
+        "error": "Adventure path not available from MySQL",
+        "hint": "Use data/adventure_path.json fallback or run import-adventure-map.py",
+    }
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -85,6 +103,15 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path == "/api/adventure/path":
+            status, payload = adventure_path_api_response()
+            body = json.dumps(payload).encode("utf-8")
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/dev/save-sublevel-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/sublevel_icon_layout.json"}
@@ -474,6 +501,7 @@ def main() -> None:
         raise SystemExit(1) from exc
 
     print(f"Serving on http://localhost:{PORT}")
+    print("Adventure path API: GET /api/adventure/path")
     print("Sublevel tuner save API: POST /api/dev/save-sublevel-layout")
     print("Discovery tuner save API: POST /api/dev/save-discovery-layout")
     print("Menu tuner save API: POST /api/dev/save-menu-layout")

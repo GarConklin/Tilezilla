@@ -117,9 +117,9 @@ export const JOURNAL_ITEM_DEFS = {
 /** Canonical puzzle-record journal layout — game + tuner share this via journal_layout.json. */
 export const RECORD_PUZZLE_JOURNAL_ITEMS = {
   solutionPreview: { space: 'pane', x: 4, y: 4, w: 92, h: 92, nudgeX: 0, nudgeY: 0 },
-  listContent: { space: 'pane', x: 9, y: 2, w: 89, h: 96, nudgeX: -18, nudgeY: 10 },
+  listContent: { space: 'pane', x: 9, y: 2, w: 89, h: 96, nudgeX: 1, nudgeY: 10 },
   listScroller: {
-    space: 'pane', x: 0, y: 2, h: 96, trackScale: 0.34, pinScale: 0.66, nudgeX: -18, nudgeY: 10,
+    space: 'pane', x: 0, y: 2, h: 96, trackScale: 0.34, pinScale: 0.66, nudgeX: 1, nudgeY: 10,
   },
   listRow: { fontScale: 0.62, padX: 4, padY: 2, gap: 1 },
   fieldBoardSize: { x: 10, y: 7, w: 13, h: 5, nudgeX: 0, nudgeY: 0 },
@@ -753,9 +753,33 @@ export function applyJournalListPaneHitPositions(layout) {
   }
 }
 
-/** Push all tuned hit boxes (tabs, list pane, preview) onto real DOM nodes. */
+/** Push tuned pane boxes onto real elements (tuner + live) — inline styles win over CSS vars. */
+export function applyJournalPaneHitPositions(layout) {
+  const merged = mergeJournalLayout(layout);
+  const paneSelectors = {
+    paneTop: '.tz-journal-pane--top, [data-tuner-item="paneTop"]',
+    paneBottomLeft: '.tz-journal-pane--bl, [data-tuner-item="paneBottomLeft"]',
+    paneBottomRight: '.tz-journal-pane--br, [data-tuner-item="paneBottomRight"]',
+  };
+
+  for (const [key, selector] of Object.entries(paneSelectors)) {
+    const item = getJournalItemLayout(key, merged);
+    const style = {
+      left: `calc(${item.x ?? 0}% + ${item.nudgeX ?? 0}px)`,
+      top: `calc(${item.y ?? 0}% + ${item.nudgeY ?? 0}px)`,
+      width: `${item.w ?? 44}%`,
+      height: `${item.h ?? 32}%`,
+    };
+    for (const el of document.querySelectorAll(selector)) {
+      Object.assign(el.style, style);
+    }
+  }
+}
+
+/** Push all tuned hit boxes (tabs, panes, list pane, preview) onto real DOM nodes. */
 export function applyJournalLayoutHits(layout) {
   applyJournalTabHitPositions(layout);
+  applyJournalPaneHitPositions(layout);
   applyJournalListPaneHitPositions(layout);
   applyJournalPreviewHitPositions(layout);
 }

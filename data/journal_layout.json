@@ -52,15 +52,15 @@
       "y": 50.5,
       "w": 38.1,
       "h": 36.4,
-      "nudgeX": 17,
+      "nudgeX": 7,
       "nudgeY": 40
     },
     "paneBottomRight": {
       "x": 48.9,
       "y": 50.7,
-      "w": 35.6,
+      "w": 38.1,
       "h": 35.9,
-      "nudgeX": 0,
+      "nudgeX": -10,
       "nudgeY": 43
     },
     "listTitleBar": {
@@ -74,7 +74,7 @@
     },
     "titleFoundSolutions": {
       "space": "titleBar",
-      "x": 3,
+      "x": 6,
       "y": 8,
       "w": 94,
       "h": 84,
@@ -92,26 +92,26 @@
     },
     "listScroller": {
       "space": "pane",
-      "x": 0,
+      "x": 4,
       "y": 2,
       "h": 96,
       "trackScale": 0.34,
       "pinScale": 0.66,
-      "nudgeX": -18,
-      "nudgeY": 10
+      "nudgeX": -2,
+      "nudgeY": 4
     },
     "listContent": {
       "space": "pane",
-      "x": 9,
-      "y": 2,
+      "x": 10,
+      "y": 6,
       "w": 89,
       "h": 96,
-      "nudgeX": -18,
+      "nudgeX": 1,
       "nudgeY": 10
     },
     "listRow": {
       "fontScale": 0.62,
-      "padX": 4,
+      "padX": 3,
       "padY": 2,
       "gap": 1
     },

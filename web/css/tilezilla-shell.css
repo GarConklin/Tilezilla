@@ -8,7 +8,7 @@
  *   Tablet          768 × 1024+ → 2× canvas (≥780px wide)
  *   Desktop         ≥780px wide → 2× (780 × 1688 visual)
  *
- * Background: one full-screen stretch on .tz-bg; UI artboard scales to fit (nav + tile bag visible).
+ * Background: sky/dock layer + dual animated water layers on .tz-bg; UI on .tz-ui-layer.
  */
 
 :root {
@@ -18,7 +18,10 @@
   --tz-ui-scale: 1;
   --tz-img-bg: url("/img/Background%20lake%20and%20dock.png");
   --tz-img-bg-inline: url("/img/Background lake and dock.png");
-  --tz-img-board-frame: url("/img/Board%20Area.png");
+  --tz-img-bg-sky: url("/img/Background%20Sky%20and%20dock%20without%20water.png");
+  --tz-img-bg-water-a: url("/img/Background%20water1.png");
+  --tz-img-bg-water-b: url("/img/Background%20water2.png");
+  --tz-img-board-frame: url("/img/boardframes/Board%20Area-5x6.png");
   --tz-img-preview-frame: url("/img/preview%20tile%20Area%20bubble.png");
   --tz-img-check-solve-panel: url("/img/Check%20Solve%20nb.png");
   --tz-img-check-solve-btn: url("/img/Check%20Solve%20Button.png");
@@ -86,21 +89,35 @@
   --tz-cell-size: 55px;
   --tz-board-frame-pad-x: 14px;
   --tz-board-frame-pad-y: 15px;
-  --tz-w-board-frame: calc(5 * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-x));
-  --tz-h-board-frame: calc(6 * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-y));
-  --tz-x-board: calc((var(--tz-design-width) - var(--tz-w-board-frame)) / 2);
+  --tz-max-board-cols: 5;
+  --tz-max-board-rows: 6;
+  --tz-board-rows: 6;
+  --tz-board-cols: 5;
+  --tz-w-board-frame: calc(var(--tz-board-cols) * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-x));
+  --tz-h-board-frame: calc(var(--tz-board-rows) * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-y));
+  /* Reserved screen area (original 5×6); smaller frames center inside without shifting chrome */
+  --tz-w-board-slot: max(
+    calc(var(--tz-max-board-cols) * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-x)),
+    var(--tz-w-board-frame)
+  );
+  --tz-h-board-slot: max(
+    calc(var(--tz-max-board-rows) * var(--tz-cell-size) + 2 * var(--tz-board-frame-pad-y)),
+    var(--tz-h-board-frame)
+  );
+  --tz-x-board: calc((var(--tz-design-width) - var(--tz-w-board-slot)) / 2);
   --tz-board-grid-nudge-x: -1px;
   --tz-board-grid-nudge-y: 0px;
   --tz-board-frame-art-nudge-x: 0px;
   --tz-board-frame-art-nudge-y: 0px;
   /*
-   * Board frame: 14px L/R, 15px T/B. Cell = 55px → frame 303×360, max grid 5×6 → 275×330.
-   * Smaller boards center inside frame via flex on .tz-board-frame.
+   * Board frame: 14px L/R, 15px T/B padding around the live grid.
+   * --tz-board-rows / --tz-board-cols set per puzzle in board-frame.js.
+   * Frame art sizes to the puzzle; .tz-board-section slot stays 5×6 (or grows if larger).
    */
   --tz-board-frame-scale: 1;
   --tz-cell-substrate: url("/img/Blank-BG-Tile.png");
 
-  --tz-y-message: 498px;
+  --tz-y-message: calc(var(--tz-y-board) + var(--tz-h-board-slot) + 2px);
   --tz-y-message-nudge: -2px;
   --tz-h-message: 10px;
   --tz-preview-art-w: 1593;
@@ -254,7 +271,7 @@
   );
   /* Check-solve overlay — fits preview inner tile slot (same box as #activePad) */
   --tz-check-solve-nudge-x: 0px;
-  --tz-check-solve-nudge-y: 0px;
+  --tz-check-solve-nudge-y: -5px;
   --tz-invalid-solve-nudge-y: -6px;
   --tz-check-solve-scale: 1.6;
   --tz-check-solve-btn-scale: 0.8;
@@ -716,20 +733,73 @@ button {
   align-items: center;
 }
 
-/* One lake background — stretched to full screen (no second layer on .tz-stage) */
+/* backgroundLayer + waterLayer (full viewport); uiLayer = .tz-ui-layer */
 .tz-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
   background-color: var(--tz-teal-dark);
-  background-image: var(--tz-img-bg-inline);
-  background-size: 100% 100%;
-  background-position: center center;
-  background-repeat: no-repeat;
 }
 
-/* 1× artboard; JS zoom fits height + width on phone, up to 2× on desktop */
+.tz-bg__sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: var(--tz-img-bg-sky) center center / 100% 100% no-repeat;
+}
+
+.tz-bg__water {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tz-bg__water-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  will-change: transform;
+}
+
+.tz-bg__water-layer--a {
+  background-image: var(--tz-img-bg-water-a);
+  animation: tz-ripple 18s ease-in-out infinite;
+}
+
+.tz-bg__water-layer--b {
+  background-image: var(--tz-img-bg-water-b);
+  animation: tz-ripple 27s ease-in-out infinite;
+}
+
+@keyframes tz-ripple {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tz-bg__water-layer--a,
+  .tz-bg__water-layer--b {
+    animation: none;
+  }
+}
+
+/* uiLayer — 1× artboard; JS zoom fits height + width on phone, up to 2× on desktop */
+.tz-ui-layer,
 .tz-stage {
   position: relative;
   z-index: 1;
@@ -1096,8 +1166,8 @@ button {
 .tz-board-section {
   top: var(--tz-y-board);
   left: var(--tz-x-board);
-  width: var(--tz-w-board-frame);
-  height: var(--tz-h-board-frame);
+  width: var(--tz-w-board-slot);
+  height: var(--tz-h-board-slot);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2468,7 +2538,7 @@ button {
   top: var(--tz-y-board);
   left: 0;
   width: var(--tz-design-width);
-  height: var(--tz-h-board-frame);
+  height: var(--tz-h-board-slot);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3202,17 +3272,17 @@ html.tz-phone-preview .tz-pinfo-dialog {
 }
 
 .tz-journal-pane--bl {
-  left: calc(var(--tz-journal-pane-bl-x) * 1% + var(--tz-journal-pane-bl-nudge-x));
-  top: calc(var(--tz-journal-pane-bl-y) * 1% + var(--tz-journal-pane-bl-nudge-y));
-  width: calc(var(--tz-journal-pane-bl-w) * 1%);
-  height: calc(var(--tz-journal-pane-bl-h) * 1%);
+  left: calc(var(--tz-journal-pane-bl-x, 8) * 1% + var(--tz-journal-pane-bl-nudge-x, 0px));
+  top: calc(var(--tz-journal-pane-bl-y, 52) * 1% + var(--tz-journal-pane-bl-nudge-y, 0px));
+  width: calc(var(--tz-journal-pane-bl-w, 44) * 1%);
+  height: calc(var(--tz-journal-pane-bl-h, 32) * 1%);
 }
 
 .tz-journal-pane--br {
-  left: calc(var(--tz-journal-pane-br-x) * 1% + var(--tz-journal-pane-br-nudge-x));
-  top: calc(var(--tz-journal-pane-br-y) * 1% + var(--tz-journal-pane-br-nudge-y));
-  width: calc(var(--tz-journal-pane-br-w) * 1%);
-  height: calc(var(--tz-journal-pane-br-h) * 1%);
+  left: calc(var(--tz-journal-pane-br-x, 53) * 1% + var(--tz-journal-pane-br-nudge-x, 0px));
+  top: calc(var(--tz-journal-pane-br-y, 52) * 1% + var(--tz-journal-pane-br-nudge-y, 0px));
+  width: calc(var(--tz-journal-pane-br-w, 39) * 1%);
+  height: calc(var(--tz-journal-pane-br-h, 32) * 1%);
 }
 
 .tz-journal-pane-title {
@@ -3236,12 +3306,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
   box-sizing: border-box;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(244, 232, 205, 0.97) 0%,
-    rgba(244, 232, 205, 0.88) 70%,
-    rgba(244, 232, 205, 0) 100%
-  );
+  background: transparent;
 }
 
 .tz-journal-pane--bl .tz-journal-list-title-bar .tz-journal-pane-title {
@@ -3257,13 +3322,21 @@ html.tz-phone-preview .tz-pinfo-dialog {
   font-weight: 700;
 }
 
+.tz-journal-pane--bl .tz-journal-list-title-bar .tz-journal-pane-title[hidden] {
+  display: none !important;
+}
+
+.tz-journal-root[data-journal-mode="record"] .tz-journal-field--title-recorded {
+  display: none !important;
+}
+
+.tz-journal-root[data-journal-mode="library"] .tz-journal-field--title-found {
+  display: none !important;
+}
+
 /* Puzzle record journal — fixed in-game layout (not tuner-dependent) */
 .tz-journal-root[data-journal-mode="record"] .tz-journal-pane--bl {
   overflow: visible;
-}
-
-.tz-journal-root[data-journal-mode="record"] .tz-journal-list-title-bar {
-  display: none !important;
 }
 
 .tz-journal-root[data-journal-mode="record"] .tz-journal-list-scroll {
@@ -3671,6 +3744,10 @@ html.tz-phone-preview .tz-pinfo-dialog {
   pointer-events: auto;
 }
 
+.tz-journal-preview-wrap[hidden] {
+  display: none !important;
+}
+
 .tz-journal-pane--br .tz-journal-field--preview {
   position: absolute;
   left: calc(var(--tz-journal-solution-preview-x, 5) * 1% + var(--tz-journal-solution-preview-nudge-x, 0px));
@@ -4046,6 +4123,8 @@ html.tz-phone-preview .tz-app {
 }
 
 html.tz-phone-preview .tz-bg,
+html.tz-phone-preview .tz-bg__sky,
+html.tz-phone-preview .tz-bg__water,
 html.tz-phone-preview .tz-sheet-root,
 html.tz-phone-preview .tz-stuck-root,
 html.tz-phone-preview .tz-stuck-root__backdrop,

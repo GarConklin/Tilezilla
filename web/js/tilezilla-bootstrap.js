@@ -2,6 +2,10 @@
  * Tilezilla production shell — bridges UI chrome to app_v16 game engine.
  */
 
+import {
+  applyBoardFrame,
+  centerBoardInFrame,
+} from './board-frame.js';
 import { loadGameplaySettings, initSettingsUi, applyPhonePreviewMode } from './tilezilla-settings.js';
 import { initMenuUi } from './tilezilla-menu.js';
 import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
@@ -308,8 +312,7 @@ async function advanceAdventurePath(app) {
     showGameMessage(`Next adventure puzzle (${location.puzzle.levelId}) is not in the catalog yet.`, 'warn');
     return;
   }
-  applyResponsiveBoard(app);
-  await app.applyLevel(level);
+  await loadLevelOnBoard(app, level);
   resetPuzzleTimer();
   displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
   await refreshPaletteIfReady(app);
@@ -330,19 +333,36 @@ function boardRenderSize(cols, rows) {
   return { w: cols * TZ_CELL_PX, h: rows * TZ_CELL_PX };
 }
 
-/** Center any cols×rows grid inside the 360×360 frame (flex + published grid size). */
+/** Center cols×rows grid; select frame art for this puzzle size. */
 function applyBoardFrameLayout(app) {
   const cols = app.CONFIG.cols || TZ_MAX_BOARD_COLS;
   const rows = app.CONFIG.rows || TZ_MAX_BOARD_ROWS;
+  applyBoardFrame(rows, cols);
   const { w, h } = boardRenderSize(cols, rows);
   document.documentElement.style.setProperty('--tz-grid-w', `${w}px`);
   document.documentElement.style.setProperty('--tz-grid-h', `${h}px`);
 }
 
-function applyResponsiveBoard(app) {
+function ensureBoardCellMetrics(app) {
   app.CONFIG.cellPx = TZ_CELL_PX;
   document.documentElement.style.setProperty('--cell', `${TZ_CELL_PX}px`);
   document.documentElement.style.setProperty('--tz-cell-size', `${TZ_CELL_PX}px`);
+}
+
+async function afterLevelApplied(app) {
+  applyBoardFrameLayout(app);
+  app.setCssCell?.();
+  centerBoardInFrame();
+}
+
+async function loadLevelOnBoard(app, level) {
+  ensureBoardCellMetrics(app);
+  await app.applyLevel(level);
+  await afterLevelApplied(app);
+}
+
+function applyResponsiveBoard(app) {
+  ensureBoardCellMetrics(app);
   app.setCssCell();
   app.buildGrid();
   applyBoardFrameLayout(app);
@@ -1214,6 +1234,73 @@ function wirePuzzleTimer(app) {
   window.addEventListener('tilezilla:hint-balance', () => updateGlobalHintCount(app));
 }
 
+function setActiveBottomNav(screen) {
+  document.querySelectorAll('.tz-bottom-nav__hit').forEach((item) => {
+    const active = item.dataset.nav === screen;
+    item.classList.toggle('tz-bottom-nav__hit--active', active);
+    item.toggleAttribute('aria-current', active ? 'page' : false);
+  });
+}
+
+/** Load a specific catalog puzzle onto the board (journal → play/review). */
+async function loadJournalPuzzleOnBoard(app, levelId) {
+  if (!app || !levelId) return false;
+
+  while (!app.state.allLevels?.length) {
+    await new Promise((r) => setTimeout(r, 50));
+  }
+
+  const level = app.state.allLevels.find((l) => l.id === levelId);
+  if (!level) {
+    showGameMessage(`Puzzle ${levelId} is not in the catalog.`, 'error');
+    return false;
+  }
+
+  const progress = app.progress;
+  const appRoot = document.querySelector('.tz-app');
+  let journalSource = progress?.getLevelMeta?.(levelId)?.journalSource || null;
+  if (!journalSource) {
+    const path = await loadAdventurePath();
+    const levelContext = adventureLevelContext(app);
+    if (buildAdventureMetaForLevel(path, levelId, progress, levelContext)) {
+      journalSource = 'adventure';
+    }
+  }
+
+  if (journalSource === 'adventure') {
+    appRoot?.setAttribute('data-screen', 'adventure');
+    setActiveBottomNav('adventure');
+  } else if (journalSource === 'daily-challenge') {
+    appRoot?.setAttribute('data-screen', 'daily-challenge');
+    setActiveBottomNav('daily-challenge');
+  }
+
+  await loadLevelOnBoard(app, level);
+
+  if (journalSource === 'adventure') {
+    const path = await loadAdventurePath();
+    const levelContext = adventureLevelContext(app);
+    const meta = buildAdventureMetaForLevel(path, levelId, progress, levelContext);
+    if (meta) window.__adventureMeta = meta;
+    updateChallengePanel(level, { ...meta, screen: 'adventure' });
+    await updateRankPanel(app);
+  } else if (journalSource === 'daily-challenge') {
+    updateChallengePanel(level, { screen: 'daily-challenge' });
+  } else {
+    updateChallengePanel(level, {
+      screen: journalSource || appRoot?.dataset?.screen || 'daily-challenge',
+    });
+  }
+
+  resetPuzzleTimer();
+  displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
+  await refreshPaletteIfReady(app);
+  updateTileBagCount(app);
+  syncBoardChrome(app);
+  updateValidationState(app);
+  return true;
+}
+
 async function loadAdventurePuzzle(app) {
   const loading = $('loadingHud');
   const appRoot = document.querySelector('.tz-app');
@@ -1238,8 +1325,7 @@ async function loadAdventurePuzzle(app) {
 
     if (!level) throw new Error('No adventure puzzle available');
 
-    applyResponsiveBoard(app);
-    await app.applyLevel(level);
+    await loadLevelOnBoard(app, level);
     resetPuzzleTimer();
     displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     window.__adventureMeta = meta;
@@ -1272,8 +1358,7 @@ async function loadDailyPuzzle(app) {
     const { level, meta } = await resolveDailyChallenge(app);
     if (!level) throw new Error('No puzzle level available');
 
-    applyResponsiveBoard(app);
-    await app.applyLevel(level);
+    await loadLevelOnBoard(app, level);
     resetPuzzleTimer();
     displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     window.__dailyChallengeMeta = meta;
@@ -1335,7 +1420,11 @@ async function init() {
     openStuckFlow,
   });
   initStuckPopup({ getApp: () => appRef, menuApi });
-  const journalApi = initJournalUi({ getApp: () => appRef, menuApi });
+  const journalApi = initJournalUi({
+    getApp: () => appRef,
+    menuApi,
+    loadPuzzleLevel: (levelId) => loadJournalPuzzleOnBoard(appRef, levelId),
+  });
   window.__journalApi = journalApi;
 
   initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
@@ -1453,7 +1542,7 @@ async function init() {
 
   window.addEventListener('resize', () => {
     applyUiScale();
-    applyResponsiveBoard(app);
+    if (app?.CONFIG) applyBoardFrameLayout(app);
   });
 
   await loadDailyPuzzle(app);

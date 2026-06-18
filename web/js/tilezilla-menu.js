@@ -101,12 +101,13 @@ async function loadSelectedFoundToBoard(app, { closeMenuAfter = true } = {}) {
 
 async function openFoundSolutionAt(solutionIndex) {
   const app = getApp();
-  const data = app ? await app.getMenuFoundSolutions() : { entries: [], level: null };
-  const entry = data.entries.find((e) => e.index === solutionIndex);
-  await openPanelFn('found-solutions');
-  if (entry && data.level) {
-    await selectFoundSolution(entry, data.level, app);
-  }
+  closeMenuFn();
+  closePanelFn();
+  await openJournal({
+    mode: 'record',
+    levelId: app?.state?.currentLevel?.id,
+    solutionIndex,
+  });
 }
 
 export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {

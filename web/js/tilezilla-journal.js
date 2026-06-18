@@ -15,6 +15,7 @@ import { initJournalListScroller } from './journal-scroller.js';
 
 let getApp = () => null;
 let menuApi = null;
+let loadPuzzleLevel = async () => false;
 let listScroller = null;
 let journalLayoutCache = null;
 let previewRenderToken = 0;
@@ -142,7 +143,8 @@ function syncJournalTabContent() {
 
   $('journalRecordTop')?.toggleAttribute('hidden', artTab || state.mode !== 'record');
   $('journalLibraryTop')?.toggleAttribute('hidden', artTab || state.mode !== 'library');
-  $('journalListTitleBar')?.toggleAttribute('hidden', artTab || state.mode === 'record');
+  $('journalListTitleBar')?.toggleAttribute('hidden', artTab);
+  $('journalTitleFound')?.toggleAttribute('hidden', artTab || state.mode !== 'record');
   $('journalTitleRecorded')?.toggleAttribute('hidden', artTab || state.mode !== 'library');
 
   for (const sel of ['.tz-journal-pane--top', '.tz-journal-pane--bl', '.tz-journal-pane--br']) {
@@ -281,6 +283,25 @@ function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(resolve));
 }
 
+function clearSolutionPreview() {
+  const canvas = $('journalPreviewCanvas');
+  const wrap = $('journalPreviewWrap');
+  if (!canvas || !wrap) return;
+
+  previewRenderToken += 1;
+  previewContext = null;
+  wrap.hidden = true;
+  showLoadConfirm(false);
+
+  const ctx = canvas.getContext('2d');
+  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0;
+  canvas.height = 0;
+  canvas.removeAttribute('tabindex');
+  canvas.removeAttribute('role');
+  canvas.removeAttribute('aria-label');
+}
+
 async function renderSolutionPreview(record, entry) {
   const canvas = $('journalPreviewCanvas');
   const wrap = $('journalPreviewWrap');
@@ -288,8 +309,7 @@ async function renderSolutionPreview(record, entry) {
   if (!canvas || !wrap || !app?.renderSolutionPreview) return;
 
   if (!entry?.placements?.length) {
-    wrap.hidden = true;
-    previewContext = null;
+    clearSolutionPreview();
     return;
   }
 
@@ -381,6 +401,7 @@ function navigateLibraryPuzzle(delta) {
     puzzles.map((p) => ({ ...p, label: p.label })),
     { mode: 'puzzles' },
   );
+  clearSolutionPreview();
   scrollActiveListRowIntoView();
   listScroller?.sync?.();
 }
@@ -393,12 +414,18 @@ async function refreshRecordView() {
 
   renderRecordFields(record);
   const entries = record.entries || [];
-  if (state.selectedSolutionIndex == null && entries.length) {
+  if (!entries.length) {
+    state.selectedSolutionIndex = null;
+  } else if (state.selectedSolutionIndex == null) {
     state.selectedSolutionIndex = entries[0].index;
   }
-  const selected = entries.find((e) => e.index === state.selectedSolutionIndex) || entries[0];
+  const selected = entries.find((e) => e.index === state.selectedSolutionIndex) || entries[0] || null;
   renderSolutionList(entries, { mode: 'solutions' });
-  await renderSolutionPreview(record, selected);
+  if (selected) {
+    await renderSolutionPreview(record, selected);
+  } else {
+    clearSolutionPreview();
+  }
 }
 
 function renderLibrarySelectors(data) {
@@ -478,16 +505,22 @@ async function refreshLibraryView() {
     state.libraryPuzzles.map((p) => ({ ...p, label: p.label })),
     { mode: 'puzzles' },
   );
-  const previewWrap = $('journalPreviewWrap');
-  if (previewWrap) previewWrap.hidden = true;
+  clearSolutionPreview();
 }
 
 async function loadSelectedSolutionToBoard() {
   const app = getApp();
-  if (!app || state.selectedSolutionIndex == null || !state.levelId) return;
+  if (!app || !state.levelId) return;
+
   const record = await getJournalRecord(app, state.levelId);
-  const entry = record?.entries?.find((e) => e.index === state.selectedSolutionIndex);
+  const entries = record?.entries || [];
+  const entry = Number.isFinite(state.selectedSolutionIndex)
+    ? entries.find((e) => e.index === state.selectedSolutionIndex)
+    : null;
   if (!entry?.placements?.length) return;
+
+  const levelReady = await loadPuzzleLevel(state.levelId);
+  if (!levelReady) return;
 
   window.__discoveryRecord?.hide?.();
   const ok = await app.applyPlacementsToBoard(entry.placements, {
@@ -500,7 +533,7 @@ async function loadSelectedSolutionToBoard() {
   }
 }
 
-export async function openJournal({ mode = 'record', levelId } = {}) {
+export async function openJournal({ mode = 'record', levelId, solutionIndex } = {}) {
   const root = $('journalRoot');
   const app = getApp();
   if (!root || !app) return;
@@ -519,7 +552,7 @@ export async function openJournal({ mode = 'record', levelId } = {}) {
     state.levelId = app.state?.currentLevel?.id || null;
   }
 
-  state.selectedSolutionIndex = null;
+  state.selectedSolutionIndex = Number.isFinite(solutionIndex) ? solutionIndex : null;
   showLoadConfirm(false);
   setModeUi(mode);
   root.hidden = false;
@@ -533,6 +566,9 @@ export async function openJournal({ mode = 'record', levelId } = {}) {
     await refreshLibraryView();
   } else {
     await refreshRecordView();
+    if (Number.isFinite(state.selectedSolutionIndex)) {
+      scrollActiveListRowIntoView();
+    }
   }
 
   listScroller?.sync?.();
@@ -545,9 +581,10 @@ export async function openJournal({ mode = 'record', levelId } = {}) {
   });
 }
 
-export function initJournalUi({ getApp: getAppFn, menuApi: menu } = {}) {
+export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel: loadPuzzleLevelFn } = {}) {
   getApp = getAppFn || (() => null);
   menuApi = menu || null;
+  loadPuzzleLevel = loadPuzzleLevelFn || (async () => false);
 
   const root = $('journalRoot');
   if (!root) return null;
@@ -633,6 +670,11 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu } = {}) {
   });
 
   window.addEventListener('tilezilla:journal-layout-saved', () => {
+    void applyLayoutFromDisk({ force: true });
+  });
+
+  window.addEventListener('focus', () => {
+    if (root.hidden) return;
     void applyLayoutFromDisk({ force: true });
   });
 

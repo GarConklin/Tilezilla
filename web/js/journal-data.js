@@ -61,6 +61,33 @@ export function getPuzzleProgressState(foundCount, totalKnown) {
   return 'inProgress';
 }
 
+function isCatalogFoundEntry(entry) {
+  return !entry?.bonus && Number.isFinite(entry?.index);
+}
+
+/** Unique catalog solutions found — re-solves of the same index count once. */
+function countUniqueFoundSolutions(found) {
+  const indices = new Set();
+  for (const entry of found || []) {
+    if (!isCatalogFoundEntry(entry)) continue;
+    indices.add(entry.index);
+  }
+  return indices.size;
+}
+
+/** Keep one journal row per solution index (most recent solve wins). */
+function dedupeFoundByIndex(found) {
+  const byIndex = new Map();
+  for (const entry of found || []) {
+    if (!isCatalogFoundEntry(entry)) continue;
+    const prev = byIndex.get(entry.index);
+    if (!prev || String(entry.foundAt || '') > String(prev.foundAt || '')) {
+      byIndex.set(entry.index, entry);
+    }
+  }
+  return [...byIndex.values()].sort((a, b) => a.index - b.index);
+}
+
 export async function getJournalRecord(app, levelId) {
   const progress = app?.progress;
   const state = app?.state;
@@ -72,12 +99,12 @@ export async function getJournalRecord(app, levelId) {
 
   const known = await app.loadKnownSolutionsForLevel?.(level) || [];
   const found = progress.getFoundForLevel(levelId) || [];
-  const foundCount = found.filter((f) => !f.bonus && Number.isFinite(f.index)).length;
+  const uniqueFound = dedupeFoundByIndex(found);
+  const foundCount = uniqueFound.length;
   const total = known.length || app.totalKnownForLevel?.(level) || 0;
   const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
 
-  const entries = found
-    .filter((f) => !f.bonus && Number.isFinite(f.index))
+  const entries = uniqueFound
     .map((f) => {
       const placements = Array.isArray(f.placements) && f.placements.length
         ? f.placements
@@ -134,7 +161,7 @@ function levelMatchesFilters(level, progress, filters) {
     if (puzzleType === 'random' && src !== 'random') return false;
   }
 
-  const found = progress.getFoundForLevel(levelId).filter((f) => !f.bonus && Number.isFinite(f.index)).length;
+  const found = countUniqueFoundSolutions(progress.getFoundForLevel(levelId));
   const total = Number(level.totalUniqueSolutions) || 0;
 
   if (status === 'started' && found <= 0) return false;
@@ -147,28 +174,35 @@ function levelMatchesFilters(level, progress, filters) {
 export async function getJournalLibraryIndex(app, filters = {}) {
   const progress = app?.progress;
   const levels = app?.state?.allLevels || [];
+  const levelById = new Map(levels.map((level) => [level.id, level]));
   if (!progress) {
     return { sizeCounts: [], puzzles: [], filters };
   }
 
   const sizeCountsMap = new Map();
   const puzzles = [];
+  const seenLevelIds = new Set();
 
-  for (const level of levels) {
-    if (!progress.hasJournalEntry(level.id)) continue;
+  for (const levelId of Object.keys(progress.data || {})) {
+    if (!progress.hasJournalEntry(levelId) || seenLevelIds.has(levelId)) continue;
+    seenLevelIds.add(levelId);
+
+    const level = levelById.get(levelId);
+    if (!level) continue;
+
     const key = boardSizeKey(level);
     if (key) sizeCountsMap.set(key, (sizeCountsMap.get(key) || 0) + 1);
     if (!levelMatchesFilters(level, progress, filters)) continue;
 
     const known = await app.loadKnownSolutionsForLevel?.(level) || [];
-    const found = progress.getFoundForLevel(level.id).filter((f) => !f.bonus && Number.isFinite(f.index)).length;
+    const found = countUniqueFoundSolutions(progress.getFoundForLevel(levelId));
     const total = known.length || app.totalKnownForLevel?.(level) || 0;
     const progressState = getPuzzleProgressState(found, total);
     const pct = total > 0 ? Math.round((found / total) * 100) : 0;
 
     puzzles.push({
       levelId: level.id,
-      label: level.name || level.id,
+      label: level.id || level.name,
       boardSize: boardSizeLabel(level),
       boardSizeKey: key,
       found,

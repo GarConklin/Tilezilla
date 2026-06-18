@@ -226,16 +226,19 @@ function syncTunerMockVisibility() {
   );
   document.getElementById('mockLibraryTop')?.toggleAttribute('hidden', !showLibraryTop);
 
-  document.getElementById('mockListTitleBar')?.toggleAttribute('hidden', artTab || previewMode === 'record');
+  document.getElementById('mockListTitleBar')?.toggleAttribute('hidden', artTab);
 
   for (const sel of ['.tz-journal-pane--top', '.tz-journal-pane--bl', '.tz-journal-pane--br']) {
     document.getElementById('mockJournalFrame')?.querySelector(sel)?.toggleAttribute('hidden', artTab);
   }
 
-  document.getElementById('mockTitleFound')?.toggleAttribute('hidden', true);
+  document.getElementById('mockTitleFound')?.toggleAttribute(
+    'hidden',
+    artTab || (previewMode !== 'record' && currentItem !== 'titleFoundSolutions'),
+  );
   document.getElementById('mockTitleRecorded')?.toggleAttribute(
     'hidden',
-    !(previewMode === 'library' || currentItem === 'titleRecordedPuzzles' || currentItem === 'listRow'),
+    artTab || (previewMode !== 'library' && currentItem !== 'titleRecordedPuzzles'),
   );
 }
 

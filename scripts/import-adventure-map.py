@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import os
 import sys
 from pathlib import Path
@@ -278,6 +279,11 @@ def main() -> None:
         help="Step progression CSV (levels_required per Lx-y)",
     )
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--export-json",
+        action="store_true",
+        help="After import, write data/adventure_path.json from MySQL",
+    )
     args = ap.parse_args()
 
     root = Path(__file__).resolve().parents[1]
@@ -361,6 +367,19 @@ def main() -> None:
         raise
     finally:
         conn.close()
+
+    if args.export_json:
+        sys.path.insert(0, str(root / "scripts"))
+        from lib.adventure_path_build import load_adventure_path_from_mysql  # noqa: E402
+
+        out = root / "data" / "adventure_path.json"
+        doc = load_adventure_path_from_mysql(root)
+        if not doc:
+            raise SystemExit("MySQL import OK but adventure_path.json export failed")
+        with out.open("w", encoding="utf-8") as f:
+            json.dump(doc, f, indent=2)
+            f.write("\n")
+        print(f"Wrote {out} from MySQL ({doc['stepCount']} steps)")
 
 
 if __name__ == "__main__":

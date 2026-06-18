@@ -264,9 +264,56 @@ export function buildAdventurePath(entries) {
 
 
 
+export async function loadAdventurePathFromJson() {
+  try {
+    const res = await fetch('/data/adventure_path.json', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const doc = await res.json();
+    return adventurePathFromDocument(doc);
+  } catch (e) {
+    console.warn('Adventure path JSON unavailable', e);
+    return null;
+  }
+}
+
+export async function loadAdventurePathFromMysql() {
+  try {
+    const res = await fetch('/api/adventure/path', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const payload = await res.json();
+    if (!payload?.ok) return null;
+    return adventurePathFromDocument(payload.path);
+  } catch (e) {
+    console.warn('Adventure path MySQL API unavailable', e);
+    return null;
+  }
+}
+
+export function adventurePathFromDocument(doc) {
+  if (!doc || !Array.isArray(doc.steps) || !Array.isArray(doc.flat)) return null;
+  return {
+    steps: doc.steps,
+    postgame: Array.isArray(doc.postgame) ? doc.postgame : [],
+    flat: doc.flat,
+    stepCount: Number.isFinite(doc.stepCount) ? doc.stepCount : doc.steps.length,
+  };
+}
+
 export async function loadAdventurePath() {
 
   if (pathCache) return pathCache;
+
+  const mysqlPath = await loadAdventurePathFromMysql();
+  if (mysqlPath?.flat?.length) {
+    pathCache = mysqlPath;
+    return pathCache;
+  }
+
+  const jsonPath = await loadAdventurePathFromJson();
+  if (jsonPath?.flat?.length) {
+    pathCache = jsonPath;
+    return pathCache;
+  }
 
   try {
 
@@ -278,7 +325,7 @@ export async function loadAdventurePath() {
 
   } catch (e) {
 
-    console.warn('Adventure path unavailable', e);
+    console.warn('Adventure path CSV unavailable', e);
 
     pathCache = { steps: [], postgame: [], flat: [], stepCount: 0 };
 

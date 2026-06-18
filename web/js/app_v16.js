@@ -3795,33 +3795,54 @@ async function init(){
         setCheckMessage('No level selected.', 'checkWarn');
         return;
       }
-      const v = validateBoard();
       const knownSolutions = await loadKnownSolutionsForLevel(lv);
       const placements = currentPortablePlacements();
+      const invMismatch = getInventoryMismatch(state.levelTileCounts, state.tiles);
+      if(invMismatch){
+        setCheckMessage(
+          `Place every tile for this puzzle (${invMismatch.id}: placed ${invMismatch.got}, expected ${invMismatch.need}).`,
+          'checkWarn'
+        );
+        return;
+      }
+
+      // Catalog match is authoritative — compare to solutions on file before geometry rules
+      // that can reject layouts the solver stored (e.g. multi-path SH/ET adjacency).
+      const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
+      if(catalogRes.duplicate){
+        window.__invalidSolve?.hide?.();
+        renderFoundList(lv.id, knownSolutions);
+        window.__discoveryRecord?.show?.(
+          window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes),
+        );
+        return;
+      }
+      if(Number.isFinite(catalogRes.index)){
+        window.__invalidSolve?.hide?.();
+        const outcome = processSolutionFound(lv, catalogRes, placements);
+        setCheckMessage(outcome.msg, 'checkSuccess');
+        renderFoundList(lv.id, knownSolutions);
+        refreshLevelSelectOptionTexts();
+
+        const found = progress.getFoundForLevel(lv.id) || [];
+        const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+        const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+        window.__discoveryRecord?.show?.(
+          window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
+        );
+        return;
+      }
+
+      const v = validateBoard();
       if(!v.ok){
         window.__invalidSolve?.show?.();
         setCheckMessage(v.msg || 'Board is not valid yet.', 'checkError');
         return;
       }
-      const invMismatch = getInventoryMismatch(state.levelTileCounts, state.tiles);
-      if(invMismatch){
-        setCheckMessage(
-          `Logic-valid board, but not this level inventory (${invMismatch.id}: placed ${invMismatch.got}, expected ${invMismatch.need}).`,
-          'checkWarn'
-        );
-        return;
-      }
-      const res = progress.checkSolution(lv.id, placements, knownSolutions);
-      if(res.duplicate){
-        renderFoundList(lv.id, knownSolutions);
-        window.__discoveryRecord?.show?.(
-          window.__discoveryRecord.buildDuplicatePayload(lv, res),
-        );
-        return;
-      }
 
-      const outcome = processSolutionFound(lv, res, placements);
-      if(res.bonus) setCheckMessage(outcome.msg, 'checkBonus');
+      const outcome = processSolutionFound(lv, catalogRes, placements);
+      if(catalogRes.bonus) setCheckMessage(outcome.msg, 'checkBonus');
       else setCheckMessage(outcome.msg, 'checkSuccess');
       renderFoundList(lv.id, knownSolutions);
       refreshLevelSelectOptionTexts();
@@ -3831,7 +3852,7 @@ async function init(){
       const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
 
       window.__discoveryRecord?.show?.(
-        window.__discoveryRecord.buildPayload(lv, res, outcome, solutionsFoundTotal, totalKnown),
+        window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
       );
     });
   }
@@ -4170,6 +4191,7 @@ async function init(){
       }
     });
   }
+  window.__app.ready = true;
 }
 
 let solver=null;
