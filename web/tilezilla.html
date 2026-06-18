@@ -21,6 +21,14 @@
     <div class="tz-stage tz-ui-layer">
       <div class="tz-shell">
 
+        <div class="tz-guest-banner" id="guestBanner" hidden>
+          <p class="tz-guest-banner__text">
+            <strong>Playing as Guest</strong>
+            <span>Progress, statistics, and solutions are not saved.</span>
+          </p>
+          <a class="tz-guest-banner__cta" href="/create-passport.html">Create Account</a>
+        </div>
+
         <header class="tz-header">
           <button class="tz-menu-btn" type="button" aria-label="Open menu">
             <img src="/img/Menu Bubble.png" alt="" class="tz-menu-btn__img" />
@@ -323,6 +331,7 @@
           <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" data-nav="random" aria-label="Random Puzzle"></button>
           <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" data-nav="library" aria-label="Puzzle Library"></button>
           <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" data-nav="profile" aria-label="Profile"></button>
+          <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--login" data-nav="login" aria-label="Login" hidden></button>
         </div>
       </nav>
     </div>
@@ -351,6 +360,8 @@
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--stuck" id="menuStuckBtn" aria-label="I'm Stuck"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--hint-rules" id="menuHintRulesBtn" aria-label="Hint Rules"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--settings" id="menuOpenSettingsBtn" aria-label="Settings"></button>
+        <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-login" id="menuGuestLoginBtn" href="/login-screen.html" hidden aria-label="Login"></a>
+        <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-create" id="menuGuestCreateBtn" href="/create-passport.html" hidden aria-label="Create Account"></a>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--dev-tools" id="menuDevToolsBtn" data-dev-only hidden aria-label="Dev Tools"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--force-discovery" id="menuDevForceDiscoveryBtn" data-dev-only hidden aria-label="Force Solution Popup"></button>
         <a class="tz-menu-plaque__hit tz-menu-plaque__hit--switch-player" href="/dev-player-select.html" data-dev-only hidden aria-label="Switch test player"></a>
@@ -698,6 +709,48 @@
     </div>
   </div>
 
+  <div class="tz-challenge-begin-root" id="challengeBeginRoot" hidden>
+    <button type="button" class="tz-challenge-begin-root__backdrop" id="challengeBeginBackdrop" aria-label="Close"></button>
+    <div class="tz-challenge-begin-dialog" role="dialog" aria-modal="true" aria-labelledby="challengeBeginTitle">
+      <h2 class="tz-sr-only" id="challengeBeginTitle">Challenge Gate</h2>
+
+      <div class="tz-challenge-begin-dialog__frame">
+        <img
+          src="/img/ChallengeBeginBase.png"
+          alt=""
+          class="tz-challenge-begin-dialog__bg"
+          id="challengeBeginBg"
+          width="1397"
+          height="1126"
+        />
+        <img
+          src=""
+          alt=""
+          class="tz-challenge-begin-dialog__overlay"
+          id="challengeBeginOverlay"
+          width="1397"
+          height="1126"
+        />
+        <button
+          type="button"
+          class="tz-challenge-begin-dialog__btn tz-challenge-begin-dialog__btn--begin"
+          id="challengeBeginBtn"
+          aria-label="Begin challenge"
+        >
+          <img src="/img/BeginChallenge-btn.png" alt="" />
+        </button>
+        <button
+          type="button"
+          class="tz-challenge-begin-dialog__btn tz-challenge-begin-dialog__btn--continue"
+          id="challengeBeginContinueBtn"
+          aria-label="Continue search"
+        >
+          <img src="/img/CLD-ContinueSearch-btn.png" alt="" />
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="tz-stuck-root" id="stuckPopupRoot" hidden>
     <button type="button" class="tz-stuck-root__backdrop" id="stuckPopupBackdrop" aria-label="Close"></button>
     <div class="tz-stuck-dialog" role="dialog" aria-modal="true" aria-labelledby="stuckPopupTitle">
@@ -784,6 +837,49 @@
     </div>
   </div>
 
+  <div class="tz-guest-modal" id="guestLoginRequired" hidden>
+    <button type="button" class="tz-guest-modal__backdrop tz-guest-login-required__backdrop" aria-label="Close"></button>
+    <div class="tz-guest-modal__panel" role="dialog" aria-modal="true" aria-labelledby="guestLoginRequiredTitle">
+      <h2 class="tz-guest-modal__title" id="guestLoginRequiredTitle">Login Required</h2>
+      <p class="tz-guest-modal__body">Create a free Tilezilla account to access this feature.</p>
+      <div class="tz-guest-modal__actions">
+        <button type="button" class="tz-guest-modal__btn tz-guest-modal__btn--primary" data-action="create-account">Create Account</button>
+        <button type="button" class="tz-guest-modal__btn" data-action="login">Login</button>
+        <button type="button" class="tz-guest-modal__btn tz-guest-modal__btn--ghost" data-action="close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-guest-modal" id="guestDailyComplete" hidden>
+    <button type="button" class="tz-guest-modal__backdrop tz-guest-complete__backdrop" aria-label="Close"></button>
+    <div class="tz-guest-modal__panel tz-guest-modal__panel--wide" role="dialog" aria-modal="true" aria-labelledby="guestDailyCompleteTitle">
+      <h2 class="tz-guest-modal__title" id="guestDailyCompleteTitle">Daily Challenge Complete!</h2>
+      <p class="tz-guest-modal__body">
+        Player: <strong id="guestDailyCompleteCode">Guest</strong><br />
+        You solved today's challenge.
+      </p>
+      <p class="tz-guest-modal__list">Create an account to unlock:</p>
+      <ul class="tz-guest-modal__bullets">
+        <li>Adventure Path</li>
+        <li>Random Puzzles</li>
+        <li>Statistics</li>
+        <li>Leaderboards</li>
+        <li>Saved Solutions</li>
+      </ul>
+      <div class="tz-guest-modal__actions">
+        <button type="button" class="tz-guest-modal__btn tz-guest-modal__btn--primary" data-action="create-account">Create Account</button>
+        <button type="button" class="tz-guest-modal__btn" data-action="continue-guest">Continue as Guest</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { shouldUseLoadScreen, isRegisteredUser, isGuestUser } from './js/tilezilla-guest.js';
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('dev') && shouldUseLoadScreen() && !isRegisteredUser() && !isGuestUser()) {
+      window.location.replace('/');
+    }
+  </script>
   <script type="module" src="js/app_v16.js"></script>
   <script type="module" src="js/tilezilla-bootstrap.js"></script>
 </body>

@@ -106,6 +106,17 @@
       line-height: 1.35;
     }
 
+    button.player.player--guest {
+      border-color: rgba(140, 180, 200, 0.45);
+      background: rgba(35, 70, 90, 0.55);
+    }
+
+    button.player.player--guest:hover,
+    button.player.player--guest:focus-visible {
+      border-color: #9ec4d4;
+      background: rgba(35, 70, 90, 0.85);
+    }
+
     button.player-reset {
       appearance: none;
       border: 1px solid rgba(196, 163, 90, 0.25);
@@ -148,6 +159,12 @@
 
     <div class="players">
       <div class="player-card">
+        <button type="button" class="player player--guest" data-flow="guest-startup">
+          <span class="name">Guest</span>
+          <span class="meta">Production startup — load screen (index) · Play As Guest / Login</span>
+        </button>
+      </div>
+      <div class="player-card">
         <button type="button" class="player" data-user="dev">
           <span class="name">Dev</span>
           <span class="meta">QA account · dev menu · browse known solutions · load board · 99 hint tokens</span>
@@ -174,7 +191,8 @@
 
     <p class="foot">
       Progress is saved separately per player in this browser.
-      <a href="/rank-sublevel-tuner.html" style="color:#8fd49a">Rank sublevel tuner</a>
+      <a href="/index.html" style="color:#8fd49a">Startup screen</a>
+      · <a href="/rank-sublevel-tuner.html" style="color:#8fd49a">Rank sublevel tuner</a>
       · <a href="/rank-badge-preview.html" style="color:#8fd49a">Badge preview</a>
       · <a href="/discovery-record-tuner.html" style="color:#8fd49a">Discovery record tuner</a>
       · <a href="/menu-tuner.html" style="color:#8fd49a">Menu tuner</a>
@@ -186,22 +204,36 @@
       · <a href="/journal-tuner.html" style="color:#8fd49a">Journal tuner</a>
       · <a href="/tilebag-tuner.html" style="color:#8fd49a">Tile bag tuner</a>
       · <a href="/random-popup-tuner.html" style="color:#8fd49a">Random popup tuner</a>
+      · <a href="/load-screen-tuner.html" style="color:#8fd49a">Load screen tuner</a>
+      · <a href="/auth-screen-tuner.html" style="color:#8fd49a">Auth screen tuner</a>
+      · <a href="/auth-error-tuner.html" style="color:#8fd49a">Auth error tuner</a>
+      · <a href="/challenge-begin-tuner.html" style="color:#8fd49a">Challenge begin tuner</a>
       · <a href="/revisit-tuner.html" style="color:#8fd49a">Revisit popup tuner</a>
     </p>
   </main>
 
   <script type="module">
     import { resetDevPlayerProgress } from './js/dev-player-reset.js';
+    import { beginStartupScreen } from './js/tilezilla-guest.js';
 
     const STORAGE_KEY = 'snake_active_user_v1';
-    const PLAY_URL = '/tilezilla.html';
+    const AUTH_MODE_KEY = 'tilezilla_auth_mode';
+    const PLAY_URL = '/tilezilla.html?dev=1';
+    const STARTUP_URL = '/index.html';
     const statusEl = document.getElementById('status');
 
-    document.querySelectorAll('button.player').forEach((btn) => {
+    document.querySelector('[data-flow="guest-startup"]')?.addEventListener('click', () => {
+      beginStartupScreen();
+      window.location.assign(STARTUP_URL);
+    });
+
+    document.querySelectorAll('button.player[data-user]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const user = btn.dataset.user;
         if (!user) return;
         localStorage.setItem(STORAGE_KEY, user);
+        localStorage.setItem(AUTH_MODE_KEY, 'registered');
+        localStorage.removeItem('guest_code');
         window.location.href = PLAY_URL;
       });
     });

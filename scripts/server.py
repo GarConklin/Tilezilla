@@ -31,6 +31,10 @@ JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
 TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 RANDOM_POPUP_LAYOUT_PATH = ROOT / "data" / "random_popup_layout.json"
 REVISIT_LAYOUT_PATH = ROOT / "data" / "revisit_layout.json"
+LOAD_SCREEN_LAYOUT_PATH = ROOT / "data" / "load_screen_layout.json"
+AUTH_SCREEN_LAYOUT_PATH = ROOT / "data" / "auth_screen_layout.json"
+AUTH_ERROR_LAYOUT_PATH = ROOT / "data" / "auth_error_layout.json"
+CHALLENGE_BEGIN_LAYOUT_PATH = ROOT / "data" / "challenge_begin_layout.json"
 LAYOUT_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
 DISCOVERY_TEXT_KEYS = ("x", "y", "nudgeX", "nudgeY", "fontScale")
 DISCOVERY_BTN_KEYS = ("x", "y", "nudgeX", "nudgeY", "w", "h", "wScale", "hScale")
@@ -52,17 +56,25 @@ DISCOVERY_ITEM_KEYS = (
 import sys
 
 sys.path.insert(0, str(SCRIPTS))
-from lib.adventure_path_build import load_adventure_path_from_mysql  # noqa: E402
+from lib.adventure_path_build import (  # noqa: E402
+    load_adventure_path_from_json,
+    load_adventure_path_from_mysql,
+)
 
 
 def adventure_path_api_response() -> tuple[int, dict]:
     path = load_adventure_path_from_mysql(ROOT)
     if path and path.get("flat"):
         return 200, {"ok": True, "source": "mysql", "path": path}
-    return 503, {
+
+    path = load_adventure_path_from_json(ROOT)
+    if path and path.get("flat"):
+        return 200, {"ok": True, "source": "json", "path": path}
+
+    return 200, {
         "ok": False,
-        "error": "Adventure path not available from MySQL",
-        "hint": "Use data/adventure_path.json fallback or run import-adventure-map.py",
+        "error": "Adventure path not available",
+        "hint": "Add data/adventure_path.json or configure MySQL / run import-adventure-map.py",
     }
 
 
@@ -71,9 +83,9 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(path)
         req = unquote(parsed.path)
 
-        # Dev player picker → production shell (dev tool still at /index.html)
+        # Production entry — guest welcome (legacy sandbox at /sandbox.html)
         if req in ("", "/"):
-            target = WEB / "dev-player-select.html"
+            target = WEB / "index.html"
         # Repo-root data consumed by app fetch() calls
         elif req.startswith("/data/") or req.startswith("/solves/"):
             target = ROOT / req.lstrip("/")
@@ -234,10 +246,53 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-load-screen-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/load_screen_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-auth-screen-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/auth_screen_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-auth-error-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/auth_error_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-challenge-begin-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/challenge_begin_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         return super().do_GET()
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path == "/api/guest/event":
+            self._log_guest_event(parsed)
+            return
         if parsed.path == "/api/dev/save-sublevel-layout":
             self._save_json_layout(parsed, SUBLEVEL_LAYOUT_PATH, validate_sublevel_layout)
             return
@@ -274,6 +329,18 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/dev/save-revisit-layout":
             self._save_json_layout(parsed, REVISIT_LAYOUT_PATH, validate_revisit_layout)
             return
+        if parsed.path == "/api/dev/save-load-screen-layout":
+            self._save_json_layout(parsed, LOAD_SCREEN_LAYOUT_PATH, validate_load_screen_layout)
+            return
+        if parsed.path == "/api/dev/save-auth-screen-layout":
+            self._save_json_layout(parsed, AUTH_SCREEN_LAYOUT_PATH, validate_auth_screen_layout)
+            return
+        if parsed.path == "/api/dev/save-auth-error-layout":
+            self._save_json_layout(parsed, AUTH_ERROR_LAYOUT_PATH, validate_auth_error_layout)
+            return
+        if parsed.path == "/api/dev/save-challenge-begin-layout":
+            self._save_json_layout(parsed, CHALLENGE_BEGIN_LAYOUT_PATH, validate_challenge_begin_layout)
+            return
         self.send_error(404, "Not found")
 
     def _save_json_layout(self, parsed, path: Path, validator) -> None:
@@ -308,6 +375,33 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
         print(f"Wrote {path.relative_to(ROOT)}")
+
+    def _log_guest_event(self, parsed) -> None:
+        length = int(self.headers.get("Content-Length", "0"))
+        if length <= 0:
+            self.send_error(400, "Empty body")
+            return
+        try:
+            payload = json.loads(self.rfile.read(length).decode("utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self.send_error(400, "Invalid JSON")
+            return
+
+        log_path = ROOT / "data" / "guest_events.jsonl"
+        try:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            with log_path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(payload, ensure_ascii=False) + "\n")
+        except OSError as exc:
+            self.send_error(500, f"Write failed: {exc}")
+            return
+
+        body = json.dumps({"ok": True}).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
 
 def validate_sublevel_layout(payload: object) -> str | None:
@@ -418,6 +512,139 @@ def validate_revisit_layout(payload: object) -> str | None:
     if isinstance(items, dict):
         for key, box in items.items():
             if key not in REVISIT_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+    return None
+
+
+LOAD_SCREEN_ITEM_KEYS = ("guest", "login")
+
+
+def validate_load_screen_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "top", "widthScale", "topNudge"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in LOAD_SCREEN_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+    return None
+
+
+AUTH_SCREEN_KEYS = ("login", "create", "profile")
+AUTH_SCREEN_ITEM_KEYS = {
+    "login": ("user", "pass", "submit", "secondary", "navDaily", "navLogout"),
+    "create": ("name", "email", "pass", "pass2", "submit", "secondary", "navDaily", "navLogout"),
+    "profile": (
+        "profileName",
+        "navDaily",
+        "navAdventure",
+        "navRandom",
+        "navLogout",
+        "back",
+    ),
+}
+
+
+def validate_auth_screen_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for screen_key in payload:
+        if screen_key not in AUTH_SCREEN_KEYS:
+            return f"Unknown screen key: {screen_key}"
+    for screen_key in AUTH_SCREEN_KEYS:
+        screen = payload.get(screen_key)
+        if screen is None:
+            continue
+        if not isinstance(screen, dict):
+            return f"{screen_key} must be an object"
+        dialog = screen.get("dialog")
+        if dialog is not None and not isinstance(dialog, dict):
+            return f"{screen_key}.dialog must be an object"
+        if isinstance(dialog, dict):
+            for key in ("artW", "artH", "maxWidth"):
+                if key in dialog and not isinstance(dialog[key], (int, float)):
+                    return f"{screen_key}.dialog.{key} must be a number"
+        items = screen.get("items")
+        if items is not None and not isinstance(items, dict):
+            return f"{screen_key}.items must be an object"
+        if isinstance(items, dict):
+            for key, box in items.items():
+                if key not in AUTH_SCREEN_ITEM_KEYS[screen_key]:
+                    return f"Unknown item key: {screen_key}.{key}"
+                if not isinstance(box, dict):
+                    return f"{screen_key}.items.{key} must be an object"
+                for dim in ("x", "y", "w", "h", "fontScale"):
+                    if dim in box and not isinstance(box[dim], (int, float)):
+                        return f"{screen_key}.items.{key}.{dim} must be a number"
+    return None
+
+
+AUTH_ERROR_ITEM_KEYS = ("message", "ok", "close")
+
+
+def validate_auth_error_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "maxWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in AUTH_ERROR_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "fontScale"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+    return None
+
+
+CHALLENGE_BEGIN_ITEM_KEYS = ("begin", "continue")
+
+
+def validate_challenge_begin_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in CHALLENGE_BEGIN_ITEM_KEYS:
                 return f"Unknown item key: {key}"
             if not isinstance(box, dict):
                 return f"items.{key} must be an object"
@@ -600,6 +827,10 @@ def main() -> None:
     print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
     print("Random popup tuner save API: POST /api/dev/save-random-popup-layout")
     print("Revisit popup tuner save API: POST /api/dev/save-revisit-layout")
+    print("Load screen tuner save API: POST /api/dev/save-load-screen-layout")
+    print("Auth screen tuner save API: POST /api/dev/save-auth-screen-layout")
+    print("Auth error tuner save API: POST /api/dev/save-auth-error-layout")
+    print("Challenge begin tuner save API: POST /api/dev/save-challenge-begin-layout")
     server.serve_forever()
 
 

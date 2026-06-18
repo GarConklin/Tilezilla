@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Explorer Profile</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+</head>
+<body class="auth-screen auth-screen--profile">
+  <main class="auth-screen__stage" id="profileStage">
+    <img
+      class="auth-screen__art"
+      src="/img/Logged-in.png"
+      alt="Explorer's passport"
+      width="1418"
+      height="2200"
+      draggable="false"
+    />
+    <p class="auth-screen__profile-name" id="profileName">Explorer</p>
+    <nav class="auth-screen__profile-nav" aria-label="Main navigation">
+      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla.html" aria-label="Daily Challenge"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-adventure" href="/tilezilla.html?screen=adventure" aria-label="Adventure Path"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-random" href="/tilezilla.html?screen=random" aria-label="Random Puzzle"></a>
+      <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="logoutBtn" aria-label="Log out"></button>
+    </nav>
+    <a class="auth-screen__hit auth-screen__hit--back" href="/tilezilla.html" aria-label="Back to game"></a>
+  </main>
+  <script type="module" src="./js/auth-screen-init.js"></script>
+  <script type="module">
+    import {
+      ACTIVE_USER_KEY,
+      isRegisteredUser,
+      logoutRegisteredUser,
+    } from './js/tilezilla-guest.js';
+
+    if (!isRegisteredUser()) {
+      window.location.replace('/login-screen.html');
+    }
+
+    const name = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
+    const nameEl = document.getElementById('profileName');
+    if (nameEl) nameEl.textContent = name;
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      void logoutRegisteredUser();
+    });
+  </script>
+</body>
+</html>

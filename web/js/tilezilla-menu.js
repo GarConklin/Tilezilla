@@ -189,6 +189,11 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     void openPuzzleInfo();
   });
   $('menuFoundSolutionsBtn')?.addEventListener('click', () => {
+    if (window.__tilezillaGuest?.isGuestUser?.()) {
+      closeMenu();
+      window.__tilezillaGuest.showLoginRequired();
+      return;
+    }
     closeMenu();
     void openJournal({
       mode: 'record',
@@ -196,6 +201,11 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     });
   });
   $('menuStuckBtn')?.addEventListener('click', () => {
+    if (window.__tilezillaGuest?.isGuestUser?.()) {
+      closeAll();
+      window.__tilezillaGuest.showLoginRequired();
+      return;
+    }
     closeAll();
     void openStuckFlow();
   });
@@ -204,6 +214,11 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
   };
 
   $('menuOpenSettingsBtn')?.addEventListener('click', () => {
+    if (window.__tilezillaGuest?.isGuestUser?.()) {
+      closeMenu();
+      window.__tilezillaGuest.showLoginRequired();
+      return;
+    }
     settingsEntry = 'menu';
     menuRoot.hidden = true;
     api.openSettings();

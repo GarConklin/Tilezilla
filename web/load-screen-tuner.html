@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en" class="tz-phone-preview load-screen-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Load screen tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .mode-hint { margin: 0 0 8px; font-size: 0.68rem; color: #c4a35a; }
+    .nudge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 10px 0;
+      max-width: 180px;
+    }
+    .nudge-grid .btn { padding: 6px 0; font-size: 0.85rem; }
+    .nudge-grid .btn-wide { grid-column: span 3; font-size: 0.72rem; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut {
+      width: 100%;
+      min-height: 120px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.7rem;
+      resize: vertical;
+    }
+    .mock-stage {
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .load-screen-tuner-page .tz-app {
+      width: var(--tz-design-width);
+      margin: 0 auto;
+      min-height: var(--tz-design-height);
+    }
+    .load-screen-tuner-page .tz-stage {
+      margin: 0 auto;
+    }
+    .load-screen-tuner-page .tuner-box {
+      background: rgba(100, 200, 255, 0.28) !important;
+      border: 2px solid rgba(100, 200, 255, 0.85) !important;
+      border-radius: 4px;
+      z-index: 6;
+      cursor: move;
+    }
+    .load-screen-tuner-page .tuner-box.is-tuner-active {
+      border-color: #e8b923 !important;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+      z-index: 7;
+    }
+    .load-screen-tuner-page .tuner-box .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(8px, 2.5cqi, 12px);
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+    .load-screen-tuner-page .tz-load-screen__hit img { opacity: 0.2; }
+    .load-screen-tuner-page .tuner-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #e8b923;
+      border: 1px solid #142c28;
+      border-radius: 2px;
+      z-index: 8;
+    }
+    .load-screen-tuner-page .tuner-handle--e {
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: ew-resize;
+    }
+    .load-screen-tuner-page .tuner-handle--s {
+      left: 50%;
+      bottom: -5px;
+      transform: translateX(-50%);
+      cursor: ns-resize;
+    }
+    .load-screen-tuner-page .tuner-handle--se {
+      right: -5px;
+      bottom: -5px;
+      cursor: nwse-resize;
+    }
+  </style>
+</head>
+<body>
+  <h1>Load screen tuner</h1>
+  <p class="lead">
+    Drag the blue boxes to move <strong>Play As Guest</strong> and <strong>Login</strong> hits.
+    Pull handles to resize. Select <strong>Plaque</strong> to adjust vertical position and width scale.
+    Saves to <code>data/load_screen_layout.json</code>.
+    <a href="/dev-player-select.html">Dev tools</a> · <a href="/">Open index</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="mode-hint" id="modeHint">Drag box to move · Handles resize · Arrow keys nudge</p>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span>
+        <button type="button" class="btn" data-nudge="up">↑</button>
+        <span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <ul style="margin:8px 0 0;padding-left:1.1rem;font-size:0.65rem;color:#7a8a86;line-height:1.5;">
+        <li><strong>Plaque</strong> — wheel: top % · Shift+wheel: nudge px · Ctrl+wheel: width scale</li>
+        <li><strong>Buttons</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H</li>
+        <li><strong>Tab</strong> — cycle selection</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — same shell as index.html</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="tz-app" data-screen="load">
+          <div class="tz-bg" aria-hidden="true">
+            <div class="tz-bg__sky"></div>
+            <div class="tz-bg__water">
+              <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+              <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+            </div>
+          </div>
+          <div class="tz-stage tz-ui-layer">
+            <div class="tz-shell tz-shell--load">
+              <section class="tz-load-screen" id="mockLoadScreen">
+                <img class="tz-load-screen__art" src="/img/Load-Screen.png" alt="" width="1024" height="1536" />
+                <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest tuner-box" data-item="guest">
+                  <img src="/img/PlayAsGuest.png" alt="" />
+                  <span class="hit-label">Guest</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </button>
+                <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login tuner-box" data-item="login">
+                  <img src="/img/LogIn.png" alt="" />
+                  <span class="hit-label">Login</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </button>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { applyUiScale } from './js/tilezilla-ui-scale.js';
+    import {
+      LOAD_SCREEN_ITEM_DEFS,
+      applyLoadScreenLayout,
+      clearLoadScreenLayoutCache,
+      clearLoadScreenLayoutDraft,
+      getLoadScreenItemLayout,
+      loadLoadScreenLayout,
+      mergeLoadScreenLayout,
+      stashLoadScreenLayoutDraft,
+    } from './js/load-screen-layout.js';
+
+    const POS_STEP = 0.5;
+    const SIZE_STEP = 0.5;
+    const ARROW_STEP = 0.25;
+    const DIALOG_ITEM = '__dialog__';
+    const ITEM_ORDER = [DIALOG_ITEM, ...Object.keys(LOAD_SCREEN_ITEM_DEFS)];
+
+    let workingLayout = mergeLoadScreenLayout(null);
+    let currentItem = 'guest';
+    let dragState = null;
+    const els = {};
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    function getFrameRect() {
+      return document.getElementById('mockLoadScreen')?.getBoundingClientRect();
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      patchItem(currentItem, {
+        x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
+        y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const patch = {};
+      if (edges.e || edges.se) {
+        patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+      }
+      if (edges.s || edges.se) {
+        patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+      }
+      if (Object.keys(patch).length) patchItem(currentItem, patch);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-load-screen-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Stale dev server — restart: python scripts/server.py');
+          }
+          throw new Error(await res.text() || `HTTP ${res.status}`);
+        }
+        clearLoadScreenLayoutCache();
+        clearLoadScreenLayoutDraft();
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/load_screen_layout.json'
+          : 'Saved to data/load_screen_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function formatReadout(key) {
+      if (key === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        return [
+          '<strong>Plaque position</strong>',
+          `top: ${d.top ?? 54}%`,
+          `widthScale: ${d.widthScale ?? 1}`,
+          `topNudge: ${d.topNudge ?? 0}px`,
+        ].join('<br />');
+      }
+      const box = getLoadScreenItemLayout(key, workingLayout);
+      const def = LOAD_SCREEN_ITEM_DEFS[key];
+      return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+    }
+
+    function refresh() {
+      applyLoadScreenLayout(workingLayout, document.documentElement);
+      els.readout.innerHTML = formatReadout(currentItem);
+      els.jsonOut.value = exportJson();
+      stashLoadScreenLayoutDraft(workingLayout);
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      }
+      els.nudgeGrid.hidden = currentItem === DIALOG_ITEM;
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      if (e.target.matches('textarea, input')) return;
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      if (currentItem === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        if (e.ctrlKey && !e.altKey) {
+          patchDialog({ widthScale: Math.max(0.5, Math.min(1.2, (d.widthScale ?? 1) + dir * 0.01)) });
+          return;
+        }
+        if (e.shiftKey) {
+          patchDialog({ topNudge: (d.topNudge ?? 0) + dir * 2 });
+          return;
+        }
+        patchDialog({ top: Math.max(20, Math.min(80, (d.top ?? 54) + dir * 0.5)) });
+        return;
+      }
+      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) {
+        patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
+        return;
+      }
+      if (e.ctrlKey) {
+        patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 10) / 10) });
+        return;
+      }
+      if (e.shiftKey) {
+        patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
+        return;
+      }
+      patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
+    }
+
+    function onNudge(action) {
+      if (currentItem === DIALOG_ITEM) return;
+      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      switch (action) {
+        case 'left': patchItem(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
+        case 'right': patchItem(currentItem, { x: Math.round((box.x + ARROW_STEP) * 10) / 10 }); break;
+        case 'up': patchItem(currentItem, { y: Math.max(0, Math.round((box.y - ARROW_STEP) * 10) / 10) }); break;
+        case 'down': patchItem(currentItem, { y: Math.round((box.y + ARROW_STEP) * 10) / 10 }); break;
+        case 'wider': patchItem(currentItem, { w: Math.round((box.w + ARROW_STEP) * 10) / 10 }); break;
+        case 'narrower': patchItem(currentItem, { w: Math.max(1, Math.round((box.w - ARROW_STEP) * 10) / 10) }); break;
+        case 'taller': patchItem(currentItem, { h: Math.round((box.h + ARROW_STEP) * 10) / 10 }); break;
+        case 'shorter': patchItem(currentItem, { h: Math.max(1, Math.round((box.h - ARROW_STEP) * 10) / 10) }); break;
+        default: break;
+      }
+    }
+
+    function onPointerDown(e) {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const boxEl = e.target.closest('.tuner-box[data-item]');
+      if (handle && boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        handle.setPointerCapture?.(e.pointerId);
+        dragState = {
+          kind: 'resize',
+          pointerId: e.pointerId,
+          edges: {
+            e: handle.classList.contains('tuner-handle--e') || handle.classList.contains('tuner-handle--se'),
+            s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se'),
+            se: handle.classList.contains('tuner-handle--se'),
+          },
+        };
+        return;
+      }
+      if (boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        boxEl.setPointerCapture?.(e.pointerId);
+        dragState = { kind: 'move', pointerId: e.pointerId };
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!dragState || dragState.pointerId !== e.pointerId) return;
+      e.preventDefault();
+      const dx = e.movementX;
+      const dy = e.movementY;
+      if (dragState.kind === 'move') applyMoveDelta(dx, dy);
+      else applyResizeDelta(dx, dy, dragState.edges);
+    }
+
+    function onPointerUp(e) {
+      if (!dragState || dragState.pointerId !== e.pointerId) return;
+      dragState = null;
+    }
+
+    function cycleItem(backward = false) {
+      const idx = ITEM_ORDER.indexOf(currentItem);
+      const next = backward
+        ? (idx - 1 + ITEM_ORDER.length) % ITEM_ORDER.length
+        : (idx + 1) % ITEM_ORDER.length;
+      currentItem = ITEM_ORDER[next];
+      refresh();
+    }
+
+    function onKeyDown(e) {
+      if (e.target.matches('textarea, input')) return;
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        cycleItem(e.shiftKey);
+        return;
+      }
+      if (currentItem === DIALOG_ITEM) return;
+      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const step = e.shiftKey ? POS_STEP : ARROW_STEP;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); patchItem(currentItem, { x: Math.max(0, Math.round((box.x - step) * 10) / 10) }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); patchItem(currentItem, { x: Math.round((box.x + step) * 10) / 10 }); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); patchItem(currentItem, { y: Math.max(0, Math.round((box.y - step) * 10) / 10) }); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); patchItem(currentItem, { y: Math.round((box.y + step) * 10) / 10 }); }
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.nudgeGrid = document.getElementById('nudgeGrid');
+      els.mockStage = document.getElementById('mockStage');
+
+      const plaqueBtn = document.createElement('button');
+      plaqueBtn.type = 'button';
+      plaqueBtn.className = 'field-btn';
+      plaqueBtn.dataset.item = DIALOG_ITEM;
+      plaqueBtn.textContent = 'Plaque';
+      plaqueBtn.addEventListener('click', () => { currentItem = DIALOG_ITEM; refresh(); });
+      els.fieldGrid.appendChild(plaqueBtn);
+
+      for (const [key, meta] of Object.entries(LOAD_SCREEN_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = meta.label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+      }
+
+      els.nudgeGrid.querySelectorAll('[data-nudge]').forEach((btn) => {
+        btn.addEventListener('click', () => onNudge(btn.dataset.nudge));
+      });
+      document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
+      document.getElementById('reloadBtn')?.addEventListener('click', async () => {
+        workingLayout = mergeLoadScreenLayout(await loadLoadScreenLayout({ force: true }));
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      els.mockStage.addEventListener('pointerdown', onPointerDown);
+      els.mockStage.addEventListener('pointermove', onPointerMove);
+      els.mockStage.addEventListener('pointerup', onPointerUp);
+      els.mockStage.addEventListener('pointercancel', onPointerUp);
+      els.mockStage.addEventListener('keydown', onKeyDown);
+
+      workingLayout = mergeLoadScreenLayout(await loadLoadScreenLayout());
+      applyUiScale();
+      window.addEventListener('resize', applyUiScale);
+      refresh();
+      els.mockStage.focus();
+    }
+
+    void init();
+  </script>
+</body>
+</html>

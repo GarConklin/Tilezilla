@@ -1,0 +1,147 @@
+TZ-X000-XX
+
+
+
+so main screen loads but you have two options right from the start. a popup that has play as guest or login.
+
+so a guest button options will also be different.  
+Adventure path buttons would take you to the login process if signed in as guest. 
+
+
+
+
+
+
+
+
+
+
+Daily Challenge Complete!
+
+Player:
+Guest-TZ-A4821-QM
+
+Your solution was completed successfully.
+
+Create an account to unlock:
+
+• Adventure Path
+• Random Puzzles
+• Statistics
+• Leaderboards
+• Saved Solutions
+
+[ Create Account ]
+[ Continue as Guest ]
+
+That is a very clean free-to-play structure.
+
+For a Guest User (not logged in) I'd lock almost everything and make the experience focused on one thing:
+
+"Play today's puzzle. Like it? Create an account."
+
+Guest Main Screen
+
+Bottom Navigation becomes only:
+
+Icon	Label
+📅	Daily Challenge
+🔐	Login / Create Account
+
+No Adventure Path.
+
+No Random Puzzle.
+
+No Progress.
+
+No Leaderboards.
+
+No Achievements.
+
+No Settings shortcut.
+
+Hamburger Menu (Guest)
+
+Only show:
+
+Puzzle Info
+Hint Rules
+Login
+Create Account
+
+Optional:
+
+About Tilezilla
+Daily Challenge Access
+
+Guests can:
+
+✅ Open Daily Challenge
+
+✅ Solve Daily Challenge
+
+✅ Use Hint System (if you allow guest hints)
+
+❌ Save progress
+
+❌ Earn Hint Tokens
+
+❌ Earn Adventure Progress
+
+❌ Earn Rank Progress
+
+❌ Track Statistics
+
+❌ Submit Multiple Solutions
+
+Completion Popup (Guest)
+
+When they solve:
+
+Daily Challenge Complete!
+
+You solved today's puzzle.
+
+Create a free account to:
+
+Unlock Adventure Path
+Earn Hint Tokens
+Track Statistics
+Save Found Solutions
+Compete on Leaderboards
+
+[ Create Account ]
+[ Continue as Guest ]
+
+This becomes your conversion screen.
+
+Logged In Navigation
+
+Bottom menu returns to:
+
+Icon	Label
+🏔️	Adventure Path
+🎲	Random Puzzle
+📅	Daily Challenge
+👤	Profile
+
+or
+
+Icon	Label
+🏔️	Adventure Path
+🎲	Random Puzzle
+📅	Daily Challenge
+☰	Menu
+
+depending on how much you want in the hamburger.
+
+One thing I would add
+
+On the Guest Daily Challenge screen place a small banner:
+
+Playing as Guest
+Progress and solutions are not saved.
+
+with a Create Account button.
+
+That reminder will steadily convert players without being annoying.

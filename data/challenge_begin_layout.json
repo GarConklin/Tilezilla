@@ -1,0 +1,13 @@
+{
+  "dialog": {
+    "artW": 1397,
+    "artH": 1126,
+    "displayPad": 32,
+    "maxDesignWidth": 390,
+    "widthScale": 0.92
+  },
+  "items": {
+    "begin": { "x": 12, "y": 86.5, "w": 76, "h": 9 },
+    "continue": { "x": 12, "y": 86.5, "w": 76, "h": 9 }
+  }
+}

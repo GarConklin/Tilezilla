@@ -10,14 +10,20 @@ import { loadGameplaySettings, initSettingsUi, applyPhonePreviewMode } from './t
 import { initMenuUi } from './tilezilla-menu.js';
 import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
 import { initRandomPuzzlePopup, openRandomPuzzlePopup } from './tilezilla-random-popup.js';
+import { initChallengeBeginPopup, gateAdventureChallengeBegin } from './tilezilla-challenge-begin-popup.js';
 import {
   applyRandomPopupLayout,
   loadRandomPopupLayout,
   reloadRandomPopupLayout,
 } from './random-popup-layout.js';
+import {
+  applyChallengeBeginLayout,
+  loadChallengeBeginLayout,
+} from './challenge-begin-layout.js';
 import { initPuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
+import * as guestUser from './tilezilla-guest.js';
 import { initInvalidSolve, isInvalidSolveShowing } from './tilezilla-invalid-solve.js';
 import {
   applyDiscoveryPopupLayout,
@@ -83,6 +89,7 @@ import {
 } from './sublevel-icon.js';
 import {
   adventureLevelContext,
+  adventureSolveCount,
   buildAdventureMeta,
   buildAdventureMetaForLevel,
   findNextUnsolved,
@@ -93,69 +100,14 @@ import {
   loadAdventurePath,
   resolveAdventureResume,
 } from './adventure-path.js';
+import { applyUiScale, wireUiScaleListeners, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
 
 const $ = (id) => document.getElementById(id);
-
-/**
- * Canonical CSS viewport: 390×844 (iPhone 13/14/15 portrait).
- * Small phone (360): shrink. Tablet/desktop (≥780): 2×.
- */
-const TZ_DESIGN_WIDTH = 390;
-const TZ_DESIGN_HEIGHT = 844;
-const TZ_DESKTOP_SCALE = 2;
-const TZ_DESKTOP_MIN_WIDTH = TZ_DESIGN_WIDTH * TZ_DESKTOP_SCALE; // 780
 
 /** Fixed cell size; largest board 5×6 → 275×330. Frame size is in tilezilla-shell.css. */
 const TZ_CELL_PX = 55;
 const TZ_MAX_BOARD_COLS = 5;
 const TZ_MAX_BOARD_ROWS = 6;
-
-function viewportSize() {
-  const vp = window.visualViewport;
-  return {
-    vw: vp?.width ?? window.innerWidth,
-    vh: vp?.height ?? window.innerHeight,
-  };
-}
-
-function applyUiScale() {
-  const phonePreview = document.documentElement.classList.contains('tz-phone-preview');
-  const { vw: layoutVw, vh } = viewportSize();
-  const vw = phonePreview ? Math.min(TZ_DESIGN_WIDTH, layoutVw) : layoutVw;
-  const isDesktop = !phonePreview && vw >= TZ_DESKTOP_MIN_WIDTH;
-  const scaleW = vw / TZ_DESIGN_WIDTH;
-  const scaleH = vh / TZ_DESIGN_HEIGHT;
-  let scale = 1;
-
-  if (isDesktop) {
-    scale = Math.min(TZ_DESKTOP_SCALE, scaleH);
-  } else {
-    /* Fit full 844px artboard (nav + tile bag) on screen; width gaps use .tz-bg stretch */
-    scale = Math.min(scaleW, scaleH);
-  }
-
-  const stage = document.querySelector('.tz-stage');
-  if (stage) {
-    stage.style.zoom = String(scale);
-    if (!('zoom' in stage.style)) {
-      stage.style.transform = scale === 1 ? '' : `scale(${scale})`;
-      stage.style.transformOrigin = 'top center';
-    } else {
-      stage.style.transform = '';
-    }
-  }
-
-  document.documentElement.dataset.uiScale = String(scale);
-  document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
-  window.__journalApi?.syncJournalDialogTop?.();
-  window.__journalApi?.syncJournalLayoutHits?.();
-  return scale;
-}
-
-function wireUiScaleListeners() {
-  window.visualViewport?.addEventListener('resize', applyUiScale);
-  window.visualViewport?.addEventListener('scroll', applyUiScale);
-}
 
 function designCanvasWidth() {
   return TZ_DESIGN_WIDTH;
@@ -318,21 +270,56 @@ async function advanceAdventurePath(app) {
     showGameMessage(`Next adventure puzzle (${location.puzzle.levelId}) is not in the catalog yet.`, 'warn');
     return;
   }
+
+  const meta = buildAdventureMeta(path, location, progress, levelContext);
+  const loaded = await loadAdventureLevelWithChallengeGate(app, {
+    level,
+    meta,
+    path,
+    progress,
+    levelContext,
+    message: `Advanced to ${level.id}`,
+  });
+  if (!loaded) return;
+}
+
+async function applyAdventureLevelToBoard(app, level, meta, { message } = {}) {
   await loadLevelOnBoard(app, level);
   resetPuzzleTimer();
   displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
-  await refreshPaletteIfReady(app);
-  updateTileBagCount(app);
-  resetPreviewAfterSolve();
-  updateValidationState(app);
-  app.renderActivePreview?.();
-
-  const meta = buildAdventureMeta(path, location, progress, levelContext);
   window.__adventureMeta = meta;
+  await refreshPaletteIfReady(app);
+  resetPreviewAfterSolve();
   updateChallengePanel(level, meta);
   await updateRankPanel(app);
+  updateTileBagCount(app);
+  updateValidationState(app);
+  app.renderActivePreview?.();
+  if (message) showGameMessage(message, 'info');
+}
 
-  showGameMessage(`Advanced to ${level.id}`, 'info');
+async function loadAdventureLevelWithChallengeGate(app, {
+  level,
+  meta,
+  path,
+  progress,
+  levelContext,
+  message,
+  onCancel,
+} = {}) {
+  if (!level || !meta) return false;
+
+  const required = meta.requiredSolutionCount
+    || getPuzzleRequirement(path, level.id, levelContext);
+  const found = adventureSolveCount(progress, level.id, { isChallenge: true });
+
+  return gateAdventureChallengeBegin({
+    isChallenge: meta.isChallenge,
+    found,
+    required,
+    onBegin: () => applyAdventureLevelToBoard(app, level, meta, { message }),
+    onCancel,
+  });
 }
 
 function boardRenderSize(cols, rows) {
@@ -1089,6 +1076,38 @@ async function loadRandomVenturePuzzle(app) {
   }
 }
 
+function applyGuestChrome() {
+  const guest = guestUser.isGuestUser();
+  document.body.classList.toggle('tz-guest-mode', guest);
+  document.body.classList.toggle('tz-registered-mode', guestUser.isRegisteredUser());
+
+  const hints = document.querySelector('.tz-hints');
+  if (hints) hints.hidden = guest;
+
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintBtn) hintBtn.hidden = guest;
+
+  const loginHit = document.querySelector('.tz-bottom-nav__hit--login');
+  if (loginHit) loginHit.hidden = !guest;
+
+  for (const sel of [
+    '.tz-bottom-nav__hit--adventure',
+    '.tz-bottom-nav__hit--random',
+    '.tz-bottom-nav__hit--library',
+    '.tz-bottom-nav__hit--profile',
+  ]) {
+    const el = document.querySelector(sel);
+    if (el) el.hidden = guest;
+  }
+
+  const menuLogin = document.getElementById('menuGuestLoginBtn');
+  const menuCreate = document.getElementById('menuGuestCreateBtn');
+  if (menuLogin) menuLogin.hidden = !guest;
+  if (menuCreate) menuCreate.hidden = !guest;
+
+  guestUser.syncGuestBanner();
+}
+
 function wireBottomNav(getApp) {
   const appRoot = document.querySelector('.tz-app');
   document.querySelectorAll('.tz-bottom-nav__hit').forEach((item) => {
@@ -1096,8 +1115,28 @@ function wireBottomNav(getApp) {
       const screen = item.dataset.nav;
       const app = getApp?.();
 
+      if (screen === 'login') {
+        guestUser.trackGuestEvent('Login Clicked', { source: 'bottom_nav' });
+        window.location.href = '/login-screen.html';
+        return;
+      }
+
+      if (guestUser.isRestrictedNav(screen)) {
+        guestUser.showLoginRequired();
+        return;
+      }
+
       if (screen === 'random') {
+        if (guestUser.isGuestUser()) {
+          guestUser.showLoginRequired();
+          return;
+        }
         openRandomPuzzlePopup();
+        return;
+      }
+
+      if (screen === 'profile' && guestUser.isRegisteredUser()) {
+        window.location.href = '/profile-screen.html';
         return;
       }
 
@@ -1106,10 +1145,12 @@ function wireBottomNav(getApp) {
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
       });
       appRoot?.setAttribute('data-screen', screen);
+      guestUser.syncGuestBanner();
 
       if (!app) return;
 
       if (screen === 'daily-challenge') {
+        guestUser.trackGuestGameplay('Daily Challenge Started', app.state?.currentLevel?.id);
         await loadDailyPuzzle(app);
       } else if (screen === 'adventure') {
         await loadAdventurePuzzle(app);
@@ -1417,16 +1458,15 @@ async function loadAdventurePuzzle(app) {
 
     if (!level) throw new Error('No adventure puzzle available');
 
-    await loadLevelOnBoard(app, level);
-    resetPuzzleTimer();
-    displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
-    window.__adventureMeta = meta;
-    await refreshPaletteIfReady(app);
-    updateChallengePanel(level, meta);
-    await updateRankPanel(app);
-    updateTileBagCount(app);
-    updateValidationState(app);
-    showGameMessage(`Adventure puzzle loaded: ${level.id}`, 'info');
+    const loaded = await loadAdventureLevelWithChallengeGate(app, {
+      level,
+      meta,
+      path,
+      progress,
+      levelContext,
+      message: `Adventure puzzle loaded: ${level.id}`,
+    });
+    if (!loaded) return;
   } catch (e) {
     console.error(e);
     showGameMessage(`Failed to load adventure puzzle: ${e.message}`, 'error');
@@ -1489,9 +1529,19 @@ async function applyShellLayouts() {
   } catch (err) {
     console.warn('Random popup layout:', err);
   }
+  try {
+    applyChallengeBeginLayout(await loadChallengeBeginLayout());
+  } catch (err) {
+    console.warn('Challenge begin layout:', err);
+  }
 }
 
 async function init() {
+  window.__tilezillaGuest = guestUser;
+  guestUser.wireLoginRequiredModal();
+  guestUser.wireGuestCompletionModal();
+  applyGuestChrome();
+
   const settings = loadGameplaySettings();
   applyPhonePreviewMode(settings.phonePreview === 'ON');
   applyUiScale();
@@ -1522,6 +1572,10 @@ async function init() {
     menuApi,
     onRemainOnPath: () => switchToAdventureScreen(appRef),
     onVentureForth: () => loadRandomVenturePuzzle(appRef),
+  });
+  initChallengeBeginPopup({
+    menuApi,
+    onContinueSearch: () => continueDiscoverySearch(appRef),
   });
   const journalApi = initJournalUi({
     getApp: () => appRef,
@@ -1656,6 +1710,17 @@ async function init() {
   });
 
   await loadDailyPuzzle(app);
+  if (guestUser.isGuestUser()) {
+    guestUser.trackGuestGameplay('Daily Challenge Started', app.state?.currentLevel?.id);
+  }
+
+  const startScreen = new URLSearchParams(window.location.search).get('screen');
+  if (startScreen && startScreen !== 'daily-challenge' && !guestUser.isGuestUser()) {
+    const hit = document.querySelector(`.tz-bottom-nav__hit[data-nav="${startScreen}"]`);
+    hit?.click();
+  }
+
+  applyGuestChrome();
 }
 
 async function refreshBottomNavLayoutFromDisk() {

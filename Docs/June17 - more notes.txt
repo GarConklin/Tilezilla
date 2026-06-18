@@ -1,0 +1,241 @@
+Tilezilla Guest User System Specification
+Overview
+
+Tilezilla supports anonymous guest play for Daily Challenges only.
+
+Guest users are automatically assigned a unique Guest Code on first visit. This code is used for analytics, logging, troubleshooting, and tracking daily challenge participation.
+
+Guest users are intentionally restricted from most game features to encourage account creation.
+
+Guest User Creation
+Trigger
+
+On site load:
+
+if (!localStorage.getItem('guest_code') && !userLoggedIn) {
+    createGuestUser();
+}
+Guest Code Format
+Guest-TZ-A####-XX
+
+Examples:
+
+Guest-TZ-A4821-QM
+Guest-TZ-A0194-KD
+Guest-TZ-A7777-ZX
+Components
+Part	Description
+Guest	User Type
+TZ	Tilezilla
+A	Anonymous Identifier Prefix
+####	Random 4 digit number
+XX	Random uppercase letters
+
+Generation Example:
+
+function generateGuestCode() {
+    const num = Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0');
+
+    const letters =
+        String.fromCharCode(65 + Math.floor(Math.random() * 26)) +
+        String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+    return `Guest-TZ-A${num}-${letters}`;
+}
+Local Storage
+
+Store:
+
+localStorage.setItem('guest_code', guestCode);
+
+Example:
+
+guest_code = Guest-TZ-A4821-QM
+
+Guest code remains until:
+
+Browser cache cleared
+Local storage cleared
+User registers and converts account
+Database Table
+CREATE TABLE guest_users (
+    guest_id INT AUTO_INCREMENT PRIMARY KEY,
+    guest_code VARCHAR(32) UNIQUE NOT NULL,
+    created_at DATETIME NOT NULL,
+    last_seen DATETIME NOT NULL,
+    total_daily_attempts INT DEFAULT 0,
+    total_daily_solves INT DEFAULT 0
+);
+Session Logging
+
+Every guest action should include:
+
+guest_code
+puzzle_id
+timestamp
+action
+
+Examples:
+
+Guest-TZ-A4821-QM
+DC-2026-06-17
+ROTATE_TILE
+Guest-TZ-A4821-QM
+DC-2026-06-17
+SOLVED
+Guest Permissions
+Allowed
+Bottom Navigation
+Daily Challenge
+Login / Create Account
+Hamburger Menu
+Puzzle Info
+Hint Rules
+Login
+Create Account
+Gameplay
+Play Daily Challenge
+Check Solve
+View Puzzle Info
+Restricted Features
+
+Guest users cannot access:
+
+Adventure Path
+Random Puzzle
+Profile
+Statistics
+Achievements
+Leaderboards
+Saved Solutions
+Solution History
+Settings Sync
+Hint Tokens
+Hint Usage
+Postgame Content
+
+Any attempt to access a restricted feature should redirect to:
+
+Login Required
+Create a free Tilezilla account to access this feature.
+Hint System
+
+Guests receive:
+
+0 Hint Tokens
+
+Guests cannot:
+
+Use Hints
+Earn Hint Tokens
+Purchase Hint Tokens
+
+Hint button should:
+
+Not be displayed
+
+or
+
+Disabled
+
+Recommended:
+
+Hide entirely
+
+to simplify the UI.
+
+Daily Challenge Completion
+
+Upon successful solve:
+
+Daily Challenge Complete!
+
+Player:
+Guest-TZ-A4821-XX
+
+You solved today's challenge.
+
+Create an account to unlock:
+
+• Adventure Path
+• Random Puzzles
+• Statistics
+• Leaderboards
+• Saved Solutions
+
+[ Create Account ]
+[ Continue as Guest ]
+Guest Banner
+
+Display on Daily Challenge screen:
+
+Playing as Guest
+
+Progress, statistics, and solutions are not saved.
+
+[ Create Account ]
+Account Conversion
+
+When guest creates an account:
+
+Preserve
+Guest Code
+Daily Challenge History
+Solve Count
+Analytics Data
+Link Guest Record
+ALTER TABLE users
+ADD guest_code VARCHAR(32);
+
+Migration:
+
+guest_code → user account
+
+This allows historical analytics to remain intact.
+
+Analytics Events
+
+Track:
+
+Guest Created
+Daily Challenge Started
+Daily Challenge Abandoned
+Daily Challenge Solved
+Create Account Clicked
+Account Created
+
+Useful metrics:
+
+Guest Players Per Day
+Guest Solve Rate
+Average Solve Time
+Guest Conversion Rate
+Daily Challenge Participation
+UI Summary
+Guest Bottom Navigation
++------------------------+
+| Daily | Login |
++------------------------+
+Guest Hamburger Menu
+Puzzle Info
+Hint Rules
+---------------
+Login
+Create Account
+Logged-In Bottom Navigation
+Adventure Path
+Random Puzzle
+Daily Challenge
+Profile/Menu
+
+
+
+The guest experience should allow a visitor to:
+
+Immediately play today's Daily Challenge.
+Experience the core Tilezilla gameplay.
+Generate useful analytics through Guest Codes.
+Encounter gentle account-creation prompts.
+Be unable to access progression, rewards, hints, statistics, or other long-term systems until registered.

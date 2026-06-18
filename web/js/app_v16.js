@@ -2141,10 +2141,38 @@ function todayChallengeDate() {
     || new Date().toISOString().slice(0, 10);
 }
 
+function isGuestDailySession() {
+  return window.__tilezillaGuest?.isGuestUser?.()
+    && document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+}
+
+function showGuestDailySolveUi(lv, catalogRes, placements) {
+  window.__invalidSolve?.hide?.();
+  const outcome = processSolutionFound(lv, catalogRes, placements);
+  setCheckMessage(outcome.msg, 'checkSuccess');
+  window.__tilezillaGuest?.showGuestDailyComplete?.(window.__tilezillaGuest?.getGuestCode?.());
+}
+
 function processSolutionFound(lv, res, placements) {
+  const guestSession = window.__tilezillaGuest?.isGuestUser?.();
   const timer = window.__puzzleTimer;
   const elapsedSec = timer?.stop?.() ?? 0;
   const hintsUsed = puzzleAttemptUsedHints();
+
+  if (guestSession) {
+    const n = Number.isFinite(res?.index) ? res.index + 1 : '★';
+    let msg = `Solution #${n} found!`;
+    if (res?.bonus) msg = 'Bonus solution discovered!';
+    if (res?.duplicate) msg = 'You already found this solution!';
+    return {
+      msg,
+      elapsedSec,
+      tokensEarned: 0,
+      bonusNotes: [],
+      leaderboardSubmitted: false,
+    };
+  }
+
   const exampleRouteViewed = hasViewedExampleRoute(lv.id);
   const leaderboardEligible = !hasLeaderboardForfeit(lv.id);
   const hintRewardEligible = !hasHintCompletionRewardForfeit(lv.id);
@@ -3811,6 +3839,10 @@ async function init(){
       const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
       if(catalogRes.duplicate){
         window.__invalidSolve?.hide?.();
+        if (isGuestDailySession()) {
+          showGuestDailySolveUi(lv, catalogRes, placements);
+          return;
+        }
         renderFoundList(lv.id, knownSolutions);
         window.__discoveryRecord?.show?.(
           window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes),
@@ -3819,6 +3851,10 @@ async function init(){
       }
       if(Number.isFinite(catalogRes.index)){
         window.__invalidSolve?.hide?.();
+        if (isGuestDailySession()) {
+          showGuestDailySolveUi(lv, catalogRes, placements);
+          return;
+        }
         const outcome = processSolutionFound(lv, catalogRes, placements);
         setCheckMessage(outcome.msg, 'checkSuccess');
         renderFoundList(lv.id, knownSolutions);
@@ -3827,6 +3863,21 @@ async function init(){
         const found = progress.getFoundForLevel(lv.id) || [];
         const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
         const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+        const challengePopup = window.__challengeBeginPopup;
+        if (challengePopup?.shouldShowProgress?.(lv.id)) {
+          const state = challengePopup.getProgressState(lv.id, progress);
+          await challengePopup.showProgressAfterSolve({
+            found: state.found,
+            total: state.required,
+          });
+          if (!state.incomplete) {
+            window.__discoveryRecord?.show?.(
+              window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
+            );
+          }
+          return;
+        }
 
         window.__discoveryRecord?.show?.(
           window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
@@ -3850,6 +3901,21 @@ async function init(){
       const found = progress.getFoundForLevel(lv.id) || [];
       const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
       const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+      const challengePopup = window.__challengeBeginPopup;
+      if (challengePopup?.shouldShowProgress?.(lv.id)) {
+        const state = challengePopup.getProgressState(lv.id, progress);
+        await challengePopup.showProgressAfterSolve({
+          found: state.found,
+          total: state.required,
+        });
+        if (!state.incomplete) {
+          window.__discoveryRecord?.show?.(
+            window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
+          );
+        }
+        return;
+      }
 
       window.__discoveryRecord?.show?.(
         window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
@@ -4121,10 +4187,21 @@ async function init(){
   progress = new Progress(window.__app);
   window.__app.progress = progress;
   const savedUser = localStorage.getItem('snake_active_user_v1');
-  state.userId = (savedUser && typeof savedUser === 'string') ? savedUser : 'gar';
-  state.hintTokens = loadGlobalHintTokens();
+  const authMode = localStorage.getItem('tilezilla_auth_mode');
+  const guestCode = localStorage.getItem('guest_code');
+  if (authMode === 'guest' || (guestCode && /^Guest-TZ-A\d{4}-[A-Z]{2}$/.test(savedUser || guestCode))) {
+    state.userId = savedUser || guestCode;
+    state.hintTokens = 0;
+  } else {
+    state.userId = (savedUser && typeof savedUser === 'string') ? savedUser : 'gar';
+    state.hintTokens = loadGlobalHintTokens();
+  }
   progress.storageKey = `snake_progress_v1_${state.userId}`;
   progress.data = progress.load();
+  if (authMode === 'guest' || /^Guest-TZ-A\d{4}-[A-Z]{2}$/.test(state.userId || '')) {
+    progress.data = {};
+    progress.save = () => {};
+  }
   if(userSelect){
     userSelect.value = state.userId;
     syncAdminUi();

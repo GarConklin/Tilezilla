@@ -1,0 +1,120 @@
+Tilezilla Development Notes / Backlog
+
+Version number (accessible) in the setup menu
+Correct HH:MM formatting
+Date/time when applicable
+Proper login/logout state
+Mobile-friendly scrolling
+Guest vs Registered user experience
+
+
+Guest User Flow
+Guest Login
+
+When a user chooses "Continue as Guest":
+
+Create guest account/code.
+Store guest code in local storage.
+Create guest session record.
+Immediately redirect to Daily Challenge.
+Display Guest banner.
+
+Example:
+
+Playing as Guest: Guest-TZ-A4821-QM
+
+Progress is not saved.
+
+Guest Restrictions
+
+Allowed:
+
+Daily Challenge
+Puzzle Info
+Hint Rules
+Login
+Create Account
+
+Restricted:
+
+Adventure Path
+Random Puzzle
+Statistics
+Leaderboards
+Achievements
+Saved Solutions
+Profile
+Guest Hint Exception
+
+Guests normally receive no hint tokens.
+
+Exception:
+
+If the player selects:
+
+"I'm Stuck"
+
+allow a single emergency hint for the Daily Challenge.
+
+This is intended as a conversion aid, not part of the normal hint economy.
+
+Journal
+Left Pane Scrolling
+
+Fix scrolling behavior in the Journal's left navigation pane.
+
+Requirements:
+
+Smooth scrolling.
+Mouse wheel support.
+Touch support.
+Maintain selected item visibility.
+Prevent clipping of long lists.
+
+
+
+Version Number
+Display application version somewhere visible. in settings and at bottom of hamburger menu
+
+
+Options:
+
+Preferred:
+
+Settings screen footer.
+
+Alternative:
+
+Puzzle Info screen.
+
+Example:
+
+Tilezilla v1.2.14
+
+
+
+The following are only available to registered users:
+
+Statistics
+Leaderboards
+Achievements
+Adventure Progress Tracking
+Logout Behavior
+
+When user selects Logout:
+
+Destroy authentication session.
+Clear login token.
+Return account to logged-out state.
+Redirect browser to:
+
+https://www.skifflakegames.com
+
+Hamburger Menu Updates
+
+Current Menu Items:
+
+Puzzle Info
+Hint Rules
+Login / Logout - in login Create Account
+

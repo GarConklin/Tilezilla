@@ -2,227 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Snake Tile Board</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">Snake Tile Board</div>
+  <div class="tz-app" data-screen="load">
 
-    <div class="toolbar">
-      <label class="muted">User
-        <select id="userSelect" title="Choose test user">
-          <option value="gar">gar</option>
-          <option value="dev">dev</option>
-          <option value="garadmin">garadmin</option>
-        </select>
-      </label>
-      <select id="boardSizeSelect" title="Choose board size"></select>
-      <select id="tierSelect" title="Choose level tier"></select>
-      <select id="levelSelect" title="Choose puzzle level"></select>
-      <span class="levelInfo">Level: <b id="levelHud">--</b></span>
-      <span class="levelInfo" id="blockerHud" style="visibility:hidden">Blockers are fixed for this level</span>
-
-      <button id="toggleEdgesBtn" title="Show/hide live-edge overlay">Live Edges</button>
-      <button id="toggleOutlinesBtn" title="Show/hide tile outlines on the board">Tile Borders</button>
-      <button id="toggleBlockerBtn" hidden title="Sandbox only: toggle blocker placement — click cells to place/remove blockers">Blockers</button>
-      <button id="clearBtn" title="Clear board">Clear</button>
-
-      <div class="hud">
-        <span>Board: <b id="sizeHud">5×6</b></span>
-        <span>Solved: <b id="progressHud">0 / ?</b></span>
-        <span class="timerWrap">Time: <b id="timerHud">00:00</b></span>
+    <div class="tz-bg" aria-hidden="true">
+      <div class="tz-bg__sky"></div>
+      <div class="tz-bg__water">
+        <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+        <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
       </div>
     </div>
-  </header>
 
-  <main class="layout">
-    <section class="boardPane">
-      <div id="replayBanner" class="replayBanner" style="display:none;">
-        Viewing found solution <span id="replayIndex"></span> &mdash;
-        <button id="prevSolBtn" class="replayNavBtn" title="Previous solution">&lt; Prev</button>
-        <button id="nextSolBtn" class="replayNavBtn" title="Next solution">Next &gt;</button>
-        <button id="returnToPuzzleBtn" class="returnBtn">Return to Puzzle</button>
+    <div class="tz-stage tz-ui-layer">
+      <div class="tz-shell tz-shell--load">
+        <section class="tz-load-screen" id="loadScreen" aria-label="Welcome to Tilezilla">
+          <img
+            class="tz-load-screen__art"
+            src="/img/Load-Screen.png"
+            alt=""
+            width="1024"
+            height="1536"
+            draggable="false"
+          />
+          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest" id="playGuestBtn" aria-label="Play as guest">
+            <img src="/img/PlayAsGuest.png" alt="" />
+          </button>
+          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login" id="loginBtn" aria-label="Login">
+            <img src="/img/LogIn.png" alt="" />
+          </button>
+        </section>
       </div>
-      <div class="boardWrap" id="boardWrap" style="position:relative;">
-        <div id="board" class="board" aria-label="board"></div>
-        <canvas id="hoverOverlay" class="overlay"></canvas>
-        <div id="loadingHud" style="display:none; position:absolute; inset:0; z-index:100;
-          background:rgba(0,0,0,0.55); color:#fff; font-size:1.4rem; font-weight:600;
-          align-items:center; justify-content:center; border-radius:6px;
-          pointer-events:none;">Loading sets&hellip;</div>
-      </div>
-      <div class="boardActions">
-        <button id="checkSolBtn" class="checkSolBtn" title="Validate and check your solution">Check Solution</button>
-        <span id="checkMsg" class="checkMsg"></span>
-      </div>
+    </div>
+  </div>
 
-      <!-- Board Tools -->
-      <div id="boardToolsPanel" class="panel boardToolsPanel">
-        <h3>Board Tools</h3>
-        <div class="row">
-          <button id="validateBtn">Validate Board</button>
-          <span id="valOut" class="muted"></span>
-        </div>
-
-        <div class="row wrap">
-          <button id="solveBtn">Start Solver</button>
-          <button id="pauseBtn">Pause</button>
-          <button id="stepBtn">Step</button>
-          <label class="muted">Speed
-            <input id="speed" type="range" min="0" max="600" value="160" />
-          </label>
-          <label class="muted"><input id="turboChk" type="checkbox" /> Turbo</label>
-          <span id="solverOut" class="muted"></span>
-        </div>
-        <div id="solverStats" class="muted" style="font-family:monospace; font-size:13px; margin-top:4px;"></div>
-
-        <div class="debugSection collapsed" id="debugSection">
-          <div class="debugHeader" id="debugToggle">▶ Debug Tools</div>
-          <div class="debugContent">
-            <div class="row wrap">
-              <button id="injectSolveBtn" title="Load the known solve (with VL) onto the board">Debug: Step Known Solution</button>
-              <label class="muted"><input id="occDebugChk" type="checkbox" /> occ debug</label>
-              <label class="muted"><input id="occBreakTileChk" type="checkbox" checked /> break each tile</label>
-              <label class="muted"><input id="occBreakCellChk" type="checkbox" /> break each cell</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="logBlock">
-          <div class="muted">Solver log:</div>
-          <div id="solverLog" class="log"></div>
-          <div class="row">
-            <button id="clearLogBtn">Clear Log</button>
-            <button id="copyLogBtn">Copy Log</button>
-          </div>
-        </div>
-
-        <div class="muted tip">Tip: place some tiles, then Step / Start Solver to continue from your partial board.</div>
-        <div class="row" style="margin-top:10px;">
-          <div class="muted">Load Solve JSON (board + tiles + solutions):</div>
-        </div>
-        <textarea id="solveDocText" class="textarea" style="min-height:130px;"></textarea>
-        <div class="row wrap" style="margin-top:8px;">
-          <button id="loadSolveDocBtn" title="Apply pasted solve doc to board and load first solution">Load Solve JSON to Board</button>
-          <span id="loadSolveDocStatus" class="muted"></span>
-        </div>
-      </div>
-    </section>
-
-    <aside class="previewPane">
-      <div class="panel">
-              <h3>Active Tile Preview</h3>
-              <div class="muted">Select a tile from the palette, then place on board.</div>
-
-              <div id="activePad" class="activePad" aria-label="active tile preview">
-                <div id="activeEmpty" class="activeEmpty muted">No tile selected</div>
-                <img id="activeImg" class="activeImg" alt="" />
-              </div>
-
-              <div class="previewActions">
-                <button id="rotateCCW" class="actionBtn rotBtn" title="Rotate counter-clockwise">&#8630;</button>
-                <button id="deleteBtn" class="actionBtn delBtn" title="Delete selected placed tile" disabled>🗑</button>
-                <button id="rotateCW" class="actionBtn rotBtn" title="Rotate clockwise">&#8631;</button>
-              </div>
-
-              <div class="previewMeta">
-                <span>Rotation: <b id="rotHud">0°</b></span>
-              </div>
-
-              <label class="muted chkRow">
-                <input id="keepPreviewChk" type="checkbox" />
-                Keep tile after placement
-              </label>
-            </div>
-
-      <div class="panel foundPanel">
-        <h3>Found Solutions</h3>
-        <div id="foundStatus" class="muted">No solutions found yet.</div>
-        <select id="foundList" size="5" style="width:100%; margin-top:6px;"></select>
-        <div class="row wrap" style="margin-top:8px;">
-          <button id="viewFoundBtn" title="View this found solution on the board">View</button>
-          <button id="approveReviewBtn" title="Approve loaded solve doc: add new standard level or detect duplicate">Approve Loaded Solve</button>
-          <button id="resetLevelBtn" class="resetBtn" title="Reset progress for this level">Reset Level</button>
-          <button id="resetAllBtn" class="resetBtn" title="Reset progress for all levels">Reset All</button>
-          <button type="button" id="exportProgressBtn" title="Download this user’s progress as JSON">Export progress</button>
-          <button type="button" id="importProgressBtn" title="Restore progress from a JSON file">Import progress</button>
-          <input type="file" id="importProgressFile" accept="application/json,.json" style="display:none" aria-hidden="true" />
-        </div>
-      </div>
-    </aside>
-
-    <aside class="sidePane">
-      <div class="panel">
-        <div class="palHeader">
-          <h3>Tile Bag</h3>
-          <span id="palPageHud" class="muted palPageHud">1 / 1</span>
-        </div>
-        <div class="palViewport">
-          <button id="palPrev" class="palArrow palArrowUp" title="Previous tiles" disabled>&#9650;</button>
-          <div id="palette" class="palette"></div>
-          <button id="palNext" class="palArrow palArrowDown" title="Next tiles">&#9660;</button>
-        </div>
-      </div>
-
-      
-      
-
-      <div class="panel">
-        <h3>Solutions Library</h3>
-	
-        <div class="muted">
-          This is a saved library in <code>localStorage</code> on this computer/browser. It starts empty.
-          Each entry is <code>{label, placements:[{tile,r,c,deg}]}</code>.
-        </div>
-
-        <div class="row wrap" style="align-items:flex-start; gap:12px; margin-top:10px;">
-          <div style="min-width:260px; flex: 1;">
-            <div class="muted" style="margin-bottom:6px;">Saved solutions:</div>
-            <select id="solList" size="8" style="width:100%;"></select>
-
-            <div class="row wrap" style="align-items:center; margin-top:8px;">
-              <label class="muted">Label
-                <input id="solLabel" type="text" placeholder="e.g., Solve 1" style="min-width:180px;">
-              </label>
-            </div>
-
-            <div class="row wrap" style="margin-top:8px;">
-              <button id="captureNewBtn" title="Capture current board as a NEW entry">Capture New</button>
-              <button id="updateSelectedBtn" title="Overwrite selected entry with the current board">Update Selected</button>
-              <button id="applySelectedBtn" title="Apply selected entry to the board">Apply Selected</button>
-              <button id="deleteSelectedBtn" title="Delete selected entry">Delete</button>
-              <button id="clearLibraryBtn" title="Clear all saved solutions in this browser">Clear Library</button>
-            </div>
-
-            <div id="solHud" class="muted" style="margin-top:8px;"></div>
-          </div>
-
-          <div style="min-width:320px; flex: 2;">
-            <div class="muted">Library JSON (Format 1):</div>
-            <textarea id="solutionsText" class="textarea"></textarea>
-
-            <div class="row wrap" style="margin-top:8px;">
-              <button id="exportSolutionsBtn" title="Export all saved solutions to the JSON box">Export All</button>
-              <button id="importSolutionsBtn" title="Import JSON box as the library (overwrites current)">Import (Overwrite)</button>
-              <button id="applyJsonBtn" title="Apply a SINGLE solve from the JSON box (or apply selected from a pasted library)">Apply JSON to Board</button>
-              <button id="loadSolveDocBtn" title="Paste a full solve doc (board/tiles/solutions), auto-match level, then load its first solution">Load Solve Doc to Level</button>
-            </div>
-            <div style="margin-top:8px;">
-              <div class="muted">Load Solve JSON (board + tiles + solutions):</div>
-              <textarea id="solveDocText" class="textarea" placeholder='{"board":{"rows":3,"cols":5},"tiles":{"SH":1,...},"solutions":[{"placements":[...]}]}'></textarea>
-            </div>
-			<div><button id="genCardsBtn">Generate Cards</button>
-				<span id="genCardsStatus"></span>
-			</div>
-          </div>
-        </div>
-      </div>      </div>
-    </aside>
-
-  </main>
-
-  <script type="module" src="js/app_v16.js"></script>
+  <script type="module" src="js/tilezilla-load.js"></script>
 </body>
 </html>

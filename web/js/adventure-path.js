@@ -281,10 +281,10 @@ export async function loadAdventurePathFromMysql() {
     const res = await fetch('/api/adventure/path', { cache: 'no-store' });
     if (!res.ok) return null;
     const payload = await res.json();
-    if (!payload?.ok) return null;
+    if (!payload?.ok || !payload?.path) return null;
     return adventurePathFromDocument(payload.path);
   } catch (e) {
-    console.warn('Adventure path MySQL API unavailable', e);
+    console.debug('Adventure path API unavailable', e);
     return null;
   }
 }

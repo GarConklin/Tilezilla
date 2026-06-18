@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -182,6 +183,20 @@ def build_adventure_path_from_mysql_rows(
         "stepCount": len(steps),
     }
     return build_adventure_path_document(path, source="mysql")
+
+
+def load_adventure_path_from_json(repo_root: Path) -> Optional[dict]:
+    """Load pre-built path from data/adventure_path.json (local dev fallback)."""
+    path_file = repo_root / "data" / "adventure_path.json"
+    if not path_file.is_file():
+        return None
+    try:
+        doc = json.loads(path_file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not doc or not isinstance(doc.get("flat"), list) or not doc["flat"]:
+        return None
+    return doc
 
 
 def load_adventure_path_from_mysql(repo_root: Path) -> Optional[dict]:

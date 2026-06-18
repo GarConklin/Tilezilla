@@ -310,6 +310,11 @@ export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu, journalAp
   $('puzzleInfoCloseX')?.addEventListener('click', closePuzzleInfoPopup);
 
   $('puzzleInfoCloseJournal')?.addEventListener('click', () => {
+    if (window.__tilezillaGuest?.isGuestUser?.()) {
+      closePuzzleInfoPopup();
+      window.__tilezillaGuest.showLoginRequired();
+      return;
+    }
     const levelId = getApp()?.state?.currentLevel?.id;
     closePuzzleInfoPopup();
     journalApi?.openJournal?.({ mode: 'record', levelId });

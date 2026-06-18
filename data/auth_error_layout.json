@@ -1,0 +1,13 @@
+{
+  "dialog": {
+    "artW": 1267,
+    "artH": 1022,
+    "maxWidth": 390,
+    "widthScale": 0.92
+  },
+  "items": {
+    "message": { "x": 14, "y": 47.5, "w": 72, "h": 14, "fontScale": 1 },
+    "ok": { "x": 32, "y": 76, "w": 36, "h": 9 },
+    "close": { "x": 86, "y": 2.5, "w": 10, "h": 8 }
+  }
+}

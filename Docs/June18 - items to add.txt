@@ -1,0 +1,31 @@
+items  to add 
+
+Logged-in nav: Menu instead of Profile
+Not implemented as an option
+
+
+Menu: About Tilezilla
+Not in menu
+
+? Menu: Daily Challenge Access
+Not in menu (optional item)
+
+? No Achievements shortcut
+No dedicated achievements nav found; not explicitly gated
+
+
+isRestrictedFeature() helper
+Defined in tilezilla-guest.js but never wired — enforcement is ad hoc (CSS + a few click handlers)
+Wire isRestrictedFeature() consistently if you want one enforcement path
+
+
+Decide guest hints (on/off)
+Not implemented as an option under systems options
+
+Align logged-in bottom nav to 4 items (drop or move Library to menu)
+
+next step is hiding guest progress/rank - They get no progress or rank UI 
+so the screen reads as “today’s puzzle only,” not a full progression game with locked tabs.
+
+Summary
+You’re in good shape on the product shape: one puzzle for guests, conversion at solve time, locked features behind account, stripped nav and menu.

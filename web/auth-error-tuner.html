@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" class="auth-error-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Auth error tuner</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 340px) 1fr; gap: 16px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; color: #c4a35a; }
+    .field-btn, .btn {
+      padding: 8px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.25); color: #f4ecd8; font: inherit; font-size: 0.72rem; cursor: pointer;
+    }
+    .field-btn { width: 100%; text-align: left; margin-bottom: 6px; }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout { font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; }
+    .mock-stage { padding: 16px; border: 2px dashed rgba(196, 163, 90, 0.35); touch-action: none; outline: none; }
+    .mock-stage:focus { border-color: #e8b923; }
+    .auth-error-tuner-page .tuner-box {
+      position: absolute; background: rgba(100, 200, 255, 0.28) !important;
+      border: 2px solid rgba(100, 200, 255, 0.85) !important; border-radius: 4px;
+      z-index: 6; cursor: move; min-width: 12px; min-height: 8px; box-sizing: border-box;
+    }
+    .auth-error-tuner-page .tuner-box.is-tuner-active { border-color: #e8b923 !important; z-index: 7; }
+    .auth-error-tuner-page .tuner-box .hit-label {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: clamp(7px, 2.2cqi, 11px); font-weight: 600; color: #fff; pointer-events: none; text-align: center;
+    }
+    .auth-error-tuner-page .tuner-handle {
+      position: absolute; width: 10px; height: 10px; background: #e8b923; border: 1px solid #142c28; z-index: 8;
+    }
+    .auth-error-tuner-page .tuner-handle--e { right: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .auth-error-tuner-page .tuner-handle--s { left: 50%; bottom: -5px; transform: translateX(-50%); cursor: ns-resize; }
+    .auth-error-tuner-page .tuner-handle--se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+    #jsonOut { width: 100%; min-height: 100px; margin-top: 8px; font: ui-monospace, monospace; font-size: 0.7rem; }
+    .nudge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 180px; margin: 10px 0; }
+    .nudge-grid .btn-wide { grid-column: span 3; }
+    .status { font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Auth error plaque tuner</h1>
+  <p class="lead">
+    Tune error message text (red area), OK button, and close hit on
+    <code>login-Erros-PlaqueBase.png</code> for login and create passport.
+    Saves to <code>data/auth_error_layout.json</code>.
+    <a href="/auth-screen-tuner.html">Auth screen tuner</a>
+    · <a href="/dev-player-select.html">Dev tools</a>
+  </p>
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span><button type="button" class="btn" data-nudge="up">↑</button><span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <button type="button" class="btn" id="reloadBtn">Reload</button>
+      <button type="button" class="btn" id="saveBtn">Save now</button>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+    </div>
+    <div class="panel">
+      <h2>Preview</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="auth-error-dialog">
+          <div class="auth-error-dialog__frame" id="mockFrame">
+            <img class="auth-error-dialog__art" src="/img/login-Erros-PlaqueBase.png" alt="" width="1267" height="1022" />
+            <div class="auth-error__message tuner-box" data-item="message">
+              <span class="hit-label">Sample error message</span>
+              <span class="tuner-handle tuner-handle--e"></span><span class="tuner-handle tuner-handle--s"></span><span class="tuner-handle tuner-handle--se"></span>
+            </div>
+            <div class="auth-screen__hit auth-error__hit--ok tuner-box" data-item="ok">
+              <span class="hit-label">OK</span>
+              <span class="tuner-handle tuner-handle--e"></span><span class="tuner-handle tuner-handle--s"></span><span class="tuner-handle tuner-handle--se"></span>
+            </div>
+            <div class="auth-screen__hit auth-error__hit--close tuner-box" data-item="close">
+              <span class="hit-label">X</span>
+              <span class="tuner-handle tuner-handle--e"></span><span class="tuner-handle tuner-handle--s"></span><span class="tuner-handle tuner-handle--se"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import {
+      AUTH_ERROR_ITEM_DEFS,
+      applyAuthErrorLayout,
+      clearAuthErrorLayoutCache,
+      clearAuthErrorLayoutDraft,
+      getAuthErrorItemLayout,
+      loadAuthErrorLayout,
+      mergeAuthErrorLayout,
+      stashAuthErrorLayoutDraft,
+    } from './js/auth-error-layout.js';
+
+    const POS_STEP = 0.5;
+    const ARROW_STEP = 0.25;
+    const DIALOG_ITEM = '__dialog__';
+    let workingLayout = mergeAuthErrorLayout(null);
+    let currentItem = 'message';
+    let dragState = null;
+    const els = {};
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function getFrameRect() {
+      return document.getElementById('mockFrame')?.getBoundingClientRect();
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getAuthErrorItemLayout(currentItem, workingLayout);
+      patchItem(currentItem, {
+        x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
+        y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getAuthErrorItemLayout(currentItem, workingLayout);
+      const patch = {};
+      if (edges.e || edges.se) patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+      if (edges.s || edges.se) patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+      if (Object.keys(patch).length) patchItem(currentItem, patch);
+    }
+
+    let saveTimer = null;
+    async function saveToFile({ quiet = false } = {}) {
+      try {
+        const res = await fetch('/api/dev/save-auth-error-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(workingLayout, null, 2),
+        });
+        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearAuthErrorLayoutCache();
+        clearAuthErrorLayoutDraft();
+        localStorage.setItem('tilezilla:auth-error-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:auth-error-layout-saved'));
+        els.status.textContent = quiet ? 'Auto-saved' : 'Saved to data/auth_error_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refresh() {
+      applyAuthErrorLayout(workingLayout, document.documentElement);
+      const box = getAuthErrorItemLayout(currentItem, workingLayout);
+      const label = currentItem === DIALOG_ITEM ? 'Frame width' : (AUTH_ERROR_ITEM_DEFS[currentItem]?.label || currentItem);
+      if (currentItem === DIALOG_ITEM) {
+        els.readout.innerHTML = `<strong>${label}</strong><br />maxWidth: ${workingLayout.dialog.maxWidth ?? 390}px`;
+      } else {
+        els.readout.innerHTML = `<strong>${label}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+      }
+      els.jsonOut.value = JSON.stringify(workingLayout, null, 2);
+      stashAuthErrorLayoutDraft(workingLayout);
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const boxEl of document.querySelectorAll('.tuner-box[data-item]')) {
+        boxEl.classList.toggle('is-tuner-active', boxEl.dataset.item === currentItem);
+      }
+      scheduleSave();
+    }
+
+    function onNudge(action) {
+      if (currentItem === DIALOG_ITEM) return;
+      const box = getAuthErrorItemLayout(currentItem, workingLayout);
+      switch (action) {
+        case 'left': patchItem(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
+        case 'right': patchItem(currentItem, { x: Math.round((box.x + ARROW_STEP) * 10) / 10 }); break;
+        case 'up': patchItem(currentItem, { y: Math.max(0, Math.round((box.y - ARROW_STEP) * 10) / 10) }); break;
+        case 'down': patchItem(currentItem, { y: Math.round((box.y + ARROW_STEP) * 10) / 10 }); break;
+        case 'wider': patchItem(currentItem, { w: Math.round((box.w + ARROW_STEP) * 10) / 10 }); break;
+        case 'narrower': patchItem(currentItem, { w: Math.max(1, Math.round((box.w - ARROW_STEP) * 10) / 10) }); break;
+        case 'taller': patchItem(currentItem, { h: Math.round((box.h + ARROW_STEP) * 10) / 10 }); break;
+        case 'shorter': patchItem(currentItem, { h: Math.max(1, Math.round((box.h - ARROW_STEP) * 10) / 10) }); break;
+        default: break;
+      }
+    }
+
+    function onPointerDown(e) {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const boxEl = e.target.closest('.tuner-box[data-item]');
+      if (handle && boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        handle.setPointerCapture?.(e.pointerId);
+        dragState = {
+          kind: 'resize', pointerId: e.pointerId,
+          edges: {
+            e: handle.classList.contains('tuner-handle--e') || handle.classList.contains('tuner-handle--se'),
+            s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se'),
+          },
+        };
+        return;
+      }
+      if (boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        boxEl.setPointerCapture?.(e.pointerId);
+        dragState = { kind: 'move', pointerId: e.pointerId };
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!dragState || dragState.pointerId !== e.pointerId) return;
+      e.preventDefault();
+      if (dragState.kind === 'move') applyMoveDelta(e.movementX, e.movementY);
+      else applyResizeDelta(e.movementX, e.movementY, dragState.edges);
+    }
+
+    function onPointerUp(e) {
+      if (!dragState || dragState.pointerId !== e.pointerId) return;
+      dragState = null;
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.nudgeGrid = document.getElementById('nudgeGrid');
+      els.mockStage = document.getElementById('mockStage');
+
+      const frameBtn = document.createElement('button');
+      frameBtn.type = 'button';
+      frameBtn.className = 'field-btn';
+      frameBtn.dataset.item = DIALOG_ITEM;
+      frameBtn.textContent = 'Frame width';
+      frameBtn.addEventListener('click', () => { currentItem = DIALOG_ITEM; refresh(); });
+      els.fieldGrid.appendChild(frameBtn);
+
+      for (const [key, meta] of Object.entries(AUTH_ERROR_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = meta.label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+      }
+
+      els.nudgeGrid.querySelectorAll('[data-nudge]').forEach((btn) => {
+        btn.addEventListener('click', () => onNudge(btn.dataset.nudge));
+      });
+      document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
+      document.getElementById('reloadBtn')?.addEventListener('click', async () => {
+        workingLayout = mergeAuthErrorLayout(await loadAuthErrorLayout({ force: true }));
+        refresh();
+        els.status.textContent = 'Reloaded';
+      });
+
+      els.mockStage.addEventListener('pointerdown', onPointerDown);
+      els.mockStage.addEventListener('pointermove', onPointerMove);
+      els.mockStage.addEventListener('pointerup', onPointerUp);
+      els.mockStage.addEventListener('pointercancel', onPointerUp);
+
+      workingLayout = mergeAuthErrorLayout(await loadAuthErrorLayout());
+      refresh();
+      els.mockStage.focus();
+    }
+
+    void init().catch((err) => {
+      document.getElementById('status').textContent = `Init failed — ${err?.message || err}`;
+    });
+  </script>
+</body>
+</html>

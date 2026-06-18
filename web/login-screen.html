@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Login</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+</head>
+<body class="auth-screen auth-screen--login">
+  <main class="auth-screen__stage" id="loginStage">
+    <img
+      class="auth-screen__art"
+      src="/img/Logging-in.png"
+      alt="Explorer's Passport — login"
+      width="1418"
+      height="2200"
+      draggable="false"
+    />
+    <form class="auth-screen__form auth-screen__form--login" id="loginForm">
+      <label class="auth-screen__sr" for="loginUser">Explorer name or email</label>
+      <input class="auth-screen__input auth-screen__input--user" id="loginUser" name="user" autocomplete="username" />
+      <label class="auth-screen__sr" for="loginPass">Secret passphrase</label>
+      <input class="auth-screen__input auth-screen__input--pass" id="loginPass" name="pass" type="password" autocomplete="current-password" />
+      <button type="submit" class="auth-screen__hit auth-screen__hit--submit" aria-label="Open passport"></button>
+    </form>
+    <a class="auth-screen__hit auth-screen__hit--secondary" href="/create-passport.html" aria-label="Issue new passport"></a>
+    <nav class="auth-screen__bottom-nav" aria-label="Shortcuts">
+      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla.html" id="authNavDaily" aria-label="Daily Challenge"></a>
+      <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="authNavLogout" aria-label="Log out"></button>
+    </nav>
+  </main>
+
+  <div class="auth-error-root" id="authErrorRoot" hidden>
+    <button type="button" class="auth-error-root__backdrop" id="authErrorBackdrop" aria-label="Close"></button>
+    <div class="auth-error-dialog" role="alertdialog" aria-modal="true" aria-labelledby="authErrorMessage">
+      <div class="auth-error-dialog__frame">
+        <img
+          class="auth-error-dialog__art"
+          src="/img/login-Erros-PlaqueBase.png"
+          alt=""
+          width="1267"
+          height="1022"
+        />
+        <p class="auth-error__message" id="authErrorMessage"></p>
+        <button type="button" class="auth-screen__hit auth-error__hit--ok" id="authErrorOkBtn" aria-label="OK"></button>
+        <button type="button" class="auth-screen__hit auth-error__hit--close" id="authErrorCloseBtn" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/auth-screen-init.js"></script>
+  <script type="module">
+    import {
+      ACTIVE_USER_KEY,
+      AUTH_MODE_KEY,
+      setRegisteredUser,
+      trackGuestEvent,
+      getGuestCode,
+    } from './js/tilezilla-guest.js';
+    import { initAuthErrorPopup, showAuthErrorPopup } from './js/auth-error-popup.js';
+    import { initAuthScreenNav } from './js/auth-screen-nav.js';
+
+    initAuthErrorPopup();
+    initAuthScreenNav({ source: 'login_screen' });
+
+    const form = document.getElementById('loginForm');
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = document.getElementById('loginUser')?.value?.trim();
+      const pass = document.getElementById('loginPass')?.value || '';
+      if (!user || !pass) {
+        showAuthErrorPopup('Enter your explorer name and passphrase.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/auth/api/login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username: user, password: pass, guest_code: getGuestCode() || null }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data?.ok) {
+          showAuthErrorPopup(data?.error || 'Login failed. Check your credentials.');
+          return;
+        }
+        const userId = data.username || user;
+        setRegisteredUser(userId);
+        localStorage.setItem(ACTIVE_USER_KEY, userId);
+        localStorage.setItem(AUTH_MODE_KEY, 'registered');
+        trackGuestEvent('Account Created', { user_id: userId, converted_from: getGuestCode() });
+        window.location.href = '/profile-screen.html';
+      } catch {
+        setRegisteredUser(user);
+        localStorage.setItem(ACTIVE_USER_KEY, user);
+        localStorage.setItem(AUTH_MODE_KEY, 'registered');
+        window.location.href = '/profile-screen.html';
+      }
+    });
+  </script>
+</body>
+</html>
