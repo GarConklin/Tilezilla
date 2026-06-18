@@ -1,0 +1,14 @@
+{
+  "dialog": {
+    "artW": 1024,
+    "artH": 811,
+    "displayPad": 32,
+    "maxDesignWidth": 390,
+    "widthScale": 0.71
+  },
+  "items": {
+    "remain": { "x": 5.2, "y": 82.2, "w": 42.5, "h": 12.5 },
+    "venture": { "x": 51.8, "y": 82.2, "w": 42.5, "h": 12.5 },
+    "close": { "x": 90.2, "y": 1.6, "w": 6.8, "h": 7.2, "hidden": true }
+  }
+}

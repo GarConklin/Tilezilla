@@ -29,6 +29,8 @@ PUZZLE_INFO_LAYOUT_PATH = ROOT / "data" / "puzzle_info_layout.json"
 HINT_RULES_LAYOUT_PATH = ROOT / "data" / "hint_rules_layout.json"
 JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
 TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
+RANDOM_POPUP_LAYOUT_PATH = ROOT / "data" / "random_popup_layout.json"
+REVISIT_LAYOUT_PATH = ROOT / "data" / "revisit_layout.json"
 LAYOUT_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
 DISCOVERY_TEXT_KEYS = ("x", "y", "nudgeX", "nudgeY", "fontScale")
 DISCOVERY_BTN_KEYS = ("x", "y", "nudgeX", "nudgeY", "w", "h", "wScale", "hScale")
@@ -212,6 +214,26 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-random-popup-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/random_popup_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-revisit-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/revisit_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         return super().do_GET()
 
     def do_POST(self) -> None:
@@ -245,6 +267,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-tilebag-layout":
             self._save_json_layout(parsed, TILEBAG_LAYOUT_PATH, validate_tilebag_layout)
+            return
+        if parsed.path == "/api/dev/save-random-popup-layout":
+            self._save_json_layout(parsed, RANDOM_POPUP_LAYOUT_PATH, validate_random_popup_layout)
+            return
+        if parsed.path == "/api/dev/save-revisit-layout":
+            self._save_json_layout(parsed, REVISIT_LAYOUT_PATH, validate_revisit_layout)
             return
         self.send_error(404, "Not found")
 
@@ -339,6 +367,64 @@ def validate_preview_layout(payload: object) -> str | None:
 
 def validate_stuck_reveal_layout(payload: object) -> str | None:
     return validate_preview_layout(payload)
+
+
+RANDOM_POPUP_ITEM_KEYS = ("remain", "venture", "close")
+
+
+def validate_random_popup_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in RANDOM_POPUP_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
+REVISIT_ITEM_KEYS = ("puzzleId", "solutions", "solved", "cancel", "revisit")
+
+
+def validate_revisit_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in REVISIT_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+    return None
 
 
 PINFO_ITEM_KEYS = (
@@ -512,6 +598,8 @@ def main() -> None:
     print("Hint Rules tuner save API: POST /api/dev/save-hint-rules-layout")
     print("Journal tuner save API: POST /api/dev/save-journal-layout")
     print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
+    print("Random popup tuner save API: POST /api/dev/save-random-popup-layout")
+    print("Revisit popup tuner save API: POST /api/dev/save-revisit-layout")
     server.serve_forever()
 
 

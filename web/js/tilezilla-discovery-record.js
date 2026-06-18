@@ -26,6 +26,7 @@ let onOpenFoundSolutions = async () => {};
 let onResumeBoardEdit = () => {};
 let onAdventureProgress = async () => {};
 let pendingViewFoundIndex = null;
+let pendingRecordMode = null;
 
 function isDailyChallengeScreen() {
   return document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
@@ -123,7 +124,7 @@ export function setDiscoveryRecordLayout(layout) {
   discoveryLayout = layout;
 }
 
-export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdvance = false) {
+export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdvance = false, options = {}) {
   if (!root) return;
   applyDiscoveryVariantClasses(root, mode, showAdvance);
 
@@ -131,9 +132,10 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
   const viewFoundBtn = fieldEl('btnViewFound', ids);
   const bookBtn = fieldEl('btnBook', ids);
   const advanceBtn = fieldEl('btnAdvance', ids);
+  const showViewFound = options.showViewFound ?? (mode === 'duplicate');
 
   if (note) note.hidden = mode !== 'duplicate';
-  if (viewFoundBtn) viewFoundBtn.hidden = mode !== 'duplicate';
+  if (viewFoundBtn) viewFoundBtn.hidden = !showViewFound;
   if (bookBtn) bookBtn.hidden = false;
   if (bookBtn) {
     bookBtn.setAttribute(
@@ -151,7 +153,9 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
 
   const mode = payload?.mode === 'duplicate' ? 'duplicate' : 'new';
   const showAdvance = resolveShowAdvance(payload);
-  applyRecordMode(root, mode, ids, showAdvance);
+  const showViewFound = mode === 'duplicate'
+    || (mode === 'new' && Number.isFinite(payload?.solutionIndex));
+  applyRecordMode(root, mode, ids, showAdvance, { showViewFound });
   if (discoveryLayout) {
     applyDiscoveryPopupLayout(
       discoveryLayout,
@@ -197,6 +201,13 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     setFieldText('time', formatTime(payload.elapsedSec), ids);
     setFieldText('tokens', Math.max(0, payload.tokensEarned || 0), ids);
 
+    const viewFoundBtn = fieldEl('btnViewFound', ids);
+    if (viewFoundBtn) {
+      const canView = Number.isFinite(payload.solutionIndex);
+      viewFoundBtn.disabled = !canView;
+      viewFoundBtn.setAttribute('aria-disabled', canView ? 'false' : 'true');
+    }
+
     const advanceBtn = fieldEl('btnAdvance', ids);
     if (advanceBtn && ids === DISCOVERY_RECORD_IDS) {
       advanceBtn.setAttribute(
@@ -239,9 +250,8 @@ async function showDiscoveryRecordAsync(payload) {
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
   applyDiscoveryRecordContent(enriched);
-  pendingViewFoundIndex = enriched?.mode === 'duplicate' && Number.isFinite(enriched.solutionIndex)
-    ? enriched.solutionIndex
-    : null;
+  pendingRecordMode = enriched?.mode === 'duplicate' ? 'duplicate' : 'new';
+  pendingViewFoundIndex = Number.isFinite(enriched.solutionIndex) ? enriched.solutionIndex : null;
 
   void onAdventureProgress();
 }
@@ -253,6 +263,7 @@ function hideDiscoveryRecord() {
   root.setAttribute('aria-hidden', 'true');
   document.querySelector('.tz-app')?.classList.remove('is-discovery-record');
   pendingViewFoundIndex = null;
+  pendingRecordMode = null;
 }
 
 /** Player picked up a board tile while the plaque is open — restore preview + tile bag. */
@@ -286,7 +297,13 @@ async function handleViewFoundSolve() {
 }
 
 async function handleOpenFoundSolutions() {
+  const mode = pendingRecordMode;
+  const index = pendingViewFoundIndex;
   hideDiscoveryRecord();
+  if (mode === 'new' && Number.isFinite(index)) {
+    await onViewFoundSolve(index);
+    return;
+  }
   await onOpenFoundSolutions();
 }
 
@@ -307,6 +324,7 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
     levelId: level?.id || '—',
     challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     solutionNumber: solutionLabel(res),
+    solutionIndex: Number.isFinite(res?.index) ? res.index : null,
     elapsedSec: outcome?.elapsedSec ?? 0,
     tokensEarned: outcome?.tokensEarned ?? 0,
   };

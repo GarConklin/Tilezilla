@@ -11,6 +11,7 @@ import {
   applyJournalOverlays,
 } from './journal-layout.js';
 import { getJournalRecord, getJournalLibraryIndex } from './journal-data.js';
+import { applyRevisitLayout, loadRevisitLayout, reloadRevisitLayout } from './revisit-layout.js';
 import { initJournalListScroller } from './journal-scroller.js';
 
 let getApp = () => null;
@@ -71,23 +72,32 @@ async function applyLayoutFromDisk({ force = false } = {}) {
   }
 }
 
-/** Pin journal shell top to the main game board (accounts for UI scale + safe-area padding). */
+/** Pin journal shell just under the centered title (12px gap). */
 export function syncJournalDialogTop() {
-  const board = document.querySelector('.tz-board-section');
   const journalRoot = $('journalRoot');
   if (!journalRoot) return;
 
-  let marginTop = 0;
-  if (board) {
-    const padTop = parseFloat(getComputedStyle(journalRoot).paddingTop) || 0;
-    marginTop = board.getBoundingClientRect().top
-      - journalRoot.getBoundingClientRect().top
-      - padTop;
+  const padTop = parseFloat(getComputedStyle(journalRoot).paddingTop) || 0;
+  const rootTop = journalRoot.getBoundingClientRect().top;
+  const titleGap = parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue('--tz-journal-title-gap'),
+  ) || 12;
+
+  const titleEl = document.querySelector('.tz-title-img');
+  let anchorBottom = 0;
+  if (titleEl) {
+    anchorBottom = titleEl.getBoundingClientRect().bottom;
   } else {
-    const scale = parseFloat(document.documentElement.dataset.uiScale) || 1;
-    marginTop = 136 * scale;
+    const header = document.querySelector('.tz-header');
+    if (header) {
+      anchorBottom = header.getBoundingClientRect().bottom;
+    } else {
+      const scale = parseFloat(document.documentElement.dataset.uiScale) || 1;
+      anchorBottom = rootTop + 48 * scale;
+    }
   }
 
+  const marginTop = Math.max(0, anchorBottom - rootTop - padTop + titleGap);
   journalRoot.style.setProperty('--tz-journal-dialog-top', `${marginTop}px`);
 }
 
@@ -126,11 +136,42 @@ function closeJournal() {
   }
 }
 
-function showLoadConfirm(show) {
+async function showLoadConfirm(show) {
   const el = $('journalLoadConfirm');
   if (!el) return;
-  if (show) el.removeAttribute('hidden');
-  else el.setAttribute('hidden', '');
+  if (!show) {
+    el.setAttribute('hidden', '');
+    return;
+  }
+
+  const app = getApp();
+  let puzzleId = state.levelId || '—';
+  let solutions = '—';
+  let solved = '—';
+
+  if (app && state.levelId) {
+    const record = await getJournalRecord(app, state.levelId);
+    if (record) {
+      puzzleId = record.puzzleId || record.levelId || puzzleId;
+      solutions = record.totalKnown > 0
+        ? `${record.solutionsFound} / ${record.totalKnown}`
+        : String(record.solutionsFound ?? 0);
+      const entry = Number.isFinite(state.selectedSolutionIndex)
+        ? (record.entries || []).find((e) => e.index === state.selectedSolutionIndex)
+        : null;
+      solved = entry?.foundDate || record.firstSolvedDate || '—';
+    }
+  }
+
+  const set = (id, text) => {
+    const node = $(id);
+    if (node) node.textContent = text ?? '—';
+  };
+  set('journalRevisitPuzzleId', puzzleId);
+  set('journalRevisitSolutions', solutions);
+  set('journalRevisitSolved', solved);
+
+  el.removeAttribute('hidden');
 }
 
 function isJournalArtTab() {
@@ -324,7 +365,7 @@ async function renderSolutionPreview(record, entry) {
 
   canvas.setAttribute('tabindex', '0');
   canvas.setAttribute('role', 'button');
-  canvas.setAttribute('aria-label', 'Load this solution on the board');
+  canvas.setAttribute('aria-label', 'Revisit this solution on the board');
 
   const rect = wrap.getBoundingClientRect();
   const cssW = Math.max(1, rect.width || wrap.clientWidth);
@@ -601,14 +642,15 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
 
   $('journalPreviewCanvas')?.addEventListener('click', () => {
     if (state.mode !== 'record' || state.selectedSolutionIndex == null) return;
-    showLoadConfirm(true);
+    void showLoadConfirm(true);
   });
   $('journalPreviewCanvas')?.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
-    showLoadConfirm(true);
+    void showLoadConfirm(true);
   });
 
+  $('journalRevisitBackdrop')?.addEventListener('click', () => showLoadConfirm(false));
   $('journalLoadCancel')?.addEventListener('click', () => showLoadConfirm(false));
   $('journalLoadConfirmBtn')?.addEventListener('click', () => {
     void loadSelectedSolutionToBoard();
@@ -673,6 +715,24 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
     void applyLayoutFromDisk({ force: true });
   });
 
+  window.addEventListener('tilezilla:revisit-layout-saved', () => {
+    void reloadRevisitLayout()
+      .then((layout) => applyRevisitLayout(layout))
+      .catch((err) => console.warn('Revisit layout reload:', err));
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (
+      e.key === 'tilezilla:layouts:revisit'
+      || e.key === 'tilezilla:layouts:revisit:pending'
+      || e.key === 'tilezilla:revisit-layout-version'
+    ) {
+      void reloadRevisitLayout()
+        .then((layout) => applyRevisitLayout(layout))
+        .catch((err) => console.warn('Revisit layout reload:', err));
+    }
+  });
+
   window.addEventListener('focus', () => {
     if (root.hidden) return;
     void applyLayoutFromDisk({ force: true });
@@ -688,6 +748,10 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
   void applyLayoutFromDisk();
 
   installPreviewResizeObserver();
+
+  void loadRevisitLayout()
+    .then((layout) => applyRevisitLayout(layout))
+    .catch((err) => console.warn('Revisit layout:', err));
 
   return {
     openJournal,

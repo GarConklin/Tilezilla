@@ -627,13 +627,73 @@
         <button type="button" class="tz-journal-hit tz-journal-field--btn-next" id="journalBtnNext" aria-label="Next"></button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-exit" id="journalBtnExit" aria-label="Exit"></button>
 
-        <div class="tz-journal-load-confirm" id="journalLoadConfirm" hidden>
-          <p class="tz-journal-load-confirm__msg">Load solution to board?</p>
-          <div class="tz-journal-load-confirm__actions">
-            <button type="button" class="tz-journal-load-confirm__btn" id="journalLoadCancel">Cancel</button>
-            <button type="button" class="tz-journal-load-confirm__btn tz-journal-load-confirm__btn--load" id="journalLoadConfirmBtn">Load</button>
+        <div class="tz-journal-revisit" id="journalLoadConfirm" hidden>
+          <button type="button" class="tz-journal-revisit__backdrop" id="journalRevisitBackdrop" aria-label="Cancel revisit"></button>
+          <div class="tz-journal-revisit__dialog" role="dialog" aria-modal="true" aria-labelledby="journalRevisitTitle">
+            <h2 class="tz-sr-only" id="journalRevisitTitle">Revisit puzzle</h2>
+            <div class="tz-journal-revisit__frame">
+              <img
+                src="/img/Revisit.png"
+                alt=""
+                class="tz-journal-revisit__bg"
+                width="1418"
+                height="1048"
+              />
+              <span class="tz-journal-revisit__field tz-journal-revisit__field--puzzle-id" id="journalRevisitPuzzleId">—</span>
+              <span class="tz-journal-revisit__field tz-journal-revisit__field--solutions" id="journalRevisitSolutions">—</span>
+              <span class="tz-journal-revisit__field tz-journal-revisit__field--solved" id="journalRevisitSolved">—</span>
+              <button type="button" class="tz-journal-revisit__btn tz-journal-revisit__btn--cancel" id="journalLoadCancel" aria-label="Cancel">
+                <img src="/img/rv-cncl-btn.png" alt="" />
+              </button>
+              <button type="button" class="tz-journal-revisit__btn tz-journal-revisit__btn--revisit" id="journalLoadConfirmBtn" aria-label="Revisit">
+                <img src="/img/rv-revisit-btn.png" alt="" />
+              </button>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-random-root" id="randomPopupRoot" hidden>
+    <button type="button" class="tz-random-root__backdrop" id="randomPopupBackdrop" aria-label="Close"></button>
+    <div class="tz-random-dialog" role="dialog" aria-modal="true" aria-labelledby="randomPopupTitle">
+      <h2 class="tz-sr-only" id="randomPopupTitle">Random Puzzle</h2>
+
+      <div class="tz-random-dialog__frame">
+        <img
+          src="/img/RandomPuzzle-Base.png"
+          alt=""
+          class="tz-random-dialog__bg"
+          width="1024"
+          height="811"
+        />
+
+        <div class="tz-random-dialog__actions">
+          <button
+            type="button"
+            class="tz-random-dialog__btn tz-random-dialog__btn--remain"
+            id="randomRemainBtn"
+            aria-label="Remain on the Path"
+          >
+            <img src="/img/Remain%20On%20the%20Path.png" alt="" />
+          </button>
+          <button
+            type="button"
+            class="tz-random-dialog__btn tz-random-dialog__btn--venture"
+            id="randomVentureBtn"
+            aria-label="Venture Forth"
+          >
+            <img src="/img/Venture%20Forth.png" alt="" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="tz-random-dialog__btn tz-random-dialog__btn--close"
+          id="randomCloseBtn"
+          aria-label="Close"
+        ></button>
       </div>
     </div>
   </div>

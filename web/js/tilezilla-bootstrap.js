@@ -9,6 +9,12 @@ import {
 import { loadGameplaySettings, initSettingsUi, applyPhonePreviewMode } from './tilezilla-settings.js';
 import { initMenuUi } from './tilezilla-menu.js';
 import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
+import { initRandomPuzzlePopup, openRandomPuzzlePopup } from './tilezilla-random-popup.js';
+import {
+  applyRandomPopupLayout,
+  loadRandomPopupLayout,
+  reloadRandomPopupLayout,
+} from './random-popup-layout.js';
 import { initPuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
@@ -412,10 +418,16 @@ function updateChallengePanel(level, meta) {
   const countEl = $('solutionCount');
 
   if (eyebrow) {
-    eyebrow.textContent = screen === 'adventure' ? 'Adventure Path' : 'Daily Challenge';
+    if (screen === 'adventure') {
+      eyebrow.textContent = 'Adventure Path';
+    } else if (screen === 'random') {
+      eyebrow.textContent = 'Random Puzzle';
+    } else {
+      eyebrow.textContent = 'Daily Challenge';
+    }
   }
   if (dateEl) {
-    if (screen === 'adventure') {
+    if (screen === 'adventure' || screen === 'random') {
       dateEl.removeAttribute('datetime');
       dateEl.textContent = '';
       dateEl.hidden = true;
@@ -1003,18 +1015,98 @@ const BOTTOM_NAV_LABELS = {
   profile: 'Profile',
 };
 
+const RANDOM_VENTURE_SIZES = new Set(['4x5', '5x5', '4x6', '5x6']);
+
+function adventureSizeFromLevelId(levelId) {
+  const match = /^(\d+x\d+)-/.exec(String(levelId || ''));
+  return match ? match[1] : null;
+}
+
+async function pickRandomVentureLevel(app) {
+  const path = await loadAdventurePath();
+  const ids = new Set();
+
+  const consider = (puzzle) => {
+    if (!puzzle || puzzle.isChallenge) return;
+    const size = adventureSizeFromLevelId(puzzle.levelId);
+    if (!RANDOM_VENTURE_SIZES.has(size)) return;
+    ids.add(puzzle.levelId);
+  };
+
+  for (const puzzle of path.flat || []) consider(puzzle);
+  for (const puzzle of path.postgame || []) consider(puzzle);
+
+  const levels = app?.state?.allLevels || [];
+  const candidates = [...ids]
+    .map((id) => levels.find((l) => l.id === id))
+    .filter(Boolean);
+
+  if (!candidates.length) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+async function switchToAdventureScreen(app) {
+  const appRoot = document.querySelector('.tz-app');
+  setActiveBottomNav('adventure');
+  appRoot?.setAttribute('data-screen', 'adventure');
+  await loadAdventurePuzzle(app);
+}
+
+async function loadRandomVenturePuzzle(app) {
+  const loading = $('loadingHud');
+  const appRoot = document.querySelector('.tz-app');
+  if (loading) loading.hidden = false;
+  appRoot?.classList.add('is-loading-puzzle');
+
+  try {
+    while (!app.state.allLevels?.length) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+
+    const level = await pickRandomVentureLevel(app);
+    if (!level) throw new Error('No matching random puzzles available');
+
+    setActiveBottomNav('random');
+    appRoot?.setAttribute('data-screen', 'random');
+
+    await loadLevelOnBoard(app, level);
+    resetPuzzleTimer();
+    displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
+    await refreshPaletteIfReady(app);
+    updateChallengePanel(level, {
+      screen: 'random',
+      totalSolutions: level.totalUniqueSolutions,
+    });
+    updateTileBagCount(app);
+    updateValidationState(app);
+    showGameMessage(`Random puzzle: ${level.id}`, 'info');
+  } catch (e) {
+    console.error(e);
+    showGameMessage(`Failed to load random puzzle: ${e.message}`, 'error');
+  } finally {
+    appRoot?.classList.remove('is-loading-puzzle');
+    if (loading) loading.hidden = true;
+  }
+}
+
 function wireBottomNav(getApp) {
   const appRoot = document.querySelector('.tz-app');
   document.querySelectorAll('.tz-bottom-nav__hit').forEach((item) => {
     item.addEventListener('click', async () => {
       const screen = item.dataset.nav;
+      const app = getApp?.();
+
+      if (screen === 'random') {
+        openRandomPuzzlePopup();
+        return;
+      }
+
       document.querySelectorAll('.tz-bottom-nav__hit').forEach((i) => {
         i.classList.toggle('tz-bottom-nav__hit--active', i === item);
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
       });
       appRoot?.setAttribute('data-screen', screen);
 
-      const app = getApp?.();
       if (!app) return;
 
       if (screen === 'daily-challenge') {
@@ -1392,6 +1484,11 @@ async function applyShellLayouts() {
   } catch (err) {
     console.warn('Tile bag layout:', err);
   }
+  try {
+    applyRandomPopupLayout(await loadRandomPopupLayout());
+  } catch (err) {
+    console.warn('Random popup layout:', err);
+  }
 }
 
 async function init() {
@@ -1420,6 +1517,12 @@ async function init() {
     openStuckFlow,
   });
   initStuckPopup({ getApp: () => appRef, menuApi });
+  initRandomPuzzlePopup({
+    getApp: () => appRef,
+    menuApi,
+    onRemainOnPath: () => switchToAdventureScreen(appRef),
+    onVentureForth: () => loadRandomVenturePuzzle(appRef),
+  });
   const journalApi = initJournalUi({
     getApp: () => appRef,
     menuApi,
@@ -1432,7 +1535,14 @@ async function init() {
   initDiscoveryRecord({
     getApp: () => appRef,
     onContinueSearch: () => continueDiscoverySearch(appRef),
-    onAdvancePath: () => advanceAdventurePath(appRef),
+    onAdvancePath: async () => {
+      const appRoot = document.querySelector('.tz-app');
+      if (appRoot?.dataset?.screen === 'daily-challenge') {
+        await switchToAdventureScreen(appRef);
+        return;
+      }
+      await advanceAdventurePath(appRef);
+    },
     onAdventureProgress: () => refreshAdventureChrome(appRef),
     onViewFoundSolve: (solutionIndex) => menuApi?.openFoundSolutionAt?.(solutionIndex),
     onOpenFoundSolutions: () => {
@@ -1572,6 +1682,28 @@ window.addEventListener('storage', (e) => {
 
 window.addEventListener('focus', () => {
   void refreshBottomNavLayoutFromDisk();
+});
+
+async function refreshRandomPopupLayoutFromDisk() {
+  try {
+    applyRandomPopupLayout(await reloadRandomPopupLayout());
+  } catch (err) {
+    console.warn('Random popup layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:random-popup-layout-saved', () => {
+  void refreshRandomPopupLayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (
+    e.key === 'tilezilla:layouts:random-popup'
+    || e.key === 'tilezilla:layouts:random-popup:pending'
+    || e.key === 'tilezilla:random-popup-layout-version'
+  ) {
+    void refreshRandomPopupLayoutFromDisk();
+  }
 });
 
 async function refreshPreviewLayoutFromDisk() {

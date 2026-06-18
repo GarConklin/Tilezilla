@@ -477,6 +477,25 @@
   --tz-stuck-reveal-close-w: 7%;
   --tz-stuck-reveal-close-h: 7%;
 
+  /* Random puzzle popup — RandomPuzzle-Base.png 1024×811 */
+  --tz-random-art-w: 1024;
+  --tz-random-art-h: 811;
+  --tz-random-display-pad: 32px;
+  --tz-random-max-design-width: 390px;
+  --tz-random-width-scale: 0.71;
+  --tz-random-remain-x: 5.2%;
+  --tz-random-remain-y: 82.2%;
+  --tz-random-remain-w: 42.5%;
+  --tz-random-remain-h: 12.5%;
+  --tz-random-venture-x: 51.8%;
+  --tz-random-venture-y: 82.2%;
+  --tz-random-venture-w: 42.5%;
+  --tz-random-venture-h: 12.5%;
+  --tz-random-close-x: 90.2%;
+  --tz-random-close-y: 1.6%;
+  --tz-random-close-w: 6.8%;
+  --tz-random-close-h: 7.2%;
+
   /* Puzzle Info popup — Puzzle-Info-Blank.png artboard 1120×1157 */
   --tz-pinfo-art-w: 1120;
   --tz-pinfo-art-h: 1157;
@@ -555,11 +574,40 @@
   --tz-journal-art-h: 1686;
   --tz-journal-display-pad: 16px;
   --tz-journal-max-design-width: 390px;
-  --tz-journal-dialog-top: calc(var(--tz-y-board) * var(--tz-ui-scale, 1));
+  --tz-journal-dialog-top: calc(
+    var(--tz-y-header) + var(--tz-h-header) / 2 + var(--tz-title-max-h) / 2 + var(--tz-journal-title-gap, 12px)
+  );
   --tz-journal-dialog-top-nudge: 0px;
+  --tz-journal-title-gap: 12px;
   --tz-journal-field-color: #3d2e1a;
   --tz-journal-field-font: calc(0.62rem + 2px);
   --tz-journal-field-font-lg: calc(0.78rem + 2px);
+
+  /* Journal revisit confirm — Revisit.png 1418×1048 */
+  --tz-revisit-art-w: 1418;
+  --tz-revisit-art-h: 1048;
+  --tz-revisit-display-pad: 16px;
+  --tz-revisit-width-scale: 0.94;
+  --tz-revisit-puzzle-id-x: 54.5%;
+  --tz-revisit-puzzle-id-y: 39.2%;
+  --tz-revisit-puzzle-id-w: 38%;
+  --tz-revisit-puzzle-id-h: 5%;
+  --tz-revisit-solutions-x: 54.5%;
+  --tz-revisit-solutions-y: 49.2%;
+  --tz-revisit-solutions-w: 38%;
+  --tz-revisit-solutions-h: 5%;
+  --tz-revisit-solved-x: 54.5%;
+  --tz-revisit-solved-y: 59.2%;
+  --tz-revisit-solved-w: 38%;
+  --tz-revisit-solved-h: 5%;
+  --tz-revisit-cancel-x: 9.5%;
+  --tz-revisit-cancel-y: 83.8%;
+  --tz-revisit-cancel-w: 38.5%;
+  --tz-revisit-cancel-h: 11.5%;
+  --tz-revisit-revisit-x: 51.5%;
+  --tz-revisit-revisit-y: 83.8%;
+  --tz-revisit-revisit-w: 38.5%;
+  --tz-revisit-revisit-h: 11.5%;
   --tz-journal-label-font: calc(0.55rem + 1px);
   --tz-journal-pane-top-x: 8;
   --tz-journal-pane-top-y: 3;
@@ -1677,8 +1725,7 @@ button {
   display: none;
 }
 
-.tz-discovery-record--new .tz-discovery-record__field--note,
-.tz-discovery-record--new .tz-discovery-record__btn--view-found {
+.tz-discovery-record--new .tz-discovery-record__field--note {
   display: none;
 }
 
@@ -2919,6 +2966,157 @@ button {
   filter: grayscale(0.45);
 }
 
+/* ── Random puzzle popup ── */
+
+.tz-random-root {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+}
+
+.tz-random-root[hidden] {
+  display: none !important;
+}
+
+.tz-random-root__backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.68);
+  cursor: pointer;
+}
+
+.tz-random-dialog {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  width: min(
+    100vw,
+    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1)),
+    calc(var(--tz-random-art-w) * 1px),
+    calc((100svh - var(--tz-random-display-pad)) * var(--tz-random-art-w) / var(--tz-random-art-h))
+  );
+  aspect-ratio: calc(var(--tz-random-art-w) / var(--tz-random-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+}
+
+html.tz-phone-preview .tz-random-dialog {
+  width: min(
+    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1)),
+    calc(var(--tz-random-art-w) * 1px),
+    calc((100svh - var(--tz-random-display-pad)) * var(--tz-random-art-w) / var(--tz-random-art-h))
+  );
+}
+
+.tz-random-dialog__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.tz-random-dialog__bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-random-dialog__actions {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tz-random-dialog__btn {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.tz-random-dialog__btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.15s ease;
+}
+
+.tz-random-dialog__btn--remain {
+  left: var(--tz-random-remain-x);
+  top: var(--tz-random-remain-y);
+  width: var(--tz-random-remain-w);
+  height: var(--tz-random-remain-h);
+  z-index: 2;
+}
+
+.tz-random-dialog__btn--venture {
+  left: var(--tz-random-venture-x);
+  top: var(--tz-random-venture-y);
+  width: var(--tz-random-venture-w);
+  height: var(--tz-random-venture-h);
+  z-index: 2;
+}
+
+.tz-random-dialog__btn--close {
+  left: var(--tz-random-close-x);
+  top: var(--tz-random-close-y);
+  width: var(--tz-random-close-w);
+  height: var(--tz-random-close-h);
+  z-index: 5;
+}
+
+@media (hover: hover) {
+  .tz-random-dialog__btn:hover:not(:disabled) {
+    z-index: 6;
+  }
+
+  .tz-random-dialog__btn:hover:not(:disabled) img {
+    filter: brightness(1.12)
+      drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+      drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
+  }
+}
+
+.tz-random-dialog__btn:focus-visible img {
+  filter: brightness(1.12)
+    drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+    drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
+  outline: none;
+}
+
+.tz-random-dialog__btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.tz-random-dialog__btn:active:not(:disabled) img {
+  filter: brightness(1.12)
+    drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+    drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
+}
+
 /* ── Puzzle Info popup ── */
 
 .tz-pinfo-root {
@@ -3252,7 +3450,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
 .tz-journal-dialog__frame > .tz-journal-pane,
 .tz-journal-dialog__frame > .tz-journal-pane-title,
 .tz-journal-dialog__frame > .tz-journal-hit,
-.tz-journal-dialog__frame > .tz-journal-load-confirm,
+.tz-journal-dialog__frame > .tz-journal-revisit,
 .tz-journal-dialog__frame > .tz-journal-record-top {
   z-index: 2;
 }
@@ -3856,48 +4054,152 @@ html.tz-phone-preview .tz-pinfo-dialog {
   height: calc(var(--tz-journal-btn-exit-h) * 1%);
 }
 
-.tz-journal-load-confirm {
+.tz-journal-revisit {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  min-width: 70%;
-  padding: 12px;
-  border-radius: 8px;
-  background: rgba(255, 248, 230, 0.96);
-  border: 2px solid rgba(60, 40, 20, 0.35);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  text-align: center;
-}
-
-.tz-journal-load-confirm[hidden] { display: none !important; }
-
-.tz-journal-load-confirm__msg {
-  margin: 0 0 10px;
-  font-size: var(--tz-journal-field-font-lg);
-  font-weight: 700;
-  color: var(--tz-journal-field-color);
-}
-
-.tz-journal-load-confirm__actions {
+  inset: 0;
+  z-index: 12;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
 }
 
-.tz-journal-load-confirm__btn {
-  padding: 6px 14px;
-  border: 1px solid rgba(60, 40, 20, 0.35);
-  border-radius: 6px;
-  background: rgba(255, 248, 230, 0.8);
-  font: inherit;
-  font-weight: 700;
+.tz-journal-revisit[hidden] {
+  display: none !important;
+}
+
+.tz-journal-revisit__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.55);
   cursor: pointer;
 }
 
-.tz-journal-load-confirm__btn--load {
-  background: rgba(124, 184, 104, 0.65);
+.tz-journal-revisit__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(
+    calc(100% - var(--tz-revisit-display-pad) * 2),
+    calc(100% * var(--tz-revisit-width-scale, 0.94)),
+    calc((100% - var(--tz-revisit-display-pad) * 2) * var(--tz-revisit-art-w) / var(--tz-revisit-art-h) * 0.88)
+  );
+  aspect-ratio: calc(var(--tz-revisit-art-w) / var(--tz-revisit-art-h));
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.45));
+}
+
+.tz-journal-revisit__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.tz-journal-revisit__bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-journal-revisit__field {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  color: #e8dcc4;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.58rem, 2.6cqi, 0.82rem);
+  font-weight: 600;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.tz-journal-revisit__field--puzzle-id {
+  left: var(--tz-revisit-puzzle-id-x);
+  top: var(--tz-revisit-puzzle-id-y);
+  width: var(--tz-revisit-puzzle-id-w);
+  height: var(--tz-revisit-puzzle-id-h);
+}
+
+.tz-journal-revisit__field--solutions {
+  left: var(--tz-revisit-solutions-x);
+  top: var(--tz-revisit-solutions-y);
+  width: var(--tz-revisit-solutions-w);
+  height: var(--tz-revisit-solutions-h);
+}
+
+.tz-journal-revisit__field--solved {
+  left: var(--tz-revisit-solved-x);
+  top: var(--tz-revisit-solved-y);
+  width: var(--tz-revisit-solved-w);
+  height: var(--tz-revisit-solved-h);
+}
+
+.tz-journal-revisit__btn {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.tz-journal-revisit__btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.15s ease;
+}
+
+.tz-journal-revisit__btn--cancel {
+  left: var(--tz-revisit-cancel-x);
+  top: var(--tz-revisit-cancel-y);
+  width: var(--tz-revisit-cancel-w);
+  height: var(--tz-revisit-cancel-h);
+  z-index: 2;
+}
+
+.tz-journal-revisit__btn--revisit {
+  left: var(--tz-revisit-revisit-x);
+  top: var(--tz-revisit-revisit-y);
+  width: var(--tz-revisit-revisit-w);
+  height: var(--tz-revisit-revisit-h);
+  z-index: 2;
+}
+
+@media (hover: hover) {
+  .tz-journal-revisit__btn:hover img {
+    filter: brightness(1.12)
+      drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+      drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
+  }
+}
+
+.tz-journal-revisit__btn:focus-visible img {
+  filter: brightness(1.12)
+    drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+    drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
+  outline: none;
+}
+
+.tz-journal-revisit__btn:active {
+  transform: scale(0.97);
+}
+
+.tz-journal-revisit__btn:active img {
+  filter: brightness(1.12)
+    drop-shadow(0 0 8px rgba(232, 185, 35, 0.75))
+    drop-shadow(0 0 16px rgba(232, 185, 35, 0.4));
 }
 
 html.tz-phone-preview .tz-journal-root {
