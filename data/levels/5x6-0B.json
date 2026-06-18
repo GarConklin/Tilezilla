@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "5x6",
   "tier": "0B",
-  "count": 806,
+  "count": 1165,
   "levels": [
     {
       "id": "5x6-0B-AAA",
@@ -18992,6 +18992,8324 @@
       },
       "blockers": [],
       "solvesFile": "5x6-0B-BEZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFA",
+      "name": "BFA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFB",
+      "name": "BFB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFC",
+      "name": "BFC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFD",
+      "name": "BFD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFE",
+      "name": "BFE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFF",
+      "name": "BFF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFG",
+      "name": "BFG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFH",
+      "name": "BFH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFI",
+      "name": "BFI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFJ",
+      "name": "BFJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFK",
+      "name": "BFK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFL",
+      "name": "BFL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFM",
+      "name": "BFM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFN",
+      "name": "BFN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFO",
+      "name": "BFO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFP",
+      "name": "BFP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFQ",
+      "name": "BFQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFR",
+      "name": "BFR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFS",
+      "name": "BFS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFT",
+      "name": "BFT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFU",
+      "name": "BFU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFV",
+      "name": "BFV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFW",
+      "name": "BFW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFX",
+      "name": "BFX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFY",
+      "name": "BFY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BFZ",
+      "name": "BFZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BFZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGA",
+      "name": "BGA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGB",
+      "name": "BGB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGC",
+      "name": "BGC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGD",
+      "name": "BGD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGE",
+      "name": "BGE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGF",
+      "name": "BGF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGG",
+      "name": "BGG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGH",
+      "name": "BGH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGI",
+      "name": "BGI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGJ",
+      "name": "BGJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGK",
+      "name": "BGK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGL",
+      "name": "BGL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGM",
+      "name": "BGM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGN",
+      "name": "BGN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGO",
+      "name": "BGO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 4,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGP",
+      "name": "BGP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGQ",
+      "name": "BGQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 5,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGR",
+      "name": "BGR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 5,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGS",
+      "name": "BGS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGT",
+      "name": "BGT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGU",
+      "name": "BGU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGV",
+      "name": "BGV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 5,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGW",
+      "name": "BGW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGX",
+      "name": "BGX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 5
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGY",
+      "name": "BGY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BGZ",
+      "name": "BGZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BGZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHA",
+      "name": "BHA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHB",
+      "name": "BHB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHC",
+      "name": "BHC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHD",
+      "name": "BHD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHE",
+      "name": "BHE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHF",
+      "name": "BHF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHG",
+      "name": "BHG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHH",
+      "name": "BHH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHI",
+      "name": "BHI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 4,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHJ",
+      "name": "BHJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHK",
+      "name": "BHK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 4,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHL",
+      "name": "BHL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHM",
+      "name": "BHM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHN",
+      "name": "BHN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 5,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHO",
+      "name": "BHO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHP",
+      "name": "BHP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHQ",
+      "name": "BHQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHR",
+      "name": "BHR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 5,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHS",
+      "name": "BHS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHT",
+      "name": "BHT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHU",
+      "name": "BHU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHV",
+      "name": "BHV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHW",
+      "name": "BHW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHX",
+      "name": "BHX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHY",
+      "name": "BHY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BHZ",
+      "name": "BHZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BHZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIA",
+      "name": "BIA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIB",
+      "name": "BIB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIC",
+      "name": "BIC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BID",
+      "name": "BID",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BID.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIE",
+      "name": "BIE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIF",
+      "name": "BIF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIG",
+      "name": "BIG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIH",
+      "name": "BIH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BII",
+      "name": "BII",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BII.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIJ",
+      "name": "BIJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIK",
+      "name": "BIK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIL",
+      "name": "BIL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIM",
+      "name": "BIM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIN",
+      "name": "BIN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIO",
+      "name": "BIO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIP",
+      "name": "BIP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIQ",
+      "name": "BIQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIR",
+      "name": "BIR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIS",
+      "name": "BIS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIT",
+      "name": "BIT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIU",
+      "name": "BIU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIV",
+      "name": "BIV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIW",
+      "name": "BIW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIX",
+      "name": "BIX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIY",
+      "name": "BIY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BIZ",
+      "name": "BIZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BIZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJA",
+      "name": "BJA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJB",
+      "name": "BJB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJC",
+      "name": "BJC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJD",
+      "name": "BJD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJE",
+      "name": "BJE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJF",
+      "name": "BJF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJG",
+      "name": "BJG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJH",
+      "name": "BJH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJI",
+      "name": "BJI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 4,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJJ",
+      "name": "BJJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJK",
+      "name": "BJK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJL",
+      "name": "BJL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJM",
+      "name": "BJM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJN",
+      "name": "BJN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJO",
+      "name": "BJO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJP",
+      "name": "BJP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJQ",
+      "name": "BJQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJR",
+      "name": "BJR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJS",
+      "name": "BJS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJT",
+      "name": "BJT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJU",
+      "name": "BJU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJV",
+      "name": "BJV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJW",
+      "name": "BJW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJX",
+      "name": "BJX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJY",
+      "name": "BJY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BJZ",
+      "name": "BJZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BJZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKA",
+      "name": "BKA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKB",
+      "name": "BKB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKC",
+      "name": "BKC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKD",
+      "name": "BKD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKE",
+      "name": "BKE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKF",
+      "name": "BKF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKG",
+      "name": "BKG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKH",
+      "name": "BKH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKI",
+      "name": "BKI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKJ",
+      "name": "BKJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKK",
+      "name": "BKK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKL",
+      "name": "BKL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKM",
+      "name": "BKM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKN",
+      "name": "BKN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKO",
+      "name": "BKO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKP",
+      "name": "BKP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKQ",
+      "name": "BKQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKR",
+      "name": "BKR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKS",
+      "name": "BKS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKT",
+      "name": "BKT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKU",
+      "name": "BKU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKV",
+      "name": "BKV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKW",
+      "name": "BKW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 4,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKX",
+      "name": "BKX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKY",
+      "name": "BKY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BKZ",
+      "name": "BKZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BKZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLA",
+      "name": "BLA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLB",
+      "name": "BLB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLC",
+      "name": "BLC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLD",
+      "name": "BLD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLE",
+      "name": "BLE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLF",
+      "name": "BLF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLG",
+      "name": "BLG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLH",
+      "name": "BLH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLI",
+      "name": "BLI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLJ",
+      "name": "BLJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLK",
+      "name": "BLK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLL",
+      "name": "BLL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLM",
+      "name": "BLM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLN",
+      "name": "BLN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLO",
+      "name": "BLO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLP",
+      "name": "BLP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLQ",
+      "name": "BLQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLR",
+      "name": "BLR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLS",
+      "name": "BLS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLT",
+      "name": "BLT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLU",
+      "name": "BLU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLV",
+      "name": "BLV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLW",
+      "name": "BLW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLX",
+      "name": "BLX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLY",
+      "name": "BLY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BLZ",
+      "name": "BLZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BLZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMA",
+      "name": "BMA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMB",
+      "name": "BMB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMC",
+      "name": "BMC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMD",
+      "name": "BMD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BME",
+      "name": "BME",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BME.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMF",
+      "name": "BMF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 5
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMG",
+      "name": "BMG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMH",
+      "name": "BMH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMI",
+      "name": "BMI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMJ",
+      "name": "BMJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMK",
+      "name": "BMK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BML",
+      "name": "BML",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BML.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMM",
+      "name": "BMM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMN",
+      "name": "BMN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMO",
+      "name": "BMO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMP",
+      "name": "BMP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMQ",
+      "name": "BMQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMR",
+      "name": "BMR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMS",
+      "name": "BMS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMT",
+      "name": "BMT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMU",
+      "name": "BMU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMV",
+      "name": "BMV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMW",
+      "name": "BMW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMX",
+      "name": "BMX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMY",
+      "name": "BMY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BMZ",
+      "name": "BMZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BMZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNA",
+      "name": "BNA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 3,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNB",
+      "name": "BNB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNC",
+      "name": "BNC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BND",
+      "name": "BND",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BND.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNE",
+      "name": "BNE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNF",
+      "name": "BNF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 4,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNG",
+      "name": "BNG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNH",
+      "name": "BNH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 6,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNI",
+      "name": "BNI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNJ",
+      "name": "BNJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 6
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNK",
+      "name": "BNK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNL",
+      "name": "BNL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNM",
+      "name": "BNM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNN",
+      "name": "BNN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 3,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNO",
+      "name": "BNO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNP",
+      "name": "BNP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNQ",
+      "name": "BNQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNR",
+      "name": "BNR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNS",
+      "name": "BNS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNT",
+      "name": "BNT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNU",
+      "name": "BNU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 4,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNV",
+      "name": "BNV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNW",
+      "name": "BNW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNX",
+      "name": "BNX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 4,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNY",
+      "name": "BNY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BNZ",
+      "name": "BNZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 6,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BNZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOA",
+      "name": "BOA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOB",
+      "name": "BOB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOC",
+      "name": "BOC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOD",
+      "name": "BOD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOE",
+      "name": "BOE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOF",
+      "name": "BOF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOG",
+      "name": "BOG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOH",
+      "name": "BOH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOI",
+      "name": "BOI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOJ",
+      "name": "BOJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOK",
+      "name": "BOK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOL",
+      "name": "BOL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOM",
+      "name": "BOM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BON",
+      "name": "BON",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BON.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOO",
+      "name": "BOO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOP",
+      "name": "BOP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOQ",
+      "name": "BOQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOR",
+      "name": "BOR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOS",
+      "name": "BOS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOT",
+      "name": "BOT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOU",
+      "name": "BOU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOV",
+      "name": "BOV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOW",
+      "name": "BOW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOX",
+      "name": "BOX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOY",
+      "name": "BOY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BOZ",
+      "name": "BOZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BOZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPA",
+      "name": "BPA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPB",
+      "name": "BPB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 3,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPC",
+      "name": "BPC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPD",
+      "name": "BPD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPE",
+      "name": "BPE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPF",
+      "name": "BPF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPG",
+      "name": "BPG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPH",
+      "name": "BPH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPI",
+      "name": "BPI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPJ",
+      "name": "BPJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPK",
+      "name": "BPK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPL",
+      "name": "BPL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPM",
+      "name": "BPM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPN",
+      "name": "BPN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPO",
+      "name": "BPO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPP",
+      "name": "BPP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPQ",
+      "name": "BPQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPR",
+      "name": "BPR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPS",
+      "name": "BPS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPT",
+      "name": "BPT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPU",
+      "name": "BPU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPV",
+      "name": "BPV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPW",
+      "name": "BPW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPX",
+      "name": "BPX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPY",
+      "name": "BPY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BPZ",
+      "name": "BPZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BPZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQA",
+      "name": "BQA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQB",
+      "name": "BQB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQC",
+      "name": "BQC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQD",
+      "name": "BQD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQE",
+      "name": "BQE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQF",
+      "name": "BQF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQG",
+      "name": "BQG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 5
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQH",
+      "name": "BQH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQI",
+      "name": "BQI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQJ",
+      "name": "BQJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQK",
+      "name": "BQK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQL",
+      "name": "BQL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQM",
+      "name": "BQM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQN",
+      "name": "BQN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQO",
+      "name": "BQO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQP",
+      "name": "BQP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQQ",
+      "name": "BQQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQR",
+      "name": "BQR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 5
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQS",
+      "name": "BQS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQT",
+      "name": "BQT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQU",
+      "name": "BQU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQV",
+      "name": "BQV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQW",
+      "name": "BQW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQX",
+      "name": "BQX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQY",
+      "name": "BQY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BQZ",
+      "name": "BQZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BQZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRA",
+      "name": "BRA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRB",
+      "name": "BRB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRC",
+      "name": "BRC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRD",
+      "name": "BRD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRE",
+      "name": "BRE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRF",
+      "name": "BRF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRG",
+      "name": "BRG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRH",
+      "name": "BRH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRI",
+      "name": "BRI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRJ",
+      "name": "BRJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRK",
+      "name": "BRK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRL",
+      "name": "BRL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRM",
+      "name": "BRM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRN",
+      "name": "BRN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRO",
+      "name": "BRO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRP",
+      "name": "BRP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRQ",
+      "name": "BRQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRR",
+      "name": "BRR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRS",
+      "name": "BRS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRT",
+      "name": "BRT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRU",
+      "name": "BRU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRV",
+      "name": "BRV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRW",
+      "name": "BRW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRX",
+      "name": "BRX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRY",
+      "name": "BRY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BRZ",
+      "name": "BRZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BRZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSA",
+      "name": "BSA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSB",
+      "name": "BSB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSC",
+      "name": "BSC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSD",
+      "name": "BSD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 6
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSE",
+      "name": "BSE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSF",
+      "name": "BSF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSG",
+      "name": "BSG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSH",
+      "name": "BSH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSI",
+      "name": "BSI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSJ",
+      "name": "BSJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSK",
+      "name": "BSK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSL",
+      "name": "BSL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSM",
+      "name": "BSM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSN",
+      "name": "BSN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSO",
+      "name": "BSO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSP",
+      "name": "BSP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSQ",
+      "name": "BSQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSR",
+      "name": "BSR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSS",
+      "name": "BSS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 3,
+        "SH": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BST",
+      "name": "BST",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BST.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-BSU",
+      "name": "BSU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QC": 1,
+        "QS": 3,
+        "RC": 1,
+        "SH": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-BSU.json",
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 1
