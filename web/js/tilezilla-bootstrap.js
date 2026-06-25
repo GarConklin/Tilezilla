@@ -7,9 +7,12 @@ import {
   centerBoardInFrame,
 } from './board-frame.js';
 import { loadGameplaySettings, initSettingsUi, applyPhonePreviewMode } from './tilezilla-settings.js';
+import { initTilesetPicker } from './tilezilla-tileset-picker.js';
+import { formatTilesetDisplayName } from './tileset-preferences.js';
 import { initMenuUi } from './tilezilla-menu.js';
 import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
 import { initRandomPuzzlePopup, openRandomPuzzlePopup } from './tilezilla-random-popup.js';
+import { initBuyHintsPopup, wireBuyHintsTriggers } from './tilezilla-buy-hints-popup.js';
 import { initChallengeBeginPopup, gateAdventureChallengeBegin } from './tilezilla-challenge-begin-popup.js';
 import {
   applyRandomPopupLayout,
@@ -20,7 +23,8 @@ import {
   applyChallengeBeginLayout,
   loadChallengeBeginLayout,
 } from './challenge-begin-layout.js';
-import { initPuzzleInfoPopup } from './tilezilla-puzzle-info.js';
+import { initPuzzleInfoPopup, openPuzzleInfo } from './tilezilla-puzzle-info.js';
+import { initProfileOverlay, openProfileOverlay } from './tilezilla-profile-overlay.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
 import * as guestUser from './tilezilla-guest.js';
@@ -39,6 +43,7 @@ import {
   clearMenuLayoutCache,
   loadMenuLayout,
 } from './menu-layout.js';
+import { initMenuSystemInfo } from './system-info.js';
 import {
   applyBottomNavLayout,
   clearBottomNavLayoutCache,
@@ -52,6 +57,29 @@ import {
   reloadPreviewLayout,
 } from './preview-layout.js';
 import {
+  applyMainScreenV2Layout,
+  loadMainScreenV2Layout,
+  reloadMainScreenV2Layout,
+} from './main-screen-v2-layout.js';
+import {
+  applyPreviewV2Layout,
+  loadPreviewV2Layout,
+  reloadPreviewV2Layout,
+} from './preview-v2-layout.js';
+import {
+  applyHintV2Layout,
+  applyHintV2ArtImages,
+  loadHintV2Layout,
+  reloadHintV2Layout,
+} from './hint-v2-layout.js';
+import {
+  PREVIEW_V2_DATA_SECTIONS,
+  applyAllPreviewV2DataSublayouts,
+  applyPreviewV2DataSublayout,
+  clearPreviewV2DataSublayoutCache,
+  loadPreviewV2DataSublayout,
+} from './preview-v2-data-sublayout.js';
+import {
   applyPuzzleInfoLayout,
   clearPuzzleInfoLayoutCache,
   loadPuzzleInfoLayout,
@@ -62,6 +90,7 @@ import {
   clearHintRulesLayoutCache,
   loadHintRulesLayout,
   reloadHintRulesLayout,
+  syncHintRulesWindowGeometry,
 } from './hint-rules-layout.js';
 import {
   applyJournalLayoutEverywhere,
@@ -76,6 +105,11 @@ import {
   loadTilebagLayout,
   reloadTilebagLayout,
 } from './tilebag-layout.js';
+import {
+  applyTilebagV2Layout,
+  loadTilebagV2Layout,
+  reloadTilebagV2Layout,
+} from './tilebag-v2-layout.js';
 import { initJournalUi } from './tilezilla-journal.js';
 import { resetDevPlayerProgress } from './dev-player-reset.js';
 import { setDiscoveryRecordTexts, setDiscoveryRecordLayout } from './tilezilla-discovery-record.js';
@@ -103,6 +137,8 @@ import {
 import { applyUiScale, wireUiScaleListeners, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
 
 const $ = (id) => document.getElementById(id);
+
+const MAIN_V2_SHELL = Boolean(document.querySelector('.tz-main-v2-app'));
 
 /** Fixed cell size; largest board 5×6 → 275×330. Frame size is in tilezilla-shell.css. */
 const TZ_CELL_PX = 55;
@@ -334,6 +370,23 @@ function applyBoardFrameLayout(app) {
   const { w, h } = boardRenderSize(cols, rows);
   document.documentElement.style.setProperty('--tz-grid-w', `${w}px`);
   document.documentElement.style.setProperty('--tz-grid-h', `${h}px`);
+  if (MAIN_V2_SHELL) {
+    requestAnimationFrame(() => updateMainV2BoardFit());
+  }
+}
+
+function updateMainV2BoardFit() {
+  if (!MAIN_V2_SHELL) return;
+  const section = document.querySelector('.tz-main-v2-app .tz-board-section');
+  const frame = section?.querySelector('.tz-board-frame');
+  if (!section || !frame) return;
+  const slotW = section.clientWidth;
+  const slotH = section.clientHeight;
+  const frameW = frame.offsetWidth;
+  const frameH = frame.offsetHeight;
+  if (!slotW || !slotH || !frameW || !frameH) return;
+  const scale = Math.min(slotW / frameW, slotH / frameH);
+  document.documentElement.style.setProperty('--tz-msv2-board-fit-scale', String(scale));
 }
 
 function ensureBoardCellMetrics(app) {
@@ -429,6 +482,36 @@ function updateChallengePanel(level, meta) {
     const n = meta?.totalSolutions || level?.totalUniqueSolutions;
     countEl.textContent = Number.isFinite(n) && n > 0 ? String(n) : '?';
   }
+
+  if (MAIN_V2_SHELL) {
+    const typeV2 = $('previewV2GameType');
+    const dateV2 = $('previewV2GameDate');
+    const idV2 = $('previewV2PuzzleId');
+    const solutionV2 = $('previewV2SolutionCount');
+    if (typeV2 && eyebrow) typeV2.textContent = eyebrow.textContent;
+    if (dateV2) {
+      if (screen === 'adventure' || screen === 'random') {
+        dateV2.removeAttribute('datetime');
+        dateV2.textContent = '';
+        dateV2.hidden = true;
+      } else {
+        dateV2.hidden = false;
+        dateV2.dateTime = meta?.date || '';
+        dateV2.textContent = meta?.date ? formatDateLabel(meta.date) : '—';
+      }
+    }
+    if (idV2) idV2.textContent = level?.id || meta?.levelId || '—';
+    if (solutionV2) {
+      const n = meta?.totalSolutions || level?.totalUniqueSolutions;
+      solutionV2.textContent = Number.isFinite(n) && n > 0 ? String(n) : '?';
+    }
+    const infoBar = $('infoBarText');
+    if (infoBar) {
+      const n = meta?.totalSolutions || level?.totalUniqueSolutions;
+      const label = Number.isFinite(n) && n > 0 ? String(n) : '?';
+      infoBar.textContent = label === '?' ? '— solutions' : `${label} Possible Solutions`;
+    }
+  }
 }
 
 function updatePreviewDir() {
@@ -483,9 +566,17 @@ async function updateRankPanel(app) {
     try {
       const layout = await loadSublevelIconLayout();
       applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, layout);
+      if (MAIN_V2_SHELL) {
+        const v2Sub = $('previewV2SubLevelIcon');
+        if (v2Sub) applySublevelIconElement(v2Sub, rankState.subLevel, rank.sublevel_badge, layout);
+      }
     } catch (err) {
       console.warn('Sublevel icon layout:', err);
       applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, null);
+      if (MAIN_V2_SHELL) {
+        const v2Sub = $('previewV2SubLevelIcon');
+        if (v2Sub) applySublevelIconElement(v2Sub, rankState.subLevel, rank.sublevel_badge, null);
+      }
     }
     subIcon.alt = `Sublevel ${roman}`;
   }
@@ -499,6 +590,33 @@ async function updateRankPanel(app) {
     progressTrack.setAttribute('aria-valuenow', String(pct));
     progressTrack.setAttribute('aria-label', `Sublevel progress ${pct}%`);
   }
+
+  if (MAIN_V2_SHELL) {
+    const v2Badge = $('previewV2RankBadge');
+    const v2Pct = $('previewV2ProgressPct');
+    const v2Fill = $('previewV2RankProgressFill');
+    const v2Track = document.querySelector('.tz-preview-v2-progress__track');
+    const v2Sub = $('previewV2SubLevelIcon');
+    const v2SubWrap = $('previewV2SubLevel');
+    if (v2Badge && badge) {
+      v2Badge.src = badge.src;
+      v2Badge.alt = badge.alt;
+    }
+    if (v2Sub && subIcon) {
+      v2Sub.src = subIcon.src;
+      v2Sub.alt = subIcon.alt;
+      v2Sub.style.cssText = subIcon.style.cssText;
+    }
+    if (v2SubWrap && subLevelEl) {
+      v2SubWrap.setAttribute('aria-label', subLevelEl.getAttribute('aria-label') || `Sublevel ${roman}`);
+    }
+    if (v2Fill) v2Fill.style.width = `${pct}%`;
+    if (v2Pct) v2Pct.textContent = `${pct}%`;
+    if (v2Track) {
+      v2Track.setAttribute('aria-valuenow', String(pct));
+      v2Track.setAttribute('aria-label', `Sublevel progress ${pct}%`);
+    }
+  }
 }
 
 function formatHintTokenLabel(app) {
@@ -510,8 +628,13 @@ function formatHintTokenLabel(app) {
 let selectedHintType = null;
 
 function updateGlobalHintCount(app) {
+  const count = String(app.getGlobalHintTokens?.() ?? 0);
   const el = $('hintCount');
-  if (el) el.textContent = String(app.getGlobalHintTokens?.() ?? 0);
+  if (el) el.textContent = count;
+  const v2Use = $('previewV2HintCountUse');
+  const v2Count = $('previewV2HintCountCount');
+  if (v2Use) v2Use.textContent = count;
+  if (v2Count) v2Count.textContent = count;
 }
 
 function updateHintMenuAvailable(app) {
@@ -635,9 +758,73 @@ function shouldShowHintButton(app) {
   return false;
 }
 
+function setHintV2Shown(el, show) {
+  if (!el) return;
+  if (show) el.removeAttribute('hidden');
+  else el.setAttribute('hidden', '');
+}
+
 function updateHintButtonState(app) {
   const btn = $('hintBtn');
   if (!btn) return;
+
+  if (guestUser.isGuestUser()) {
+    btn.hidden = true;
+    if (MAIN_V2_SHELL) {
+      setHintV2Shown($('hintBtn'), false);
+      setHintV2Shown($('hintPlaqueUse'), false);
+      setHintV2Shown($('hintPlaqueCount'), false);
+      setHintV2Shown($('previewV2HintCountUse'), false);
+      setHintV2Shown($('previewV2HintCountCount'), false);
+      setHintV2Shown($('hintTokenAddBtnUse'), false);
+      setHintV2Shown($('hintTokenAddBtnCount'), false);
+    }
+    return;
+  }
+
+  if (MAIN_V2_SHELL) {
+    const useBtn = $('hintBtn');
+    const usePlaque = $('hintPlaqueUse');
+    const countPlaque = $('hintPlaqueCount');
+    const tokenCountUse = $('previewV2HintCountUse');
+    const addUse = $('hintTokenAddBtnUse');
+    const countCount = $('previewV2HintCountCount');
+    const addCount = $('hintTokenAddBtnCount');
+
+    // Empty board → use plaque + tokens + add + use-hint btn.
+    // Any tile placed → count plaque + tokens + add.
+    const emptyBoard = !(app?.state?.tiles || []).length;
+    const remaining = app.hintsRemainingThisPuzzle?.() ?? 0;
+    const exhausted = remaining <= 0;
+
+    if (emptyBoard) {
+      setHintV2Shown(usePlaque, true);
+      setHintV2Shown(useBtn, true);
+      setHintV2Shown(tokenCountUse, true);
+      setHintV2Shown(addUse, true);
+      setHintV2Shown(countPlaque, false);
+      setHintV2Shown(countCount, false);
+      setHintV2Shown(addCount, false);
+
+      useBtn?.setAttribute('aria-disabled', exhausted ? 'true' : 'false');
+      useBtn.title = exhausted
+        ? 'No hints remaining for this puzzle.'
+        : HINT_BOARD_TOOLTIP;
+      useBtn?.setAttribute(
+        'aria-label',
+        exhausted ? 'Use hint — no hints remaining for this puzzle' : 'Use hint',
+      );
+    } else {
+      setHintV2Shown(usePlaque, false);
+      setHintV2Shown(useBtn, false);
+      setHintV2Shown(tokenCountUse, false);
+      setHintV2Shown(addUse, false);
+      setHintV2Shown(countPlaque, true);
+      setHintV2Shown(countCount, true);
+      setHintV2Shown(addCount, true);
+    }
+    return;
+  }
 
   if (!shouldShowHintButton(app)) {
     btn.hidden = true;
@@ -701,6 +888,7 @@ function syncBoardChrome(app) {
   updateTileBagCount(app);
   updateValidationState(app);
   updatePreviewDir();
+  if (MAIN_V2_SHELL) updateMainV2BoardFit();
   requestAnimationFrame(() => {
     $('tileBagTrack')?.dispatchEvent(new Event('scroll'));
   });
@@ -890,6 +1078,7 @@ function setTileBagExpanded(container, expanded, syncBagScroll) {
 
   tileBagExpanded = expanded;
   applyTileBagExpandedLayout(container, expanded);
+  if (expanded && MAIN_V2_SHELL) closeBottomMenuV2();
   handle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
   if (label) label.textContent = expanded ? 'Collapse tile bag' : 'Expand tile bag';
   syncBagScroll?.();
@@ -1076,7 +1265,7 @@ async function loadRandomVenturePuzzle(app) {
   }
 }
 
-function applyGuestChrome() {
+function applyGuestChrome(app) {
   const guest = guestUser.isGuestUser();
   document.body.classList.toggle('tz-guest-mode', guest);
   document.body.classList.toggle('tz-registered-mode', guestUser.isRegisteredUser());
@@ -1084,8 +1273,23 @@ function applyGuestChrome() {
   const hints = document.querySelector('.tz-hints');
   if (hints) hints.hidden = guest;
 
-  const hintBtn = document.getElementById('hintBtn');
-  if (hintBtn) hintBtn.hidden = guest;
+  if (MAIN_V2_SHELL) {
+    if (guest) {
+      for (const id of [
+        'hintBtn', 'hintPlaqueUse', 'hintPlaqueCount',
+        'previewV2HintCountUse', 'previewV2HintCountCount',
+        'hintTokenAddBtnUse', 'hintTokenAddBtnCount',
+      ]) {
+        const el = document.getElementById(id);
+        if (el) el.hidden = true;
+      }
+    } else if (app) {
+      updateHintButtonState(app);
+    }
+  } else {
+    const hintBtn = document.getElementById('hintBtn');
+    if (hintBtn) hintBtn.hidden = guest;
+  }
 
   const loginHit = document.querySelector('.tz-bottom-nav__hit--login');
   if (loginHit) loginHit.hidden = !guest;
@@ -1108,6 +1312,70 @@ function applyGuestChrome() {
   guestUser.syncGuestBanner();
 }
 
+function closeBottomMenuV2() {
+  const drawer = $('bottomMenuDrawer');
+  const open = $('bottomMenuOpenBtn');
+  const close = $('bottomMenuCloseBtn');
+  if (!drawer || !open) return;
+  drawer.hidden = true;
+  open.hidden = false;
+  if (close) close.hidden = true;
+  open.setAttribute('aria-expanded', 'false');
+  document.querySelector('.tz-app')?.classList.remove('is-bottom-menu-open');
+}
+
+function openBottomMenuV2() {
+  if (tileBagExpanded) return;
+  const drawer = $('bottomMenuDrawer');
+  const open = $('bottomMenuOpenBtn');
+  const close = $('bottomMenuCloseBtn');
+  if (!drawer || !open) return;
+  drawer.hidden = false;
+  open.hidden = true;
+  if (close) close.hidden = false;
+  open.setAttribute('aria-expanded', 'true');
+  document.querySelector('.tz-app')?.classList.add('is-bottom-menu-open');
+}
+
+function wireBottomMenuV2() {
+  if (!MAIN_V2_SHELL) return;
+  $('bottomMenuOpenBtn')?.addEventListener('click', openBottomMenuV2);
+  $('bottomMenuCloseBtn')?.addEventListener('click', closeBottomMenuV2);
+}
+
+function wirePreviewV2DataClicks() {
+  if (!MAIN_V2_SHELL) return;
+
+  const userData = document.querySelector('.tz-preview-v2-user-data');
+  const gameData = document.querySelector('.tz-preview-v2-game-data');
+
+  const activate = (el, handler) => {
+    if (!el || el.dataset.previewV2ClickWired === '1') return;
+    el.dataset.previewV2ClickWired = '1';
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      handler();
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      handler();
+    });
+  };
+
+  activate(userData, () => {
+    closeBottomMenuV2();
+    void openProfileOverlay();
+  });
+
+  activate(gameData, () => {
+    closeBottomMenuV2();
+    void openPuzzleInfo();
+  });
+}
+
 function wireBottomNav(getApp) {
   const appRoot = document.querySelector('.tz-app');
   document.querySelectorAll('.tz-bottom-nav__hit').forEach((item) => {
@@ -1118,6 +1386,20 @@ function wireBottomNav(getApp) {
       if (screen === 'login') {
         guestUser.trackGuestEvent('Login Clicked', { source: 'bottom_nav' });
         window.location.href = '/login-screen.html';
+        return;
+      }
+
+      if (screen === 'profile') {
+        if (MAIN_V2_SHELL) {
+          closeBottomMenuV2();
+          void openProfileOverlay();
+          return;
+        }
+        if (guestUser.isRegisteredUser()) {
+          window.location.href = '/profile-screen.html';
+          return;
+        }
+        guestUser.showLoginRequired();
         return;
       }
 
@@ -1132,11 +1414,7 @@ function wireBottomNav(getApp) {
           return;
         }
         openRandomPuzzlePopup();
-        return;
-      }
-
-      if (screen === 'profile' && guestUser.isRegisteredUser()) {
-        window.location.href = '/profile-screen.html';
+        if (MAIN_V2_SHELL) closeBottomMenuV2();
         return;
       }
 
@@ -1146,6 +1424,7 @@ function wireBottomNav(getApp) {
       });
       appRoot?.setAttribute('data-screen', screen);
       guestUser.syncGuestBanner();
+      if (MAIN_V2_SHELL) closeBottomMenuV2();
 
       if (!app) return;
 
@@ -1252,8 +1531,13 @@ let puzzleTimerStopped = false;
 let puzzleTimerElapsedSec = 0;
 
 function updatePuzzleTimerDisplay(sec = 0) {
+  const text = formatPuzzleTimer(sec);
   const el = $('timerCurrent');
-  if (el) el.textContent = formatPuzzleTimer(sec);
+  if (el) el.textContent = text;
+  if (MAIN_V2_SHELL) {
+    const v2 = $('previewV2TimerCurrent');
+    if (v2) v2.textContent = text;
+  }
 }
 
 function getPuzzleElapsedSeconds() {
@@ -1308,15 +1592,25 @@ function updatePuzzleTimerBest(elapsedSec, levelId, userId = 'gar') {
     return false;
   }
   const el = $('timerBest');
-  if (el) el.textContent = formatPuzzleTimer(elapsedSec);
+  const text = formatPuzzleTimer(elapsedSec);
+  if (el) el.textContent = text;
+  if (MAIN_V2_SHELL) {
+    const v2 = $('previewV2TimerBest');
+    if (v2) v2.textContent = text;
+  }
   return true;
 }
 
 function displayPuzzleTimerBest(levelId, userId = 'gar') {
   const el = $('timerBest');
-  if (!el) return;
+  if (!el && !MAIN_V2_SHELL) return;
   const best = loadPuzzleTimerBest(levelId, userId);
-  el.textContent = best != null ? formatPuzzleTimer(best) : '—';
+  const text = best != null ? formatPuzzleTimer(best) : '—';
+  if (el) el.textContent = text;
+  if (MAIN_V2_SHELL) {
+    const v2 = $('previewV2TimerBest');
+    if (v2) v2.textContent = text;
+  }
 }
 
 function resetPuzzleTimer() {
@@ -1509,20 +1803,51 @@ async function loadDailyPuzzle(app) {
 }
 
 async function applyShellLayouts() {
-  try {
-    applyBottomNavLayout(await loadBottomNavLayout());
-  } catch (err) {
-    console.warn('Bottom nav layout:', err);
-  }
-  try {
-    applyPreviewLayout(await loadPreviewLayout());
-  } catch (err) {
-    console.warn('Preview layout:', err);
-  }
-  try {
-    applyTilebagLayout(await loadTilebagLayout());
-  } catch (err) {
-    console.warn('Tile bag layout:', err);
+  if (MAIN_V2_SHELL) {
+    try {
+      applyMainScreenV2Layout(await loadMainScreenV2Layout());
+    } catch (err) {
+      console.warn('Main screen v2 layout:', err);
+    }
+    try {
+      const previewLayout = await loadPreviewV2Layout();
+      applyPreviewV2Layout(previewLayout);
+      applyHintV2Layout(await loadHintV2Layout());
+      applyHintV2ArtImages(document);
+      await applyAllPreviewV2DataSublayouts();
+    } catch (err) {
+      console.warn('Preview v2 / hint layout:', err);
+    }
+    try {
+      applyTilebagV2Layout(await loadTilebagV2Layout());
+    } catch (err) {
+      console.warn('Tile bag v2 layout:', err);
+    }
+    try {
+      applyBottomNavLayout(await loadBottomNavLayout());
+    } catch (err) {
+      console.warn('Bottom nav layout:', err);
+    }
+    requestAnimationFrame(() => {
+      updateMainV2BoardFit();
+      syncHintRulesWindowGeometry();
+    });
+  } else {
+    try {
+      applyBottomNavLayout(await loadBottomNavLayout());
+    } catch (err) {
+      console.warn('Bottom nav layout:', err);
+    }
+    try {
+      applyPreviewLayout(await loadPreviewLayout());
+    } catch (err) {
+      console.warn('Preview layout:', err);
+    }
+    try {
+      applyTilebagLayout(await loadTilebagLayout());
+    } catch (err) {
+      console.warn('Tile bag layout:', err);
+    }
   }
   try {
     applyRandomPopupLayout(await loadRandomPopupLayout());
@@ -1556,6 +1881,7 @@ async function init() {
   appRef = app;
   app.onBoardStateChanged = () => syncBoardChrome(app);
   wireBottomNav(() => appRef);
+  wireBottomMenuV2();
   updateGlobalHintCount(app);
   wirePuzzleTimer(app);
   await updateRankPanel(app);
@@ -1585,7 +1911,27 @@ async function init() {
   window.__journalApi = journalApi;
 
   initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
+  initProfileOverlay({
+    menuApi,
+    onDaily: async () => {
+      const app = appRef;
+      const appRoot = document.querySelector('.tz-app');
+      appRoot?.setAttribute('data-screen', 'daily-challenge');
+      guestUser.syncGuestBanner();
+      if (app) await loadDailyPuzzle(app);
+    },
+    onAdventure: async () => {
+      const app = appRef;
+      const appRoot = document.querySelector('.tz-app');
+      appRoot?.setAttribute('data-screen', 'adventure');
+      guestUser.syncGuestBanner();
+      if (app) await loadAdventurePuzzle(app);
+    },
+    onRandom: () => openRandomPuzzlePopup(),
+  });
   initHintRules({ menuApi });
+  initBuyHintsPopup({ menuApi });
+  wireBuyHintsTriggers();
   initDiscoveryRecord({
     getApp: () => appRef,
     onContinueSearch: () => continueDiscoverySearch(appRef),
@@ -1624,6 +1970,7 @@ async function init() {
       }
     },
   });
+  let tilesetPickerApi = null;
   const settingsApi = initSettingsUi({
     menuApi,
     onChange: (next) => {
@@ -1632,6 +1979,17 @@ async function init() {
       app.applyGameplaySettings(next);
       app.renderTiles();
       updateTileBagCount(app);
+    },
+    getTilesetLabel: () => formatTilesetDisplayName(appRef?.state?.activeTileset),
+    onOpenTileset: () => tilesetPickerApi?.openTilesetPicker?.(),
+  });
+  tilesetPickerApi = initTilesetPicker({
+    getApp: () => appRef,
+    menuApi,
+    settingsApi,
+    onEquipped: () => {
+      updateTileBagCount(appRef);
+      syncBoardChrome(appRef);
     },
   });
   if (menuApi && settingsApi?.openSettings) {
@@ -1669,6 +2027,12 @@ async function init() {
   }
 
   try {
+    await initMenuSystemInfo();
+  } catch (err) {
+    console.warn('System info:', err);
+  }
+
+  try {
     applyPuzzleInfoLayout(await loadPuzzleInfoLayout());
   } catch (err) {
     console.warn('Puzzle info layout:', err);
@@ -1698,6 +2062,7 @@ async function init() {
   });
 
   wireActions(app);
+  wirePreviewV2DataClicks();
   wireHintMenu(app);
   wireCheckMessageMirror();
   wirePreviewSync();
@@ -1720,7 +2085,7 @@ async function init() {
     hit?.click();
   }
 
-  applyGuestChrome();
+  applyGuestChrome(appRef);
 }
 
 async function refreshBottomNavLayoutFromDisk() {
@@ -1773,9 +2138,41 @@ window.addEventListener('storage', (e) => {
 
 async function refreshPreviewLayoutFromDisk() {
   try {
-    applyPreviewLayout(await reloadPreviewLayout());
+    if (MAIN_V2_SHELL) {
+      const previewLayout = await reloadPreviewV2Layout();
+      applyPreviewV2Layout(previewLayout);
+      applyHintV2Layout(await loadHintV2Layout());
+      applyHintV2ArtImages(document);
+      await applyAllPreviewV2DataSublayouts();
+    } else {
+      applyPreviewLayout(await reloadPreviewLayout());
+    }
   } catch (err) {
     console.warn('Preview layout reload:', err);
+  }
+}
+
+async function refreshHintV2LayoutFromDisk() {
+  if (!MAIN_V2_SHELL) return;
+  try {
+    applyPreviewV2Layout(await reloadPreviewV2Layout());
+    applyHintV2Layout(await reloadHintV2Layout());
+    applyHintV2ArtImages(document);
+    const app = window.__tilezillaApp;
+    if (app) updateHintButtonState(app);
+  } catch (err) {
+    console.warn('Hint v2 layout reload:', err);
+  }
+}
+
+async function refreshPreviewV2DataSublayoutFromDisk(sectionKey) {
+  if (!MAIN_V2_SHELL) return;
+  try {
+    clearPreviewV2DataSublayoutCache(sectionKey);
+    const layout = await loadPreviewV2DataSublayout(sectionKey, { force: true });
+    applyPreviewV2DataSublayout(sectionKey, layout);
+  } catch (err) {
+    console.warn(`Preview data sublayout reload (${sectionKey}):`, err);
   }
 }
 
@@ -1795,6 +2192,70 @@ window.addEventListener('storage', (e) => {
 
 window.addEventListener('focus', () => {
   void refreshPreviewLayoutFromDisk();
+  void refreshHintV2LayoutFromDisk();
+});
+
+async function refreshMainScreenV2LayoutFromDisk() {
+  if (!MAIN_V2_SHELL) return;
+  try {
+    applyMainScreenV2Layout(await reloadMainScreenV2Layout());
+    requestAnimationFrame(() => syncHintRulesWindowGeometry());
+  } catch (err) {
+    console.warn('Main screen v2 layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:main-screen-v2-layout-saved', () => {
+  void refreshMainScreenV2LayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (
+    e.key === 'tilezilla:layouts:main-screen-v2'
+    || e.key === 'tilezilla:layouts:main-screen-v2:pending'
+  ) {
+    void refreshMainScreenV2LayoutFromDisk();
+  }
+});
+
+window.addEventListener('tilezilla:preview-v2-layout-saved', () => {
+  void refreshPreviewLayoutFromDisk();
+});
+
+window.addEventListener('tilezilla:hint-v2-layout-saved', () => {
+  void refreshHintV2LayoutFromDisk();
+});
+
+for (const sectionKey of ['userData', 'gameData', 'infoData', 'timerData']) {
+  window.addEventListener(`tilezilla:${sectionKey}-v2-layout-saved`, () => {
+    void refreshPreviewV2DataSublayoutFromDisk(sectionKey);
+  });
+}
+
+window.addEventListener('storage', (e) => {
+  if (
+    e.key === 'tilezilla:layouts:preview-v2'
+    || e.key === 'tilezilla:layouts:preview-v2:pending'
+  ) {
+    void refreshPreviewLayoutFromDisk();
+  }
+  if (
+    e.key === 'tilezilla:layouts:hint-v2'
+    || e.key === 'tilezilla:layouts:hint-v2:pending'
+    || e.key === 'tilezilla:hint-v2-layout-version'
+  ) {
+    void refreshHintV2LayoutFromDisk();
+  }
+  for (const sectionKey of ['userData', 'gameData', 'infoData', 'timerData']) {
+    const def = PREVIEW_V2_DATA_SECTIONS[sectionKey];
+    if (
+      e.key === def.lsKey
+      || e.key === def.lsPendingKey
+      || e.key === `tilezilla:${sectionKey}-v2-layout-version`
+    ) {
+      void refreshPreviewV2DataSublayoutFromDisk(sectionKey);
+    }
+  }
 });
 
 async function refreshMenuLayoutFromDisk() {
@@ -1926,9 +2387,13 @@ window.addEventListener('tilezilla:journal-layout-saved', () => {
 });
 
 async function refreshTilebagLayoutFromDisk() {
-  clearTilebagLayoutCache();
   try {
-    applyTilebagLayout(await reloadTilebagLayout());
+    if (MAIN_V2_SHELL) {
+      applyTilebagV2Layout(await reloadTilebagV2Layout());
+    } else {
+      clearTilebagLayoutCache();
+      applyTilebagLayout(await reloadTilebagLayout());
+    }
     const container = $('tileBagContainer');
     if (container && tileBagExpanded) {
       applyTileBagExpandedLayout(container, true);
@@ -1939,14 +2404,21 @@ async function refreshTilebagLayoutFromDisk() {
 }
 
 window.addEventListener('tilezilla:tilebag-layout-saved', () => {
-  void refreshTilebagLayoutFromDisk();
+  if (!MAIN_V2_SHELL) void refreshTilebagLayoutFromDisk();
+});
+
+window.addEventListener('tilezilla:tilebag-v2-layout-saved', () => {
+  if (MAIN_V2_SHELL) void refreshTilebagLayoutFromDisk();
 });
 
 window.addEventListener('storage', (e) => {
   if (e.key === 'tilezilla:journal-layout-version') {
     void refreshJournalLayoutFromDisk();
   }
-  if (e.key === 'tilezilla:tilebag-layout-version') {
+  if (e.key === 'tilezilla:tilebag-layout-version' && !MAIN_V2_SHELL) {
+    void refreshTilebagLayoutFromDisk();
+  }
+  if (e.key === 'tilezilla:tilebag-v2-layout-version' && MAIN_V2_SHELL) {
     void refreshTilebagLayoutFromDisk();
   }
 });

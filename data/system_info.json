@@ -1,0 +1,9 @@
+{
+  "schema": "system-info-v1",
+  "version": "1.0.0",
+  "lastUpdated": "2026-06-16",
+  "creator": "Gar Conklin",
+  "creationDate": "March 28, 2026",
+  "productName": "Tilezilla",
+  "environment": "development"
+}

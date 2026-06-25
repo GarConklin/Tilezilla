@@ -2,6 +2,7 @@
 <html lang="en" class="hint-rules-tuner-page tz-phone-preview">
 <head>
   <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tilezilla — Hint Rules tuner</title>
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
@@ -257,6 +258,7 @@
         'Scroll — nudge Y px · Shift+scroll — nudge X px',
         'Ctrl+scroll — scale · Alt+scroll — top vh',
         'Alt+Shift+scroll — height vh · Ctrl+Alt+scroll — max width px',
+        'Ctrl+Shift+scroll — width scale (0.95 = 5% narrower than max)',
       ],
       scroller: [
         'Scroll — top % · Shift+scroll — right % · Ctrl+scroll — height %',
@@ -349,9 +351,11 @@
       const item = getHintRulesSectionLayout(key, workingLayout);
       const meta = HINT_RULES_ITEM_DEFS[key];
       if (key === 'window') {
+        const effectiveW = Math.round((item.maxDesignWidth ?? 390) * (item.widthScale ?? 0.95));
         return `<strong>${meta.label}</strong><br />`
-          + `top ${item.topVh}vh · height ${item.heightVh}vh · max ${item.maxDesignWidth}px<br />`
-          + `nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px · scale ${item.scale}`;
+          + `top ${item.topVh}vh · height ${item.heightVh}vh · max ${item.maxDesignWidth}px × scale ${item.widthScale ?? 0.95} (= ${effectiveW}px)<br />`
+          + `nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px · scale ${item.scale}<br />`
+          + `anchorMainScreenV2 ${item.anchorMainScreenV2 !== false}`;
       }
       if (key === 'scroller') {
         return `<strong>${meta.label}</strong><br />`
@@ -379,7 +383,15 @@
       const dir = e.deltaY < 0 ? 1 : -1;
       const item = getHintRulesSectionLayout(currentItem, workingLayout);
 
+    const SCALE_WIDTH_STEP = 0.01;
+
       if (currentItem === 'window') {
+        if (e.ctrlKey && e.shiftKey) {
+          patchSection('window', {
+            widthScale: Math.round(Math.max(0.5, (item.widthScale ?? 0.95) + dir * SCALE_WIDTH_STEP) * 100) / 100,
+          });
+          return;
+        }
         if (e.ctrlKey && e.altKey) {
           patchSection('window', {
             maxDesignWidth: Math.max(280, (item.maxDesignWidth ?? 390) + dir * WIDTH_STEP),

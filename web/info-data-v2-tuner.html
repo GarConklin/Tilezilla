@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" class="preview-data-v2-zone-tuner-page tz-main-v2-app">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Info_data v2 tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <link rel="stylesheet" href="css/preview-data-v2-zone-tuner-page.css" />
+</head>
+<body>
+  <h1>Info_data v2 tuner</h1>
+  <p class="lead">
+    Size, move, and align the <strong>three solution lines</strong> (count, Possible, Solutions) inside the Info_data box on the preview plaque.
+    Saves to <code>data/info_data_v2_layout.json</code>.
+    Zone position: <a href="/preview-v2-tuner.html">preview-v2-tuner</a> ·
+    <a href="/tilezilla-v2.html">tilezilla-v2</a>
+  </p>
+  <nav class="tuner-nav" aria-label="Preview data tuners">
+    <a href="/game-data-v2-tuner.html">Game_Data</a>
+    <a class="is-active" href="/info-data-v2-tuner.html">Info_data</a>
+    <a href="/timer-data-v2-tuner.html">Timer_data</a>
+    <a href="/preview-data-v2-tuner.html">All data zones</a>
+  </nav>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Fields</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span>
+        <button type="button" class="btn" data-nudge="up">↑</button>
+        <span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn" data-nudge="wider">Wider</button>
+        <button type="button" class="btn" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn" data-nudge="taller">Taller</button>
+        <button type="button" class="btn" data-nudge="shorter">Shorter</button>
+      </div>
+      <div class="font-nudge-row" id="fontNudgeRow">
+        <button type="button" class="btn" data-nudge="fontDown">Smaller text</button>
+        <button type="button" class="btn" data-nudge="fontUp">Larger text</button>
+      </div>
+      <div class="align-row" id="alignRow">
+        <button type="button" class="btn" data-action="cycleJustify">Cycle H align</button>
+        <button type="button" class="btn" data-action="cycleAlign">Cycle V align</button>
+      </div>
+      <ul class="keys">
+        <li>Scroll — move X · Shift+scroll — move Y</li>
+        <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+        <li>Ctrl+Shift+scroll — fontScale</li>
+        <li>Arrow keys — nudge position</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="clearDraftBtn">Clear browser draft</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false"></textarea>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview plaque — Info_data (same scale as live)</h2>
+      <p class="zone-readout" id="zoneReadout">—</p>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="tz-stage" id="tunerStage">
+          <div class="tz-preview-frame" id="mockFrame">
+            <div class="tz-preview-v2-data tz-preview-v2-user-data" aria-hidden="true">
+              <div class="tz-preview-v2-user-data__badge-stack"><img class="tz-preview-v2-user-data__badge" src="/img/ranks/Wanderer.png" alt="" /></div>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-game-data" aria-hidden="true">
+              <span class="tz-preview-v2-game-data__type tz-preview-v2-game-data__item tz-preview-v2-game-data__item--type">Daily</span>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-info-data is-tuner-focus" aria-label="Info data preview">
+              <span class="tz-preview-v2-info-data__count tz-preview-v2-info-data__item tz-preview-v2-info-data__item--count tuner-box" data-item="solutionCount">3</span>
+              <span class="tz-preview-v2-info-data__possible tz-preview-v2-info-data__item tz-preview-v2-info-data__item--possible tuner-box" data-item="solutionPossible">Possible</span>
+              <span class="tz-preview-v2-info-data__solutions tz-preview-v2-info-data__item tz-preview-v2-info-data__item--solutions tuner-box" data-item="solutionSolutions">Solutions</span>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-timer-data" aria-hidden="true">
+              <span class="tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--current">01:23</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initPreviewDataV2ZoneTuner } from './js/preview-data-v2-zone-tuner.js';
+    initPreviewDataV2ZoneTuner('infoData');
+  </script>
+</body>
+</html>

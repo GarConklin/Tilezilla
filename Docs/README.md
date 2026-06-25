@@ -11,7 +11,7 @@ This is a refactored version that separates:
 ```bash
 docker compose up --build
 ```
-Open http://localhost:8080
+Open http://127.0.0.1:8081/tilezilla-v2.html
 
 ## Files you must provide
 Put your real files in `img/`:

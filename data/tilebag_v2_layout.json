@@ -1,0 +1,103 @@
+{
+  "container": {
+    "yNudge": 0
+  },
+  "collapsed": {
+    "track": {
+      "left": 18,
+      "width": 351,
+      "nudgeX": 0,
+      "nudgeY": -9
+    },
+    "arrowPrev": {
+      "left": -2,
+      "width": 17,
+      "nudgeX": 0,
+      "nudgeY": -2
+    },
+    "arrowNext": {
+      "left": 374,
+      "width": 17,
+      "nudgeX": -6,
+      "nudgeY": -2
+    }
+  },
+  "expanded": {
+    "track": {
+      "left": 18,
+      "width": 353,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "arrowPrev": {
+      "left": 0,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    },
+    "arrowNext": {
+      "left": 374,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    }
+  },
+  "handle": {
+    "countX": 216,
+    "countY": 1,
+    "countW": 60,
+    "countH": 14,
+    "countNudgeX": -3,
+    "countExpandedNudgeY": -3,
+    "handleXOffset": -55,
+    "handleYGap": 1,
+    "handleNudgeX": 24,
+    "handleNudgeY": -4,
+    "handleW": 32,
+    "handleHitH": 12,
+    "handleExpandedXOffset": -55,
+    "handleExpandedYGap": 1,
+    "handleExpandedNudgeX": -8,
+    "handleExpandedNudgeY": -1,
+    "titleOffsetX": -70,
+    "titleNudgeX": 10,
+    "titleNudgeY": 0,
+    "titleExpandedNudgeX": 0,
+    "titleExpandedNudgeY": 0
+  },
+  "tiles": {
+    "cell": 34,
+    "gap": 5,
+    "thumbHScale": 0.94,
+    "fitInsetY": 2,
+    "vNudge": -1
+  },
+  "glow": {
+    "ring": 2,
+    "blur": 10,
+    "spread": 0,
+    "r": 232,
+    "g": 185,
+    "b": 35,
+    "alpha": 0.55
+  },
+  "expandedLayout": {
+    "maxRows": 3,
+    "growScale": 1.5,
+    "heightTrim": 24,
+    "maxOverlap": 56,
+    "frameCollapsedH": 100,
+    "trackCollapsedH": 49,
+    "trackExpandedNudgeY": 0
+  },
+  "art": {
+    "w": 390,
+    "collapsedH": 100,
+    "expandedH": 261,
+    "collapsed": "/img/390x840-tile bag.png",
+    "expanded": "/img/expanded-tile bag.png",
+    "handlebar": "/img/handlebar-tilebag.png"
+  }
+}

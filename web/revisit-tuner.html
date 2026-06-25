@@ -2,6 +2,7 @@
 <html lang="en" class="tz-phone-preview revisit-tuner-page">
 <head>
   <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tilezilla — Revisit popup tuner</title>
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
@@ -182,7 +183,6 @@
       border-color: rgba(140, 220, 140, 0.8) !important;
       color: #e8dcc4;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(0.5rem, 2.2cqi, 0.72rem);
       font-weight: 600;
       justify-content: flex-start;
       padding-left: 2px;
@@ -256,10 +256,13 @@
         <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
         <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
         <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+        <button type="button" class="btn btn-wide" data-nudge="fontLarger" id="fontLargerBtn" hidden>Larger text</button>
+        <button type="button" class="btn btn-wide" data-nudge="fontSmaller" id="fontSmallerBtn" hidden>Smaller text</button>
       </div>
       <ul class="keys">
-        <li><strong>Dialog size</strong> — scroll width scale · Shift+scroll display pad</li>
+        <li><strong>Dialog size</strong> — scroll width scale · Shift+scroll display pad · Alt+scroll default field font (rem)</li>
         <li><strong>Fields / buttons</strong> — wheel X · Shift+wheel Y · Ctrl+wheel W · Alt+Ctrl+wheel H</li>
+        <li><strong>Text fields</strong> — Alt+wheel or Larger/Smaller = min+max rem · Shift+Alt+wheel = cqi only</li>
         <li><strong>Tab</strong> — cycle items</li>
       </ul>
       <div class="btn-row">
@@ -327,6 +330,7 @@
   <script type="module">
     import {
       REVISIT_ITEM_DEFS,
+      adjustRevisitFontSize,
       applyRevisitLayout,
       buildRevisitLayoutReport,
       clearRevisitLayoutCache,
@@ -334,6 +338,7 @@
       getRevisitItemLayout,
       loadRevisitLayout,
       mergeRevisitLayout,
+      parseRevisitFontSize,
       stashRevisitLayoutDraft,
     } from './js/revisit-layout.js';
 
@@ -358,6 +363,31 @@
     function patchDialog(patch) {
       workingLayout.dialog = { ...workingLayout.dialog, ...patch };
       refresh();
+    }
+
+    function isTextItem(key) {
+      return REVISIT_ITEM_DEFS[key]?.kind === 'text';
+    }
+
+    function adjustFieldFont(key, dir, mode = 'rem') {
+      const box = getRevisitItemLayout(key, workingLayout);
+      patchItem(key, { fontSize: adjustRevisitFontSize(box.fontSize, dir, mode) });
+    }
+
+    function adjustDialogFieldFont(dir, mode = 'rem') {
+      const d = workingLayout.dialog;
+      const current = d.fieldFontSize ?? getRevisitItemLayout('puzzleId', workingLayout).fontSize;
+      patchDialog({ fieldFontSize: adjustRevisitFontSize(current, dir, mode) });
+    }
+
+    function formatFontReadout(fontSize) {
+      const { minRem, cqi, maxRem } = parseRevisitFontSize(fontSize);
+      return [
+        `min <strong>${minRem}rem</strong> (floor)`,
+        `cqi <strong>${cqi}</strong> (preferred)`,
+        `max <strong>${maxRem}rem</strong> (ceiling)`,
+        '<span style="color:#a8b8b4">Alt+wheel changes min+max rem — that is what you usually see.</span>',
+      ].join('<br />');
     }
 
     function exportJson() {
@@ -442,24 +472,33 @@
       for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
         box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
       }
-      els.nudgeGrid.hidden = currentItem === DIALOG_ITEM;
+      const showFont = isTextItem(currentItem);
+      els.fontLargerBtn.hidden = !showFont;
+      els.fontSmallerBtn.hidden = !showFont;
+      els.nudgeGrid.hidden = false;
     }
 
     function formatReadout(key) {
       if (key === DIALOG_ITEM) {
         const d = workingLayout.dialog;
+        const font = d.fieldFontSize ?? getRevisitItemLayout('puzzleId', workingLayout).fontSize;
         return [
           '<strong>Dialog size / pad</strong>',
           `widthScale: ${d.widthScale ?? 0.94}`,
           `displayPad: ${d.displayPad ?? 16}px`,
+          '<strong>Default field font</strong>',
+          formatFontReadout(font),
         ].join('<br />');
       }
       const box = getRevisitItemLayout(key, workingLayout);
       const def = REVISIT_ITEM_DEFS[key];
+      const fontBlock = def?.kind === 'text'
+        ? `<br /><strong>Font</strong><br />${formatFontReadout(box.fontSize)}`
+        : '';
       return `
         <strong>${def?.label || key}</strong><br />
         x: ${box.x}% · y: ${box.y}%<br />
-        w: ${box.w}% · h: ${box.h}%
+        w: ${box.w}% · h: ${box.h}%${fontBlock}
       `;
     }
 
@@ -480,6 +519,10 @@
 
       if (currentItem === DIALOG_ITEM) {
         const d = workingLayout.dialog;
+        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+          adjustDialogFieldFont(dir);
+          return;
+        }
         if (e.ctrlKey && !e.altKey) {
           const next = Math.max(0.4, Math.min(1.2, (d.widthScale ?? 0.94) + dir * 0.01));
           patchDialog({ widthScale: Math.round(next * 100) / 100 });
@@ -498,6 +541,14 @@
         patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
         return;
       }
+      if (e.altKey && e.shiftKey && isTextItem(currentItem)) {
+        adjustFieldFont(currentItem, dir, 'cqi');
+        return;
+      }
+      if (e.altKey && !e.ctrlKey && !e.shiftKey && isTextItem(currentItem)) {
+        adjustFieldFont(currentItem, dir, 'rem');
+        return;
+      }
       if (e.ctrlKey) {
         patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 10) / 10) });
         return;
@@ -511,6 +562,14 @@
 
     function onNudge(action) {
       if (currentItem === DIALOG_ITEM) return;
+      if (action === 'fontLarger' && isTextItem(currentItem)) {
+        adjustFieldFont(currentItem, 1, 'rem');
+        return;
+      }
+      if (action === 'fontSmaller' && isTextItem(currentItem)) {
+        adjustFieldFont(currentItem, -1, 'rem');
+        return;
+      }
       const box = getRevisitItemLayout(currentItem, workingLayout);
       switch (action) {
         case 'left': patchItem(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
@@ -612,6 +671,8 @@
       els.reportOut = document.getElementById('reportOut');
       els.mockStage = document.getElementById('mockStage');
       els.nudgeGrid = document.getElementById('nudgeGrid');
+      els.fontLargerBtn = document.getElementById('fontLargerBtn');
+      els.fontSmallerBtn = document.getElementById('fontSmallerBtn');
 
       const dialogBtn = document.createElement('button');
       dialogBtn.type = 'button';

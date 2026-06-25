@@ -1,11 +1,13 @@
 {
   "window": {
-    "topVh": 10,
-    "heightVh": 80,
+    "topVh": 7.7,
+    "heightVh": 92.3,
     "maxDesignWidth": 390,
+    "widthScale": 0.95,
+    "anchorMainScreenV2": true,
     "nudgeX": 0,
     "nudgeY": 0,
-    "scale": 1.1
+    "scale": 1
   },
   "scroller": {
     "right": 1.5,

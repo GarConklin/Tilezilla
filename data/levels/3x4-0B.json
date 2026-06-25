@@ -185,7 +185,7 @@
       "solvesFile": "3x4-0B-AAI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 2
+      "totalUniqueSolutions": 1
     },
     {
       "id": "3x4-0B-AAJ",
@@ -311,7 +311,7 @@
       "solvesFile": "3x4-0B-AAO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 2
+      "totalUniqueSolutions": 1
     },
     {
       "id": "3x4-0B-AAP",

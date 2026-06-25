@@ -30,8 +30,16 @@ export function applyUiScale() {
     scale = Math.min(scaleW, scaleH);
   }
 
+  document.documentElement.dataset.uiScale = String(scale);
+  document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
+
+  const scaleHost = document.querySelector('.tz-scale-host');
   const stage = document.querySelector('.tz-stage');
-  if (stage) {
+
+  if (scaleHost && stage) {
+    stage.style.zoom = '';
+    stage.style.transform = '';
+  } else if (stage) {
     stage.style.zoom = String(scale);
     if (!('zoom' in stage.style)) {
       stage.style.transform = scale === 1 ? '' : `scale(${scale})`;
@@ -41,14 +49,13 @@ export function applyUiScale() {
     }
   }
 
-  document.documentElement.dataset.uiScale = String(scale);
-  document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
   window.__journalApi?.syncJournalDialogTop?.();
   window.__journalApi?.syncJournalLayoutHits?.();
   return scale;
 }
 
 export function wireUiScaleListeners() {
+  window.addEventListener('resize', applyUiScale);
   window.visualViewport?.addEventListener('resize', applyUiScale);
   window.visualViewport?.addEventListener('scroll', applyUiScale);
 }

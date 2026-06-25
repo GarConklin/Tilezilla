@@ -1,0 +1,21 @@
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+!**/.env.remote-test.example
+node_modules
+unused/
+unused_old/
+/img/Stuff/**
+/invalid solutions/**
+invalid solutions/**
+data/solver-runs/
+Docs/New Plans/
+*.log
+Thumbs.db
+.DS_Store
+# Working assets
+img/Stuff/
+*.tmp

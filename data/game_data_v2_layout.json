@@ -1,0 +1,35 @@
+{
+  "frame": {
+    "w": 70,
+    "h": 46
+  },
+  "items": {
+    "gameType": {
+      "x": 0,
+      "y": 2,
+      "w": 70,
+      "h": 14,
+      "fontScale": 0.75,
+      "justify": "center",
+      "align": "center"
+    },
+    "gameDate": {
+      "x": 0,
+      "y": 15,
+      "w": 70,
+      "h": 14,
+      "fontScale": 0.85,
+      "justify": "center",
+      "align": "center"
+    },
+    "puzzleId": {
+      "x": 0,
+      "y": 29,
+      "w": 70,
+      "h": 15,
+      "fontScale": 1.05,
+      "justify": "center",
+      "align": "center"
+    }
+  }
+}

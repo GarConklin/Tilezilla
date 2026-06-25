@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tilezilla — Sublevel tuner</title>
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
@@ -407,7 +408,7 @@
         if (!res.ok) {
           if (res.status === 501) {
             throw new Error(
-              'Stale dev server on port 8080 — stop all python servers, then run: python scripts/server.py'
+              'Stale dev server — stop old python servers, then run: python scripts/server.py (default port 8081)'
             );
           }
           const detail = await res.text();
@@ -721,7 +722,7 @@
             if (data?.writable) {
               els.status.textContent = 'Connected — edits auto-save to data/sublevel_icon_layout.json';
             } else {
-              els.status.textContent = 'Stop old servers on port 8080, then run: python scripts/server.py';
+              els.status.textContent = 'Stop old python servers, then run: python scripts/server.py (default port 8081)';
             }
           })
           .catch(() => {

@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en" class="bottom-menu-v2-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Bottom menu v2 tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a, .lead code { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 12px; }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .keys { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.65rem; color: #7a8a86; line-height: 1.5; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .mode-toggle { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mode-toggle .btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.25); }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut {
+      width: 100%; min-height: 120px; margin-top: 8px; padding: 8px;
+      border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3); color: #f4ecd8;
+      font: ui-monospace, monospace; font-size: 0.7rem; resize: vertical;
+    }
+    .mock-stage {
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .bottom-menu-v2-tuner-page .mock-phone {
+      width: 390px;
+      height: 844px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(196, 163, 90, 0.3);
+      border-radius: 8px;
+    }
+    .bottom-menu-v2-tuner-page .mock-phone__bg {
+      position: absolute;
+      inset: 0;
+      background-image: var(--tz-msv2-bg, url("/img/Background%20lake%20and%20sun-no-water.png"));
+      background-size: 100% 100%;
+      background-position: center;
+    }
+    .bottom-menu-v2-tuner-page .mock-phone__water {
+      position: absolute;
+      inset: 0;
+      background-image: var(--tz-msv2-bg-water-a, url("/img/Background%20lake%20and%20sun-Just-water1.png"));
+      background-size: 100% 100%;
+      background-position: center;
+      opacity: 0.85;
+    }
+    .bottom-menu-v2-tuner-page .mock-phone__shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.2) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .bottom-menu-v2-tuner-page .mock-tilebag-slot {
+      position: absolute;
+      left: var(--tz-msv2-tilebag-x, 0%);
+      top: var(--tz-msv2-tilebag-y, 88.15%);
+      width: var(--tz-msv2-tilebag-w, 100%);
+      height: var(--tz-msv2-tilebag-h, 11.85%);
+      background: rgba(60, 90, 70, 0.35);
+      border: 1px dashed rgba(196, 163, 90, 0.35);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .bottom-menu-v2-tuner-page .mock-tilebag-slot.is-expanded {
+      top: calc(var(--tz-msv2-tilebag-y, 88.15%) - 14%);
+      height: calc(var(--tz-msv2-tilebag-h, 11.85%) + 14%);
+      background: rgba(60, 90, 70, 0.55);
+    }
+    .bottom-menu-v2-tuner-page .tz-bottom-menu-v2 {
+      z-index: 12;
+    }
+    .bottom-menu-v2-tuner-page .tuner-box {
+      position: absolute;
+      border: 2px solid rgba(100, 200, 255, 0.85);
+      background: rgba(100, 200, 255, 0.2);
+      z-index: 20;
+      cursor: move;
+      padding: 0;
+    }
+    .bottom-menu-v2-tuner-page .tuner-box.is-tuner-active {
+      border-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.55);
+      z-index: 21;
+    }
+    .bottom-menu-v2-tuner-page .tuner-box:not(.is-tuner-active) { opacity: 0.55; }
+    .bottom-menu-v2-tuner-page .tuner-box[data-item="bottomMenuCloseTab"] {
+      background: transparent !important;
+      opacity: 1 !important;
+      border-style: dashed;
+    }
+    .bottom-menu-v2-tuner-page .tuner-box[data-item="bottomMenuCloseTab"] .tuner-box__label {
+      pointer-events: none;
+    }
+    .close-tab-appearance {
+      display: none;
+      margin: 0 0 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .close-tab-appearance.is-visible { display: block; }
+    .close-tab-appearance label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 0.68rem;
+      color: #a8b8b4;
+    }
+    .close-tab-appearance .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .close-tab-appearance input[type="color"] {
+      width: 42px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .close-tab-appearance input[type="text"] {
+      flex: 1 1 120px;
+      min-width: 0;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.68rem;
+    }
+    .bottom-menu-v2-tuner-page .tuner-box__label {
+      position: absolute;
+      top: 0; left: 0;
+      padding: 1px 4px;
+      font-size: 8px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      pointer-events: none;
+    }
+    .bottom-menu-v2-tuner-page .tz-bottom-nav__hover { opacity: 0 !important; }
+    .bottom-menu-v2-tuner-page.is-preview-tilebag-expanded .tz-bottom-menu-v2 {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .nudge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 10px 0;
+      max-width: 200px;
+    }
+    .nudge-grid .btn { padding: 6px 0; font-size: 0.78rem; }
+    .nudge-grid .btn-wide { grid-column: span 3; font-size: 0.72rem; }
+  </style>
+</head>
+<body>
+  <h1>Bottom menu v2 tuner</h1>
+  <p class="lead">
+    Tune the <strong>close tab</strong> (menu open), <strong>expand tab</strong> (menu closed), and <strong>drawer panel</strong>
+    on the main v2 screen. Saves to <code>data/main_screen_v2_layout.json</code>.
+    Close tab uses a PNG with transparent corners — set <strong>backdrop color</strong> to block the scene behind it, or clear it for see-through.
+    <a href="/tilezilla-v2.html">Open v2 game</a>
+    · <a href="/main-screen-v2-tuner.html">Main screen v2 tuner</a>
+    · <a href="/bottom-nav-tuner.html">Bottom nav hits</a>
+    · <a href="/dev-player-select.html">Dev tools</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Layout items</h2>
+      <div class="mode-toggle" id="previewToggle">
+        <button type="button" class="btn is-active" data-preview="menu-open">Menu open</button>
+        <button type="button" class="btn" data-preview="menu-closed">Menu closed</button>
+        <button type="button" class="btn" data-preview="tilebag-expanded">Tile bag expanded</button>
+      </div>
+      <div class="field-grid" id="fieldGrid"></div>
+      <div class="close-tab-appearance" id="closeTabAppearance">
+        <h2 style="margin:0 0 8px;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:#c4a35a">Close tab appearance</h2>
+        <label for="closeTabOpacity">Opacity</label>
+        <div class="row">
+          <button type="button" class="btn" data-close-opacity="-0.05">−</button>
+          <span id="closeTabOpacityReadout" class="readout" style="margin:0;min-width:3.5rem;text-align:center">1</span>
+          <button type="button" class="btn" data-close-opacity="0.05">+</button>
+        </div>
+        <label for="closeTabBg">Backdrop color (fills transparent PNG corners)</label>
+        <div class="row">
+          <input type="color" id="closeTabBgPicker" value="#1b3d30" aria-label="Close tab backdrop color" />
+          <input type="text" id="closeTabBg" spellcheck="false" placeholder="empty = transparent" />
+          <button type="button" class="btn" id="closeTabBgClear">Clear</button>
+        </div>
+      </div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys" id="keysList">
+        <li>Scroll — move X · Shift+scroll — move Y · Ctrl+scroll — width</li>
+        <li><strong>Alt+scroll — height</strong> (use on <em>Bottom menu panel</em> to grow menu)</li>
+        <li>Or use Taller / Shorter buttons below · drag the highlighted box</li>
+        <li>Close tab selected: <strong>Ctrl+Shift+scroll</strong> — opacity</li>
+      </ul>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span>
+        <button type="button" class="btn" data-nudge="up">↑</button>
+        <span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON excerpt"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — bottom of 390×844</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-phone" id="mockPhone">
+          <div class="mock-phone__bg" aria-hidden="true"></div>
+          <div class="mock-phone__water" aria-hidden="true"></div>
+          <div class="mock-phone__shade" aria-hidden="true"></div>
+          <div class="mock-tilebag-slot" id="mockTilebagSlot" aria-hidden="true"></div>
+          <div class="tz-bottom-menu-v2 is-bottom-menu-open" id="mockBottomMenu">
+            <button type="button" class="tz-bottom-menu-v2__tab tz-bottom-menu-v2__tab--open" id="mockOpenTab" hidden>
+              <img src="/img/BottomMenuExpandTab.png" alt="" />
+            </button>
+            <div class="tz-bottom-menu-v2__drawer" id="mockDrawer">
+              <nav class="tz-bottom-nav tz-bottom-nav--v2-drawer" aria-label="Main navigation">
+                <div class="tz-bottom-nav-plaque">
+                  <img class="tz-bottom-nav-plaque__bg" src="/img/NewBotmMenu.png" alt="" width="1698" height="456" />
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" aria-label="Adventure"></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" aria-label="Daily Challenge"></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" aria-label="Random Puzzle"></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" aria-label="Library"></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" aria-label="Profile"></button>
+                </div>
+              </nav>
+            </div>
+            <button type="button" class="tz-bottom-menu-v2__tab tz-bottom-menu-v2__tab--close" id="mockCloseTab">
+              <img src="/img/BottomMenuCloseTab.png" alt="" />
+            </button>
+          </div>
+          <div id="tunerBoxLayer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      MAIN_SCREEN_V2_ITEM_DEFS,
+      applyMainScreenV2Layout,
+      clearMainScreenV2LayoutCache,
+      clearMainScreenV2LayoutDraft,
+      getMainScreenV2ItemLayout,
+      loadMainScreenV2Layout,
+      mergeMainScreenV2Layout,
+      stashMainScreenV2LayoutDraft,
+    } from './js/main-screen-v2-layout.js';
+    import { applyBottomNavLayout, loadBottomNavLayout } from './js/bottom-nav-layout.js';
+
+    const ITEM_KEYS = ['bottomMenuCloseTab', 'bottomMenuPanel', 'bottomMenuTab'];
+    const POS_STEP = 0.25;
+    const SIZE_STEP = 0.25;
+
+    let workingLayout = mergeMainScreenV2Layout(null);
+    let currentItem = 'bottomMenuCloseTab';
+    let previewMode = 'menu-open';
+    let dragState = null;
+    const els = {};
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function exportJson() {
+      const items = {};
+      for (const key of ITEM_KEYS) {
+        items[key] = { ...workingLayout.items[key] };
+      }
+      return JSON.stringify({ items }, null, 2);
+    }
+
+    function hexForColorInput(value) {
+      const raw = String(value || '').trim();
+      if (/^#[0-9a-f]{6}$/i.test(raw)) return raw;
+      return '#1b3d30';
+    }
+
+    function syncCloseTabControls() {
+      const close = getMainScreenV2ItemLayout('bottomMenuCloseTab', workingLayout);
+      const opacity = Math.max(0.05, Math.min(1, Number(close.opacity ?? 1)));
+      const bg = String(close.bg ?? '').trim();
+      els.closeTabAppearance?.classList.toggle('is-visible', currentItem === 'bottomMenuCloseTab');
+      if (els.closeTabOpacityReadout) {
+        els.closeTabOpacityReadout.textContent = opacity.toFixed(2).replace(/\.?0+$/, '') || '0';
+      }
+      if (els.closeTabBg && document.activeElement !== els.closeTabBg) {
+        els.closeTabBg.value = bg;
+      }
+      if (els.closeTabBgPicker && document.activeElement !== els.closeTabBgPicker) {
+        els.closeTabBgPicker.value = hexForColorInput(bg);
+      }
+    }
+
+    function patchCloseTabAppearance(patch) {
+      patchItem('bottomMenuCloseTab', patch);
+    }
+
+    function phoneRect() {
+      return document.getElementById('mockPhone')?.getBoundingClientRect();
+    }
+
+    function boxStyle(key) {
+      const box = getMainScreenV2ItemLayout(key, workingLayout);
+      return {
+        left: `${box.x}%`,
+        top: `${box.y}%`,
+        width: `${box.w}%`,
+        height: `${box.h}%`,
+      };
+    }
+
+    function ensureTunerBoxes() {
+      const layer = document.getElementById('tunerBoxLayer');
+      if (!layer) return;
+      for (const key of ITEM_KEYS) {
+        let box = layer.querySelector(`[data-item="${key}"]`);
+        if (!box) {
+          box = document.createElement('button');
+          box.type = 'button';
+          box.className = 'tuner-box';
+          box.dataset.item = key;
+          box.innerHTML = `<span class="tuner-box__label">${MAIN_SCREEN_V2_ITEM_DEFS[key]?.label || key}</span>`;
+          box.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectItem(key);
+            els.mockStage.focus();
+            dragState = {
+              key,
+              startX: e.clientX,
+              startY: e.clientY,
+              snapshot: { ...getMainScreenV2ItemLayout(key, workingLayout) },
+            };
+            box.setPointerCapture(e.pointerId);
+          });
+          box.addEventListener('pointermove', (e) => {
+            if (!dragState || dragState.key !== key) return;
+            const rect = phoneRect();
+            if (!rect?.width || !rect?.height) return;
+            const dx = e.clientX - dragState.startX;
+            const dy = e.clientY - dragState.startY;
+            patchItem(key, {
+              x: Math.max(0, Math.round((dragState.snapshot.x + (dx / rect.width) * 100) * 20) / 20),
+              y: Math.max(0, Math.round((dragState.snapshot.y + (dy / rect.height) * 100) * 20) / 20),
+            });
+          });
+          box.addEventListener('pointerup', () => { dragState = null; });
+          box.addEventListener('pointercancel', () => { dragState = null; });
+          layer.appendChild(box);
+        }
+        Object.assign(box.style, boxStyle(key));
+        box.classList.toggle('is-tuner-active', key === currentItem);
+      }
+    }
+
+    function refreshPreviewMode() {
+      const openTab = document.getElementById('mockOpenTab');
+      const closeTab = document.getElementById('mockCloseTab');
+      const drawer = document.getElementById('mockDrawer');
+      const menu = document.getElementById('mockBottomMenu');
+      const tilebag = document.getElementById('mockTilebagSlot');
+      const isMenuOpen = previewMode === 'menu-open';
+      const isTilebagExpanded = previewMode === 'tilebag-expanded';
+
+      document.documentElement.classList.toggle('is-preview-tilebag-expanded', isTilebagExpanded);
+      tilebag?.classList.toggle('is-expanded', isTilebagExpanded);
+      menu?.classList.toggle('is-bottom-menu-open', isMenuOpen && !isTilebagExpanded);
+
+      if (openTab) openTab.hidden = isMenuOpen || isTilebagExpanded;
+      if (closeTab) closeTab.hidden = !isMenuOpen || isTilebagExpanded;
+      if (drawer) drawer.hidden = !isMenuOpen || isTilebagExpanded;
+
+      for (const btn of els.previewToggle.querySelectorAll('[data-preview]')) {
+        btn.classList.toggle('is-active', btn.dataset.preview === previewMode);
+      }
+    }
+
+    function selectItem(key) {
+      currentItem = key;
+      refresh();
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return; }
+      saveInFlight = true;
+      try {
+        const full = mergeMainScreenV2Layout(workingLayout);
+        const res = await fetch('/api/dev/save-main-screen-v2-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(full, null, 2),
+        });
+        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearMainScreenV2LayoutCache();
+        clearMainScreenV2LayoutDraft();
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/main_screen_v2_layout.json'
+          : 'Saved to data/main_screen_v2_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refresh() {
+      applyMainScreenV2Layout(workingLayout, document.documentElement);
+      ensureTunerBoxes();
+      refreshPreviewMode();
+      syncCloseTabControls();
+      const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
+      const def = MAIN_SCREEN_V2_ITEM_DEFS[currentItem];
+      let readout = `
+        <strong>${def?.label || currentItem}</strong><br />
+        x: ${box.x}% · y: ${box.y}%<br />
+        w: ${box.w}% · h: ${box.h}%
+      `;
+      if (currentItem === 'bottomMenuCloseTab') {
+        readout += `<br />opacity: ${box.opacity ?? 1} · bg: ${box.bg || '(transparent)'}`;
+      }
+      els.readout.innerHTML = readout;
+      els.jsonOut.value = exportJson();
+      stashMainScreenV2LayoutDraft(workingLayout);
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      if (e.target.matches('textarea, input')) return;
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
+      if (currentItem === 'bottomMenuCloseTab' && e.ctrlKey && e.shiftKey) {
+        const next = Math.max(0.05, Math.min(1, Math.round(((box.opacity ?? 1) + dir * 0.05) * 100) / 100));
+        patchCloseTabAppearance({ opacity: next });
+        return;
+      }
+      if (e.altKey) {
+        patchItem(currentItem, { h: Math.max(0.5, Math.round((box.h + dir * SIZE_STEP) * 20) / 20) });
+      } else if (e.ctrlKey) {
+        patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 20) / 20) });
+      } else if (e.shiftKey) {
+        patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 20) / 20) });
+      } else {
+        patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 20) / 20) });
+      }
+    }
+
+    function applyNudge(action) {
+      const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
+      if (action === 'up') patchItem(currentItem, { y: Math.max(0, Math.round((box.y - POS_STEP) * 20) / 20) });
+      if (action === 'down') patchItem(currentItem, { y: Math.round((box.y + POS_STEP) * 20) / 20 });
+      if (action === 'left') patchItem(currentItem, { x: Math.max(0, Math.round((box.x - POS_STEP) * 20) / 20) });
+      if (action === 'right') patchItem(currentItem, { x: Math.round((box.x + POS_STEP) * 20) / 20 });
+      if (action === 'taller') patchItem(currentItem, { h: Math.round((box.h + SIZE_STEP) * 20) / 20 });
+      if (action === 'shorter') patchItem(currentItem, { h: Math.max(0.5, Math.round((box.h - SIZE_STEP) * 20) / 20) });
+      if (action === 'wider') patchItem(currentItem, { w: Math.round((box.w + SIZE_STEP) * 20) / 20 });
+      if (action === 'narrower') patchItem(currentItem, { w: Math.max(1, Math.round((box.w - SIZE_STEP) * 20) / 20) });
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.mockStage = document.getElementById('mockStage');
+      els.previewToggle = document.getElementById('previewToggle');
+      els.closeTabAppearance = document.getElementById('closeTabAppearance');
+      els.closeTabOpacityReadout = document.getElementById('closeTabOpacityReadout');
+      els.closeTabBg = document.getElementById('closeTabBg');
+      els.closeTabBgPicker = document.getElementById('closeTabBgPicker');
+
+      workingLayout = await loadMainScreenV2Layout();
+      applyBottomNavLayout(await loadBottomNavLayout());
+
+      for (const key of ITEM_KEYS) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = MAIN_SCREEN_V2_ITEM_DEFS[key]?.label || key;
+        btn.addEventListener('click', () => selectItem(key));
+        els.fieldGrid.appendChild(btn);
+      }
+
+      els.previewToggle.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-preview]');
+        if (!btn) return;
+        previewMode = btn.dataset.preview;
+        refresh();
+        els.mockStage.focus();
+      });
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      document.getElementById('nudgeGrid')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-nudge]');
+        if (!btn) return;
+        applyNudge(btn.dataset.nudge);
+        els.mockStage.focus();
+      });
+      document.getElementById('reloadBtn')?.addEventListener('click', async () => {
+        workingLayout = await loadMainScreenV2Layout({ force: true });
+        refresh();
+        els.status.textContent = 'Reloaded from file';
+      });
+      document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
+
+      els.closeTabAppearance?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-close-opacity]');
+        if (!btn) return;
+        const close = getMainScreenV2ItemLayout('bottomMenuCloseTab', workingLayout);
+        const delta = Number(btn.dataset.closeOpacity);
+        const next = Math.max(0.05, Math.min(1, Math.round(((close.opacity ?? 1) + delta) * 100) / 100));
+        patchCloseTabAppearance({ opacity: next });
+      });
+      els.closeTabBgPicker?.addEventListener('input', (e) => {
+        patchCloseTabAppearance({ bg: e.target.value });
+      });
+      els.closeTabBg?.addEventListener('change', (e) => {
+        patchCloseTabAppearance({ bg: e.target.value.trim() });
+      });
+      document.getElementById('closeTabBgClear')?.addEventListener('click', () => {
+        patchCloseTabAppearance({ bg: '' });
+      });
+
+      refresh();
+      els.mockStage.focus();
+    }
+
+    init();
+  </script>
+</body>
+</html>

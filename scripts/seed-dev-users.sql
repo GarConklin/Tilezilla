@@ -1,14 +1,16 @@
--- Dev seed: Gar (newbie) + Arn (Adventure L4-1)
+-- Dev seed: Gar (newbie) + Arn (Adventure L4-1) + test (mobile QA)
 -- Requires adventure_progression (run import-adventure-map.ps1 first).
--- words_user_id / user_id are fixed dev ids (900001, 900002) — must match seed-dev-words-users.sql.
+-- words_user_id / user_id are fixed dev ids (900001, 900002, 900003) — must match seed-dev-words-users.sql.
 
 USE tilegame;
 
 SET @gar_id = 900001;
 SET @arn_id = 900002;
+SET @test_id = 900003;
 
 SET @gar_hash = '$2y$10$pkUJycfoDi5j8f2exp5V2u7X4vXxX6/NbrSoRsVatkp/dhhkGsROG';
 SET @arn_hash = '$2y$10$nwtUdak2Z0GlP0NtvKk0r.H7.EXmMyHTmRdC2iDA7l29Gs7QTkrEW';
+SET @test_hash = '$2y$10$BBHQeivzRp/qdA4G6sS0UOg4hQSDtVK1xWwpIdComhGMNB32/x47e';
 
 -- adventure_rank rows with badge paths (canonical: data/adventure_ranks.json)
 INSERT INTO adventure_rank (
@@ -55,6 +57,10 @@ INSERT INTO users (
 (
     @arn_id, 'Arn', 'arn-dev@tilezilla.local', @arn_hash,
     'Connector', 5, 0, 0
+),
+(
+    @test_id, 'test', 'test-dev@tilezilla.local', @test_hash,
+    'Connector', 18, 0, 0
 )
 ON DUPLICATE KEY UPDATE
     username = VALUES(username),
@@ -72,7 +78,8 @@ INSERT INTO tile_profiles (
     words_user_id, `rank`, hint_tokens, current_streak, best_streak
 ) VALUES
 (@gar_id, 'Connector', 5, 0, 0),
-(@arn_id, 'Connector', 5, 0, 0)
+(@arn_id, 'Connector', 5, 0, 0),
+(@test_id, 'Connector', 18, 0, 0)
 ON DUPLICATE KEY UPDATE
     `rank` = VALUES(`rank`),
     hint_tokens = VALUES(hint_tokens),
@@ -86,7 +93,8 @@ INSERT INTO player_progress (
     player_id, total_levels_solved, current_rank_id, current_sub_level
 ) VALUES
 (@gar_id, 0, 1, 1),
-(@arn_id, COALESCE(@arn_total, 1141), 4, 1)
+(@arn_id, COALESCE(@arn_total, 1141), 4, 1),
+(@test_id, 0, 1, 1)
 ON DUPLICATE KEY UPDATE
     total_levels_solved = VALUES(total_levels_solved),
     current_rank_id = VALUES(current_rank_id),
@@ -104,5 +112,5 @@ SELECT
     pp.current_sub_level
 FROM users u
 LEFT JOIN player_progress pp ON pp.player_id = u.user_id
-WHERE u.user_id IN (@gar_id, @arn_id)
+WHERE u.user_id IN (@gar_id, @arn_id, @test_id)
 ORDER BY u.user_id;

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" class="auth-screen-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Logging-in tuner</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/auth-screen-tuner-page.css" />
+  <link rel="stylesheet" href="css/auth-screen-tuner.css" />
+</head>
+<body>
+  <h1>Logging-in tuner</h1>
+  <p class="lead">
+    Tune <code>Logging-in.png</code> fields and hit areas. Saves to <code>data/auth_screen_layout.json</code> (login section).
+    <a href="/login-screen.html">Live login</a> ·
+    <a href="/auth-error-tuner.html">Auth error tuner</a> ·
+    <a href="/dev-player-select.html">Dev tools</a>
+  </p>
+  <nav class="tuner-nav" aria-label="Auth tuners">
+    <a class="is-active" href="/logging-in-tuner.html">Logging in</a>
+    <a href="/create-passport-tuner.html">Create passport</a>
+    <a href="/logged-in-tuner.html">Logged in</a>
+  </nav>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="mode-hint" id="modeHint">Drag box to move · Handles resize · Arrow keys nudge</p>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span>
+        <button type="button" class="btn" data-nudge="up">↑</button>
+        <span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <ul class="keys">
+        <li><strong>Frame</strong> — wheel: max width px</li>
+        <li><strong>Fields</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H</li>
+        <li><strong>Tab</strong> — cycle selection</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+    <div class="panel">
+      <h2 id="previewTitle">Preview</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="auth-screen" id="mockWrap">
+          <main class="auth-screen__stage" id="mockFrame">
+            <img class="auth-screen__art" id="mockArt" src="/img/Logging-in.png" alt="" width="1418" height="2200" />
+            <div class="auth-screen__form" id="mockOverlay"></div>
+            <div id="mockHitsOutside"></div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { initAuthScreenTuner } from './js/auth-screen-tuner.js';
+    initAuthScreenTuner('login');
+  </script>
+</body>
+</html>

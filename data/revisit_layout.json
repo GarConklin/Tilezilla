@@ -3,26 +3,30 @@
     "artW": 1418,
     "artH": 1048,
     "widthScale": 0.94,
-    "displayPad": 16
+    "displayPad": 16,
+    "fieldFontSize": "clamp(0.58rem, 2.6cqi, 0.82rem)"
   },
   "items": {
     "puzzleId": {
-      "x": 71.4,
-      "y": 50.3,
-      "w": 22.6,
-      "h": 5
+      "x": 71.7,
+      "y": 50.7,
+      "w": 24.4,
+      "h": 4.8,
+      "fontSize": "clamp(0.46rem, 1.7cqi, 0.7rem)"
     },
     "solutions": {
-      "x": 81.2,
+      "x": 81.9,
       "y": 56.1,
       "w": 13.6,
-      "h": 5
+      "h": 4.4,
+      "fontSize": "clamp(0.44rem, 1.7cqi, 0.68rem)"
     },
     "solved": {
-      "x": 70.7,
-      "y": 59.7,
+      "x": 71.6,
+      "y": 61.3,
       "w": 21.9,
-      "h": 9
+      "h": 6,
+      "fontSize": "clamp(0.4rem, 1.7cqi, 0.64rem)"
     },
     "cancel": {
       "x": 9.5,

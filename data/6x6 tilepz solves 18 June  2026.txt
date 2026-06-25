@@ -1,0 +1,2779 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 1,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 2,
+    "UT": 2,
+    "VL": 3
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 153311528,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAP solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAP",
+  "generatedAt": "2026-06-14T06:17:53.994Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 1,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 3,
+    "UT": 2,
+    "VL": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 99243965,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAQ solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAQ",
+  "generatedAt": "2026-06-14T09:38:17.226Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 2,
+    "SH": 1,
+    "SS": 2,
+    "SZ": 1,
+    "UT": 2,
+    "VL": 4
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 15384159,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAR solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 4,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAR",
+  "generatedAt": "2026-06-14T16:14:54.152Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 2,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 1,
+    "VL": 4
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 28110841,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAS solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAS",
+  "generatedAt": "2026-06-14T19:10:27.057Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "UT": 4,
+    "VL": 4
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 9776890,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAT solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "QC",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAT",
+  "generatedAt": "2026-06-15T07:57:29.523Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 3,
+    "UT": 2,
+    "VL": 3
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 38040382,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAU solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QC",
+          "r": 2,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 4,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAU",
+  "generatedAt": "2026-06-15T19:56:36.404Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 2,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 156949209,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAV solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QC",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 1,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAV",
+  "generatedAt": "2026-06-15T22:24:22.793Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 1,
+    "UT": 1,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 23310268,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAW solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "QC",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 1,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAW",
+  "generatedAt": "2026-06-16T02:22:57.379Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 4,
+    "UT": 1,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 9203897,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAX solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 4,
+          "c": 4,
+          "deg": 180
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAX",
+  "generatedAt": "2026-06-16T12:36:19.549Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 2,
+    "VL": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 11226534,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAY solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QC",
+          "r": 0,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAY",
+  "generatedAt": "2026-06-16T12:46:15.797Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 3,
+    "RC": 1,
+    "SH": 1,
+    "SS": 2,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 3
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 74693017,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-AAZ solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-AAZ",
+  "generatedAt": "2026-06-16T23:23:54.338Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QC": 1,
+    "QS": 3,
+    "RC": 2,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 82889504,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0C-ABA solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "QC",
+          "r": 1,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "SZ",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "QS",
+          "r": 2,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0C-ABA",
+  "generatedAt": "2026-06-17T16:37:18.241Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 1,
+    "RC": 3,
+    "SH": 1,
+    "SS": 4,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 94655112,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABG solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABG",
+  "generatedAt": "2026-06-13T15:16:34.474Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 1,
+    "RC": 4,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 334998128,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABH solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 2,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABH",
+  "generatedAt": "2026-06-14T03:14:57.169Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 2,
+    "RC": 2,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 4,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 67533111,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABI solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 0,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 0,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABI",
+  "generatedAt": "2026-06-15T00:46:51.509Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 2,
+    "UT": 4,
+    "VL": 3
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 26828385,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABJ solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 2,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 3,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 0
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "LR",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 5,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 1,
+          "c": 4,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABJ",
+  "generatedAt": "2026-06-15T08:44:05.251Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 2,
+    "RC": 3,
+    "SH": 1,
+    "SS": 3,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 13339206,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABK solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "SZ",
+          "r": 2,
+          "c": 2,
+          "deg": 0
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABK",
+  "generatedAt": "2026-06-15T11:26:58.385Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 2,
+    "SZ": 1,
+    "UT": 3,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 81134097,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABL solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 3,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 2,
+          "deg": 180
+        },
+        {
+          "tile": "VL",
+          "r": 2,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "SZ",
+          "r": 3,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "SS",
+          "r": 4,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 4,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 5,
+          "c": 3,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 4,
+          "c": 5,
+          "deg": 90
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 3,
+          "c": 3,
+          "deg": 270
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABL",
+  "generatedAt": "2026-06-15T20:57:24.052Z"
+}
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 2,
+    "QS": 2,
+    "RC": 4,
+    "SH": 1,
+    "SS": 4,
+    "UT": 2,
+    "VL": 2
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "seedsTotal": 12976,
+    "seedsUsed": 12976,
+    "seedsDominoNonOverlap": 12976,
+    "totalIters": 43348459,
+    "pruning": "full",
+    "enumerateNote": "tiles-live-edges + level bag; single SH/ET; dedupe square layouts up to 90° rotation (C4)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "6x6-0A-ABM solver 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 5,
+          "c": 3,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "QS",
+          "r": 3,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "LR",
+          "r": 3,
+          "c": 0,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 5,
+          "c": 1,
+          "deg": 180
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 3,
+          "c": 2,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "SS",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "QS",
+          "r": 1,
+          "c": 4,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 0,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "LR",
+          "r": 2,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "SS",
+          "r": 3,
+          "c": 4,
+          "deg": 0
+        },
+        {
+          "tile": "RC",
+          "r": 5,
+          "c": 5,
+          "deg": 270
+        },
+        {
+          "tile": "VL",
+          "r": 4,
+          "c": 4,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "6x6-0A-ABM",
+  "generatedAt": "2026-06-16T00:12:29.605Z"
+}

@@ -83,11 +83,11 @@
           body: JSON.stringify({ username: user, password: pass, guest_code: getGuestCode() || null }),
         });
         const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data?.ok) {
+        if (!res.ok || !data?.success) {
           showAuthErrorPopup(data?.error || 'Login failed. Check your credentials.');
           return;
         }
-        const userId = data.username || user;
+        const userId = data.user?.username || user;
         setRegisteredUser(userId);
         localStorage.setItem(ACTIVE_USER_KEY, userId);
         localStorage.setItem(AUTH_MODE_KEY, 'registered');

@@ -9,7 +9,7 @@ const SCREEN_BY_CLASS = {
 
 for (const [cls, key] of Object.entries(SCREEN_BY_CLASS)) {
   if (document.body.classList.contains(cls)) {
-    void initAuthScreenLayout(key);
+    void initAuthScreenLayout(key, { preferFile: true });
     break;
   }
 }

@@ -1,0 +1,1103 @@
+<!doctype html>
+
+<html lang="en" class="preview-v2-tuner-page">
+
+<head>
+
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Tilezilla — Preview v2 tuner</title>
+
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+
+      margin: 0;
+
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+      color: #f4ecd8;
+
+      background: #142c28;
+
+      padding: 16px;
+
+    }
+
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+
+    .lead {
+
+      margin: 0 0 16px;
+
+      font-size: 0.82rem;
+
+      color: #a8b8b4;
+
+      line-height: 1.45;
+
+      max-width: 56rem;
+
+    }
+
+    .lead a { color: #8fd49a; }
+
+    .lead strong { color: #e8b923; }
+
+    .layout {
+
+      display: grid;
+
+      grid-template-columns: minmax(300px, 380px) 1fr;
+
+      gap: 16px;
+
+      align-items: start;
+
+    }
+
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel {
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      background: rgba(20, 48, 44, 0.85);
+
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+
+    }
+
+    .panel h2 {
+
+      margin: 0 0 10px;
+
+      font-size: 0.8rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.06em;
+
+      color: #c4a35a;
+
+    }
+
+    .field-grid {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 6px;
+
+      margin-bottom: 12px;
+
+    }
+
+    .field-btn {
+
+      padding: 8px 6px;
+
+      border-radius: 6px;
+
+      border: 1px solid rgba(196, 163, 90, 0.25);
+
+      background: rgba(0, 0, 0, 0.25);
+
+      color: #f4ecd8;
+
+      font: inherit;
+
+      font-size: 0.68rem;
+
+      cursor: pointer;
+
+      text-align: left;
+
+    }
+
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+
+    .readout {
+
+      margin: 0 0 10px;
+
+      font-family: ui-monospace, monospace;
+
+      font-size: 0.75rem;
+
+      color: #8fd49a;
+
+      line-height: 1.45;
+
+    }
+
+    .keys {
+
+      margin: 10px 0 0;
+
+      padding: 0;
+
+      list-style: none;
+
+      font-size: 0.65rem;
+
+      color: #7a8a86;
+
+      line-height: 1.5;
+
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+    .btn {
+
+      padding: 8px 12px;
+
+      border-radius: 6px;
+
+      border: 1px solid rgba(196, 163, 90, 0.4);
+
+      background: rgba(45, 90, 61, 0.55);
+
+      color: #f4ecd8;
+
+      font: inherit;
+
+      font-size: 0.78rem;
+
+      cursor: pointer;
+
+    }
+
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+
+    #jsonOut, #reportOut {
+
+      width: 100%;
+
+      min-height: 100px;
+
+      margin-top: 8px;
+
+      padding: 8px;
+
+      border-radius: 6px;
+
+      border: 1px solid rgba(196, 163, 90, 0.35);
+
+      background: rgba(0, 0, 0, 0.3);
+
+      color: #f4ecd8;
+
+      font: ui-monospace, monospace;
+
+      font-size: 0.7rem;
+
+      resize: vertical;
+
+    }
+
+    .art-field {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 4px;
+
+      margin-bottom: 8px;
+
+    }
+
+    .art-field label {
+
+      font-size: 0.68rem;
+
+      color: #a8b8b4;
+
+    }
+
+    .art-field input {
+
+      width: 100%;
+
+      padding: 6px 8px;
+
+      border-radius: 6px;
+
+      border: 1px solid rgba(196, 163, 90, 0.35);
+
+      background: rgba(0, 0, 0, 0.3);
+
+      color: #f4ecd8;
+
+      font: ui-monospace, monospace;
+
+      font-size: 0.68rem;
+
+    }
+
+    .mock-stage {
+
+      padding: 24px 16px 40px;
+
+      border-radius: 10px;
+
+      background: rgba(8, 20, 18, 0.72);
+
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+
+      cursor: crosshair;
+
+      touch-action: none;
+
+      user-select: none;
+
+      outline: none;
+
+    }
+
+    .mock-stage:focus { border-color: #e8b923; }
+
+    .preview-v2-tuner-mock {
+
+      width: 390px;
+
+      height: 259px;
+
+      margin: 0 auto;
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-frame {
+
+      position: relative;
+
+      width: 100%;
+
+      height: 100%;
+
+      margin: 0 auto;
+
+      overflow: visible;
+
+      background-image: var(
+
+        --tz-preview-v2-frame-bg,
+
+        var(--tz-img-preview-frame)
+
+      );
+
+      background-position: top center;
+
+      background-size: 100% 100%;
+
+      background-repeat: no-repeat;
+
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-frame > .tuner-box {
+
+      position: absolute !important;
+
+      margin: 0;
+
+      min-width: 0;
+
+      min-height: 0;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box {
+
+      background: rgba(100, 200, 255, 0.28) !important;
+
+      border: 2px solid rgba(100, 200, 255, 0.85) !important;
+
+      border-radius: 4px;
+
+      z-index: 3;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box.is-tuner-active {
+
+      border-color: #e8b923 !important;
+
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+
+      z-index: 6;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box .hit-label {
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 2px;
+
+      font-size: clamp(7px, 2.5cqi, 11px);
+
+      font-weight: 600;
+
+      line-height: 1.1;
+
+      text-align: center;
+
+      color: #fff;
+
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+
+      pointer-events: none;
+
+      z-index: 1;
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-renderer.activePad {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      color: rgba(255, 255, 255, 0.5);
+
+      font-size: 0.65rem;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box--data {
+
+      z-index: 5;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box--data .tz-preview-v2-data {
+
+      position: static;
+
+      width: 100%;
+
+      height: 100%;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      gap: 1px;
+
+      padding: 2px 4px;
+
+      font: 600 clamp(6px, 9cqi, 10px) / 1.2 system-ui, sans-serif;
+
+      color: #f4ecd8;
+
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+
+      pointer-events: none;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box--data .tz-preview-v2-user-data {
+
+      flex-direction: row;
+
+      align-items: center;
+
+      gap: 3px;
+
+    }
+
+    .preview-v2-tuner-page .tuner-box--hint .tz-preview-v2-hint-plaque__art,
+
+    .preview-v2-tuner-page .tuner-box--hint .tz-preview-v2-hint-use-btn__art {
+
+      position: absolute;
+
+      inset: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: contain;
+
+      opacity: 0.95;
+
+      pointer-events: none;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>Preview v2 tuner (main screen v2)</h1>
+
+  <p class="lead">
+
+    Align data overlays and controls on the <strong>390×259</strong> preview plaque
+
+    (<code>preview tile Area bubble.png</code>) used by
+
+    <a href="/tilezilla-v2.html">tilezilla-v2.html</a>.
+
+    Saves to <code>data/preview_v2_layout.json</code>.
+
+    <a href="/preview-data-v2-tuner.html">Data v2 tuner</a>
+
+    · <a href="/game-data-v2-tuner.html">Game_Data tuner</a>
+
+    · <a href="/info-data-v2-tuner.html">Info_data tuner</a>
+
+    · <a href="/timer-data-v2-tuner.html">Timer_data tuner</a>
+
+    · <a href="/hint-v2-tuner.html">Hint v2 tuner</a>
+
+    · <a href="/main-screen-v2-tuner.html">Main screen tuner</a>
+
+    · <a href="/dev-player-select.html">Dev tools</a>
+
+  </p>
+
+
+
+  <div class="layout">
+
+    <div class="panel">
+
+      <h2>Art paths</h2>
+
+      <div class="art-field">
+
+        <label for="artFrame">Preview frame plaque</label>
+
+        <input id="artFrame" type="text" spellcheck="false" />
+
+      </div>
+
+      <div class="art-field">
+
+        <label for="artRendererStage">Level challenge stage (tile slot backdrop)</label>
+
+        <input id="artRendererStage" type="text" spellcheck="false" />
+
+      </div>
+
+      <div class="art-field">
+
+        <label for="artRendererStageWidth">Stage width scale (0.9 = 90%)</label>
+
+        <input id="artRendererStageWidth" type="number" min="0.1" max="1.5" step="0.01" />
+
+      </div>
+
+
+
+      <h2>Zones</h2>
+
+      <div class="field-grid" id="fieldGrid"></div>
+
+      <p class="readout" id="readout">—</p>
+
+      <ul class="keys">
+
+        <li>Scroll — move X (art px) · Shift+scroll — move Y</li>
+
+        <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+
+        <li>Click a box on the preview to select it</li>
+
+      </ul>
+
+      <div class="btn-row">
+
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+
+        <button type="button" class="btn" id="clearDraftBtn">Clear browser draft</button>
+
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+
+        <button type="button" class="btn" id="copyReportBtn">Copy report</button>
+
+      </div>
+
+      <p class="status" id="status"></p>
+
+      <textarea id="reportOut" readonly spellcheck="false" aria-label="Layout report"></textarea>
+
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+
+    </div>
+
+
+
+    <div class="panel">
+
+      <h2>Preview zone — 390×259 (same as v2 game)</h2>
+
+      <div class="mock-stage" id="mockStage" tabindex="0">
+
+        <div class="preview-v2-tuner-mock">
+
+          <div class="tz-preview-frame" id="mockFrame">
+
+            <div class="tz-preview-v2-data tz-preview-v2-user-data tuner-box tuner-box--data" data-item="userData">
+
+              <div class="tz-preview-v2-user-data__body">
+
+                <div class="tz-preview-v2-user-data__badge-stack">
+
+                  <img src="/img/ranks/Wanderer.png" alt="" class="tz-preview-v2-user-data__badge" />
+
+                  <img src="/img/ranks/gld-1.png" alt="" class="tz-preview-v2-user-data__sublevel" />
+
+                </div>
+
+                <div class="tz-preview-v2-user-data__lower">
+
+                  <div class="tz-preview-v2-progress">
+
+                    <div class="tz-preview-v2-progress__track"><div class="tz-preview-v2-progress__fill" style="width:42%"></div></div>
+
+                    <span class="tz-preview-v2-progress__text">42%</span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="hit-label">User_data</span>
+
+            </div>
+
+            <div class="tz-preview-v2-data tz-preview-v2-game-data tuner-box tuner-box--data" data-item="gameData">
+
+              <div class="tz-preview-v2-data tz-preview-v2-game-data">
+
+                <span class="tz-preview-v2-game-data__type">Daily Challenge</span>
+
+                <time class="tz-preview-v2-game-data__date">Jun 16, 2026</time>
+
+                <span class="tz-preview-v2-game-data__id">DC-2026-06-16</span>
+
+              </div>
+
+              <span class="hit-label">Game_Data</span>
+
+            </div>
+
+            <div class="tz-preview-v2-data tz-preview-v2-info-data tuner-box tuner-box--data" data-item="infoData">
+
+              <span class="tz-preview-v2-info-data__count tz-preview-v2-info-data__item tz-preview-v2-info-data__item--count">3</span>
+              <span class="tz-preview-v2-info-data__possible tz-preview-v2-info-data__item tz-preview-v2-info-data__item--possible">Possible</span>
+              <span class="tz-preview-v2-info-data__solutions tz-preview-v2-info-data__item tz-preview-v2-info-data__item--solutions">Solutions</span>
+
+              <span class="hit-label">Info_data</span>
+
+            </div>
+
+            <div class="tz-preview-v2-data tz-preview-v2-timer-data tuner-box tuner-box--data" data-item="timerData">
+
+              <span class="tz-preview-v2-timer-data__time">04:32</span>
+
+              <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__time--best">03:10</span>
+
+              <span class="hit-label">Timer_data</span>
+
+            </div>
+
+
+
+            <div class="tz-preview-v2-hint-data tuner-box tuner-box--hint-data" data-item="hintData">
+
+              <span class="hit-label">Hint_data (sub-layout)</span>
+
+            </div>
+
+
+
+            <div class="tz-preview-renderer activePad tuner-box" data-item="renderer">
+
+              <img class="tz-preview-renderer__stage" alt="" aria-hidden="true" draggable="false" />
+
+              <span class="hit-label">Tile slot</span>
+
+            </div>
+
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--ccw tuner-box" data-item="rotateCcw">
+
+              <span class="hit-label">Rotate L</span>
+
+            </button>
+
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--cw tuner-box" data-item="rotateCw">
+
+              <span class="hit-label">Rotate R</span>
+
+            </button>
+
+            <p class="tz-preview-tile__dir tuner-box" data-item="tileDir" aria-hidden="true">
+
+              <span class="hit-label">0°</span>
+
+            </p>
+
+            <button type="button" class="tz-preview-hit tz-preview-hit--undo tuner-box" data-item="undo">
+
+              <span class="hit-label">Undo</span>
+
+            </button>
+
+            <button type="button" class="tz-preview-hit tz-preview-hit--reset tuner-box" data-item="reset">
+
+              <span class="hit-label">Reset</span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <script type="module">
+
+    import {
+
+      PREVIEW_V2_ALL_ITEM_KEYS,
+
+      PREVIEW_V2_ITEM_DEFS,
+
+      applyPreviewV2Layout,
+
+      buildPreviewV2LayoutReport,
+
+      clearPreviewV2LayoutCache,
+
+      clearPreviewV2LayoutDraft,
+
+      getPreviewV2ItemLayout,
+
+      loadPreviewV2Layout,
+
+      mergePreviewV2Layout,
+
+      stashPreviewV2LayoutDraft,
+
+    } from './js/preview-v2-layout.js';
+
+
+
+    const POS_STEP = 2;
+
+    const SIZE_STEP = 2;
+
+
+
+    let workingLayout = mergePreviewV2Layout(null);
+
+    let currentItem = 'gameData';
+
+
+
+    const els = {};
+
+
+
+    function patchItem(key, patch) {
+
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+
+      Object.assign(workingLayout.items[key], patch);
+
+      refresh();
+
+    }
+
+
+
+    function patchArt(patch) {
+
+      workingLayout.art = { ...workingLayout.art, ...patch };
+
+      refresh();
+
+    }
+
+
+
+    function exportJson() {
+
+      return JSON.stringify(workingLayout, null, 2);
+
+    }
+
+
+
+    let saveTimer = null;
+
+    let saveInFlight = false;
+
+    let saveQueued = false;
+
+
+
+    async function saveToFile({ quiet = false } = {}) {
+
+      if (saveInFlight) { saveQueued = true; return false; }
+
+      saveInFlight = true;
+
+      try {
+
+        const res = await fetch('/api/dev/save-preview-v2-layout', {
+
+          method: 'POST',
+
+          headers: { 'Content-Type': 'application/json' },
+
+          body: exportJson(),
+
+        });
+
+        if (!res.ok) {
+
+          if (res.status === 404 || res.status === 501) {
+
+            throw new Error('Save API not found — open http://127.0.0.1:8081 and restart: python scripts/server.py');
+
+          }
+
+          throw new Error(await res.text() || `HTTP ${res.status}`);
+
+        }
+
+        clearPreviewV2LayoutCache();
+
+        clearPreviewV2LayoutDraft();
+
+        localStorage.setItem('tilezilla:preview-v2-layout-version', String(Date.now()));
+
+        window.dispatchEvent(new CustomEvent('tilezilla:preview-v2-layout-saved'));
+
+        els.status.textContent = quiet
+
+          ? 'Auto-saved to data/preview_v2_layout.json'
+
+          : 'Saved to data/preview_v2_layout.json';
+
+        return true;
+
+      } catch (err) {
+
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser — refresh game tab`;
+
+        return false;
+
+      } finally {
+
+        saveInFlight = false;
+
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+
+      }
+
+    }
+
+
+
+    function scheduleSave() {
+
+      clearTimeout(saveTimer);
+
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+
+    }
+
+
+
+    function refreshFieldGrid() {
+
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+
+      }
+
+      for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
+
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+
+      }
+
+    }
+
+
+
+    function refresh() {
+
+      applyPreviewV2Layout(workingLayout, document.documentElement);
+
+      els.artFrame.value = workingLayout.art?.frame || '';
+
+      els.artRendererStage.value = workingLayout.art?.rendererStage || '';
+
+      els.artRendererStageWidth.value = String(workingLayout.art?.rendererStageWidthScale ?? 0.9);
+
+      const box = getPreviewV2ItemLayout(currentItem, workingLayout);
+
+      const def = PREVIEW_V2_ITEM_DEFS[currentItem];
+
+      els.readout.innerHTML = `
+
+        <strong>${def?.label || currentItem}</strong><br />
+
+        x: ${box.x} · y: ${box.y}<br />
+
+        w: ${box.w} · h: ${box.h} (art px on 390×259)
+
+      `;
+
+      els.jsonOut.value = exportJson();
+
+      els.reportOut.value = buildPreviewV2LayoutReport(workingLayout);
+
+      stashPreviewV2LayoutDraft(workingLayout);
+
+      refreshFieldGrid();
+
+      scheduleSave();
+
+    }
+
+
+
+    function onWheel(e) {
+
+      e.preventDefault();
+
+      const dir = e.deltaY < 0 ? 1 : -1;
+
+      const box = getPreviewV2ItemLayout(currentItem, workingLayout);
+
+
+
+      if (e.altKey && e.ctrlKey) {
+
+        patchItem(currentItem, { h: Math.max(8, box.h + dir * SIZE_STEP) });
+
+        return;
+
+      }
+
+      if (e.ctrlKey) {
+
+        patchItem(currentItem, { w: Math.max(8, box.w + dir * SIZE_STEP) });
+
+        return;
+
+      }
+
+      if (e.shiftKey) {
+
+        patchItem(currentItem, { y: Math.max(0, box.y + dir * POS_STEP) });
+
+        return;
+
+      }
+
+      patchItem(currentItem, { x: Math.max(0, box.x + dir * POS_STEP) });
+
+    }
+
+
+
+    function wireTunerBox(box) {
+
+      box.addEventListener('pointerdown', (ev) => {
+
+        ev.preventDefault();
+
+        currentItem = box.dataset.item;
+
+        refresh();
+
+        els.mockStage.focus();
+
+      });
+
+    }
+
+
+
+    async function init() {
+
+      els.fieldGrid = document.getElementById('fieldGrid');
+
+      els.readout = document.getElementById('readout');
+
+      els.status = document.getElementById('status');
+
+      els.jsonOut = document.getElementById('jsonOut');
+
+      els.reportOut = document.getElementById('reportOut');
+
+      els.mockStage = document.getElementById('mockStage');
+
+      els.artFrame = document.getElementById('artFrame');
+
+      els.artRendererStage = document.getElementById('artRendererStage');
+
+      els.artRendererStageWidth = document.getElementById('artRendererStageWidth');
+
+
+
+      for (const [key, def] of Object.entries(PREVIEW_V2_ITEM_DEFS)) {
+
+        const btn = document.createElement('button');
+
+        btn.type = 'button';
+
+        btn.className = 'field-btn';
+
+        btn.dataset.item = key;
+
+        btn.textContent = def.label;
+
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+
+        els.fieldGrid.appendChild(btn);
+
+      }
+
+
+
+      document.querySelectorAll('.tuner-box[data-item]').forEach(wireTunerBox);
+
+
+
+      els.artFrame.addEventListener('change', () => patchArt({ frame: els.artFrame.value.trim() }));
+
+      els.artRendererStage.addEventListener('change', () => {
+        patchArt({ rendererStage: els.artRendererStage.value.trim() });
+      });
+
+      els.artRendererStageWidth.addEventListener('change', () => {
+        const v = parseFloat(els.artRendererStageWidth.value);
+        patchArt({ rendererStageWidthScale: Number.isFinite(v) ? v : 0.9 });
+      });
+
+
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+
+        clearPreviewV2LayoutCache();
+
+        clearPreviewV2LayoutDraft();
+
+        workingLayout = await loadPreviewV2Layout({ force: true });
+
+        refresh();
+
+        els.status.textContent = 'Reloaded from data/preview_v2_layout.json';
+
+      });
+
+      document.getElementById('clearDraftBtn').addEventListener('click', () => {
+
+        clearPreviewV2LayoutDraft();
+
+        localStorage.removeItem('tilezilla:layouts:preview-v2');
+
+        els.status.textContent = 'Browser draft cleared — click Reload file';
+
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+      document.getElementById('copyReportBtn').addEventListener('click', async () => {
+
+        const text = buildPreviewV2LayoutReport(workingLayout);
+
+        try {
+
+          await navigator.clipboard.writeText(text);
+
+          els.status.textContent = 'Report copied';
+
+        } catch {
+
+          els.reportOut.select();
+
+          els.status.textContent = 'Select report text and copy manually';
+
+        }
+
+      });
+
+
+
+      try {
+
+        workingLayout = await loadPreviewV2Layout();
+
+      } catch {
+
+        workingLayout = mergePreviewV2Layout(null);
+
+      }
+
+      refresh();
+
+      els.mockStage.focus();
+
+    }
+
+
+
+    void init();
+
+  </script>
+
+</body>
+
+</html>
+
+

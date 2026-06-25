@@ -2,6 +2,7 @@
 <html lang="en" class="tz-phone-preview journal-tuner-page">
 <head>
   <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tilezilla — Puzzle Journal tuner</title>
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
@@ -469,6 +470,22 @@
     .journal-tuner-page .tz-journal-field--preview.is-preview-tuning .tuner-preview-handle {
       display: block;
     }
+    .journal-tuner-page .tz-journal-field--btn-begin-search {
+      position: absolute;
+    }
+    .journal-tuner-page .tz-journal-field--btn-begin-search.is-begin-search-tuning {
+      outline: 2px dashed #e8b923;
+      outline-offset: 2px;
+      z-index: 25;
+      cursor: move;
+      box-shadow: 0 0 0 4px rgba(232, 185, 35, 0.12);
+    }
+    .journal-tuner-page .tz-journal-field--btn-begin-search .tuner-begin-search-handle {
+      display: none;
+    }
+    .journal-tuner-page .tz-journal-field--btn-begin-search.is-begin-search-tuning .tuner-begin-search-handle {
+      display: block;
+    }
     .journal-tuner-page .tz-journal-list-scroller {
       position: absolute;
     }
@@ -623,6 +640,7 @@
         <button type="button" class="field-btn" data-item="listRow">List row size (solutions &amp; puzzles)</button>
         <button type="button" class="field-btn" data-item="listScroller">List scroll bar (track + pin)</button>
         <button type="button" class="field-btn" data-item="solutionPreview">Solution preview canvas</button>
+        <button type="button" class="field-btn" data-item="btnBeginSearch">Begin Search button</button>
         <div class="field-grid-section" data-mode="library">Library filters</div>
         <button type="button" class="field-btn" data-item="selectorBoardSize">Library — board size area</button>
         <button type="button" class="field-btn" data-item="selectorPuzzleType">Library — puzzle type area</button>
@@ -793,6 +811,19 @@
                       <span class="tuner-overlay__resize-s tuner-preview-handle" data-resize="h" title="Drag to change height"></span>
                       <span class="tuner-overlay__resize-se tuner-preview-handle" data-resize="wh" title="Drag width and height"></span>
                     </div>
+                    <button
+                      type="button"
+                      class="tz-journal-begin-search tz-journal-field--btn-begin-search"
+                      id="mockBeginSearchBtn"
+                      data-tuner-item="btnBeginSearch"
+                      hidden
+                      aria-label="Begin search for this puzzle"
+                    >
+                      <img src="/img/BeginSearch-btn.png" alt="" />
+                      <span class="tuner-overlay__resize-e tuner-begin-search-handle" data-resize="w" title="Drag to change width"></span>
+                      <span class="tuner-overlay__resize-s tuner-begin-search-handle" data-resize="h" title="Drag to change height"></span>
+                      <span class="tuner-overlay__resize-se tuner-begin-search-handle" data-resize="wh" title="Drag width and height"></span>
+                    </button>
                   </div>
                 </div>
 

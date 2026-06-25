@@ -93,7 +93,7 @@ const MOCK_PUZZLES = [
 const RECORD_ONLY_ITEMS = new Set([
   'fieldPuzzleId', 'fieldPuzzleType', 'fieldBoardSize', 'fieldTotalKnown',
   'fieldSolutionsFound', 'fieldFirstSolved', 'fieldLastPlayed', 'progressBar',
-  'titleFoundSolutions', 'solutionPreview',
+  'titleFoundSolutions', 'solutionPreview', 'btnBeginSearch',
 ]);
 
 const LIBRARY_ONLY_ITEMS = new Set([
@@ -199,6 +199,7 @@ function updateKeysHelp() {
     '<li>List content (puzzle rows): <strong>M</strong> = move in pane · <strong>W/H</strong> = box size · Shift+wheel = pixel nudge</li>',
     '<li>List rows (both modes): <strong>W</strong> = font · <strong>H</strong> = row padding · <strong>I</strong> = side padding · <strong>M</strong> + wheel = gap between rows</li>',
     '<li>Solution preview: inside lower-right pane — <strong>M/W/H</strong> move and resize · solution centers in box</li>',
+    '<li>Begin Search button: inside lower-right pane (no solutions yet) — <strong>M/W/H</strong> move and resize</li>',
   ].join('');
 }
 
@@ -211,8 +212,11 @@ function ensureCurrentItemInMode() {
 
 function syncTunerMockVisibility() {
   const artTab = previewTab === 'stats' || previewTab === 'records';
-  const showPreview = !artTab && (previewMode === 'record' || currentItem === 'solutionPreview');
+  const tuningBeginSearch = currentItem === 'btnBeginSearch';
+  const showPreview = !artTab && previewMode === 'record' && !tuningBeginSearch;
   document.getElementById('mockPreviewWrap')?.toggleAttribute('hidden', !showPreview);
+  const showBeginSearch = !artTab && previewMode === 'record' && tuningBeginSearch;
+  document.getElementById('mockBeginSearchBtn')?.toggleAttribute('hidden', !showBeginSearch);
 
   const showRecordTop = !artTab && (
     previewMode === 'record'
@@ -254,6 +258,7 @@ function wireFieldGrid() {
       currentItem = btn.dataset.item;
       if (currentItem === 'listScroller' && editMode === 'move') setEditMode('width');
       if (currentItem === 'solutionPreview' && editMode === 'dialog') setEditMode('move');
+      if (currentItem === 'btnBeginSearch' && editMode === 'dialog') setEditMode('move');
       if (currentItem === 'listRow' && editMode === 'dialog') setEditMode('width');
       refresh();
       els.mockStage?.focus({ preventScroll: true });
@@ -274,7 +279,7 @@ function getTunerDragRect(key) {
     const titleBar = document.querySelector('[data-tuner-item="listTitleBar"]');
     if (titleBar) return titleBar.getBoundingClientRect();
   }
-  if (key === 'solutionPreview') {
+  if (key === 'solutionPreview' || key === 'btnBeginSearch') {
     const pane = document.querySelector('[data-tuner-item="paneBottomRight"]');
     if (pane) return pane.getBoundingClientRect();
   }
@@ -336,7 +341,7 @@ function patchItem(key, patch, { live = false } = {}) {
       nudgeY: normalized.nudgeY ?? 0,
     };
   }
-  if (key === 'solutionPreview') {
+  if (key === 'solutionPreview' || key === 'btnBeginSearch') {
     const normalized = getJournalItemLayout(key, workingLayout);
     workingLayout.items[key] = {
       space: 'pane',
@@ -434,7 +439,7 @@ function renderOverlays() {
   for (const [key, def] of Object.entries(JOURNAL_ITEM_DEFS)) {
     if (!isItemVisibleInPreview(key)) continue;
     // Scroll bar, list/title areas, preview, and list rows tune the real element — no duplicate yellow overlay.
-    if (def.kind === 'scroller' || def.kind === 'listArea' || def.kind === 'titleBarChild' || def.kind === 'preview' || def.kind === 'list') continue;
+    if (def.kind === 'scroller' || def.kind === 'listArea' || def.kind === 'titleBarChild' || def.kind === 'preview' || def.kind === 'paneBtn' || def.kind === 'list') continue;
     const ov = document.createElement('div');
     ov.className = 'tuner-overlay';
     ov.dataset.item = key;
@@ -685,6 +690,12 @@ function syncScrollerTuningUi() {
   el.classList.toggle('is-scroller-tuning', currentItem === 'listScroller');
 }
 
+function syncBeginSearchTuningUi() {
+  const el = document.getElementById('mockBeginSearchBtn');
+  if (!el) return;
+  el.classList.toggle('is-begin-search-tuning', currentItem === 'btnBeginSearch');
+}
+
 function syncPreviewTuningUi() {
   const el = document.getElementById('mockPreviewWrap');
   if (!el) return;
@@ -743,6 +754,29 @@ function wireScrollerTuning() {
   });
 }
 
+function wireBeginSearchTuning() {
+  const el = document.getElementById('mockBeginSearchBtn');
+  if (!el || el.dataset.beginSearchTunerWired) return;
+  el.dataset.beginSearchTunerWired = '1';
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+
+    if (currentItem !== 'btnBeginSearch') {
+      currentItem = 'btnBeginSearch';
+      if (editMode === 'dialog') setEditMode('move');
+      syncTunerMockVisibility();
+      refreshFieldGrid();
+      updateKeysHelp();
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    const resizeMode = e.target?.dataset?.resize || null;
+    onOverlayPointerDown(e, 'btnBeginSearch', resizeMode);
+  });
+}
+
 function wirePreviewTuning() {
   const el = document.getElementById('mockPreviewWrap');
   if (!el || el.dataset.previewTunerWired) return;
@@ -775,6 +809,7 @@ function wireTunerItemClicks() {
       currentItem = key;
       if (key === 'listScroller' && editMode === 'move') setEditMode('width');
       if (key === 'solutionPreview' && editMode === 'dialog') setEditMode('move');
+      if (key === 'btnBeginSearch' && editMode === 'dialog') setEditMode('move');
       if (key === 'listRow' && editMode === 'dialog') setEditMode('width');
       refresh();
     });
@@ -802,6 +837,7 @@ function refreshFieldGrid() {
   syncScrollerTuningUi();
   syncListContentTuningUi();
   syncPreviewTuningUi();
+  syncBeginSearchTuningUi();
   syncListRowTuningUi();
 }
 
@@ -820,7 +856,7 @@ function formatItemReadout(key) {
   }
   const item = getJournalItemLayout(key, workingLayout);
   const meta = JOURNAL_ITEM_DEFS[key];
-  if (meta?.kind === 'listArea' || meta?.kind === 'preview') {
+  if (meta?.kind === 'listArea' || meta?.kind === 'preview' || meta?.kind === 'paneBtn') {
     return `<strong>${meta.label}</strong><br />`
       + `pane x ${item.x}% · y ${item.y}% · w ${item.w}% · h ${item.h}%`
       + (item.nudgeX ? ` · nudgeX ${item.nudgeX}px` : '')
@@ -1128,6 +1164,7 @@ async function init() {
   wireListContentTuning();
   wireScrollerTuning();
   wirePreviewTuning();
+  wireBeginSearchTuning();
 
   listScroller = initFancyScroller({
     scrollEl: document.getElementById('mockListScroll'),

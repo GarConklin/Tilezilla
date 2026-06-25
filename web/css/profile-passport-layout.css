@@ -1,0 +1,162 @@
+/* Logged-in passport stat slots — shared by auth pages and in-game overlay */
+
+.auth-screen--profile [data-profile-slot],
+.tz-profile-dialog__stage [data-profile-slot] {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  font-weight: 600;
+  color: #3d2e1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.15;
+}
+
+.auth-screen-tuner-page [data-profile-slot].tuner-box {
+  pointer-events: auto;
+}
+
+.auth-screen--profile [data-profile-slot="rank"],
+.tz-profile-dialog__stage [data-profile-slot="rank"] {
+  left: var(--auth-profile-rank-x, 28%);
+  top: var(--auth-profile-rank-y, 19%);
+  width: var(--auth-profile-rank-w, 44%);
+  height: var(--auth-profile-rank-h, 3.5%);
+  font-size: calc(clamp(0.62rem, 2.4vw, 0.82rem) * var(--auth-profile-rank-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="subLevel"],
+.tz-profile-dialog__stage [data-profile-slot="subLevel"] {
+  left: var(--auth-profile-subLevel-x, 28%);
+  top: var(--auth-profile-subLevel-y, 26%);
+  width: var(--auth-profile-subLevel-w, 44%);
+  height: var(--auth-profile-subLevel-h, 3.5%);
+  font-size: calc(clamp(0.62rem, 2.4vw, 0.82rem) * var(--auth-profile-subLevel-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="adventureProgress"],
+.tz-profile-dialog__stage [data-profile-slot="adventureProgress"] {
+  left: var(--auth-profile-adventureProgress-x, 10%);
+  top: var(--auth-profile-adventureProgress-y, 32%);
+  width: var(--auth-profile-adventureProgress-w, 80%);
+  height: var(--auth-profile-adventureProgress-h, 2.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-adventureProgress-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="routesDiscovered"],
+.tz-profile-dialog__stage [data-profile-slot="routesDiscovered"] {
+  left: var(--auth-profile-routesDiscovered-x, 22%);
+  top: var(--auth-profile-routesDiscovered-y, 39%);
+  width: var(--auth-profile-routesDiscovered-w, 18%);
+  height: var(--auth-profile-routesDiscovered-h, 4%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-routesDiscovered-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="hintTokens"],
+.tz-profile-dialog__stage [data-profile-slot="hintTokens"] {
+  left: var(--auth-profile-hintTokens-x, 52%);
+  top: var(--auth-profile-hintTokens-y, 39%);
+  width: var(--auth-profile-hintTokens-w, 18%);
+  height: var(--auth-profile-hintTokens-h, 4%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-hintTokens-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="memberSince"],
+.tz-profile-dialog__stage [data-profile-slot="memberSince"] {
+  left: var(--auth-profile-memberSince-x, 22%);
+  top: var(--auth-profile-memberSince-y, 44%);
+  width: var(--auth-profile-memberSince-w, 18%);
+  height: var(--auth-profile-memberSince-h, 4%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-memberSince-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="passportId"],
+.tz-profile-dialog__stage [data-profile-slot="passportId"] {
+  left: var(--auth-profile-passportId-x, 52%);
+  top: var(--auth-profile-passportId-y, 44%);
+  width: var(--auth-profile-passportId-w, 35%);
+  height: var(--auth-profile-passportId-h, 4%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-passportId-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="explorersRegistered"],
+.tz-profile-dialog__stage [data-profile-slot="explorersRegistered"] {
+  left: var(--auth-profile-explorersRegistered-x, 10%);
+  top: var(--auth-profile-explorersRegistered-y, 56%);
+  width: var(--auth-profile-explorersRegistered-w, 35%);
+  height: var(--auth-profile-explorersRegistered-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-explorersRegistered-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="todaysChallenge"],
+.tz-profile-dialog__stage [data-profile-slot="todaysChallenge"] {
+  left: var(--auth-profile-todaysChallenge-x, 10%);
+  top: var(--auth-profile-todaysChallenge-y, 74%);
+  width: var(--auth-profile-todaysChallenge-w, 35%);
+  height: var(--auth-profile-todaysChallenge-h, 3.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-todaysChallenge-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="recentPuzzleSolved"],
+.tz-profile-dialog__stage [data-profile-slot="recentPuzzleSolved"] {
+  left: var(--auth-profile-recentPuzzleSolved-x, 54%);
+  top: var(--auth-profile-recentPuzzleSolved-y, 56%);
+  width: var(--auth-profile-recentPuzzleSolved-w, 38%);
+  height: var(--auth-profile-recentPuzzleSolved-h, 3.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentPuzzleSolved-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="recentDailyCompleted"],
+.tz-profile-dialog__stage [data-profile-slot="recentDailyCompleted"] {
+  left: var(--auth-profile-recentDailyCompleted-x, 54%);
+  top: var(--auth-profile-recentDailyCompleted-y, 62%);
+  width: var(--auth-profile-recentDailyCompleted-w, 38%);
+  height: var(--auth-profile-recentDailyCompleted-h, 3.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentDailyCompleted-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="mostSolvedPuzzle"],
+.tz-profile-dialog__stage [data-profile-slot="mostSolvedPuzzle"] {
+  left: var(--auth-profile-mostSolvedPuzzle-x, 54%);
+  top: var(--auth-profile-mostSolvedPuzzle-y, 68%);
+  width: var(--auth-profile-mostSolvedPuzzle-w, 38%);
+  height: var(--auth-profile-mostSolvedPuzzle-h, 3.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-mostSolvedPuzzle-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="latestDiscovery"],
+.tz-profile-dialog__stage [data-profile-slot="latestDiscovery"] {
+  left: var(--auth-profile-latestDiscovery-x, 54%);
+  top: var(--auth-profile-latestDiscovery-y, 74%);
+  width: var(--auth-profile-latestDiscovery-w, 38%);
+  height: var(--auth-profile-latestDiscovery-h, 3.5%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-latestDiscovery-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="totalPlayTime"],
+.tz-profile-dialog__stage [data-profile-slot="totalPlayTime"] {
+  left: var(--auth-profile-totalPlayTime-x, 54%);
+  top: var(--auth-profile-totalPlayTime-y, 80%);
+  width: var(--auth-profile-totalPlayTime-w, 38%);
+  height: var(--auth-profile-totalPlayTime-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalPlayTime-font-scale, 1));
+}
+
+.auth-screen-tuner-page .auth-screen__profile-stat.tuner-box,
+.auth-screen-tuner-page .auth-screen__profile-name.tuner-box,
+.auth-screen-tuner-page .auth-screen__hit.tuner-box {
+  pointer-events: auto;
+  justify-content: center;
+  text-align: center;
+  background: rgba(100, 200, 255, 0.28) !important;
+  border: 2px solid rgba(100, 200, 255, 0.85) !important;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}

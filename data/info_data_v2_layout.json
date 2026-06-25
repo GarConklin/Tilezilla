@@ -1,0 +1,35 @@
+{
+  "frame": {
+    "w": 68,
+    "h": 46
+  },
+  "items": {
+    "solutionCount": {
+      "x": 0,
+      "y": 2,
+      "w": 68,
+      "h": 14,
+      "fontScale": 1,
+      "justify": "center",
+      "align": "center"
+    },
+    "solutionPossible": {
+      "x": 0,
+      "y": 16,
+      "w": 68,
+      "h": 14,
+      "fontScale": 0.92,
+      "justify": "center",
+      "align": "center"
+    },
+    "solutionSolutions": {
+      "x": 0,
+      "y": 30,
+      "w": 68,
+      "h": 14,
+      "fontScale": 0.92,
+      "justify": "center",
+      "align": "center"
+    }
+  }
+}

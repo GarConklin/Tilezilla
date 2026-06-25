@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tilezilla — Discovery record tuner</title>
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
@@ -249,31 +250,21 @@
     }
     .mock-stage:focus { border-color: #e8b923; }
     /*
-     * Crop to the exact in-game discovery box (same vars as .tz-app.is-discovery-record).
-     * Offsets a full 390×844 app so preview-section lands pixel-perfect with the game.
+     * Crop to the in-game discovery box. v2: size/offset synced in JS from
+     * .tz-main-v2-app.is-discovery-record .tz-preview-section (matches tilezilla-v2).
      */
     .tuner-discovery-viewport {
       position: relative;
-      width: var(--tz-discovery-expanded-w);
-      height: var(--tz-discovery-expanded-h);
       margin: 0 auto;
       overflow: visible;
       transform-origin: top center;
     }
     .tuner-discovery-viewport .tz-app {
       position: absolute;
-      left: calc(-1 * var(--tz-discovery-expanded-x));
-      top: calc(-1 * var(--tz-discovery-expanded-top));
       width: var(--tz-design-width);
       height: var(--tz-design-height);
       min-height: 0;
       display: block;
-    }
-    .tuner-discovery-viewport.is-duplicate-mode {
-      width: var(--tz-discovery-expanded-w-duplicate);
-    }
-    .tuner-discovery-viewport.is-duplicate-mode .tz-app {
-      left: calc(-1 * var(--tz-discovery-expanded-x-duplicate));
     }
     .tuner-discovery-fit {
       width: 100%;
@@ -284,7 +275,6 @@
     /* Tuner: show every field/button so all can be positioned; dim ones not used in current mode */
     .discovery-tuner-page .tz-discovery-record--new .tz-discovery-record__field--note,
     .discovery-tuner-page .tz-discovery-record--new .tz-discovery-record__btn--view-found,
-    .discovery-tuner-page .tz-discovery-record--duplicate .tz-discovery-record__field--solution-total,
     .discovery-tuner-page .tz-discovery-record--duplicate .tz-discovery-record__field--tokens,
     .discovery-tuner-page .tz-discovery-record--no-advance .tz-discovery-record__btn--advance {
       opacity: 0.28;
@@ -334,10 +324,10 @@
     Tune each field on the Records plaque — drag to move, edge handles to resize buttons, mode keys for wheel actions.
     No Ctrl+Alt+wheel combos — press <strong>M/W/H/F/P</strong> to choose what the wheel does.
     Uses the same <code>tilezilla-shell.css</code> + <code>discovery_record_layout.json</code> as the game.
-    Preview is cropped to the exact in-game discovery box (390×844 layout).
+    Preview matches <strong>tilezilla-v2</strong> main-screen preview zone (not v1 pixel layout).
     All fields stay visible here so you can place each one; dimmed items are hidden in that mode in the game.
     Edits auto-save when <code>python scripts/server.py</code> is running.
-    <a href="tilezilla.html">Game</a> · <a href="rank-sublevel-tuner.html">Sublevel tuner</a>
+    <a href="tilezilla-v2.html">Game (v2)</a> · <a href="tuners.html">All tuners</a> · <a href="rank-sublevel-tuner.html">Sublevel tuner</a>
   </p>
 
   <div id="root" class="err">Loading…</div>
@@ -352,6 +342,7 @@
     } from './js/tilezilla-discovery-record.js';
     import {
       DISCOVERY_ITEM_DEFS,
+      applyDiscoveryPlaqueLayout,
       applyDiscoveryPopupLayout,
       clearDiscoveryRecordLayoutCache,
       getDiscoveryButtonArt,
@@ -361,6 +352,7 @@
       loadDiscoveryRecordLayout,
       mergeDiscoveryLayout,
     } from './js/discovery-record-layout.js';
+    import { applyMainScreenV2Layout, loadMainScreenV2Layout } from './js/main-screen-v2-layout.js';
 
     const MOCK_IDS = {
       root: 'mockDiscovery',
@@ -417,7 +409,7 @@
     };
 
     const NEW_MODE_TEXT = ['solutionTotal', 'puzzleId', 'solutionFound', 'time', 'tokens'];
-    const DUPLICATE_MODE_TEXT = ['note', 'puzzleId', 'solutionFound', 'time'];
+    const DUPLICATE_MODE_TEXT = ['solutionTotal', 'note', 'puzzleId', 'solutionFound', 'time'];
     const BTN_ALWAYS = ['btnContinue', 'btnBook'];
     const BTN_DUPLICATE = ['btnViewFound'];
     const BTN_ADVANCE = ['btnAdvance'];
@@ -645,7 +637,7 @@
         if (!res.ok) {
           if (res.status === 404 || res.status === 501) {
             throw new Error(
-              'Stale dev server on port 8080 — stop all python servers, then run: python scripts/server.py'
+              'Stale dev server — stop old python servers, then run: python scripts/server.py (default port 8081)'
             );
           }
           const detail = await res.text();
@@ -812,23 +804,48 @@
     }
 
     function getGamePlaqueSizeLabel() {
+      const section = document.querySelector('#tunerApp .tz-preview-section');
+      if (section) {
+        const r = section.getBoundingClientRect();
+        return `${Math.round(r.width)}×${Math.round(r.height)}px (tilezilla-v2 preview zone)`;
+      }
       const style = getComputedStyle(document.documentElement);
       const wKey = previewMode === 'duplicate'
         ? '--tz-discovery-expanded-w-duplicate'
         : '--tz-discovery-expanded-w';
       const w = style.getPropertyValue(wKey).trim();
       const h = style.getPropertyValue('--tz-discovery-expanded-h').trim();
-      return `${w} × ${h} (390×844 game layout)`;
+      return `${w} × ${h} (fallback)`;
+    }
+
+    function syncDiscoveryTunerViewport() {
+      const app = document.getElementById('tunerApp');
+      const viewport = els.discoveryViewport;
+      const section = app?.querySelector('.tz-preview-section');
+      if (!app || !viewport || !section) return;
+
+      app.style.left = '0px';
+      app.style.top = '0px';
+
+      const viewportRect = viewport.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
+      if (!sectionRect.width || !sectionRect.height) return;
+
+      viewport.style.width = `${Math.round(sectionRect.width)}px`;
+      viewport.style.height = `${Math.round(sectionRect.height)}px`;
+      app.style.left = `${viewportRect.left - sectionRect.left}px`;
+      app.style.top = `${viewportRect.top - sectionRect.top}px`;
     }
 
     function refresh() {
       const mockRoot = document.getElementById('mockDiscovery');
+      applyDiscoveryPlaqueLayout(workingLayout, document.documentElement);
       applyDiscoveryPopupLayout(
         workingLayout,
         previewVariantKey(),
         mockRoot || document.documentElement,
       );
-
+      applyPreviewContent();
       els.modeSelect.value = previewMode;
       if (els.challengeSelect) els.challengeSelect.value = previewChallenge ? 'challenge' : 'regular';
       const L = getDiscoveryItemLayout(currentItem, workingLayout, previewVariantKey());
@@ -853,12 +870,12 @@
       `;
 
       els.discoveryViewport?.classList.toggle('is-duplicate-mode', previewMode === 'duplicate');
-      applyPreviewContent();
       syncCopyInputs();
       refreshFieldGrid();
       highlightActiveField();
       els.jsonOut.value = exportJson();
       requestAnimationFrame(() => {
+        syncDiscoveryTunerViewport();
         updatePreviewFit();
         updateSelectionOverlay();
       });
@@ -1192,7 +1209,7 @@
           <div class="mock-stage" id="mockStage" tabindex="0" data-edit-mode="move">
             <div class="tuner-discovery-fit" id="discoveryFit">
               <div class="tuner-discovery-viewport" id="discoveryViewport">
-                <div class="tz-app is-discovery-record" id="tunerApp">
+                <div class="tz-app tz-main-v2-app is-discovery-record" id="tunerApp">
                   <div class="tz-shell">
                   <section class="tz-preview-section" aria-label="Discovery record preview">
                     <div class="tz-preview-frame">
@@ -1365,6 +1382,7 @@
     async function init() {
       try {
         workingLayout = cloneLayout(mergeDiscoveryLayout(await loadDiscoveryRecordLayout()));
+        applyMainScreenV2Layout(await loadMainScreenV2Layout());
         buildUi();
         fetch('/api/dev/save-discovery-layout')
           .then(async (r) => {
@@ -1375,7 +1393,7 @@
           })
           .then((data) => {
             if (data?.writable) els.status.textContent = 'Connected — edits auto-save';
-            else els.status.textContent = 'Stop old servers on port 8080, then run: python scripts/server.py';
+            else els.status.textContent = 'Stop old python servers, then run: python scripts/server.py (default port 8081)';
           })
           .catch(() => { els.status.textContent = 'Run: python scripts/server.py'; });
       } catch (err) {

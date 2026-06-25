@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en" class="hint-v2-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Hint v2 tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a, .lead code { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .keys { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.65rem; color: #7a8a86; line-height: 1.5; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .mode-toggle { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mode-toggle .btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.25); }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%; min-height: 100px; margin-top: 8px; padding: 8px;
+      border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3); color: #f4ecd8;
+      font: ui-monospace, monospace; font-size: 0.7rem; resize: vertical;
+    }
+    .art-field { margin-bottom: 8px; }
+    .art-field label { display: block; font-size: 0.68rem; color: #a8b8b4; margin-bottom: 4px; }
+    .art-field input {
+      width: 100%; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3); color: #f4ecd8;
+      font: ui-monospace, monospace; font-size: 0.68rem;
+    }
+    .hint-zone-readout {
+      margin: 0 0 12px;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      font: ui-monospace, monospace;
+      font-size: 0.68rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+    }
+    .mock-stage {
+      padding: 24px 16px 40px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+      overflow-x: auto;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .hint-v2-tuner-mock {
+      width: 780px;
+      height: 518px;
+      margin: 0 auto;
+    }
+    .hint-v2-tuner-page .tz-preview-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      margin: 0 auto;
+      overflow: visible;
+      background-image: var(--tz-preview-v2-frame-bg, var(--tz-img-preview-frame));
+      background-position: top center;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+    }
+    .hint-v2-tuner-page .tz-preview-frame > .tuner-box,
+    .hint-v2-tuner-page .tz-preview-v2-hint-data > .tuner-box {
+      position: absolute !important;
+      margin: 0;
+      min-width: 0;
+      min-height: 0;
+      pointer-events: auto !important;
+      cursor: move;
+    }
+    /* Plaque art is background — only capture clicks when that plaque item is selected */
+    .hint-v2-tuner-page .tz-preview-v2-hint-plaque.tuner-box {
+      z-index: 1 !important;
+      pointer-events: none !important;
+    }
+    .hint-v2-tuner-page .tz-preview-v2-hint-plaque.tuner-box.is-tuner-active {
+      z-index: 6 !important;
+      pointer-events: auto !important;
+    }
+    .hint-v2-tuner-page .tz-preview-v2-hint-token-count.tuner-box,
+    .hint-v2-tuner-page .tz-preview-v2-hint-token-add.tuner-box,
+    .hint-v2-tuner-page .tz-preview-v2-hint-use-btn.tuner-box {
+      z-index: 8 !important;
+      pointer-events: auto !important;
+    }
+    .hint-v2-tuner-page .tz-preview-v2-hint-data {
+      overflow: visible;
+    }
+    .hint-v2-tuner-page .tuner-box {
+      background: rgba(143, 212, 154, 0.22) !important;
+      border: 2px solid rgba(143, 212, 154, 0.85) !important;
+      border-radius: 4px;
+    }
+    .hint-v2-tuner-page .tuner-box.is-tuner-active {
+      border-color: #e8b923 !important;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+      z-index: 10 !important;
+    }
+    .hint-v2-tuner-page .tuner-box .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      font-size: clamp(10px, 2.5cqi, 16px);
+      font-weight: 600;
+      line-height: 1.1;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hint-v2-tuner-page .tz-preview-v2-hint-plaque__art,
+    .hint-v2-tuner-page .tz-preview-v2-hint-use-btn__art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.95;
+      pointer-events: none;
+    }
+    .hint-v2-tuner-page .tz-preview-v2-hint-token-count.tuner-box .hit-label {
+      display: none;
+    }
+    .hint-v2-tuner-page .mode-hidden {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hint v2 tuner (nested sub-layout)</h1>
+  <p class="lead">
+    The preview plaque has a <strong>Hint_data</strong> zone (tuned in
+    <a href="/preview-v2-tuner.html">preview-v2-tuner</a>). This page tunes the
+    <strong>hint items inside Hint_data</strong> on the real preview plaque at 2× scale.
+    Coordinates are local pixels within Hint_data — saved to <code>data/hint_v2_layout.json</code>.
+    Use plaque and count plaque each have their own token count and + button zones.
+    <a href="/tilezilla-v2.html">tilezilla-v2</a>
+    · <a href="/dev-player-select.html">Dev tools</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Hint mode preview</h2>
+      <div class="mode-toggle" id="modeToggle">
+        <button type="button" class="btn is-active" data-mode="use">Use hint (enabled)</button>
+        <button type="button" class="btn" data-mode="count">Count plaque (disabled)</button>
+      </div>
+
+      <h2>Art paths</h2>
+      <div class="art-field">
+        <label for="artPlaqueUse">Use plaque (enabled)</label>
+        <input id="artPlaqueUse" type="text" spellcheck="false" />
+      </div>
+      <div class="art-field">
+        <label for="artHintCount">Count plaque (disabled)</label>
+        <input id="artHintCount" type="text" spellcheck="false" />
+      </div>
+      <div class="art-field">
+        <label for="artUseHint">Use hint button</label>
+        <input id="artUseHint" type="text" spellcheck="false" />
+      </div>
+
+      <h2>Hint items</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys">
+        <li>Scroll — move X (local art px) · Shift+scroll — move Y</li>
+        <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+        <li>Token count selected: Alt+scroll — font min/max px · Alt+Shift+scroll — font cqi</li>
+        <li>Click a box to select it</li>
+      </ul>
+      <div class="btn-row" id="fontBtnRow" hidden>
+        <button type="button" class="btn" id="fontSmallerBtn">Font smaller</button>
+        <button type="button" class="btn" id="fontLargerBtn">Font larger</button>
+        <button type="button" class="btn" id="fontCqiSmallerBtn">Cqi −</button>
+        <button type="button" class="btn" id="fontCqiLargerBtn">Cqi +</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="clearDraftBtn">Clear browser draft</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false" aria-label="Layout report"></textarea>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview plaque — hint items at 2× (matches game)</h2>
+      <p class="hint-zone-readout" id="hintZoneReadout">—</p>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="hint-v2-tuner-mock">
+          <div class="tz-preview-frame" id="mockPreviewFrame">
+            <div class="tz-preview-v2-hint-data" id="hintRoot">
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--use tuner-box" data-item="hintPlaqueUse" data-hint-mode="use" id="mockUsePlaque">
+                <img class="tz-preview-v2-hint-plaque__art" src="/img/hint%20bubble%20plaque%20w%20room%20for%20use%20hint%20btn.png" alt="" />
+                <span class="hit-label">Use plaque</span>
+              </div>
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--count tuner-box" data-item="hintPlaqueCount" data-hint-mode="count" id="mockCountPlaque">
+                <img class="tz-preview-v2-hint-plaque__art" src="/img/hintplaque.png" alt="" />
+                <span class="hit-label">Count plaque</span>
+              </div>
+              <span class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--use tuner-box" data-item="hintTokenCountUse" data-hint-mode="use" id="mockTokenCountUse">18</span>
+              <button type="button" class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--use tuner-box" data-item="hintTokenAddUse" data-hint-mode="use" id="mockTokenAddUse">
+                <span class="hit-label">+ use</span>
+              </button>
+              <span class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--count tuner-box" data-item="hintTokenCountCount" data-hint-mode="count" id="mockTokenCountCount">18</span>
+              <button type="button" class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--count tuner-box" data-item="hintTokenAddCount" data-hint-mode="count" id="mockTokenAddCount">
+                <span class="hit-label">+ count</span>
+              </button>
+              <button type="button" class="tz-preview-v2-hint-use-btn tuner-box" data-item="hintUseBtn" data-hint-mode="use" id="mockUseBtn">
+                <img class="tz-preview-v2-hint-use-btn__art" src="/img/use%20hint%20bubble.png" alt="" />
+                <span class="hit-label">Use hint</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      HINT_V2_ITEM_DEFS,
+      HINT_V2_ITEM_KEYS,
+      adjustHintTokenFontSize,
+      applyHintV2ArtImages,
+      applyHintV2Layout,
+      buildHintV2LayoutReport,
+      clearHintV2LayoutCache,
+      clearHintV2LayoutDraft,
+      getHintV2ItemLayout,
+      getHintV2TokenCountFont,
+      loadHintV2Layout,
+      mergeHintV2Layout,
+      parseHintTokenFontSize,
+      stashHintV2LayoutDraft,
+    } from './js/hint-v2-layout.js';
+    import {
+      applyPreviewV2Layout,
+      getPreviewV2ItemLayout,
+      loadPreviewV2Layout,
+    } from './js/preview-v2-layout.js';
+
+    const POS_STEP = 2;
+    const SIZE_STEP = 2;
+    const DISPLAY_SCALE = 2;
+
+    let workingLayout = mergeHintV2Layout(null);
+    let previewLayout = null;
+    let previewHintZone = null;
+    let currentItem = 'hintPlaqueUse';
+    let hintMode = 'use';
+
+    const els = {};
+
+    function itemHintMode(itemKey) {
+      if (itemKey === 'hintPlaqueCount' || itemKey === 'hintTokenCountCount' || itemKey === 'hintTokenAddCount') {
+        return 'count';
+      }
+      if (itemKey === 'hintPlaqueUse' || itemKey === 'hintTokenCountUse' || itemKey === 'hintTokenAddUse' || itemKey === 'hintUseBtn') {
+        return 'use';
+      }
+      return hintMode;
+    }
+
+    function isTokenCountItem(key) {
+      return key === 'hintTokenCountUse' || key === 'hintTokenCountCount';
+    }
+
+    function patchTokenCountFont(dir, mode = 'px') {
+      const current = getHintV2TokenCountFont(workingLayout);
+      workingLayout.tokenCountFont = adjustHintTokenFontSize(current, dir, mode);
+      refresh();
+    }
+
+    function formatTokenFontReadout(fontSize) {
+      const { minPx, cqi, maxPx } = parseHintTokenFontSize(fontSize);
+      return [
+        `font <strong>clamp(${minPx}px, ${cqi}cqi, ${maxPx}px)</strong>`,
+        '<span style="color:#a8b8b4">Alt+wheel: min/max px · Alt+Shift+wheel: cqi scaling</span>',
+      ].join('<br />');
+    }
+
+    function selectItem(key) {
+      currentItem = key;
+      hintMode = itemHintMode(key);
+      refresh();
+    }
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchArt(patch) {
+      workingLayout.art = { ...workingLayout.art, ...patch };
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-hint-v2-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Save API not found — open http://127.0.0.1:8081 and restart: python scripts/server.py');
+          }
+          throw new Error(await res.text() || `HTTP ${res.status}`);
+        }
+        clearHintV2LayoutCache();
+        clearHintV2LayoutDraft();
+        localStorage.setItem('tilezilla:hint-v2-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:hint-v2-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/hint_v2_layout.json'
+          : 'Saved to data/hint_v2_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refreshHintMode() {
+      const useMode = hintMode === 'use';
+      document.querySelectorAll('[data-hint-mode="use"]').forEach((el) => {
+        el.classList.toggle('mode-hidden', !useMode);
+      });
+      document.querySelectorAll('[data-hint-mode="count"]').forEach((el) => {
+        el.classList.toggle('mode-hidden', useMode);
+      });
+      for (const btn of els.modeToggle.querySelectorAll('[data-mode]')) {
+        btn.classList.toggle('is-active', btn.dataset.mode === hintMode);
+      }
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      }
+    }
+
+    function refreshHintZoneReadout() {
+      if (!previewHintZone) {
+        els.hintZoneReadout.textContent = 'Hint_data zone: load preview layout to show plaque position';
+        return;
+      }
+      const frame = workingLayout.frame || { w: 237, h: 125 };
+      els.hintZoneReadout.innerHTML = `
+        Hint_data on preview plaque: x ${previewHintZone.x} · y ${previewHintZone.y} · w ${previewHintZone.w} · h ${previewHintZone.h} (390×259)<br />
+        Local hint artboard: ${frame.w}×${frame.h}px · mock shown at ${DISPLAY_SCALE}× on preview plaque
+      `;
+    }
+
+    function refresh() {
+      if (previewLayout) {
+        applyPreviewV2Layout(previewLayout, document.documentElement);
+      }
+      applyHintV2Layout(workingLayout, document.documentElement);
+      applyHintV2ArtImages(document, workingLayout);
+      els.artPlaqueUse.value = workingLayout.art?.hintPlaqueUse || '';
+      els.artHintCount.value = workingLayout.art?.hintPlaqueCount || '';
+      els.artUseHint.value = workingLayout.art?.useHintBtn || '';
+      const box = getHintV2ItemLayout(currentItem, workingLayout);
+      const def = HINT_V2_ITEM_DEFS[currentItem];
+      const frame = workingLayout.frame || { w: 237, h: 125 };
+      const fontLine = isTokenCountItem(currentItem)
+        ? `<br />${formatTokenFontReadout(getHintV2TokenCountFont(workingLayout))}`
+        : '';
+      els.readout.innerHTML = `
+        <strong>${def?.label || currentItem}</strong><br />
+        x: ${box.x} · y: ${box.y}<br />
+        w: ${box.w} · h: ${box.h} (local px in ${frame.w}×${frame.h} Hint_data)${fontLine}
+      `;
+      els.fontBtnRow.hidden = !isTokenCountItem(currentItem);
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildHintV2LayoutReport(workingLayout);
+      refreshHintZoneReadout();
+      stashHintV2LayoutDraft(workingLayout);
+      refreshFieldGrid();
+      refreshHintMode();
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const box = getHintV2ItemLayout(currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) {
+        patchItem(currentItem, { h: Math.max(8, box.h + dir * SIZE_STEP) });
+        return;
+      }
+      if (e.altKey && e.shiftKey && isTokenCountItem(currentItem)) {
+        patchTokenCountFont(dir, 'cqi');
+        return;
+      }
+      if (e.altKey && !e.ctrlKey && !e.shiftKey && isTokenCountItem(currentItem)) {
+        patchTokenCountFont(dir, 'px');
+        return;
+      }
+      if (e.ctrlKey) {
+        patchItem(currentItem, { w: Math.max(8, box.w + dir * SIZE_STEP) });
+        return;
+      }
+      if (e.shiftKey) {
+        patchItem(currentItem, { y: Math.max(0, box.y + dir * POS_STEP) });
+        return;
+      }
+      patchItem(currentItem, { x: Math.max(0, box.x + dir * POS_STEP) });
+    }
+
+    function wireTunerBox(box) {
+      box.addEventListener('pointerdown', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        selectItem(box.dataset.item);
+        els.mockStage.focus();
+      });
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.mockStage = document.getElementById('mockStage');
+      els.hintRoot = document.getElementById('hintRoot');
+      els.hintZoneReadout = document.getElementById('hintZoneReadout');
+      els.artPlaqueUse = document.getElementById('artPlaqueUse');
+      els.artHintCount = document.getElementById('artHintCount');
+      els.artUseHint = document.getElementById('artUseHint');
+      els.modeToggle = document.getElementById('modeToggle');
+      els.fontBtnRow = document.getElementById('fontBtnRow');
+
+      for (const key of HINT_V2_ITEM_KEYS) {
+        const def = HINT_V2_ITEM_DEFS[key];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => selectItem(key));
+        els.fieldGrid.appendChild(btn);
+      }
+
+      document.querySelectorAll('.tuner-box[data-item]').forEach(wireTunerBox);
+
+      els.modeToggle.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('[data-mode]');
+        if (!btn) return;
+        hintMode = btn.dataset.mode;
+        selectItem(hintMode === 'use' ? 'hintTokenAddUse' : 'hintTokenAddCount');
+      });
+
+      els.artPlaqueUse.addEventListener('change', () => patchArt({ hintPlaqueUse: els.artPlaqueUse.value.trim() }));
+      els.artHintCount.addEventListener('change', () => patchArt({ hintPlaqueCount: els.artHintCount.value.trim() }));
+      els.artUseHint.addEventListener('change', () => patchArt({ useHintBtn: els.artUseHint.value.trim() }));
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+
+      document.getElementById('fontSmallerBtn').addEventListener('click', () => patchTokenCountFont(-1, 'px'));
+      document.getElementById('fontLargerBtn').addEventListener('click', () => patchTokenCountFont(1, 'px'));
+      document.getElementById('fontCqiSmallerBtn').addEventListener('click', () => patchTokenCountFont(-1, 'cqi'));
+      document.getElementById('fontCqiLargerBtn').addEventListener('click', () => patchTokenCountFont(1, 'cqi'));
+
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearHintV2LayoutCache();
+        clearHintV2LayoutDraft();
+        workingLayout = await loadHintV2Layout({ force: true });
+        refresh();
+        els.status.textContent = 'Reloaded from data/hint_v2_layout.json';
+      });
+
+      document.getElementById('clearDraftBtn').addEventListener('click', () => {
+        clearHintV2LayoutDraft();
+        localStorage.removeItem('tilezilla:layouts:hint-v2');
+        els.status.textContent = 'Browser draft cleared — click Reload file';
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+      document.getElementById('copyReportBtn').addEventListener('click', async () => {
+        const text = buildHintV2LayoutReport(workingLayout);
+        try {
+          await navigator.clipboard.writeText(text);
+          els.status.textContent = 'Report copied';
+        } catch {
+          els.reportOut.select();
+          els.status.textContent = 'Select report text and copy manually';
+        }
+      });
+
+      try {
+        previewLayout = await loadPreviewV2Layout();
+        previewHintZone = getPreviewV2ItemLayout('hintData', previewLayout);
+      } catch {
+        previewLayout = null;
+        previewHintZone = null;
+      }
+
+      workingLayout = await loadHintV2Layout();
+      refresh();
+      els.mockStage.focus();
+    }
+
+    init();
+  </script>
+</body>
+</html>

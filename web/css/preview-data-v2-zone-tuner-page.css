@@ -1,0 +1,63 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+.lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+.lead a, .lead code { color: #8fd49a; }
+.tuner-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; font-size: 0.75rem; }
+.tuner-nav a { color: #8fd49a; text-decoration: none; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.25); }
+.tuner-nav a.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); color: #f4ecd8; }
+.layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; align-items: start; }
+@media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+.panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+.panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: #c4a35a; }
+.field-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 12px; }
+.field-btn { padding: 8px 6px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.25); background: rgba(0,0,0,0.25); color: #f4ecd8; font: inherit; font-size: 0.72rem; cursor: pointer; text-align: left; }
+.field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+.readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+.nudge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
+.nudge-grid .btn { padding: 8px 4px; }
+.font-nudge-row, .align-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.font-nudge-row .btn, .align-row .btn { flex: 1 1 auto; }
+.keys { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.65rem; color: #7a8a86; line-height: 1.5; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.btn { padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.4); background: rgba(45, 90, 61, 0.55); color: #f4ecd8; font: inherit; font-size: 0.78rem; cursor: pointer; }
+.status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+#jsonOut, #reportOut { width: 100%; min-height: 90px; margin-top: 8px; padding: 8px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35); background: rgba(0,0,0,0.3); color: #f4ecd8; font: ui-monospace, monospace; font-size: 0.7rem; resize: vertical; }
+.zone-readout { margin: 0 0 12px; padding: 8px; border-radius: 6px; background: rgba(0,0,0,0.25); font-size: 0.68rem; color: #a8b8b4; line-height: 1.45; }
+.zone-readout a { color: #8fd49a; }
+.mock-stage { padding: 24px 16px 40px; border-radius: 10px; background: rgba(8, 20, 18, 0.72); border: 2px dashed rgba(196, 163, 90, 0.35); cursor: crosshair; touch-action: none; user-select: none; outline: none; overflow-x: auto; }
+.mock-stage:focus { border-color: #e8b923; }
+.preview-data-v2-zone-tuner-page .tz-stage { width: 390px; height: 259px; position: relative; margin: 0 auto; }
+.preview-data-v2-zone-tuner-page #mockFrame { position: relative; width: 390px; height: 259px; }
+.preview-data-v2-zone-tuner-page .tz-preview-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  overflow: visible;
+  background-image: var(--tz-preview-v2-frame-bg, var(--tz-img-preview-frame));
+  background-position: top center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.preview-data-v2-zone-tuner-page .tz-preview-v2-data { pointer-events: none; z-index: 5; overflow: visible; }
+.preview-data-v2-zone-tuner-page .tz-preview-v2-data.is-tuner-focus { pointer-events: auto; }
+.preview-data-v2-zone-tuner-page .tuner-box {
+  pointer-events: auto !important;
+  cursor: pointer;
+  outline: 2px solid rgba(232, 185, 35, 0.55);
+  outline-offset: -1px;
+  background: rgba(232, 185, 35, 0.08);
+  border-radius: 2px;
+  z-index: 8;
+}
+.preview-data-v2-zone-tuner-page .tuner-box.is-tuner-active {
+  outline-color: #e8b923;
+  box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.45);
+  background: rgba(232, 185, 35, 0.14);
+  z-index: 10;
+}
+.preview-data-v2-zone-tuner-page .tz-preview-v2-data:not(.is-tuner-focus) {
+  opacity: 0.22;
+  filter: grayscale(0.4);
+}

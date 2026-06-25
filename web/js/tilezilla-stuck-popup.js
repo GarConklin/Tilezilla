@@ -13,6 +13,23 @@ const STUCK_ART_H = 1098;
 
 function stuckMaxWidth() {
   const cs = getComputedStyle(document.documentElement);
+  const layoutRatio = parseFloat(cs.getPropertyValue('--tz-stuck-preview-layout-width-ratio')) || 0.95;
+  const previewSection = document.querySelector('.tz-preview-section');
+  if (previewSection) {
+    const w = previewSection.getBoundingClientRect().width;
+    if (w > 0) return Math.floor(w * layoutRatio);
+  }
+  const isV2 = Boolean(document.querySelector('.tz-main-v2-app'));
+  if (isV2) {
+    const designW = parseFloat(cs.getPropertyValue('--tz-design-width')) || 390;
+    const uiScale = parseFloat(cs.getPropertyValue('--tz-ui-scale')) || 1;
+    return Math.floor(designW * uiScale * layoutRatio);
+  }
+  const previewW = cs.getPropertyValue('--tz-w-preview').trim();
+  if (previewW.endsWith('px')) {
+    const uiScale = parseFloat(cs.getPropertyValue('--tz-ui-scale')) || 1;
+    return Math.floor(parseFloat(previewW) * uiScale * layoutRatio);
+  }
   const base = parseFloat(cs.getPropertyValue('--tz-stuck-display-w')) || 720;
   const scale = parseFloat(cs.getPropertyValue('--tz-stuck-width-scale')) || 1;
   return Math.floor(base * scale);

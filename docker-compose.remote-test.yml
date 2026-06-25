@@ -1,0 +1,96 @@
+# Self-contained Tilezilla stack for LAN / remote device testing on Windows 11.
+#
+# Start:  .\scripts\start-remote-test.ps1
+# Stop:   .\scripts\stop-remote-test.ps1
+#
+# One URL serves the game and /auth/* (nginx gateway on TILEZILLA_PORT, default 8080).
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: tilezilla_remote_gateway
+    restart: unless-stopped
+    ports:
+      - "${TILEZILLA_PORT:-8080}:80"
+    volumes:
+      - ./docker/nginx/remote-test.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      web:
+        condition: service_started
+      php-auth:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build: .
+    container_name: tilezilla_remote_web
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - .:/app
+    environment:
+      PORT: "8080"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  php-auth:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.remote
+    container_name: tilezilla_remote_auth
+    restart: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - ./auth/config:/var/www/html/config
+      - ./auth/api:/var/www/html/api
+      - ./auth/src:/var/www/html/src
+      - ./auth/public:/var/www/html/public
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${MYSQL_USER:-tilegame}
+      DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      DB_NAME: WordsOnline
+      GAME_DB_HOST: mysql
+      GAME_DB_USER: ${MYSQL_USER:-tilegame}
+      GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      APP_NAME: Tilezilla
+      APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    container_name: tilezilla_remote_mysql
+    restart: unless-stopped
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_change_me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
+      MYSQL_USER: ${MYSQL_USER:-tilegame}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
+    volumes:
+      - tilezilla_remote_mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+volumes:
+  tilezilla_remote_mysql_data:

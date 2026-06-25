@@ -18,13 +18,32 @@
       draggable="false"
     />
     <p class="auth-screen__profile-name" id="profileName">Explorer</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="rank" id="profileRank">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="subLevel" id="profileSubLevel">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileAdventureProgress">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileRoutes">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="hintTokens" id="profileHints">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="memberSince" id="profileMemberSince">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="passportId" id="profilePassportId">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="explorersRegistered" id="profileExplorers">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="todaysChallenge" id="profileTodaysChallenge">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="recentPuzzleSolved" id="profileRecentPuzzle">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="recentDailyCompleted" id="profileRecentDaily">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="mostSolvedPuzzle" id="profileMostSolved">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="latestDiscovery" id="profileLatestDiscovery">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="totalPlayTime" id="profilePlayTime">—</p>
+    <a class="auth-screen__hit auth-screen__hit--back" href="/tilezilla.html" aria-label="Back">
+      <img src="/img/BAck-gold-rnd-btn.png" alt="" />
+    </a>
+    <a class="auth-screen__hit auth-screen__hit--close-x" href="/tilezilla.html" aria-label="Close">
+      <img src="/img/X-gold-rnd-btn.png" alt="" />
+    </a>
     <nav class="auth-screen__profile-nav" aria-label="Main navigation">
       <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla.html" aria-label="Daily Challenge"></a>
       <a class="auth-screen__hit auth-screen__hit--nav-adventure" href="/tilezilla.html?screen=adventure" aria-label="Adventure Path"></a>
       <a class="auth-screen__hit auth-screen__hit--nav-random" href="/tilezilla.html?screen=random" aria-label="Random Puzzle"></a>
       <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="logoutBtn" aria-label="Log out"></button>
     </nav>
-    <a class="auth-screen__hit auth-screen__hit--back" href="/tilezilla.html" aria-label="Back to game"></a>
   </main>
   <script type="module" src="./js/auth-screen-init.js"></script>
   <script type="module">

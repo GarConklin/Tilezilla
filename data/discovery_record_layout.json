@@ -67,7 +67,7 @@
     "newAdvance": {
       "btnContinue": {
         "x": 14.6,
-        "y": 84.9,
+        "y": 87.9,
         "w": 38.8,
         "h": 9.1,
         "wScale": 0.87,
@@ -76,7 +76,7 @@
       },
       "btnAdvance": {
         "x": 22.6,
-        "y": 93.3,
+        "y": 96.8,
         "w": 39.1,
         "h": 11.4,
         "wScale": 1.37,
@@ -97,7 +97,7 @@
         "nudgeY": -49,
         "fontScale": 1,
         "x": 50.3,
-        "y": 81.3,
+        "y": 84.3,
         "w": 40.3,
         "h": 16.8,
         "wScale": 0.86,
@@ -108,7 +108,7 @@
         "nudgeY": 65,
         "fontScale": 0.78,
         "x": 42.2,
-        "y": 22
+        "y": 20
       },
       "time": {
         "nudgeX": 47,
@@ -130,12 +130,19 @@
         "fontScale": 1.16,
         "x": 46.9,
         "y": 36.5
+      },
+      "solutionFound": {
+        "nudgeX": 126,
+        "nudgeY": -9,
+        "fontScale": 0.72,
+        "x": 32,
+        "y": 43.5
       }
     },
     "newRegular": {
       "btnContinue": {
         "x": 14.6,
-        "y": 81,
+        "y": 84,
         "w": 65,
         "h": 17.6,
         "wScale": 0.52,
@@ -167,7 +174,7 @@
         "nudgeY": -47,
         "fontScale": 1,
         "x": 50,
-        "y": 80.6,
+        "y": 83.6,
         "w": 42.3,
         "h": 17.9,
         "wScale": 0.84,
@@ -178,7 +185,7 @@
         "nudgeY": 63,
         "fontScale": 0.76,
         "x": 41.8,
-        "y": 22.5
+        "y": 21.5
       },
       "puzzleId": {
         "nudgeX": 18,
@@ -192,7 +199,7 @@
         "nudgeY": -9,
         "fontScale": 0.76,
         "x": 32,
-        "y": 43
+        "y": 43.5
       },
       "time": {
         "nudgeX": 47,
@@ -212,7 +219,7 @@
     "duplicateAdvance": {
       "btnContinue": {
         "x": 14.5,
-        "y": 81.7,
+        "y": 84.2,
         "w": 41.4,
         "h": 15.3,
         "wScale": 0.8,
@@ -221,7 +228,7 @@
       },
       "btnViewFound": {
         "x": 49,
-        "y": 81.8,
+        "y": 84.3,
         "w": 44.6,
         "h": 17,
         "wScale": 0.8,
@@ -230,7 +237,7 @@
       },
       "btnAdvance": {
         "x": 25.8,
-        "y": 90.2,
+        "y": 92.2,
         "w": 45.6,
         "h": 17.7,
         "wScale": 1.02,
@@ -239,7 +246,7 @@
       },
       "btnBook": {
         "x": 68.9,
-        "y": 57.2,
+        "y": 57.7,
         "w": 20,
         "h": 22.7,
         "wScale": 0.68,
@@ -266,23 +273,30 @@
         "fontScale": 0.68,
         "x": 20.6,
         "y": 56
+      },
+      "solutionTotal": {
+        "nudgeX": 34,
+        "nudgeY": 63,
+        "fontScale": 0.68,
+        "x": 42,
+        "y": 20.5
       }
     },
     "duplicateRegular": {
       "btnContinue": {
-        "x": 14.3,
-        "y": 81.4,
+        "x": 13.8,
+        "y": 83.9,
         "w": 41.8,
-        "h": 16.7,
+        "h": 19.9,
         "wScale": 0.8,
         "hScale": 0.62,
         "nudgeY": -49
       },
       "btnViewFound": {
         "x": 49.8,
-        "y": 81.1,
+        "y": 83.6,
         "w": 42.6,
-        "h": 17.9,
+        "h": 21.1,
         "wScale": 0.8,
         "hScale": 0.62,
         "nudgeY": -49
@@ -326,7 +340,14 @@
         "nudgeY": 6,
         "fontScale": 0.68,
         "x": 20.4,
-        "y": 56.5
+        "y": 56
+      },
+      "solutionTotal": {
+        "nudgeX": 34,
+        "nudgeY": 63,
+        "fontScale": 0.68,
+        "x": 42,
+        "y": 20.5
       }
     }
   }

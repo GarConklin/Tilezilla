@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en" class="preview-data-v2-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Preview data v2 tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a, .lead code { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: #c4a35a; }
+    .section-toggle { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .section-toggle .btn { padding: 6px 8px; font-size: 0.68rem; }
+    .section-toggle .btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.25); }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .field-btn { padding: 8px 6px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.25); background: rgba(0,0,0,0.25); color: #f4ecd8; font: inherit; font-size: 0.68rem; cursor: pointer; text-align: left; }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .keys { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.65rem; color: #7a8a86; line-height: 1.5; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn { padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.4); background: rgba(45, 90, 61, 0.55); color: #f4ecd8; font: inherit; font-size: 0.78rem; cursor: pointer; }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut { width: 100%; min-height: 100px; margin-top: 8px; padding: 8px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35); background: rgba(0,0,0,0.3); color: #f4ecd8; font: ui-monospace, monospace; font-size: 0.7rem; resize: vertical; }
+    .zone-readout { margin: 0 0 12px; padding: 8px; border-radius: 6px; background: rgba(0,0,0,0.25); font: ui-monospace, monospace; font-size: 0.68rem; color: #a8b8b4; line-height: 1.45; }
+    .mock-stage { padding: 24px 16px 40px; border-radius: 10px; background: rgba(8, 20, 18, 0.72); border: 2px dashed rgba(196, 163, 90, 0.35); cursor: crosshair; touch-action: none; user-select: none; outline: none; overflow-x: auto; }
+    .mock-stage:focus { border-color: #e8b923; }
+    .preview-data-v2-tuner-mock { width: 780px; height: 518px; margin: 0 auto; }
+    .preview-data-v2-tuner-page .tz-preview-frame { position: relative; width: 100%; height: 100%; margin: 0 auto; overflow: visible; background-image: var(--tz-preview-v2-frame-bg, var(--tz-img-preview-frame)); background-position: top center; background-size: 100% 100%; background-repeat: no-repeat; }
+    .preview-data-v2-tuner-page .section-hidden { display: none !important; }
+    .preview-data-v2-tuner-page .tuner-box { position: absolute !important; margin: 0; min-width: 0; min-height: 0; pointer-events: auto !important; cursor: move; background: rgba(232, 185, 35, 0.22) !important; border: 2px solid rgba(232, 185, 35, 0.85) !important; border-radius: 4px; z-index: 8; }
+    .preview-data-v2-tuner-page .tuner-box.is-tuner-active { border-color: #e8b923 !important; box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65); z-index: 10; }
+    .preview-data-v2-tuner-page .tuner-box .hit-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 2px; font-size: clamp(8px, 2cqi, 14px); font-weight: 600; text-align: center; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); pointer-events: none; }
+    .preview-data-v2-tuner-page .tz-preview-v2-data { overflow: visible; pointer-events: none; z-index: 5; }
+    .preview-data-v2-tuner-page .tz-preview-v2-user-data__badge-stack .tz-preview-v2-user-data__badge {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center top;
+      pointer-events: none;
+    }
+    .preview-data-v2-tuner-page .tz-preview-v2-user-data__sublevel-slot .tz-preview-v2-user-data__sublevel {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .preview-data-v2-tuner-page .tz-preview-v2-progress__track { height: 100%; background: rgba(0,0,0,0.35); border-radius: 2px; overflow: hidden; pointer-events: none; }
+    .preview-data-v2-tuner-page .tz-preview-v2-progress__fill { height: 100%; width: 42%; background: linear-gradient(90deg, #2d5a3d, #e8b923); }
+  </style>
+</head>
+<body>
+  <h1>Preview data v2 tuner</h1>
+  <p class="lead">
+    Tune items <strong>inside</strong> each preview data zone on the real plaque at 2× scale.
+    <strong>Game_Data</strong> (type / date / ID + font): <a href="/game-data-v2-tuner.html">game-data-v2-tuner</a> ·
+    <strong>Info_data</strong>: <a href="/info-data-v2-tuner.html">info-data-v2-tuner</a> ·
+    <strong>Timer_data</strong>: <a href="/timer-data-v2-tuner.html">timer-data-v2-tuner</a> ·
+    Zone positions: <a href="/preview-v2-tuner.html">preview-v2-tuner</a> ·
+    Hint items: <a href="/hint-v2-tuner.html">hint-v2-tuner</a> ·
+    <a href="/tilezilla-v2.html">tilezilla-v2</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Data section</h2>
+      <div class="section-toggle" id="sectionToggle"></div>
+      <h2>Items</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys">
+        <li>Scroll — move X · Shift+scroll — move Y</li>
+        <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+      </ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="clearDraftBtn">Clear browser draft</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false"></textarea>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview plaque — data items at 2×</h2>
+      <p class="zone-readout" id="zoneReadout">—</p>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="preview-data-v2-tuner-mock">
+          <div class="tz-preview-frame" id="mockFrame">
+            <div class="tz-preview-v2-data tz-preview-v2-user-data" data-section="userData">
+              <div class="tz-preview-v2-user-data__badge-stack tuner-box" data-item="badgeStack"><img class="tz-preview-v2-user-data__badge" src="/img/ranks/Wanderer.png" alt="" /><span class="hit-label">Badge</span></div>
+              <div class="tz-preview-v2-user-data__sublevel-slot tuner-box" data-item="sublevelIcon">
+                <img class="tz-preview-v2-user-data__sublevel" src="/img/ranks/gld-1.png" alt="" />
+                <span class="hit-label">Sublevel</span>
+              </div>
+              <div class="tz-preview-v2-user-data__progress-track tuner-box" data-item="progressTrack">
+                <div class="tz-preview-v2-progress__fill"></div>
+                <span class="hit-label">Bar</span>
+              </div>
+              <span class="tz-preview-v2-user-data__progress-text tuner-box" data-item="progressText"><span class="hit-label">42%</span></span>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-game-data section-hidden" data-section="gameData">
+              <span class="tz-preview-v2-game-data__item tz-preview-v2-game-data__item--type tuner-box" data-item="gameType"><span class="hit-label">Type</span></span>
+              <time class="tz-preview-v2-game-data__item tz-preview-v2-game-data__item--date tuner-box" data-item="gameDate"><span class="hit-label">Date</span></time>
+              <span class="tz-preview-v2-game-data__item tz-preview-v2-game-data__item--id tuner-box" data-item="puzzleId"><span class="hit-label">ID</span></span>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-info-data section-hidden" data-section="infoData">
+              <span class="tz-preview-v2-info-data__count tz-preview-v2-info-data__item tz-preview-v2-info-data__item--count tuner-box" data-item="solutionCount"><span class="hit-label">3</span></span>
+              <span class="tz-preview-v2-info-data__possible tz-preview-v2-info-data__item tz-preview-v2-info-data__item--possible tuner-box" data-item="solutionPossible"><span class="hit-label">Possible</span></span>
+              <span class="tz-preview-v2-info-data__solutions tz-preview-v2-info-data__item tz-preview-v2-info-data__item--solutions tuner-box" data-item="solutionSolutions"><span class="hit-label">Solutions</span></span>
+            </div>
+            <div class="tz-preview-v2-data tz-preview-v2-timer-data section-hidden" data-section="timerData">
+              <span class="tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--current tuner-box" data-item="timerCurrent"><span class="hit-label">01:23</span></span>
+              <span class="tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--best tuner-box" data-item="timerBest"><span class="hit-label">00:58</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      PREVIEW_V2_DATA_SECTIONS,
+      PREVIEW_V2_DATA_SECTION_KEYS,
+      applyPreviewV2DataSublayout,
+      buildPreviewV2DataSublayoutReport,
+      clearPreviewV2DataSublayoutCache,
+      clearPreviewV2DataSublayoutDraft,
+      getPreviewV2DataSublayoutItem,
+      getPreviewV2DataSublayoutSaveApi,
+      loadPreviewV2DataSublayout,
+      mergePreviewV2DataSublayout,
+      stashPreviewV2DataSublayoutDraft,
+    } from './js/preview-v2-data-sublayout.js';
+    import { applyPreviewV2Layout, getPreviewV2ItemLayout, loadPreviewV2Layout } from './js/preview-v2-layout.js';
+
+    const POS_STEP = 2;
+    const SIZE_STEP = 2;
+    const els = {};
+    let previewLayout = null;
+    let previewZone = null;
+    let currentSection = 'userData';
+    let currentItem = 'badgeStack';
+    let workingLayout = mergePreviewV2DataSublayout(currentSection, null);
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    function sectionDef() { return PREVIEW_V2_DATA_SECTIONS[currentSection]; }
+    function sectionItemKeys() { return Object.keys(sectionDef().items); }
+
+    function selectItem(itemKey) {
+      currentItem = itemKey;
+      refresh();
+    }
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function exportJson() { return JSON.stringify(workingLayout, null, 2); }
+
+    async function saveToFile({ quiet = false } = {}) {
+      const api = getPreviewV2DataSublayoutSaveApi(currentSection);
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch(api, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearPreviewV2DataSublayoutCache(currentSection);
+        clearPreviewV2DataSublayoutDraft(currentSection);
+        localStorage.setItem(`tilezilla:${currentSection}-v2-layout-version`, String(Date.now()));
+        window.dispatchEvent(new CustomEvent(`tilezilla:${currentSection}-v2-layout-saved`));
+        els.status.textContent = quiet ? 'Auto-saved' : `Saved ${sectionDef().file}`;
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    async function switchSection(sectionKey) {
+      currentSection = sectionKey;
+      const def = sectionDef();
+      currentItem = Object.keys(def.items)[0];
+      workingLayout = await loadPreviewV2DataSublayout(sectionKey);
+      previewZone = previewLayout ? getPreviewV2ItemLayout(def.previewZoneKey, previewLayout) : null;
+      refresh();
+    }
+
+    function refreshSectionVisibility() {
+      document.querySelectorAll('[data-section]').forEach((el) => {
+        el.classList.toggle('section-hidden', el.dataset.section !== currentSection);
+      });
+      for (const btn of els.sectionToggle.querySelectorAll('[data-section]')) {
+        btn.classList.toggle('is-active', btn.dataset.section === currentSection);
+      }
+    }
+
+    function refreshFieldGrid() {
+      els.fieldGrid.innerHTML = '';
+      const def = sectionDef();
+      for (const key of sectionItemKeys()) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.items[key].label;
+        btn.classList.toggle('is-active', key === currentItem);
+        btn.addEventListener('click', () => selectItem(key));
+        els.fieldGrid.appendChild(btn);
+      }
+      for (const box of document.querySelectorAll(`.tz-preview-v2-data[data-section="${currentSection}"] .tuner-box[data-item]`)) {
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      }
+    }
+
+    function refreshZoneReadout() {
+      const def = sectionDef();
+      const frame = workingLayout.frame || def.frame;
+      if (!previewZone) {
+        els.zoneReadout.textContent = `${def.label} zone: load preview layout`;
+        return;
+      }
+      els.zoneReadout.innerHTML = `
+        ${def.label} on preview plaque: x ${previewZone.x} · y ${previewZone.y} · w ${previewZone.w} · h ${previewZone.h}<br />
+        Local artboard: ${frame.w}×${frame.h}px · shown at 2× on preview plaque
+      `;
+    }
+
+    function refresh() {
+      if (previewLayout) applyPreviewV2Layout(previewLayout, document.documentElement);
+      applyPreviewV2DataSublayout(currentSection, workingLayout, document.documentElement);
+      const box = getPreviewV2DataSublayoutItem(currentSection, currentItem, workingLayout);
+      const def = sectionDef();
+      const frame = workingLayout.frame || def.frame;
+      els.readout.innerHTML = `
+        <strong>${def.items[currentItem]?.label || currentItem}</strong><br />
+        x: ${box.x} · y: ${box.y} · w: ${box.w} · h: ${box.h} (local px in ${frame.w}×${frame.h})
+      `;
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildPreviewV2DataSublayoutReport(currentSection, workingLayout);
+      refreshZoneReadout();
+      refreshFieldGrid();
+      refreshSectionVisibility();
+      stashPreviewV2DataSublayoutDraft(currentSection, workingLayout);
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const box = getPreviewV2DataSublayoutItem(currentSection, currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) patchItem(currentItem, { h: Math.max(4, box.h + dir * SIZE_STEP) });
+      else if (e.ctrlKey) patchItem(currentItem, { w: Math.max(4, box.w + dir * SIZE_STEP) });
+      else if (e.shiftKey) patchItem(currentItem, { y: Math.max(0, box.y + dir * POS_STEP) });
+      else patchItem(currentItem, { x: Math.max(0, box.x + dir * POS_STEP) });
+    }
+
+    async function init() {
+      els.sectionToggle = document.getElementById('sectionToggle');
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.zoneReadout = document.getElementById('zoneReadout');
+      els.mockStage = document.getElementById('mockStage');
+
+      for (const key of PREVIEW_V2_DATA_SECTION_KEYS) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn';
+        btn.dataset.section = key;
+        btn.textContent = PREVIEW_V2_DATA_SECTIONS[key].label;
+        btn.addEventListener('click', () => void switchSection(key));
+        els.sectionToggle.appendChild(btn);
+      }
+
+      document.querySelectorAll('.tuner-box[data-item]').forEach((box) => {
+        box.addEventListener('pointerdown', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const root = box.closest('[data-section]');
+          if (root?.dataset.section) void switchSection(root.dataset.section).then(() => selectItem(box.dataset.item));
+          else selectItem(box.dataset.item);
+          els.mockStage.focus();
+        });
+      });
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      document.getElementById('reloadBtn').addEventListener('click', async () => {
+        clearPreviewV2DataSublayoutCache(currentSection);
+        clearPreviewV2DataSublayoutDraft(currentSection);
+        workingLayout = await loadPreviewV2DataSublayout(currentSection, { force: true });
+        refresh();
+        els.status.textContent = `Reloaded ${sectionDef().file}`;
+      });
+      document.getElementById('clearDraftBtn').addEventListener('click', () => {
+        clearPreviewV2DataSublayoutDraft(currentSection);
+        els.status.textContent = 'Draft cleared — Reload file';
+      });
+      document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+      try {
+        previewLayout = await loadPreviewV2Layout();
+      } catch {
+        previewLayout = null;
+      }
+      await switchSection('userData');
+      els.mockStage.focus();
+    }
+
+    init();
+  </script>
+</body>
+</html>

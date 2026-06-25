@@ -1,4 +1,5 @@
 /* Auth / load / login / passport / profile screens */
+@import url("profile-passport-layout.css");
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -7,6 +8,13 @@
   --tz-img-bg-sky: url("/img/Background%20Sky%20and%20dock%20without%20water.png");
   --tz-img-bg-water-a: url("/img/Background%20water1.png");
   --tz-img-bg-water-b: url("/img/Background%20water2.png");
+  --tz-profile-art-w: 1418;
+  --tz-profile-art-h: 2200;
+  --tz-profile-display-pad: calc(
+    max(8px, env(safe-area-inset-top, 0px))
+    + max(8px, env(safe-area-inset-bottom, 0px))
+  );
+  --tz-profile-max-design-width: min(100%, 420px);
 }
 
 html, body {
@@ -168,6 +176,67 @@ html, body {
   margin: 0 auto;
 }
 
+/* Passport frame — login / create / profile share art aspect ratio so % coords match tuners */
+.auth-screen--login .auth-screen__stage,
+.auth-screen--create .auth-screen__stage,
+.auth-screen--profile .auth-screen__stage {
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width),
+    calc(var(--tz-profile-art-w) * 1px),
+    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  );
+  aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
+  max-height: calc(100dvh - var(--tz-profile-display-pad));
+}
+
+.auth-screen--login .auth-screen__stage {
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width),
+    var(--auth-login-max-width, 420px),
+    calc(var(--tz-profile-art-w) * 1px),
+    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  );
+}
+
+.auth-screen--create .auth-screen__stage {
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width),
+    var(--auth-create-max-width, 420px),
+    calc(var(--tz-profile-art-w) * 1px),
+    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  );
+}
+
+.auth-screen--profile .auth-screen__stage {
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width),
+    var(--auth-profile-max-width, 420px),
+    calc(var(--tz-profile-art-w) * 1px),
+    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  );
+}
+
+.auth-screen--login .auth-screen__art,
+.auth-screen--create .auth-screen__art,
+.auth-screen--profile .auth-screen__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.auth-screen--login,
+.auth-screen--create,
+.auth-screen--profile {
+  justify-content: center;
+}
+
 .auth-screen--load .auth-screen__hit--guest {
   left: 4.5%;
   top: 58.5%;
@@ -180,10 +249,6 @@ html, body {
   top: 58.5%;
   width: 44%;
   height: 11.5%;
-}
-
-.auth-screen--login .auth-screen__stage {
-  width: min(100%, var(--auth-login-max-width, 420px));
 }
 
 .auth-screen--login .auth-screen__input--user {
@@ -226,10 +291,6 @@ html, body {
   top: var(--auth-login-navLogout-y, 92%);
   width: var(--auth-login-navLogout-w, 45%);
   height: var(--auth-login-navLogout-h, 5.5%);
-}
-
-.auth-screen--create .auth-screen__stage {
-  width: min(100%, var(--auth-create-max-width, 420px));
 }
 
 .auth-screen--create .auth-screen__input--name {
@@ -288,10 +349,6 @@ html, body {
   height: var(--auth-create-navLogout-h, 5.5%);
 }
 
-.auth-screen--profile .auth-screen__stage {
-  width: min(100%, var(--auth-profile-max-width, 420px));
-}
-
 .auth-screen--profile .auth-screen__profile-name {
   position: absolute;
   left: var(--auth-profile-profileName-x, 15%);
@@ -341,8 +398,24 @@ html, body {
 .auth-screen--profile .auth-screen__hit--back {
   left: var(--auth-profile-back-x, 2%);
   top: var(--auth-profile-back-y, 1.5%);
-  width: var(--auth-profile-back-w, 12%);
-  height: var(--auth-profile-back-h, 4%);
+  width: var(--auth-profile-back-w, 10%);
+  height: var(--auth-profile-back-h, 5%);
+}
+
+.auth-screen--profile .auth-screen__hit--close-x {
+  left: var(--auth-profile-closeX-x, 86%);
+  top: var(--auth-profile-closeX-y, 1.5%);
+  width: var(--auth-profile-closeX-w, 10%);
+  height: var(--auth-profile-closeX-h, 5%);
+}
+
+.auth-screen--profile .auth-screen__hit--back img,
+.auth-screen--profile .auth-screen__hit--close-x img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }
 
 .auth-screen__form {
@@ -356,7 +429,18 @@ html, body {
   pointer-events: none;
 }
 
+.auth-screen__profile-nav {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .auth-screen__bottom-nav .auth-screen__hit {
+  pointer-events: auto;
+}
+
+.auth-screen__profile-nav .auth-screen__hit,
+.auth-screen-tuner-page .auth-screen__profile-nav .tuner-box {
   pointer-events: auto;
 }
 

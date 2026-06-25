@@ -10,7 +10,7 @@ export const STUCK_REVEAL_ITEM_DEFS = {
 
 export const DEFAULT_STUCK_REVEAL_LAYOUT = {
   items: {
-    preview: { x: 57, y: 24, w: 36, h: 58 },
+    preview: { x: 57, y: 24, w: 36, h: 58, widthScale: 0.95, heightScale: 0.62 },
     keep: { x: 4.5, y: 88.5, w: 27, h: 9.5 },
     close: { x: 91, y: 2.5, w: 7, h: 7 },
   },
@@ -105,6 +105,8 @@ export function getStuckRevealItemLayout(itemKey, layout) {
     y: item.y ?? def.y ?? 0,
     w: item.w ?? def.w ?? 0,
     h: item.h ?? def.h ?? 0,
+    widthScale: item.widthScale ?? def.widthScale ?? 1,
+    heightScale: item.heightScale ?? def.heightScale ?? 1,
   };
 }
 
@@ -113,6 +115,16 @@ function setItemVars(target, cssPrefix, box) {
   target.style.setProperty(`--tz-stuck-${cssPrefix}-y`, `${box.y}%`);
   target.style.setProperty(`--tz-stuck-${cssPrefix}-w`, `${box.w}%`);
   target.style.setProperty(`--tz-stuck-${cssPrefix}-h`, `${box.h}%`);
+  if (cssPrefix === 'reveal-preview') {
+    target.style.setProperty(
+      '--tz-stuck-reveal-preview-width-scale',
+      String(box.widthScale ?? 0.95),
+    );
+    target.style.setProperty(
+      '--tz-stuck-reveal-preview-height-scale',
+      String(box.heightScale ?? 0.62),
+    );
+  }
 }
 
 export function applyStuckRevealLayout(layout, target = document.documentElement) {
@@ -131,7 +143,10 @@ export function buildStuckRevealLayoutReport(layout) {
   ];
   for (const [key, def] of Object.entries(STUCK_REVEAL_ITEM_DEFS)) {
     const box = getStuckRevealItemLayout(key, merged);
-    lines.push(`${def.label}: x ${box.x}% · y ${box.y}% · w ${box.w}% · h ${box.h}%`);
+    const scalePart = key === 'preview'
+      ? ` · widthScale ${box.widthScale} · heightScale ${box.heightScale}`
+      : '';
+    lines.push(`${def.label}: x ${box.x}% · y ${box.y}% · w ${box.w}% · h ${box.h}%${scalePart}`);
   }
   return lines.join('\n');
 }

@@ -1,0 +1,54 @@
+challenge overlays
+
+
+if the total number of solves is a 1 
+the the start used CP-Overlay-0of1.png uses BeginChallenge-btn.png
+and once solved the progress screen uses CP-Overlay-1of1.png   use Level-UpandContinue.png
+
+if the total number of solves is a 2
+the the start used CP-Overlay-0of2.png   uses BeginChallenge-btn.png 
+1st solve uses CP-Overlay-1of2.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of2.png  use Level-UpandContinue.png
+
+if the total number of solves is a 3
+the the start used CP-Overlay-0of3.png uses BeginChallenge-btn.png
+1st solve uses CP-Overlay-1of3.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of3.png  use CLD-ContinueSearch-btn.png
+3rd solve uses CP-Overlay-3of3.png use Level-UpandContinue.png
+
+if the total number of solves is a 4
+the the start used CP-Overlay-0of4.png uses BeginChallenge-btn.png
+1st solve uses CP-Overlay-1of4.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of4.png  use CLD-ContinueSearch-btn.png
+3rd solve uses CP-Overlay-3of4.png  use CLD-ContinueSearch-btn.png
+4th solve uses CP-Overlay-4of4.png use Level-UpandContinue.png
+
+if the total number of solves is a 5
+the the start used CP-Overlay-0of5.png uses BeginChallenge-btn.png
+1st solve uses CP-Overlay-1of5.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of5.png  use CLD-ContinueSearch-btn.png
+3rd solve uses CP-Overlay-3of5.png  use CLD-ContinueSearch-btn.png
+4th solve uses CP-Overlay-4of5.png  use CLD-ContinueSearch-btn.png
+5th solve uses CP-Overlay-5of5.png use Level-UpandContinue.png
+
+if the total number of solves is a 6
+the the start used CP-Overlay-0of6.png uses BeginChallenge-btn.png
+1st solve uses CP-Overlay-1of6.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of6.png  use CLD-ContinueSearch-btn.png
+3rd solve uses CP-Overlay-3of6.png  use CLD-ContinueSearch-btn.png
+4th solve uses CP-Overlay-4of6.png  use CLD-ContinueSearch-btn.png
+5th solve uses CP-Overlay-5of6.png  use CLD-ContinueSearch-btn.png
+6th solve uses CP-Overlay-6of6.png use Level-UpandContinue.png
+
+
+if the total number of solves is a 9
+the the start used CP-Overlay-0of9.png uses BeginChallenge-btn.png
+1st solve uses CP-Overlay-1of9.png  use CLD-ContinueSearch-btn.png
+2nd solve uses CP-Overlay-2of9.png  use CLD-ContinueSearch-btn.png
+3rd solve uses CP-Overlay-3of9.png  use CLD-ContinueSearch-btn.png
+4th solve uses CP-Overlay-4of9.png  use CLD-ContinueSearch-btn.png
+5th solve uses CP-Overlay-5of9.png  use CLD-ContinueSearch-btn.png
+6th solve uses CP-Overlay-6of9.png  use CLD-ContinueSearch-btn.png
+7th solve uses CP-Overlay-7of9.png  use CLD-ContinueSearch-btn.png
+8th solve uses CP-Overlay-8of9.png  use CLD-ContinueSearch-btn.png
+9th solve uses CP-Overlay-9of9.png use Level-UpandContinue.png

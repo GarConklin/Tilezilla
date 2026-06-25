@@ -1,0 +1,26 @@
+{
+  "frame": {
+    "w": 58,
+    "h": 44
+  },
+  "items": {
+    "timerCurrent": {
+      "x": 29,
+      "y": 15,
+      "w": 28,
+      "h": 14,
+      "fontScale": 0.85,
+      "justify": "flex-end",
+      "align": "center"
+    },
+    "timerBest": {
+      "x": 21,
+      "y": 31,
+      "w": 36,
+      "h": 8,
+      "fontScale": 0.92,
+      "justify": "flex-end",
+      "align": "center"
+    }
+  }
+}

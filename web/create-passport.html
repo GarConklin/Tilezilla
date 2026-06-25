@@ -98,11 +98,11 @@
           }),
         });
         const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data?.ok) {
+        if (!res.ok || !data?.success) {
           showAuthErrorPopup(data?.error || 'Could not create passport.');
           return;
         }
-        const userId = data.username || name;
+        const userId = data.user?.username || name;
         setRegisteredUser(userId);
         localStorage.setItem(ACTIVE_USER_KEY, userId);
         localStorage.setItem(AUTH_MODE_KEY, 'registered');

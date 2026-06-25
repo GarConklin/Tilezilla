@@ -11,6 +11,7 @@
 
 
 import { initFancyScroller } from './fancy-scroller.js';
+import { syncHintRulesWindowGeometry } from './hint-rules-layout.js';
 
 
 
@@ -52,7 +53,10 @@ function openHintRulesPopup() {
 
   if (scroll) scroll.scrollTop = 0;
 
-  requestAnimationFrame(() => fancyScroller?.sync?.());
+  requestAnimationFrame(() => {
+    syncHintRulesWindowGeometry();
+    fancyScroller?.sync?.();
+  });
 
 }
 
@@ -150,7 +154,31 @@ export function initHintRules({ menuApi: menu } = {}) {
 
   window.addEventListener('tilezilla:hint-rules-layout-saved', () => {
 
-    requestAnimationFrame(() => fancyScroller?.sync?.());
+    requestAnimationFrame(() => {
+
+      syncHintRulesWindowGeometry();
+
+      fancyScroller?.sync?.();
+
+    });
+
+  });
+
+
+
+  window.addEventListener('tilezilla:main-screen-v2-layout-saved', () => {
+
+    requestAnimationFrame(() => syncHintRulesWindowGeometry());
+
+  });
+
+
+
+  window.addEventListener('resize', () => {
+
+    if (root.hidden) return;
+
+    syncHintRulesWindowGeometry();
 
   });
 

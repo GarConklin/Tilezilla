@@ -2,45 +2,126 @@
 
 export const AUTH_PASSPORT_ART = { w: 1418, h: 2200 };
 
+export const PROFILE_HIT_ART = {
+  back: '/img/BAck-gold-rnd-btn.png',
+  closeX: '/img/X-gold-rnd-btn.png',
+};
+
+const profileStat = (label, slot) => ({
+  label,
+  kind: 'text',
+  slot,
+  cssClass: 'auth-screen__profile-stat',
+  baseClass: '',
+});
+
 export const AUTH_SCREEN_DEFS = {
   login: {
     label: 'Logging in',
     art: '/img/Logging-in.png',
     items: {
-      user: { label: 'Username / email', cssClass: 'auth-screen__input--user', baseClass: 'auth-screen__input' },
-      pass: { label: 'Password', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
-      submit: { label: 'Open passport', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
-      secondary: { label: 'Issue new passport', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
-      navDaily: { label: 'Daily Challenge (guest)', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
-      navLogout: { label: 'Log out', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
+      user: { label: 'Username / email', kind: 'input', cssClass: 'auth-screen__input--user', baseClass: 'auth-screen__input' },
+      pass: { label: 'Password', kind: 'input', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
+      submit: { label: 'Open passport', kind: 'hit', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
+      secondary: { label: 'Issue new passport', kind: 'hit', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
+      navDaily: { label: 'Daily Challenge (guest)', kind: 'hit', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
+      navLogout: { label: 'Log out', kind: 'hit', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
     },
   },
   create: {
     label: 'Create passport',
     art: '/img/Create-Passport.png',
     items: {
-      name: { label: 'Explorer name', cssClass: 'auth-screen__input--name', baseClass: 'auth-screen__input' },
-      email: { label: 'Email', cssClass: 'auth-screen__input--email', baseClass: 'auth-screen__input' },
-      pass: { label: 'Passphrase', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
-      pass2: { label: 'Confirm passphrase', cssClass: 'auth-screen__input--pass2', baseClass: 'auth-screen__input' },
-      submit: { label: 'Issue passport', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
-      secondary: { label: 'Already have passport', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
-      navDaily: { label: 'Daily Challenge (guest)', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
-      navLogout: { label: 'Log out', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
+      name: { label: 'Explorer name', kind: 'input', cssClass: 'auth-screen__input--name', baseClass: 'auth-screen__input' },
+      email: { label: 'Email', kind: 'input', cssClass: 'auth-screen__input--email', baseClass: 'auth-screen__input' },
+      pass: { label: 'Passphrase', kind: 'input', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
+      pass2: { label: 'Confirm passphrase', kind: 'input', cssClass: 'auth-screen__input--pass2', baseClass: 'auth-screen__input' },
+      submit: { label: 'Issue passport', kind: 'hit', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
+      secondary: { label: 'Already have passport', kind: 'hit', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
+      navDaily: { label: 'Daily Challenge (guest)', kind: 'hit', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
+      navLogout: { label: 'Log out', kind: 'hit', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
     },
   },
   profile: {
     label: 'Logged in',
     art: '/img/Logged-in.png',
     items: {
-      profileName: { label: 'Explorer name', cssClass: 'auth-screen__profile-name', baseClass: '' },
-      navDaily: { label: 'Nav — Daily', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
-      navAdventure: { label: 'Nav — Adventure', cssClass: 'auth-screen__hit--nav-adventure', baseClass: 'auth-screen__hit' },
-      navRandom: { label: 'Nav — Random', cssClass: 'auth-screen__hit--nav-random', baseClass: 'auth-screen__hit' },
-      navLogout: { label: 'Nav — Log out', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
-      back: { label: 'Back', cssClass: 'auth-screen__hit--back', baseClass: 'auth-screen__hit' },
+      profileName: { label: 'Name', kind: 'text', cssClass: 'auth-screen__profile-name', baseClass: '' },
+      rank: profileStat('Rank', 'rank'),
+      subLevel: profileStat('Sub level', 'subLevel'),
+      adventureProgress: profileStat('Adventure progress', 'adventureProgress'),
+      routesDiscovered: profileStat('Routes discovered', 'routesDiscovered'),
+      hintTokens: profileStat('Hint tokens', 'hintTokens'),
+      memberSince: profileStat('Member since', 'memberSince'),
+      passportId: profileStat('Passport ID', 'passportId'),
+      explorersRegistered: profileStat('Explorers registered', 'explorersRegistered'),
+      todaysChallenge: profileStat("Today's challenge ID", 'todaysChallenge'),
+      recentPuzzleSolved: profileStat('Most recent puzzle solved', 'recentPuzzleSolved'),
+      recentDailyCompleted: profileStat('Most recent daily completed', 'recentDailyCompleted'),
+      mostSolvedPuzzle: profileStat('Most solved puzzle', 'mostSolvedPuzzle'),
+      latestDiscovery: profileStat('Latest discovery', 'latestDiscovery'),
+      totalPlayTime: profileStat('Total play time', 'totalPlayTime'),
+      navDaily: { label: 'Nav — Daily', kind: 'hit', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
+      navAdventure: { label: 'Nav — Adventure', kind: 'hit', cssClass: 'auth-screen__hit--nav-adventure', baseClass: 'auth-screen__hit' },
+      navRandom: { label: 'Nav — Random', kind: 'hit', cssClass: 'auth-screen__hit--nav-random', baseClass: 'auth-screen__hit' },
+      navLogout: { label: 'Nav — Log out', kind: 'hit', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
+      back: { label: 'Back', kind: 'hit', cssClass: 'auth-screen__hit--back', baseClass: 'auth-screen__hit', art: PROFILE_HIT_ART.back },
+      closeX: { label: 'Close X', kind: 'hit', cssClass: 'auth-screen__hit--close-x', baseClass: 'auth-screen__hit', art: PROFILE_HIT_ART.closeX },
     },
   },
+};
+
+/** Field-picker grouping for logged-in tuner. */
+export const PROFILE_FIELD_SECTIONS = [
+  {
+    title: 'Passport (top)',
+    keys: [
+      'profileName',
+      'rank',
+      'subLevel',
+      'adventureProgress',
+      'routesDiscovered',
+      'hintTokens',
+      'memberSince',
+      'passportId',
+    ],
+  },
+  {
+    title: 'Left journal',
+    keys: ['explorersRegistered', 'todaysChallenge'],
+  },
+  {
+    title: 'Right journal',
+    keys: [
+      'recentPuzzleSolved',
+      'recentDailyCompleted',
+      'mostSolvedPuzzle',
+      'latestDiscovery',
+      'totalPlayTime',
+    ],
+  },
+  {
+    title: 'Navigation',
+    keys: ['back', 'closeX', 'navDaily', 'navAdventure', 'navRandom', 'navLogout'],
+  },
+];
+
+export const PROFILE_LAYOUT_MOCK = {
+  profileName: 'Explorer TileMaster',
+  rank: 'TileMaster',
+  subLevel: '12',
+  adventureProgress: '42%',
+  routesDiscovered: '128',
+  hintTokens: '7',
+  memberSince: 'Jun 2026',
+  passportId: 'TZ-4F2A9C',
+  explorersRegistered: '1,204',
+  todaysChallenge: '5x6-0B-BFA',
+  recentPuzzleSolved: '5x6-0B-BNZ',
+  recentDailyCompleted: '5x6-0B-AZZ',
+  mostSolvedPuzzle: '5x6-0B-BJO',
+  latestDiscovery: '5x6-0B-CPX',
+  totalPlayTime: '18h 42m',
 };
 
 export const DEFAULT_AUTH_SCREEN_LAYOUT = {
@@ -71,12 +152,27 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
   profile: {
     dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
     items: {
-      profileName: { x: 15, y: 22.5, w: 70, h: 4 },
+      profileName: { x: 15, y: 22.5, w: 70, h: 4, fontScale: 1 },
+      rank: { x: 28, y: 19, w: 44, h: 3.5, fontScale: 1 },
+      subLevel: { x: 28, y: 26, w: 44, h: 3.5, fontScale: 1 },
+      adventureProgress: { x: 10, y: 32, w: 80, h: 2.5, fontScale: 1 },
+      routesDiscovered: { x: 22, y: 39, w: 18, h: 4, fontScale: 1 },
+      hintTokens: { x: 52, y: 39, w: 18, h: 4, fontScale: 1 },
+      memberSince: { x: 22, y: 44, w: 18, h: 4, fontScale: 1 },
+      passportId: { x: 52, y: 44, w: 35, h: 4, fontScale: 0.92 },
+      explorersRegistered: { x: 10, y: 56, w: 35, h: 3.5, fontScale: 1 },
+      todaysChallenge: { x: 10, y: 74, w: 35, h: 3.5, fontScale: 0.92 },
+      recentPuzzleSolved: { x: 54, y: 56, w: 38, h: 3.5, fontScale: 0.92 },
+      recentDailyCompleted: { x: 54, y: 62, w: 38, h: 3.5, fontScale: 0.92 },
+      mostSolvedPuzzle: { x: 54, y: 68, w: 38, h: 3.5, fontScale: 0.92 },
+      latestDiscovery: { x: 54, y: 74, w: 38, h: 3.5, fontScale: 0.92 },
+      totalPlayTime: { x: 54, y: 80, w: 38, h: 3.5, fontScale: 1 },
       navDaily: { x: 3, y: 92, w: 22, h: 5.5 },
       navAdventure: { x: 27, y: 92, w: 22, h: 5.5 },
       navRandom: { x: 51, y: 92, w: 22, h: 5.5 },
       navLogout: { x: 75, y: 92, w: 22, h: 5.5 },
-      back: { x: 2, y: 1.5, w: 12, h: 4 },
+      back: { x: 2, y: 1.5, w: 10, h: 5 },
+      closeX: { x: 86, y: 1.5, w: 10, h: 5 },
     },
   },
 };
@@ -107,6 +203,10 @@ export function clearAuthScreenLayoutDraft() {
   }
 }
 
+export function isAuthTextItem(screenKey, itemKey) {
+  return AUTH_SCREEN_DEFS[screenKey]?.items?.[itemKey]?.kind === 'text';
+}
+
 export function mergeAuthScreenLayout(raw) {
   const base = JSON.parse(JSON.stringify(DEFAULT_AUTH_SCREEN_LAYOUT));
   if (!raw || typeof raw !== 'object') return base;
@@ -126,22 +226,24 @@ export function mergeAuthScreenLayout(raw) {
   return base;
 }
 
-export async function loadAuthScreenLayout({ force = false } = {}) {
+export async function loadAuthScreenLayout({ force = false, preferFile = false } = {}) {
   if (layoutCache && !force) return layoutCache;
 
   let raw = null;
   let pendingDraft = false;
   try {
-    pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
-    if (pendingDraft) {
-      const draft = localStorage.getItem(LS_LAYOUT_KEY);
-      if (draft) raw = JSON.parse(draft);
+    if (!preferFile) {
+      pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
+      if (pendingDraft) {
+        const draft = localStorage.getItem(LS_LAYOUT_KEY);
+        if (draft) raw = JSON.parse(draft);
+      }
     }
   } catch {
     pendingDraft = false;
   }
 
-  if (!pendingDraft) {
+  if (!raw) {
     try {
       const res = await fetch(`/data/auth_screen_layout.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) raw = await res.json();
@@ -150,7 +252,7 @@ export async function loadAuthScreenLayout({ force = false } = {}) {
     }
   }
 
-  if (!raw && !pendingDraft) {
+  if (!raw && !preferFile) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -205,7 +307,7 @@ export function applyAuthScreenLayout(layout, screenKey, target = document.docum
     target.style.setProperty(cssVarName(screenKey, itemKey, 'y'), `${box.y}%`);
     target.style.setProperty(cssVarName(screenKey, itemKey, 'w'), `${box.w}%`);
     target.style.setProperty(cssVarName(screenKey, itemKey, 'h'), `${box.h}%`);
-    if (itemKey === 'profileName') {
+    if (isAuthTextItem(screenKey, itemKey)) {
       target.style.setProperty(cssVarName(screenKey, itemKey, 'font-scale'), String(box.fontScale));
     }
   }
@@ -217,8 +319,8 @@ export function applyAllAuthScreenLayouts(layout, target = document.documentElem
   }
 }
 
-export async function initAuthScreenLayout(screenKey) {
-  const layout = await loadAuthScreenLayout();
+export async function initAuthScreenLayout(screenKey, { preferFile = false } = {}) {
+  const layout = await loadAuthScreenLayout({ force: preferFile, preferFile });
   applyAuthScreenLayout(layout, screenKey, document.documentElement);
   return layout;
 }
@@ -231,7 +333,8 @@ export function buildAuthScreenLayoutReport(layout, screenKey) {
   lines.push('');
   for (const [key, meta] of Object.entries(AUTH_SCREEN_DEFS[screenKey]?.items || {})) {
     const box = getAuthScreenItemLayout(screenKey, key, merged);
-    lines.push(`${meta.label}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`);
+    const fs = isAuthTextItem(screenKey, key) ? ` fontScale=${box.fontScale}` : '';
+    lines.push(`${meta.label}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%${fs}`);
   }
   return lines.join('\n');
 }

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" class="tz-phone-preview tilebag-v2-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Tile bag v2 tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: #c4a35a; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .field-btn.is-hidden-mode { opacity: 0.45; }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .keys { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.65rem; color: #7a8a86; line-height: 1.5; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .mode-toggle { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mode-toggle .btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.25); }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%; min-height: 100px; margin-top: 8px; padding: 8px;
+      border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3); color: #f4ecd8;
+      font: ui-monospace, monospace; font-size: 0.7rem; resize: vertical;
+    }
+    .mock-stage {
+      padding: 24px 16px 40px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      outline: none;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .tilebag-v2-tuner-page .mock-wrap {
+      width: 390px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 120px;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .tilebag-v2-tuner-page .mock-wrap .tz-tilebag-container {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      height: 100px;
+      margin: 24px auto 0;
+      --tz-w-tilebag: 100%;
+      --tz-h-tilebag-frame: 100%;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay {
+      position: absolute;
+      box-sizing: border-box;
+      border: 2px dashed rgba(232, 185, 35, 0.55);
+      background: rgba(232, 185, 35, 0.08);
+      cursor: move;
+      pointer-events: auto;
+      touch-action: none;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.18);
+    }
+    .tilebag-v2-tuner-page .tuner-overlay__label {
+      position: absolute; top: 0; left: 0; padding: 1px 4px;
+      font-size: 8px; font-weight: 700; color: #fff;
+      background: rgba(0, 0, 0, 0.65); pointer-events: none;
+    }
+    .tilebag-v2-tuner-page .mock-pal-thumb {
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, #4a6741, #2d4a28);
+      border-radius: 3px;
+      min-width: 28px; min-height: 18px;
+    }
+    .tilebag-v2-tuner-page .mock-pal-thumb span {
+      font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.85);
+    }
+    select.mode-select {
+      width: 100%; margin-bottom: 10px; padding: 8px;
+      border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3); color: #f4ecd8; font: inherit; font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body class="tilebag-v2-tuner-page">
+  <h1>Tile bag v2 tuner</h1>
+  <p class="lead">
+    Tune the <strong>main screen v2</strong> tile bag (390×100 zone). Coordinates are art pixels on your bag PNG.
+    Saves to <code>data/tilebag_v2_layout.json</code> — used by <a href="/tilezilla-v2.html">tilezilla-v2</a>.
+    <a href="/tilebag-tuner.html">V1 tile bag tuner</a>
+    · <a href="/dev-player-select.html">Dev tools</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Bag artwork</h2>
+      <label style="font-size:0.68rem;color:#c4a35a;display:block;margin-bottom:4px" for="artCollapsed">Collapsed PNG</label>
+      <input id="artCollapsed" type="text" spellcheck="false" style="width:100%;margin-bottom:8px;padding:6px;border-radius:6px;border:1px solid rgba(196,163,90,.35);background:rgba(0,0,0,.3);color:#f4ecd8;font:ui-monospace,monospace;font-size:0.68rem" />
+      <label style="font-size:0.68rem;color:#c4a35a;display:block;margin-bottom:4px" for="artExpanded">Expanded PNG</label>
+      <input id="artExpanded" type="text" spellcheck="false" style="width:100%;margin-bottom:8px;padding:6px;border-radius:6px;border:1px solid rgba(196,163,90,.35);background:rgba(0,0,0,.3);color:#f4ecd8;font:ui-monospace,monospace;font-size:0.68rem" />
+      <label style="font-size:0.68rem;color:#c4a35a;display:block;margin-bottom:4px" for="artHandlebar">Handlebar PNG</label>
+      <input id="artHandlebar" type="text" spellcheck="false" style="width:100%;margin-bottom:8px;padding:6px;border-radius:6px;border:1px solid rgba(196,163,90,.35);background:rgba(0,0,0,.3);color:#f4ecd8;font:ui-monospace,monospace;font-size:0.68rem" />
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+        <label style="font-size:0.65rem;color:#a8b8b4">Art W<input id="artW" type="number" min="1" style="width:100%;margin-top:2px;padding:4px" /></label>
+        <label style="font-size:0.65rem;color:#a8b8b4">Coll H<input id="artCollapsedH" type="number" min="1" style="width:100%;margin-top:2px;padding:4px" /></label>
+        <label style="font-size:0.65rem;color:#a8b8b4">Exp H<input id="artExpandedH" type="number" min="1" style="width:100%;margin-top:2px;padding:4px" /></label>
+      </div>
+      <h2>Layout items</h2>
+      <label for="modeSelect" style="font-size:0.72rem;color:#a8b8b4">Preview mode</label>
+      <select class="mode-select" id="modeSelect">
+        <option value="collapsed">Collapsed — horizontal scroll</option>
+        <option value="expanded">Expanded — multi-row grid</option>
+      </select>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys" id="keysList"></ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false"></textarea>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — 390×100 v2 zone</h2>
+      <p style="margin:0 0 8px;font-size:0.65rem;color:#7a8a86">Click preview to focus. This tuner uses <strong>yellow overlay boxes</strong> (not click-on-item like hint/preview-data tuners). For tile <strong>height</strong>: select <strong>Tile size &amp; spacing</strong>, then <strong>Alt+scroll</strong> (or Tab to <em>tile height scale</em>, then scroll).</p>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-wrap" id="mockWrap">
+          <section class="tz-tilebag-container" id="mockTileBag">
+            <div class="tz-tilebag-frame">
+              <div class="tz-tilebag-frame__skin" aria-hidden="true"></div>
+              <div class="tz-tilebag-title-overlay">
+                <span class="tz-tilebag-header__title">Tile Bag</span>
+              </div>
+              <div class="tz-tilebag-count-overlay">
+                <span class="tz-tilebag-header__count">8/15</span>
+              </div>
+              <button type="button" class="tz-tilebag-expand-handle" id="mockHandle" aria-label="Expand">
+                <span class="tz-tilebag-expand-handle__bar"></span>
+              </button>
+              <button type="button" class="tz-tilebag-arrow tz-tilebag-arrow--prev" id="mockPrev">‹</button>
+              <div class="tz-tilebag-track" id="mockTrack">
+                <div class="palette tz-palette-h" id="mockPalette" role="listbox"></div>
+              </div>
+              <button type="button" class="tz-tilebag-arrow tz-tilebag-arrow--next" id="mockNext">›</button>
+            </div>
+          </section>
+          <div id="tunerOverlayLayer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/tilebag-v2-tuner.js"></script>
+</body>
+</html>

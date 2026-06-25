@@ -1,0 +1,213 @@
+/* Auth tuner page chrome (logging-in / create-passport / logged-in) */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body.auth-screen-tuner-page {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #f4ecd8;
+  background: #142c28;
+  padding: 16px;
+}
+
+.auth-screen-tuner-page h1 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  color: #e8b923;
+}
+
+.auth-screen-tuner-page .lead {
+  margin: 0 0 16px;
+  font-size: 0.82rem;
+  color: #a8b8b4;
+  line-height: 1.45;
+  max-width: 56rem;
+}
+
+.auth-screen-tuner-page .lead a,
+.auth-screen-tuner-page .lead code {
+  color: #8fd49a;
+}
+
+.auth-screen-tuner-page .tuner-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.auth-screen-tuner-page .tuner-nav a {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 163, 90, 0.35);
+  background: rgba(20, 48, 44, 0.85);
+  color: #f4ecd8;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.auth-screen-tuner-page .tuner-nav a.is-active {
+  border-color: #e8b923;
+  background: rgba(232, 185, 35, 0.15);
+}
+
+.auth-screen-tuner-page .layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .auth-screen-tuner-page .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-screen-tuner-page .panel {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(20, 48, 44, 0.85);
+  border: 1.5px solid rgba(196, 163, 90, 0.35);
+}
+
+.auth-screen-tuner-page .panel h2 {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #c4a35a;
+}
+
+.auth-screen-tuner-page .field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.auth-screen-tuner-page .field-btn {
+  padding: 8px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 163, 90, 0.25);
+  background: rgba(0, 0, 0, 0.25);
+  color: #f4ecd8;
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.auth-screen-tuner-page .field-btn.is-active {
+  border-color: #e8b923;
+  background: rgba(232, 185, 35, 0.15);
+}
+
+.auth-screen-tuner-page .readout {
+  margin: 0 0 10px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: #8fd49a;
+  line-height: 1.45;
+}
+
+.auth-screen-tuner-page .mode-hint {
+  margin: 0 0 8px;
+  font-size: 0.68rem;
+  color: #c4a35a;
+}
+
+.auth-screen-tuner-page .nudge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 10px 0;
+  max-width: 180px;
+}
+
+.auth-screen-tuner-page .nudge-grid .btn {
+  padding: 6px 0;
+  font-size: 0.85rem;
+}
+
+.auth-screen-tuner-page .nudge-grid .btn-wide {
+  grid-column: span 3;
+  font-size: 0.72rem;
+}
+
+.auth-screen-tuner-page .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.auth-screen-tuner-page .btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 163, 90, 0.4);
+  background: rgba(45, 90, 61, 0.55);
+  color: #f4ecd8;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.auth-screen-tuner-page .status {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: #a8b8b4;
+  min-height: 1.2em;
+}
+
+.auth-screen-tuner-page #jsonOut {
+  width: 100%;
+  min-height: 140px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 163, 90, 0.35);
+  background: rgba(0, 0, 0, 0.3);
+  color: #f4ecd8;
+  font: ui-monospace, monospace;
+  font-size: 0.7rem;
+  resize: vertical;
+}
+
+.auth-screen-tuner-page .mock-stage {
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(8, 20, 18, 0.72);
+  border: 2px dashed rgba(196, 163, 90, 0.35);
+  touch-action: none;
+  user-select: none;
+  outline: none;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+}
+
+.auth-screen-tuner-page .mock-stage .auth-screen {
+  justify-content: center;
+}
+
+.auth-screen-tuner-page .mock-stage:focus {
+  border-color: #e8b923;
+}
+
+.auth-screen-tuner-page .keys {
+  margin: 8px 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.65rem;
+  color: #7a8a86;
+  line-height: 1.5;
+}
+
+.auth-screen-tuner-page .font-nudge-row {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.auth-screen-tuner-page .font-nudge-row[hidden] {
+  display: none;
+}

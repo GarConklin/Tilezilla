@@ -18,7 +18,7 @@ Browser  →  Tilezilla PHP (auth/api/*.php)
 | Auth DB | `WordsOnline.users` | Register, login, email verification |
 | Game DB | `tilegame` | Progress, hints, daily challenges (`tile_profiles`, etc.) |
 | Auth code | `auth/` in this repo | PHP API + login/register pages |
-| Static game | `web/` + Python `scripts/server.py` | Gameplay (port 8080) |
+| Static game | `web/` + Python `scripts/server.py` | Gameplay (port 8081 by default) |
 | Auth web | `docker-compose.auth.yml` → port 8081 | PHP/Apache auth service |
 
 ## Quick start (production server)

@@ -1,0 +1,181 @@
+/* Shared auth screen tuner chrome */
+
+.auth-screen-tuner-page .auth-screen {
+  min-height: auto;
+  padding: 0;
+}
+
+.auth-screen-tuner-page .auth-screen__stage {
+  position: relative;
+}
+
+/* Logged-in tuner — show full passport art so bottom fields (e.g. total play time) are visible */
+.auth-screen-tuner-page .auth-screen--profile .auth-screen__stage {
+  width: min(100%, var(--auth-profile-max-width, 420px));
+  max-height: none;
+  aspect-ratio: auto;
+  height: auto;
+}
+
+.auth-screen-tuner-page .auth-screen--profile .auth-screen__art {
+  width: 100%;
+  height: auto;
+  object-fit: unset;
+}
+
+.auth-screen-tuner-page .auth-screen__form {
+  pointer-events: none;
+}
+
+.auth-screen-tuner-page .auth-screen__form .tuner-box {
+  pointer-events: auto;
+}
+
+.auth-screen-tuner-page #mockHitsOutside {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.auth-screen-tuner-page #mockHitsOutside .tuner-box {
+  pointer-events: auto;
+}
+
+.auth-screen-tuner-page .tuner-box {
+  background: rgba(100, 200, 255, 0.28) !important;
+  border: 2px solid rgba(100, 200, 255, 0.85) !important;
+  border-radius: 4px;
+  z-index: 6;
+  cursor: move;
+  position: absolute;
+  min-width: 12px;
+  min-height: 8px;
+  box-sizing: border-box;
+}
+
+.auth-screen-tuner-page .auth-screen__input.tuner-box {
+  padding: 0;
+  box-shadow: none;
+}
+
+.auth-screen-tuner-page .tuner-box:not(.is-tuner-active) {
+  opacity: 0.72;
+}
+
+.auth-screen-tuner-page .tuner-box.is-tuner-active {
+  opacity: 1;
+  border-color: #e8b923 !important;
+  box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+  z-index: 7;
+}
+
+.auth-screen-tuner-page .tuner-box .hit-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(7px, 2.2cqi, 11px);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  text-align: center;
+  padding: 2px;
+}
+
+.auth-screen-tuner-page .auth-screen__profile-stat.tuner-box .hit-label,
+.auth-screen-tuner-page .auth-screen__profile-name.tuner-box .hit-label {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1px 3px;
+  font-size: clamp(6px, 1.6cqi, 9px);
+  line-height: 1.1;
+  max-height: 45%;
+  overflow: hidden;
+}
+
+.auth-screen-tuner-page .auth-screen__profile-stat.tuner-box .tuner-mock-value {
+  align-items: center;
+  justify-content: center;
+  padding-top: 12%;
+  font-size: clamp(7px, 2.2cqi, 11px);
+  color: #e8b923;
+}
+
+.auth-screen-tuner-page .tuner-mock-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(7px, 2vw, 10px);
+  font-weight: 600;
+  color: #e8f4ff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  padding: 2px;
+}
+
+.auth-screen-tuner-page .tuner-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #e8b923;
+  border: 1px solid #142c28;
+  border-radius: 2px;
+  z-index: 8;
+}
+
+.auth-screen-tuner-page .tuner-handle--e {
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+.auth-screen-tuner-page .tuner-handle--s {
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+.auth-screen-tuner-page .tuner-handle--se {
+  right: -5px;
+  bottom: -5px;
+  cursor: nwse-resize;
+}
+
+.auth-screen-tuner-page .auth-screen__hit.tuner-box {
+  padding: 0;
+  overflow: visible;
+  background: rgba(100, 200, 255, 0.18) !important;
+}
+
+.auth-screen-tuner-page .auth-screen__hit.tuner-box .tuner-hit-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.auth-screen-tuner-page .auth-screen__hit.tuner-box .hit-label {
+  z-index: 1;
+  font-size: clamp(6px, 1.8cqi, 9px);
+  align-items: flex-end;
+  padding-bottom: 1px;
+  background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.55));
+}
+
+.auth-screen-tuner-page .field-section-title {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #c4a35a;
+}

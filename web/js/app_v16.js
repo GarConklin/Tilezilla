@@ -2,6 +2,14 @@ import { Solver } from './solver.js';
 import { Solutions } from './solutions.js';
 import { Progress } from './progress.js';
 import { isDevUser, syncDevUserUi } from './tilezilla-dev-user.js';
+import {
+  applyTileBoardBackground,
+  drawBgTileUnderlay,
+  getTilesetBgSetup,
+  isEnhancedTileBgSetup,
+  toTileImgUrl,
+} from './tile-bg-setup.js';
+import { loadActiveTilesetPreference, saveActiveTilesetPreference } from './tileset-preferences.js';
 
 const CONFIG = {
   rows: 6,
@@ -676,6 +684,22 @@ async function loadImage(tileName, tilesetName){
   return img;
 }
 
+async function loadBgTileImage(tilesetName){
+  const setKey = tilesetName || state.activeTileset;
+  const cacheKey = `bg-tile|${setKey}`;
+  if(state.imgCache.has(cacheKey)) return state.imgCache.get(cacheKey);
+  const setup = getTilesetBgSetup(state.tileSets, setKey);
+  const img = new Image();
+  img.src = toTileImgUrl(setup.bgTile);
+  try {
+    await img.decode();
+  } catch (e) {
+    throw new Error(`BG-Tile failed to load (${img.src})`);
+  }
+  state.imgCache.set(cacheKey, img);
+  return img;
+}
+
 async function rotatedDataURL(tileName, deg, tilesetName){
   const key = tilesetName ? `${tilesetName}|${tileName}|${deg}` : `${tileName}|${deg}`;
   if(state.rotatedCache.has(key)) return state.rotatedCache.get(key);
@@ -693,9 +717,17 @@ async function rotatedDataURL(tileName, deg, tilesetName){
   c.width = dstW; c.height = dstH;
   const g = c.getContext('2d');
 
+  const setKey = tilesetName || state.activeTileset;
+  if (isEnhancedTileBgSetup(state.tileSets, setKey)) {
+    const bgImg = await loadBgTileImage(setKey);
+    drawBgTileUnderlay(g, bgImg, dstW, dstH, r, tileCellCount(tileName));
+  }
+
+  g.save();
   g.translate(dstW/2, dstH/2);
   g.rotate(r*Math.PI/180);
   g.drawImage(img, -srcW/2, -srcH/2);
+  g.restore();
 
   const url = c.toDataURL('image/png');
   state.rotatedCache.set(key, url);
@@ -3739,9 +3771,18 @@ async function init(){
   state.liveEdges = await loadJson(CONFIG.liveEdgesUrl);
   try { state.tileSets = await loadJson(CONFIG.tileSetsUrl); } catch(e) { console.warn('tilesets unavailable', e); }
   state.activeTileset = state.tileSets?.activeTileset || 'gray-backs';
+  const prefTileset = loadActiveTilesetPreference();
+  if (prefTileset && state.tileSets?.tilesets?.[prefTileset]) {
+    state.activeTileset = prefTileset;
+  }
   const qsTileset = new URLSearchParams(location.search).get('tileset');
   if (qsTileset && state.tileSets?.tilesets?.[qsTileset]) {
     state.activeTileset = qsTileset;
+  }
+  try {
+    applyTileBoardBackground(state.tileSets, state.activeTileset);
+  } catch (e) {
+    console.warn('tile board background:', e);
   }
   state.tileAssetById = {};
   for (const k of Object.keys(state.liveEdges || {})) {
@@ -3844,8 +3885,11 @@ async function init(){
           return;
         }
         renderFoundList(lv.id, knownSolutions);
+        const found = progress.getFoundForLevel(lv.id) || [];
+        const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+        const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
         window.__discoveryRecord?.show?.(
-          window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes),
+          window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown),
         );
         return;
       }
@@ -4103,6 +4147,17 @@ async function init(){
   }
 
   // Solver + Solutions modules
+  async function setActiveTileset(tilesetId) {
+    if (!tilesetId || !state.tileSets?.tilesets?.[tilesetId]) return false;
+    state.activeTileset = tilesetId;
+    saveActiveTilesetPreference(tilesetId);
+    applyTileBoardBackground(state.tileSets, tilesetId);
+    await buildPalette();
+    renderActivePreview?.();
+    await renderTiles();
+    return true;
+  }
+
   window.__app = {
     CONFIG, state, targetCells, cellsForTile, validateBoard, renderTiles, setPaletteUsed,
     renderActivePreview, syncPreviewFromBoardSelection, clearActivePreviewSelection, edgesFor, logSolver, canPlaceNew,
@@ -4122,6 +4177,7 @@ async function init(){
     hasViewedExampleRoute, hasLeaderboardForfeit, hasHintCompletionRewardForfeit,
     renderSolutionPreview, findClosestSolutionPlacements,
     loadKnownSolutionsForLevel,
+    setActiveTileset,
     onManualTilePlaced: null,
     onBoardStateChanged: null,
     currentPortablePlacements, displayDimsForBoard,

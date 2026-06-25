@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Main screen v2 (draft)</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+</head>
+<body>
+  <div class="tz-app tz-main-v2-app" data-screen="main-v2-draft">
+
+    <div class="tz-bg" aria-hidden="true">
+      <div class="tz-bg__sky"></div>
+      <div class="tz-bg__water">
+        <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+        <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+      </div>
+    </div>
+
+    <div class="tz-scale-host">
+      <div class="tz-stage tz-ui-layer">
+        <section class="tz-main-v2" id="mainV2Frame" aria-label="Main screen v2">
+          <img class="tz-main-v2__art" id="mainV2Art" alt="" hidden />
+          <div class="tz-main-v2__guides" id="mainV2Guides" aria-hidden="true">
+            <div class="tz-main-v2__zone tz-main-v2__zone--menu" data-label="Menu"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--title" data-label="Title"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--top-bar" data-label="Top bar"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--board" data-label="Board"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--info-bar" data-label="Info bar"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--preview" data-label="Preview"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--tilebag" data-label="Tile bag"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--bottom-menu-panel" data-label="Bottom menu panel"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--bottom-menu-tab" data-label="Bottom tab (closed)"></div>
+            <div class="tz-main-v2__zone tz-main-v2__zone--bottom-menu-close-tab" data-label="Bottom tab (open)"></div>
+          </div>
+        </section>
+
+        <section class="tz-tilebag-container tz-main-v2__tilebag-mock" id="tilebagMock" aria-hidden="true"></section>
+
+        <div class="tz-bottom-menu-v2" id="bottomMenuV2" aria-label="Main navigation menu">
+          <button
+            type="button"
+            class="tz-bottom-menu-v2__tab tz-bottom-menu-v2__tab--open"
+            id="bottomMenuOpenBtn"
+            aria-expanded="false"
+            aria-controls="bottomMenuDrawer"
+            aria-label="Open main menu"
+          >
+            <img src="/img/BottomMenuExpandTab.png" alt="" />
+          </button>
+          <div class="tz-bottom-menu-v2__drawer" id="bottomMenuDrawer" hidden>
+            <nav class="tz-bottom-nav tz-bottom-nav--v2-drawer" aria-label="Main navigation">
+              <div class="tz-bottom-nav-plaque">
+                <img
+                  class="tz-bottom-nav-plaque__bg"
+                  src="/img/NewBotmMenu.png"
+                  alt=""
+                  width="1698"
+                  height="456"
+                />
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" aria-label="Adventure"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" aria-label="Daily Challenge"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" aria-label="Random Puzzle"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" aria-label="Library"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" aria-label="Profile"></button>
+              </div>
+            </nav>
+          </div>
+          <button
+            type="button"
+            class="tz-bottom-menu-v2__tab tz-bottom-menu-v2__tab--close"
+            id="bottomMenuCloseBtn"
+            hidden
+            aria-label="Close main menu"
+          >
+            <img src="/img/BottomMenuCloseTab.png" alt="" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tz-main-v2__draft-bar" id="draftBar">
+      <button type="button" class="tz-main-v2__draft-btn is-active" data-preview="menu-closed">Menu closed</button>
+      <button type="button" class="tz-main-v2__draft-btn" data-preview="menu-open">Menu open</button>
+      <button type="button" class="tz-main-v2__draft-btn" data-preview="tilebag-expanded">Tile bag expanded</button>
+      <button type="button" class="tz-main-v2__draft-btn" data-preview="guides" id="guidesToggle">Zone guides</button>
+    </div>
+
+    <p class="tz-main-v2__foot">
+      390×844 v2 draft —
+      <a href="/tilezilla.html">current game</a> ·
+      <a href="/tilezilla-v2.html">playable v2</a> ·
+      <a href="/main-screen-v2-tuner.html">screen tuner</a> ·
+      <a href="/bottom-menu-v2-tuner.html">bottom menu tuner</a> ·
+      <a href="/preview-v2-tuner.html">preview v2 tuner</a> ·
+      <a href="/dev-player-select.html">dev tools</a>
+    </p>
+  </div>
+
+  <script type="module" src="js/main-screen-v2.js"></script>
+</body>
+</html>

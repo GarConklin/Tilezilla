@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Layout tuners</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 20px 16px 40px;
+    }
+    .wrap {
+      max-width: 56rem;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+      color: #e8b923;
+    }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.85rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+    }
+    .lead a { color: #8fd49a; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .toolbar input {
+      flex: 1 1 200px;
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.85rem;
+    }
+    .toolbar a {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font-size: 0.8rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .toolbar a:hover { border-color: #e8b923; }
+    section {
+      margin-bottom: 22px;
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.28);
+    }
+    section[hidden] { display: none !important; }
+    section h2 {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #c4a35a;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .grid a {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(196, 163, 90, 0.22);
+      background: rgba(0, 0, 0, 0.22);
+      color: #f4ecd8;
+      text-decoration: none;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .grid a:hover,
+    .grid a:focus-visible {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.12);
+      outline: none;
+    }
+    .grid a strong {
+      display: block;
+      font-size: 0.88rem;
+      color: #8fd49a;
+      margin-bottom: 2px;
+    }
+    .grid a span {
+      display: block;
+      font-size: 0.72rem;
+      color: #8a9a96;
+    }
+    .empty {
+      display: none;
+      margin: 12px 0 0;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+    }
+    .empty.is-visible { display: block; }
+    .count {
+      font-size: 0.72rem;
+      color: #7a8a86;
+      margin-left: 6px;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Layout tuners</h1>
+    <p class="lead">
+      One place for every dev layout tuner. Changes save to <code>data/*.json</code> via the dev server.
+      <a href="/dev-player-select.html">Dev player select</a>
+      · <a href="/tilezilla-v2.html">Play v2</a>
+      · <a href="/tilezilla.html">Play v1</a>
+    </p>
+
+    <div class="toolbar">
+      <input type="search" id="filter" placeholder="Filter tuners…" autocomplete="off" spellcheck="false" />
+      <a href="/dev-player-select.html">← Dev tools</a>
+    </div>
+
+    <p class="empty" id="empty">No tuners match your filter.</p>
+
+    <section data-section>
+      <h2>Main screen v2 <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/main-screen-v2-tuner.html" data-keywords="main screen v2 zones board preview tilebag">
+          <strong>Main screen v2</strong>
+          <span>Top bar, board, preview, tile bag zones</span>
+        </a>
+        <a href="/bottom-menu-v2-tuner.html" data-keywords="bottom menu close expand drawer tab">
+          <strong>Bottom menu v2</strong>
+          <span>Close tab, expand tab, drawer panel</span>
+        </a>
+        <a href="/tilebag-v2-tuner.html" data-keywords="tile bag v2 handle count">
+          <strong>Tile bag v2</strong>
+          <span>Collapsed / expanded bag on v2 screen</span>
+        </a>
+        <a href="/main-screen-v2.html" data-keywords="main screen draft preview">
+          <strong>Main screen v2 draft</strong>
+          <span>Non-playable layout preview page</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Preview plaque &amp; data zones <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/preview-v2-tuner.html" data-keywords="preview v2 frame user game info timer hint data zones">
+          <strong>Preview v2</strong>
+          <span>Preview frame + data zone positions</span>
+        </a>
+        <a href="/preview-data-v2-tuner.html" data-keywords="preview data all zones sublayout">
+          <strong>Preview data (all zones)</strong>
+          <span>User_data, Game_Data, Info_data, Timer_data</span>
+        </a>
+        <a href="/game-data-v2-tuner.html" data-keywords="game data type date puzzle id">
+          <strong>Game_Data</strong>
+          <span>Challenge type, date, puzzle ID lines</span>
+        </a>
+        <a href="/info-data-v2-tuner.html" data-keywords="info data solutions count possible">
+          <strong>Info_data</strong>
+          <span>Solution count / Possible / Solutions lines</span>
+        </a>
+        <a href="/timer-data-v2-tuner.html" data-keywords="timer data current best">
+          <strong>Timer_data</strong>
+          <span>Current time and best time</span>
+        </a>
+        <a href="/hint-v2-tuner.html" data-keywords="hint v2 token plaque use count">
+          <strong>Hint v2</strong>
+          <span>Hint plaques and token count on preview</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Navigation &amp; menus <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/menu-tuner.html" data-keywords="hamburger menu overlay plaque">
+          <strong>Menu tuner</strong>
+          <span>Hamburger menu hits and layout</span>
+        </a>
+        <a href="/bottom-nav-tuner.html" data-keywords="bottom nav adventure daily random library profile">
+          <strong>Bottom nav</strong>
+          <span>Bottom navigation hit areas</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Popups &amp; overlays <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/discovery-record-tuner.html" data-keywords="discovery record plaque solution">
+          <strong>Discovery record</strong>
+          <span>New / duplicate solution plaque</span>
+        </a>
+        <a href="/random-popup-tuner.html" data-keywords="random puzzle remain venture forth">
+          <strong>Random popup</strong>
+          <span>Random puzzle dialog size and buttons</span>
+        </a>
+        <a href="/puzzle-info-tuner.html" data-keywords="puzzle info popup game data user">
+          <strong>Puzzle info</strong>
+          <span>Game / user data popup from preview</span>
+        </a>
+        <a href="/challenge-begin-tuner.html" data-keywords="challenge begin daily adventure start">
+          <strong>Challenge begin</strong>
+          <span>Daily / adventure start dialog</span>
+        </a>
+        <a href="/revisit-tuner.html" data-keywords="revisit popup solved cancel">
+          <strong>Revisit popup</strong>
+          <span>Revisit solved puzzle dialog</span>
+        </a>
+        <a href="/journal-tuner.html" data-keywords="journal library adventure log">
+          <strong>Journal</strong>
+          <span>Journal / library overlay layout</span>
+        </a>
+        <a href="/hint-rules-tuner.html" data-keywords="hint rules menu overlay">
+          <strong>Hint rules</strong>
+          <span>Hint rules menu overlay</span>
+        </a>
+        <a href="/stuck-reveal-tuner.html" data-keywords="stuck reveal hint">
+          <strong>Stuck reveal</strong>
+          <span>Stuck / reveal hint UI</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Auth &amp; profile <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/logging-in-tuner.html" data-keywords="login logging in auth">
+          <strong>Logging in</strong>
+          <span>Login screen layout</span>
+        </a>
+        <a href="/create-passport-tuner.html" data-keywords="create passport register auth">
+          <strong>Create passport</strong>
+          <span>Registration / create account screen</span>
+        </a>
+        <a href="/logged-in-tuner.html" data-keywords="logged in profile passport explorer">
+          <strong>Logged in / profile</strong>
+          <span>Explorer passport overlay (Logged-in.png)</span>
+        </a>
+        <a href="/auth-error-tuner.html" data-keywords="auth error login fail">
+          <strong>Auth error</strong>
+          <span>Login error screen layout</span>
+        </a>
+        <a href="/load-screen-tuner.html" data-keywords="load screen guest login startup index">
+          <strong>Load screen</strong>
+          <span>Startup / guest vs login screen</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Rank &amp; adventure <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/rank-sublevel-tuner.html" data-keywords="rank sublevel badge wanderer progress">
+          <strong>Rank sublevel</strong>
+          <span>Rank badge and sublevel on preview</span>
+        </a>
+        <a href="/rank-badge-preview.html" data-keywords="rank badge preview wanderer">
+          <strong>Rank badge preview</strong>
+          <span>Visual preview of rank badges (not a tuner)</span>
+        </a>
+      </div>
+    </section>
+
+    <section data-section>
+      <h2>Legacy v1 <span class="count" data-count></span></h2>
+      <div class="grid">
+        <a href="/preview-tuner.html" data-keywords="preview v1 tile rotate undo reset">
+          <strong>Preview tuner (v1)</strong>
+          <span>Original preview bubble layout</span>
+        </a>
+        <a href="/tilebag-tuner.html" data-keywords="tile bag v1 carousel">
+          <strong>Tile bag (v1)</strong>
+          <span>Original tile bag layout</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const filter = document.getElementById('filter');
+    const empty = document.getElementById('empty');
+    const sections = [...document.querySelectorAll('[data-section]')];
+
+    function applyFilter() {
+      const q = filter.value.trim().toLowerCase();
+      let anyVisible = false;
+
+      for (const section of sections) {
+        const links = [...section.querySelectorAll('.grid a')];
+        let sectionVisible = false;
+        for (const link of links) {
+          const text = `${link.textContent} ${link.dataset.keywords || ''}`.toLowerCase();
+          const show = !q || text.includes(q);
+          link.hidden = !show;
+          if (show) sectionVisible = true;
+        }
+        const countEl = section.querySelector('[data-count]');
+        const visibleCount = links.filter((l) => !l.hidden).length;
+        if (countEl) countEl.textContent = visibleCount ? `(${visibleCount})` : '';
+        section.hidden = !sectionVisible;
+        if (sectionVisible) anyVisible = true;
+      }
+
+      empty.classList.toggle('is-visible', !anyVisible);
+    }
+
+    filter?.addEventListener('input', applyFilter);
+    applyFilter();
+  </script>
+</body>
+</html>

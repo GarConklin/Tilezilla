@@ -1,23 +1,10 @@
 {
-  "dialog": {
-    "artW": 1024,
-    "artH": 1536,
-    "top": 54,
-    "widthScale": 1,
-    "topNudge": 0
+  "art": {
+    "frame": "/img/preview tile Area bubble.png"
   },
   "items": {
-    "guest": {
-      "x": 4.5,
-      "y": 58.5,
-      "w": 44,
-      "h": 11.5
-    },
-    "login": {
-      "x": 51,
-      "y": 58.5,
-      "w": 44,
-      "h": 11.5
-    }
+    "preview": { "x": 11, "y": 33, "w": 78, "h": 24 },
+    "guest": { "x": 4.5, "y": 58.5, "w": 44, "h": 11.5 },
+    "login": { "x": 51, "y": 58.5, "w": 44, "h": 11.5 }
   }
 }

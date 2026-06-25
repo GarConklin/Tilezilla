@@ -177,6 +177,8 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     closePanel();
     closeMenu();
     if (settingsRoot) settingsRoot.hidden = true;
+    const tilesetPickerRoot = $('tilesetPickerRoot');
+    if (tilesetPickerRoot) tilesetPickerRoot.hidden = true;
     setModalOpen(false);
   };
 
@@ -251,6 +253,7 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     if ($('stuckPopupRoot') && !$('stuckPopupRoot').hidden) return;
     if ($('puzzleInfoRoot') && !$('puzzleInfoRoot').hidden) return;
     if ($('hintRulesRoot') && !$('hintRulesRoot').hidden) return;
+    if ($('tilesetPickerRoot') && !$('tilesetPickerRoot').hidden) return;
     if (settingsRoot && !settingsRoot.hidden) return;
     if (!menuPanelRoot.hidden) {
       backFromPanel();

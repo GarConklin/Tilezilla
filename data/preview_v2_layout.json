@@ -1,0 +1,79 @@
+{
+  "frame": {
+    "w": 390,
+    "h": 259
+  },
+  "art": {
+    "frame": "/img/preview tile Area bubble.png",
+    "rendererStage": "",
+    "rendererStageWidthScale": 0.9
+  },
+  "items": {
+    "userData": {
+      "x": 16,
+      "y": 52,
+      "w": 58,
+      "h": 50
+    },
+    "gameData": {
+      "x": 308,
+      "y": 56,
+      "w": 70,
+      "h": 46
+    },
+    "infoData": {
+      "x": 308,
+      "y": 164,
+      "w": 68,
+      "h": 46
+    },
+    "timerData": {
+      "x": 14,
+      "y": 166,
+      "w": 58,
+      "h": 44
+    },
+    "hintData": {
+      "x": 148,
+      "y": 212,
+      "w": 94,
+      "h": 48
+    },
+    "renderer": {
+      "x": 82,
+      "y": 56,
+      "w": 222,
+      "h": 140
+    },
+    "rotateCcw": {
+      "x": 18,
+      "y": 110,
+      "w": 54,
+      "h": 48
+    },
+    "rotateCw": {
+      "x": 314,
+      "y": 110,
+      "w": 56,
+      "h": 48
+    },
+    "tileDir": {
+      "x": 202,
+      "y": 202,
+      "w": 18,
+      "h": 8
+    },
+    "undo": {
+      "x": 250,
+      "y": 212,
+      "w": 64,
+      "h": 28
+    },
+    "reset": {
+      "x": 74,
+      "y": 212,
+      "w": 64,
+      "h": 28
+    }
+  }
+}

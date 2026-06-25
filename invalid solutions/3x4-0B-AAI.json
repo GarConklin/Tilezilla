@@ -1,0 +1,102 @@
+{
+  "board": {
+    "rows": 3,
+    "cols": 4
+  },
+  "tiles": {
+    "SH": 1,
+    "ET": 1,
+    "UT": 1,
+    "RC": 1,
+    "DB": 1,
+    "DS": 1
+  },
+  "totalUniqueSolutions": 2,
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "3x4-0B-AAI solve 1",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "DS",
+          "r": 2,
+          "c": 2,
+          "deg": 270
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "UT",
+          "r": 2,
+          "c": 0,
+          "deg": 270
+        }
+      ]
+    },
+    {
+      "id": "solve-2",
+      "label": "3x4-0B-AAI solve 2",
+      "placements": [
+        {
+          "tile": "SH",
+          "r": 0,
+          "c": 3,
+          "deg": 180
+        },
+        {
+          "tile": "ET",
+          "r": 1,
+          "c": 0,
+          "deg": 270
+        },
+        {
+          "tile": "DS",
+          "r": 0,
+          "c": 1,
+          "deg": 90
+        },
+        {
+          "tile": "DB",
+          "r": 1,
+          "c": 2,
+          "deg": 90
+        },
+        {
+          "tile": "RC",
+          "r": 2,
+          "c": 0,
+          "deg": 0
+        },
+        {
+          "tile": "UT",
+          "r": 1,
+          "c": 3,
+          "deg": 90
+        }
+      ]
+    }
+  ],
+  "levelId": "3x4-0B-AAI"
+}

@@ -132,6 +132,7 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
   const viewFoundBtn = fieldEl('btnViewFound', ids);
   const bookBtn = fieldEl('btnBook', ids);
   const advanceBtn = fieldEl('btnAdvance', ids);
+  const continueBtn = fieldEl('btnContinue', ids);
   const showViewFound = options.showViewFound ?? (mode === 'duplicate');
 
   if (note) note.hidden = mode !== 'duplicate';
@@ -144,6 +145,7 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
     );
   }
   if (advanceBtn) advanceBtn.hidden = !showAdvance;
+  if (continueBtn) continueBtn.hidden = options.showContinueSearch === false;
 }
 
 /** Fill discovery plaque fields — same logic as in-game popup (shared with tuner). */
@@ -155,7 +157,8 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
   const showAdvance = resolveShowAdvance(payload);
   const showViewFound = mode === 'duplicate'
     || (mode === 'new' && Number.isFinite(payload?.solutionIndex));
-  applyRecordMode(root, mode, ids, showAdvance, { showViewFound });
+  const showContinueSearch = payload?.showContinueSearch !== false;
+  applyRecordMode(root, mode, ids, showAdvance, { showViewFound, showContinueSearch });
   if (discoveryLayout) {
     applyDiscoveryPopupLayout(
       discoveryLayout,
@@ -169,6 +172,7 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     const noteText = payload.note ?? discoveryTexts.duplicateNote ?? '';
     if (titleEl) titleEl.textContent = payload.title ?? '';
     setFieldText('note', noteText, ids);
+    setFieldText('solutionTotal', payload.challengeProgress, ids);
     const noteEl = fieldEl('note', ids);
     if (noteEl) noteEl.hidden = !noteText;
     setFieldText('solutionFound', payload.solutionNumber, ids);
@@ -312,6 +316,12 @@ function buildChallengeProgress(foundCount, totalKnown) {
   return String(foundCount);
 }
 
+function puzzleSearchComplete(foundCount, totalKnown) {
+  const total = Math.max(0, Number(totalKnown) || 0);
+  if (total <= 0) return false;
+  return Math.max(0, Number(foundCount) || 0) >= total;
+}
+
 function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
   let showAdvancePath = isDailyChallengeScreen();
   if (isAdventureScreen()) {
@@ -321,6 +331,7 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
   return {
     mode: 'new',
     showAdvancePath,
+    showContinueSearch: !puzzleSearchComplete(foundCount, totalKnown),
     levelId: level?.id || '—',
     challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     solutionNumber: solutionLabel(res),
@@ -330,11 +341,13 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
   };
 }
 
-function buildDuplicatePayload(level, res) {
+function buildDuplicatePayload(level, res, foundCount = 0, totalKnown = 0) {
   return {
     mode: 'duplicate',
     /** Adventure: enriched on show. Daily: always offer advance + continue. */
     showAdvancePath: isDailyChallengeScreen() ? true : false,
+    showContinueSearch: !puzzleSearchComplete(foundCount, totalKnown),
+    challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     title: duplicateTitle(res),
     note: discoveryTexts.duplicateNote,
     levelId: level?.id || '—',
@@ -350,6 +363,7 @@ export function buildPreviewPayload(showAdvance = true) {
   return {
     mode: 'new',
     showAdvancePath: showAdvance,
+    showContinueSearch: true,
     levelId: lv?.id || '5x6-0A-CPZ',
     challengeProgress: buildChallengeProgress(364, 365),
     solutionNumber: '364',
@@ -362,6 +376,8 @@ export function buildPreviewDuplicatePayload(texts = discoveryTexts, showAdvance
   return {
     mode: 'duplicate',
     showAdvancePath: showAdvance,
+    showContinueSearch: true,
+    challengeProgress: buildChallengeProgress(3, 12),
     title: texts.duplicateTitle ?? '',
     note: texts.duplicateNote ?? '',
     levelId: '5x6-0A-CPZ',

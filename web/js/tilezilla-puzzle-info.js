@@ -229,6 +229,9 @@ function openPuzzleInfoPopup() {
 
   if (!root) return;
 
+  const profile = $('profileOverlayRoot');
+  if (profile) profile.hidden = true;
+
   menuApi?.closeAll?.();
 
   resetPuzzleInfoDialogLayout();

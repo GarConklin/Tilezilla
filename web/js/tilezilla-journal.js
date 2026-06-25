@@ -194,6 +194,7 @@ function syncJournalTabContent() {
 
   if (artTab) {
     $('journalPreviewWrap')?.setAttribute('hidden', '');
+    $('journalBeginSearchBtn')?.setAttribute('hidden', '');
     $('journalLoadConfirm')?.setAttribute('hidden', '');
   }
 }
@@ -343,6 +344,21 @@ function clearSolutionPreview() {
   canvas.removeAttribute('aria-label');
 }
 
+function syncBeginSearchButton(show) {
+  const btn = $('journalBeginSearchBtn');
+  if (!btn) return;
+  const visible = !!show
+    && state.mode === 'record'
+    && !isJournalArtTab()
+    && !!state.levelId;
+  if (visible) {
+    btn.removeAttribute('hidden');
+    syncJournalLayoutHits();
+  } else {
+    btn.setAttribute('hidden', '');
+  }
+}
+
 async function renderSolutionPreview(record, entry) {
   const canvas = $('journalPreviewCanvas');
   const wrap = $('journalPreviewWrap');
@@ -351,8 +367,13 @@ async function renderSolutionPreview(record, entry) {
 
   if (!entry?.placements?.length) {
     clearSolutionPreview();
+    const allFound = (record?.totalKnown || 0) > 0
+      && (record?.solutionsFound || 0) >= record.totalKnown;
+    syncBeginSearchButton(!allFound);
     return;
   }
+
+  syncBeginSearchButton(false);
 
   previewContext = { record, entry };
   const token = ++previewRenderToken;
@@ -443,8 +464,22 @@ function navigateLibraryPuzzle(delta) {
     { mode: 'puzzles' },
   );
   clearSolutionPreview();
+  syncBeginSearchButton(false);
   scrollActiveListRowIntoView();
   listScroller?.sync?.();
+}
+
+async function loadBeginSearchToBoard() {
+  const app = getApp();
+  if (!app || !state.levelId || state.mode !== 'record') return;
+
+  const levelReady = await loadPuzzleLevel(state.levelId);
+  if (!levelReady) return;
+
+  window.__discoveryRecord?.hide?.();
+  showLoadConfirm(false);
+  closeJournal();
+  menuApi?.closeAll?.();
 }
 
 async function refreshRecordView() {
@@ -466,6 +501,9 @@ async function refreshRecordView() {
     await renderSolutionPreview(record, selected);
   } else {
     clearSolutionPreview();
+    const allFound = (record.totalKnown || 0) > 0
+      && (record.solutionsFound || 0) >= record.totalKnown;
+    syncBeginSearchButton(!allFound);
   }
 }
 
@@ -547,6 +585,7 @@ async function refreshLibraryView() {
     { mode: 'puzzles' },
   );
   clearSolutionPreview();
+  syncBeginSearchButton(false);
 }
 
 async function loadSelectedSolutionToBoard() {
@@ -654,6 +693,10 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
   $('journalLoadCancel')?.addEventListener('click', () => showLoadConfirm(false));
   $('journalLoadConfirmBtn')?.addEventListener('click', () => {
     void loadSelectedSolutionToBoard();
+  });
+
+  $('journalBeginSearchBtn')?.addEventListener('click', () => {
+    void loadBeginSearchToBoard();
   });
 
   $('journalShowPuzzlesBtn')?.addEventListener('click', () => {

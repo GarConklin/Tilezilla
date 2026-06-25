@@ -188,6 +188,15 @@
       "nudgeX": 0,
       "nudgeY": 0
     },
+    "btnBeginSearch": {
+      "space": "pane",
+      "x": 5,
+      "y": 38,
+      "w": 90,
+      "h": 22,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
     "selectorBoardSize": {
       "x": 10.6,
       "y": 8.1,

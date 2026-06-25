@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
 </head>
 <body>
-  <div class="tz-app" data-screen="load">
+  <div class="tz-app">
 
     <div class="tz-bg" aria-hidden="true">
       <div class="tz-bg__sky"></div>
@@ -18,8 +18,8 @@
       </div>
     </div>
 
-    <div class="tz-stage tz-ui-layer">
-      <div class="tz-shell tz-shell--load">
+    <div class="tz-scale-host">
+      <div class="tz-stage tz-ui-layer">
         <section class="tz-load-screen" id="loadScreen" aria-label="Welcome to Tilezilla">
           <img
             class="tz-load-screen__art"
@@ -29,12 +29,11 @@
             height="1536"
             draggable="false"
           />
-          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest" id="playGuestBtn" aria-label="Play as guest">
-            <img src="/img/PlayAsGuest.png" alt="" />
-          </button>
-          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login" id="loginBtn" aria-label="Login">
-            <img src="/img/LogIn.png" alt="" />
-          </button>
+          <div class="tz-load-screen__preview" aria-hidden="true">
+            <div class="tz-load-screen__preview-frame"></div>
+          </div>
+          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest" id="playGuestBtn" aria-label="Play as guest"></button>
+          <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login" id="loginBtn" aria-label="Login"></button>
         </section>
       </div>
     </div>

@@ -78,7 +78,7 @@ export function applyPhonePreviewMode(on) {
   }));
 }
 
-export function initSettingsUi({ onChange, menuApi }) {
+export function initSettingsUi({ onChange, menuApi, onOpenTileset, getTilesetLabel }) {
   const settingsRoot = document.getElementById('settingsRoot');
   const gameplayPanel = document.getElementById('settingsGameplay');
   if (!settingsRoot || !gameplayPanel) return;
@@ -86,7 +86,14 @@ export function initSettingsUi({ onChange, menuApi }) {
   let current = loadGameplaySettings();
   renderPanel(gameplayPanel, current);
 
+  const refreshTilesetLabel = () => {
+    const el = document.getElementById('settingsTilesetName');
+    if (!el || !getTilesetLabel) return;
+    el.textContent = getTilesetLabel();
+  };
+
   const openSettings = () => {
+    refreshTilesetLabel();
     settingsRoot.hidden = false;
     document.body.classList.add('tz-modal-open');
   };
@@ -94,9 +101,11 @@ export function initSettingsUi({ onChange, menuApi }) {
     settingsRoot.hidden = true;
     const menuRoot = document.getElementById('menuRoot');
     const menuPanelRoot = document.getElementById('menuPanelRoot');
+    const tilesetPickerRoot = document.getElementById('tilesetPickerRoot');
     const menuOpen = menuRoot && !menuRoot.hidden;
     const panelOpen = menuPanelRoot && !menuPanelRoot.hidden;
-    if (!menuOpen && !panelOpen) document.body.classList.remove('tz-modal-open');
+    const tilesetOpen = tilesetPickerRoot && !tilesetPickerRoot.hidden;
+    if (!menuOpen && !panelOpen && !tilesetOpen) document.body.classList.remove('tz-modal-open');
   };
 
   const apply = (next) => {
@@ -108,19 +117,23 @@ export function initSettingsUi({ onChange, menuApi }) {
 
   bindSegment(gameplayPanel, apply);
 
-  document.getElementById('settingsBackBtn')?.addEventListener('click', () => {
+  const closeFromBack = () => {
     closeSettings();
     if (menuApi?.settingsEntry?.() === 'menu') menuApi?.openMenu?.();
-  });
-  document.getElementById('settingsCloseBtn')?.addEventListener('click', () => {
+  };
+  const closeFromExit = () => {
     closeSettings();
     menuApi?.closeAll?.();
+  };
+
+  document.getElementById('settingsBackBtn')?.addEventListener('click', closeFromBack);
+  document.getElementById('settingsCloseBtn')?.addEventListener('click', closeFromExit);
+
+  document.getElementById('settingsOpenTilesetBtn')?.addEventListener('click', () => {
+    onOpenTileset?.();
   });
 
-  settingsRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', () => {
-    closeSettings();
-    menuApi?.closeAll?.();
-  });
+  settingsRoot.querySelector('.tz-settings-root__backdrop')?.addEventListener('click', closeFromExit);
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
@@ -134,5 +147,6 @@ export function initSettingsUi({ onChange, menuApi }) {
     getSettings: () => ({ ...current }),
     openSettings,
     closeSettings,
+    refreshTilesetLabel,
   };
 }

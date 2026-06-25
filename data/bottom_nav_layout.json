@@ -5,13 +5,13 @@
     "hScale": 0.505
   },
   "hits": {
-    "w": 20,
+    "w": 21,
     "h": 88,
     "y": 50
   },
   "items": {
     "adventure": {
-      "x": 10.5,
+      "x": 11,
       "y": 50.5
     },
     "dailyChallenge": {

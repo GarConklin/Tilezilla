@@ -14,7 +14,7 @@ export const DEFAULT_RANDOM_POPUP_LAYOUT = {
     artH: 811,
     displayPad: 32,
     maxDesignWidth: 390,
-    widthScale: 0.71,
+    widthScale: 0.95,
   },
   items: {
     remain: { x: 5.2, y: 82.2, w: 42.5, h: 12.5, hidden: false },

@@ -100,6 +100,7 @@ export const JOURNAL_ITEM_DEFS = {
   fieldLastPlayed: { cssKey: 'field-last', kind: 'text', label: 'Last Played Date' },
   progressBar: { cssKey: 'progress-bar', kind: 'bar', label: 'Progress bar' },
   solutionPreview: { cssKey: 'solution-preview', kind: 'preview', label: 'Solution preview canvas' },
+  btnBeginSearch: { cssKey: 'btn-begin-search', kind: 'paneBtn', label: 'Begin Search button' },
   selectorBoardSize: { cssKey: 'selector-size', kind: 'pane', label: 'Library — board size area' },
   selectorPuzzleType: { cssKey: 'selector-type', kind: 'pane', label: 'Library — puzzle type area' },
   selectorStatus: { cssKey: 'selector-status', kind: 'pane', label: 'Library — status filter area' },
@@ -117,6 +118,7 @@ export const JOURNAL_ITEM_DEFS = {
 /** Canonical puzzle-record journal layout — game + tuner share this via journal_layout.json. */
 export const RECORD_PUZZLE_JOURNAL_ITEMS = {
   solutionPreview: { space: 'pane', x: 4, y: 4, w: 92, h: 92, nudgeX: 0, nudgeY: 0 },
+  btnBeginSearch: { space: 'pane', x: 5, y: 38, w: 90, h: 22, nudgeX: 0, nudgeY: 0 },
   listContent: { space: 'pane', x: 9, y: 2, w: 89, h: 96, nudgeX: 1, nudgeY: 10 },
   listScroller: {
     space: 'pane', x: 0, y: 2, h: 96, trackScale: 0.34, pinScale: 0.66, nudgeX: 1, nudgeY: 10,
@@ -173,6 +175,9 @@ const DEFAULT_ITEMS = {
   progressBar: { x: 12, y: 38.5, w: 76, h: 2.5, nudgeX: 0, nudgeY: 0 },
   solutionPreview: {
     space: 'pane', x: 16, y: 16, w: 68, h: 68, nudgeX: 0, nudgeY: 0,
+  },
+  btnBeginSearch: {
+    space: 'pane', x: 5, y: 38, w: 90, h: 22, nudgeX: 0, nudgeY: 0,
   },
   selectorBoardSize: { x: 10, y: 8, w: 38, h: 32, nudgeX: 0, nudgeY: 0 },
   selectorPuzzleType: { x: 50, y: 8, w: 38, h: 32, nudgeX: 0, nudgeY: 0 },
@@ -377,7 +382,9 @@ export function getJournalItemLayout(itemKey, layout) {
     if (itemKey === 'listContent') return normalizeListAreaItem({ ...fallback }, merged, 'paneBottomLeft');
     if (itemKey === 'listTitleBar') return normalizeListAreaItem({ ...fallback }, merged, 'paneBottomLeft');
     if (def.kind === 'titleBarChild') return normalizeTitleBarChildItem({ ...fallback }, merged, def.titleBarParent);
-    if (itemKey === 'solutionPreview') return normalizePreviewAreaItem({ ...fallback }, merged);
+    if (itemKey === 'solutionPreview' || def.kind === 'paneBtn') {
+      return normalizePaneBottomRightItem({ ...fallback }, merged);
+    }
     return { ...fallback };
   }
   const item = { ...fallback, ...stored };
@@ -385,7 +392,9 @@ export function getJournalItemLayout(itemKey, layout) {
   if (itemKey === 'listContent') return normalizeListAreaItem(item, merged, 'paneBottomLeft');
   if (itemKey === 'listTitleBar') return normalizeListAreaItem(item, merged, 'paneBottomLeft');
   if (def.kind === 'titleBarChild') return normalizeTitleBarChildItem(item, merged, def.titleBarParent);
-  if (itemKey === 'solutionPreview') return normalizePreviewAreaItem(item, merged);
+  if (itemKey === 'solutionPreview' || def.kind === 'paneBtn') {
+    return normalizePaneBottomRightItem(item, merged);
+  }
   return item;
 }
 
@@ -531,7 +540,7 @@ function normalizeTitleBarChildItem(item, mergedLayout, titleBarKey = 'listTitle
   };
 }
 
-function normalizePreviewAreaItem(item, mergedLayout) {
+function normalizePaneBottomRightItem(item, mergedLayout) {
   if (item.space === 'pane') {
     return { space: 'pane', ...item };
   }
@@ -631,8 +640,8 @@ export function applyJournalLayout(layout, target = document.documentElement) {
       continue;
     }
 
-    if (kind === 'preview') {
-      const area = normalizePreviewAreaItem(item, merged);
+    if (kind === 'preview' || kind === 'paneBtn') {
+      const area = normalizePaneBottomRightItem(item, merged);
       target.style.setProperty(varName(cssKey, 'x'), String(area.x ?? 0));
       target.style.setProperty(varName(cssKey, 'y'), String(area.y ?? 0));
       target.style.setProperty(varName(cssKey, 'w'), String(area.w ?? 90));
@@ -671,19 +680,31 @@ export function applyJournalTabHitPositions(layout) {
   }
 }
 
-/** Push tuned preview hit box onto the wrap (tuner + live) so sizing cannot drift via CSS vars. */
-export function applyJournalPreviewHitPositions(layout) {
+const PANE_BR_HIT_TARGETS = {
+  solutionPreview: '#journalPreviewWrap, #mockPreviewWrap',
+  btnBeginSearch: '#journalBeginSearchBtn, #mockBeginSearchBtn',
+};
+
+/** Push tuned lower-right pane hit boxes (preview + Begin Search) onto real elements. */
+export function applyJournalPaneBrHitPositions(layout) {
   const merged = mergeJournalLayout(layout);
-  const item = getJournalItemLayout('solutionPreview', merged);
-  const style = {
-    left: `calc(${item.x ?? 0}% + ${item.nudgeX ?? 0}px)`,
-    top: `calc(${item.y ?? 0}% + ${item.nudgeY ?? 0}px)`,
-    width: `${item.w ?? 90}%`,
-    height: `${item.h ?? 90}%`,
-  };
-  for (const el of document.querySelectorAll('#journalPreviewWrap, #mockPreviewWrap')) {
-    Object.assign(el.style, style);
+  for (const [key, selector] of Object.entries(PANE_BR_HIT_TARGETS)) {
+    const item = getJournalItemLayout(key, merged);
+    const style = {
+      left: `calc(${item.x ?? 0}% + ${item.nudgeX ?? 0}px)`,
+      top: `calc(${item.y ?? 0}% + ${item.nudgeY ?? 0}px)`,
+      width: `${item.w ?? 90}%`,
+      height: `${item.h ?? 90}%`,
+    };
+    for (const el of document.querySelectorAll(selector)) {
+      Object.assign(el.style, style);
+    }
   }
+}
+
+/** @deprecated use applyJournalPaneBrHitPositions */
+export function applyJournalPreviewHitPositions(layout) {
+  applyJournalPaneBrHitPositions(layout);
 }
 
 /** Push tuned lower-left list areas onto real elements (tuner + live). */
@@ -781,7 +802,7 @@ export function applyJournalLayoutHits(layout) {
   applyJournalTabHitPositions(layout);
   applyJournalPaneHitPositions(layout);
   applyJournalListPaneHitPositions(layout);
-  applyJournalPreviewHitPositions(layout);
+  applyJournalPaneBrHitPositions(layout);
 }
 
 /** Apply layout CSS vars on :root and every journal frame (live + tuner preview). */
@@ -809,6 +830,7 @@ export function buildJournalLayoutReport(layout) {
     '1.1.3) listScroller',
     '1.2) paneBottomRight',
     '1.2.1) solutionPreview',
+    '1.2.2) btnBeginSearch',
     '',
     '— Art overlays (PNG paths, stacked on shellBlank) —',
   ];
@@ -846,8 +868,8 @@ export function buildJournalLayoutReport(layout) {
       );
       continue;
     }
-    if (def.kind === 'preview') {
-      const area = normalizePreviewAreaItem(item, merged);
+    if (def.kind === 'preview' || def.kind === 'paneBtn') {
+      const area = normalizePaneBottomRightItem(item, merged);
       lines.push(
         `${def.label}: pane x ${area.x}% · y ${area.y}% · w ${area.w}% · h ${area.h}%`
         + (area.nudgeX ? ` · nudgeX ${area.nudgeX}px` : '')
