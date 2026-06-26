@@ -8,6 +8,9 @@ Thumbs.db
 node_modules/
 *.log
 
+# Archived / one-off scripts kept locally only
+unused/
+
 # Level solve JSON trees — distribute via solves.zip instead
 solves/
 !solves.zip
