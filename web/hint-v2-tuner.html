@@ -126,8 +126,28 @@
       background-repeat: no-repeat;
       filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
     }
+    .hint-v2-tuner-page .tz-preview-hint-use-slot > .tuner-box {
+      position: absolute !important;
+      margin: 0;
+      min-width: 0;
+      min-height: 0;
+      pointer-events: auto !important;
+      cursor: move;
+    }
+    .hint-v2-tuner-page .tz-preview-renderer-outline {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 2px dashed rgba(100, 200, 255, 0.55);
+      background: rgba(100, 200, 255, 0.08);
+      left: calc(var(--tz-preview-renderer-x-art) / var(--tz-preview-art-w) * 100%);
+      top: calc(var(--tz-preview-renderer-y-art) / var(--tz-preview-art-h) * 100%);
+      width: calc(var(--tz-preview-renderer-w-art) / var(--tz-preview-art-w) * 100%);
+      height: calc(var(--tz-preview-renderer-h-art) / var(--tz-preview-art-h) * 100%);
+    }
     .hint-v2-tuner-page .tz-preview-frame > .tuner-box,
-    .hint-v2-tuner-page .tz-preview-v2-hint-data > .tuner-box {
+    .hint-v2-tuner-page .tz-preview-hint-slot > .tuner-box {
       position: absolute !important;
       margin: 0;
       min-width: 0;
@@ -150,7 +170,7 @@
       z-index: 8 !important;
       pointer-events: auto !important;
     }
-    .hint-v2-tuner-page .tz-preview-v2-hint-data {
+    .hint-v2-tuner-page .tz-preview-hint-slot {
       overflow: visible;
     }
     .hint-v2-tuner-page .tuner-box {
@@ -199,37 +219,22 @@
   </style>
 </head>
 <body>
-  <h1>Hint v2 tuner (nested sub-layout)</h1>
+  <h1>Hint v2 tuner (preview plaque)</h1>
   <p class="lead">
-    The preview plaque has a <strong>Hint_data</strong> zone (tuned in
-    <a href="/preview-v2-tuner.html">preview-v2-tuner</a>). This page tunes the
-    <strong>hint items inside Hint_data</strong> on the real preview plaque at 2× scale.
-    Coordinates are local pixels within Hint_data — saved to <code>data/hint_v2_layout.json</code>.
-    Use plaque and count plaque each have their own token count and + button zones.
+    Tune <code>hintplaque.png</code> (token count below rotation) and the <strong>use-hint hit</strong> in the
+    tile preview slot. Plaque zone: <a href="/preview-v2-tuner.html">preview-v2-tuner</a> (<strong>Hint plaque</strong>).
+    Use-hint hit follows <strong>Tile slot (preview)</strong> from the same tuner.
+    Item coordinates save to <code>data/hint_v2_layout.json</code>.
     <a href="/tilezilla-v2.html">tilezilla-v2</a>
     · <a href="/dev-player-select.html">Dev tools</a>
   </p>
 
   <div class="layout">
     <div class="panel">
-      <h2>Hint mode preview</h2>
-      <div class="mode-toggle" id="modeToggle">
-        <button type="button" class="btn is-active" data-mode="use">Use hint (enabled)</button>
-        <button type="button" class="btn" data-mode="count">Count plaque (disabled)</button>
-      </div>
-
-      <h2>Art paths</h2>
+      <h2>Art</h2>
       <div class="art-field">
-        <label for="artPlaqueUse">Use plaque (enabled)</label>
-        <input id="artPlaqueUse" type="text" spellcheck="false" />
-      </div>
-      <div class="art-field">
-        <label for="artHintCount">Count plaque (disabled)</label>
+        <label for="artHintCount">Hint plaque image</label>
         <input id="artHintCount" type="text" spellcheck="false" />
-      </div>
-      <div class="art-field">
-        <label for="artUseHint">Use hint button</label>
-        <input id="artUseHint" type="text" spellcheck="false" />
       </div>
 
       <h2>Hint items</h2>
@@ -259,31 +264,26 @@
     </div>
 
     <div class="panel">
-      <h2>Preview plaque — hint items at 2× (matches game)</h2>
+      <h2>Preview plaque — hint slot at 2× (matches game)</h2>
       <p class="hint-zone-readout" id="hintZoneReadout">—</p>
       <div class="mock-stage" id="mockStage" tabindex="0">
         <div class="hint-v2-tuner-mock">
           <div class="tz-preview-frame" id="mockPreviewFrame">
-            <div class="tz-preview-v2-hint-data" id="hintRoot">
-              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--use tuner-box" data-item="hintPlaqueUse" data-hint-mode="use" id="mockUsePlaque">
-                <img class="tz-preview-v2-hint-plaque__art" src="/img/hint%20bubble%20plaque%20w%20room%20for%20use%20hint%20btn.png" alt="" />
-                <span class="hit-label">Use plaque</span>
-              </div>
-              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--count tuner-box" data-item="hintPlaqueCount" data-hint-mode="count" id="mockCountPlaque">
+            <p class="tz-preview-tile__dir" aria-hidden="true">0°</p>
+            <div class="tz-preview-renderer-outline" aria-hidden="true"></div>
+            <div class="tz-preview-hint-use-slot" id="hintUseRoot">
+              <button type="button" class="tz-preview-v2-hint-use-btn tuner-box" data-item="hintUseBtn" id="mockUseBtn">
+                <span class="hit-label">Use hint hit</span>
+              </button>
+            </div>
+            <div class="tz-preview-hint-slot" id="hintRoot">
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--count tuner-box" data-item="hintPlaqueCount" id="mockCountPlaque">
                 <img class="tz-preview-v2-hint-plaque__art" src="/img/hintplaque.png" alt="" />
-                <span class="hit-label">Count plaque</span>
+                <span class="hit-label">Plaque</span>
               </div>
-              <span class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--use tuner-box" data-item="hintTokenCountUse" data-hint-mode="use" id="mockTokenCountUse">18</span>
-              <button type="button" class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--use tuner-box" data-item="hintTokenAddUse" data-hint-mode="use" id="mockTokenAddUse">
-                <span class="hit-label">+ use</span>
-              </button>
-              <span class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--count tuner-box" data-item="hintTokenCountCount" data-hint-mode="count" id="mockTokenCountCount">18</span>
-              <button type="button" class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--count tuner-box" data-item="hintTokenAddCount" data-hint-mode="count" id="mockTokenAddCount">
-                <span class="hit-label">+ count</span>
-              </button>
-              <button type="button" class="tz-preview-v2-hint-use-btn tuner-box" data-item="hintUseBtn" data-hint-mode="use" id="mockUseBtn">
-                <img class="tz-preview-v2-hint-use-btn__art" src="/img/use%20hint%20bubble.png" alt="" />
-                <span class="hit-label">Use hint</span>
+              <span class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--count tuner-box" data-item="hintTokenCountCount" id="mockTokenCountCount">18</span>
+              <button type="button" class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--count tuner-box" data-item="hintTokenAddCount" id="mockTokenAddCount">
+                <span class="hit-label">+</span>
               </button>
             </div>
           </div>
@@ -318,27 +318,23 @@
     const POS_STEP = 2;
     const SIZE_STEP = 2;
     const DISPLAY_SCALE = 2;
+    const TUNER_HINT_ITEMS = [
+      'hintPlaqueCount',
+      'hintTokenCountCount',
+      'hintTokenAddCount',
+      'hintUseBtn',
+    ];
 
     let workingLayout = mergeHintV2Layout(null);
     let previewLayout = null;
     let previewHintZone = null;
-    let currentItem = 'hintPlaqueUse';
-    let hintMode = 'use';
+    let previewRendererZone = null;
+    let currentItem = 'hintPlaqueCount';
 
     const els = {};
 
-    function itemHintMode(itemKey) {
-      if (itemKey === 'hintPlaqueCount' || itemKey === 'hintTokenCountCount' || itemKey === 'hintTokenAddCount') {
-        return 'count';
-      }
-      if (itemKey === 'hintPlaqueUse' || itemKey === 'hintTokenCountUse' || itemKey === 'hintTokenAddUse' || itemKey === 'hintUseBtn') {
-        return 'use';
-      }
-      return hintMode;
-    }
-
     function isTokenCountItem(key) {
-      return key === 'hintTokenCountUse' || key === 'hintTokenCountCount';
+      return key === 'hintTokenCountCount';
     }
 
     function patchTokenCountFont(dir, mode = 'px') {
@@ -357,7 +353,6 @@
 
     function selectItem(key) {
       currentItem = key;
-      hintMode = itemHintMode(key);
       refresh();
     }
 
@@ -417,17 +412,53 @@
       saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
     }
 
-    function refreshHintMode() {
-      const useMode = hintMode === 'use';
-      document.querySelectorAll('[data-hint-mode="use"]').forEach((el) => {
-        el.classList.toggle('mode-hidden', !useMode);
-      });
-      document.querySelectorAll('[data-hint-mode="count"]').forEach((el) => {
-        el.classList.toggle('mode-hidden', useMode);
-      });
-      for (const btn of els.modeToggle.querySelectorAll('[data-mode]')) {
-        btn.classList.toggle('is-active', btn.dataset.mode === hintMode);
+    function refreshHintZoneReadout() {
+      if (!previewHintZone || !previewRendererZone) {
+        els.hintZoneReadout.textContent = 'Load preview layout to show plaque + tile-slot zones';
+        return;
       }
+      const frame = workingLayout.frame || { w: 237, h: 125 };
+      const useFrame = previewRendererZone;
+      els.hintZoneReadout.innerHTML = `
+        Token plaque (below rotation): x ${previewHintZone.x} · y ${previewHintZone.y} · w ${previewHintZone.w} · h ${previewHintZone.h} (390×259)<br />
+        Use-hint hit (tile slot): x ${useFrame.x} · y ${useFrame.y} · w ${useFrame.w} · h ${useFrame.h} (390×259)<br />
+        Plaque local artboard: ${frame.w}×${frame.h}px · use-hint local: ${useFrame.w}×${useFrame.h}px · mock at ${DISPLAY_SCALE}×
+      `;
+    }
+
+    function localFrameForItem(key) {
+      if (key === 'hintUseBtn' && previewRendererZone) {
+        return { w: previewRendererZone.w, h: previewRendererZone.h };
+      }
+      return workingLayout.frame || { w: 237, h: 125 };
+    }
+
+    function refresh() {
+      if (previewLayout) {
+        applyPreviewV2Layout(previewLayout, document.documentElement);
+      }
+      applyHintV2Layout(workingLayout, document.documentElement, previewLayout);
+      applyHintV2ArtImages(document, workingLayout);
+      els.artHintCount.value = workingLayout.art?.hintPlaqueCount || '';
+      const box = getHintV2ItemLayout(currentItem, workingLayout);
+      const def = HINT_V2_ITEM_DEFS[currentItem];
+      const frame = localFrameForItem(currentItem);
+      const zoneLabel = currentItem === 'hintUseBtn' ? 'tile renderer' : 'hint plaque';
+      const fontLine = isTokenCountItem(currentItem)
+        ? `<br />${formatTokenFontReadout(getHintV2TokenCountFont(workingLayout))}`
+        : '';
+      els.readout.innerHTML = `
+        <strong>${def?.label || currentItem}</strong><br />
+        x: ${box.x} · y: ${box.y}<br />
+        w: ${box.w} · h: ${box.h} (local px in ${frame.w}×${frame.h} ${zoneLabel})${fontLine}
+      `;
+      els.fontBtnRow.hidden = !isTokenCountItem(currentItem);
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildHintV2LayoutReport(workingLayout);
+      refreshHintZoneReadout();
+      stashHintV2LayoutDraft(workingLayout);
+      refreshFieldGrid();
+      scheduleSave();
     }
 
     function refreshFieldGrid() {
@@ -437,48 +468,6 @@
       for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
         box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
       }
-    }
-
-    function refreshHintZoneReadout() {
-      if (!previewHintZone) {
-        els.hintZoneReadout.textContent = 'Hint_data zone: load preview layout to show plaque position';
-        return;
-      }
-      const frame = workingLayout.frame || { w: 237, h: 125 };
-      els.hintZoneReadout.innerHTML = `
-        Hint_data on preview plaque: x ${previewHintZone.x} · y ${previewHintZone.y} · w ${previewHintZone.w} · h ${previewHintZone.h} (390×259)<br />
-        Local hint artboard: ${frame.w}×${frame.h}px · mock shown at ${DISPLAY_SCALE}× on preview plaque
-      `;
-    }
-
-    function refresh() {
-      if (previewLayout) {
-        applyPreviewV2Layout(previewLayout, document.documentElement);
-      }
-      applyHintV2Layout(workingLayout, document.documentElement);
-      applyHintV2ArtImages(document, workingLayout);
-      els.artPlaqueUse.value = workingLayout.art?.hintPlaqueUse || '';
-      els.artHintCount.value = workingLayout.art?.hintPlaqueCount || '';
-      els.artUseHint.value = workingLayout.art?.useHintBtn || '';
-      const box = getHintV2ItemLayout(currentItem, workingLayout);
-      const def = HINT_V2_ITEM_DEFS[currentItem];
-      const frame = workingLayout.frame || { w: 237, h: 125 };
-      const fontLine = isTokenCountItem(currentItem)
-        ? `<br />${formatTokenFontReadout(getHintV2TokenCountFont(workingLayout))}`
-        : '';
-      els.readout.innerHTML = `
-        <strong>${def?.label || currentItem}</strong><br />
-        x: ${box.x} · y: ${box.y}<br />
-        w: ${box.w} · h: ${box.h} (local px in ${frame.w}×${frame.h} Hint_data)${fontLine}
-      `;
-      els.fontBtnRow.hidden = !isTokenCountItem(currentItem);
-      els.jsonOut.value = exportJson();
-      els.reportOut.value = buildHintV2LayoutReport(workingLayout);
-      refreshHintZoneReadout();
-      stashHintV2LayoutDraft(workingLayout);
-      refreshFieldGrid();
-      refreshHintMode();
-      scheduleSave();
     }
 
     function onWheel(e) {
@@ -526,13 +515,10 @@
       els.mockStage = document.getElementById('mockStage');
       els.hintRoot = document.getElementById('hintRoot');
       els.hintZoneReadout = document.getElementById('hintZoneReadout');
-      els.artPlaqueUse = document.getElementById('artPlaqueUse');
       els.artHintCount = document.getElementById('artHintCount');
-      els.artUseHint = document.getElementById('artUseHint');
-      els.modeToggle = document.getElementById('modeToggle');
       els.fontBtnRow = document.getElementById('fontBtnRow');
 
-      for (const key of HINT_V2_ITEM_KEYS) {
+      for (const key of TUNER_HINT_ITEMS) {
         const def = HINT_V2_ITEM_DEFS[key];
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -545,16 +531,10 @@
 
       document.querySelectorAll('.tuner-box[data-item]').forEach(wireTunerBox);
 
-      els.modeToggle.addEventListener('click', (ev) => {
-        const btn = ev.target.closest('[data-mode]');
-        if (!btn) return;
-        hintMode = btn.dataset.mode;
-        selectItem(hintMode === 'use' ? 'hintTokenAddUse' : 'hintTokenAddCount');
+      els.artHintCount.addEventListener('change', () => {
+        const path = els.artHintCount.value.trim();
+        patchArt({ hintPlaqueCount: path, hintPlaqueUse: path });
       });
-
-      els.artPlaqueUse.addEventListener('change', () => patchArt({ hintPlaqueUse: els.artPlaqueUse.value.trim() }));
-      els.artHintCount.addEventListener('change', () => patchArt({ hintPlaqueCount: els.artHintCount.value.trim() }));
-      els.artUseHint.addEventListener('change', () => patchArt({ useHintBtn: els.artUseHint.value.trim() }));
 
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });
 
@@ -591,7 +571,9 @@
 
       try {
         previewLayout = await loadPreviewV2Layout();
-        previewHintZone = getPreviewV2ItemLayout('hintData', previewLayout);
+        previewHintZone = getPreviewV2ItemLayout('hintPreview', previewLayout)
+          || getPreviewV2ItemLayout('hintData', previewLayout);
+        previewRendererZone = getPreviewV2ItemLayout('renderer', previewLayout);
       } catch {
         previewLayout = null;
         previewHintZone = null;

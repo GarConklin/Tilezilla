@@ -151,8 +151,19 @@
       pointer-events: none;
     }
     .stuck-reveal-tuner-page .tz-stuck-dialog__preview.tuner-box {
-      display: block !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
       background: rgba(80, 160, 120, 0.15);
+      overflow: hidden;
+    }
+    .stuck-reveal-tuner-page .tz-stuck-dialog__preview-canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(232, 220, 196, 0.92);
+      border-radius: 4px;
+      pointer-events: none;
     }
     .stuck-reveal-tuner-page .tz-stuck-dialog__btn--close.tuner-box {
       display: block !important;
@@ -162,10 +173,11 @@
 <body>
   <h1>I'm Stuck reveal tuner</h1>
   <p class="lead">
-    Align hit targets on <strong>Imstuckreveal.png</strong> (after View Example Route).
-    Colored boxes are invisible click areas in the game.
+    Tune <strong>Imstuckreveal.png</strong> (show solution step): dialog width vs preview pane,
+  route preview zone, board render scale, Keep Trying, and Close X.
     Saves to <code>data/stuck_reveal_layout.json</code>.
-    <a href="/dev-player-select.html">Back to player select</a>
+    <a href="/tilezilla-v2.html">In-game test</a> ·
+    <a href="/dev-player-select.html">Dev tools</a>
   </p>
 
   <div class="layout">
@@ -174,8 +186,10 @@
       <div class="field-grid" id="fieldGrid"></div>
       <p class="readout" id="readout">—</p>
       <ul class="keys">
-        <li>Scroll — move X% · Shift+scroll — move Y%</li>
-        <li>Ctrl+scroll — width% · Alt+Ctrl+scroll — height%</li>
+        <li><strong>Dialog</strong> — wheel: preview width ratio (0.95 = 95% of preview pane)</li>
+        <li><strong>Route preview</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H</li>
+        <li><strong>Route preview</strong> — Ctrl+Shift+wheel: widthScale · Alt+Shift+wheel: heightScale</li>
+        <li><strong>Route preview</strong> — Ctrl+Alt+wheel: boardScale (solution size in zone)</li>
         <li>Click a box on the art to select it</li>
       </ul>
       <div class="btn-row">
@@ -202,6 +216,7 @@
                 height="1122"
               />
               <div class="tz-stuck-dialog__preview tuner-box" data-item="preview">
+                <canvas class="tz-stuck-dialog__preview-canvas" id="mockBoardCanvas" width="120" height="120" aria-hidden="true"></canvas>
                 <span class="hit-label">Route preview</span>
               </div>
               <button type="button" class="tz-stuck-dialog__btn tz-stuck-dialog__btn--keep tuner-box" data-item="keep">
@@ -223,6 +238,7 @@
       applyStuckRevealLayout,
       buildStuckRevealLayoutReport,
       clearStuckRevealLayoutCache,
+      getStuckRevealDialogLayout,
       getStuckRevealItemLayout,
       loadStuckRevealLayout,
       mergeStuckRevealLayout,
@@ -232,9 +248,11 @@
 
     const POS_STEP = 0.5;
     const SIZE_STEP = 0.5;
+    const SCALE_STEP = 0.05;
+    const DIALOG_ITEM = '__dialog__';
 
     let workingLayout = mergeStuckRevealLayout(null);
-    let currentItem = 'keep';
+    let currentItem = 'preview';
 
     const els = {};
 
@@ -242,6 +260,39 @@
       if (!workingLayout.items[key]) workingLayout.items[key] = {};
       Object.assign(workingLayout.items[key], patch);
       refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function drawMockBoard() {
+      const canvas = document.getElementById('mockBoardCanvas');
+      const box = document.querySelector('.tuner-box[data-item="preview"]');
+      if (!canvas || !box) return;
+      const rect = box.getBoundingClientRect();
+      const preview = getStuckRevealItemLayout('preview', workingLayout);
+      const boardScale = preview.boardScale ?? 1;
+      const side = Math.max(24, Math.round(Math.min(rect.width, rect.height) * boardScale * 0.85));
+      canvas.width = side;
+      canvas.height = side;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.fillStyle = '#e8dcc4';
+      ctx.fillRect(0, 0, side, side);
+      const cell = side / 5;
+      const colors = ['#6b8f71', '#8a6b4f', '#5a7a9a', '#9a6b5a'];
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          if ((r + c) % 2 === 0) continue;
+          ctx.fillStyle = colors[(r + c) % colors.length];
+          ctx.fillRect(c * cell + 1, r * cell + 1, cell - 2, cell - 2);
+        }
+      }
+      ctx.strokeStyle = '#3d2e1a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cell, cell, cell * 3, cell * 2);
     }
 
     function exportJson() {
@@ -298,26 +349,64 @@
       }
     }
 
-    function refresh() {
-      applyStuckRevealLayout(workingLayout, document.documentElement);
+    function formatReadout() {
+      if (currentItem === DIALOG_ITEM) {
+        const d = getStuckRevealDialogLayout(workingLayout);
+        return `<strong>Dialog width</strong><br />previewWidthRatio: ${d.previewWidthRatio} (${Math.round(d.previewWidthRatio * 100)}% of preview pane)`;
+      }
       const box = getStuckRevealItemLayout(currentItem, workingLayout);
       const def = STUCK_REVEAL_ITEM_DEFS[currentItem];
-      els.readout.innerHTML = `
-        <strong>${def?.label || currentItem}</strong><br />
-        x: ${box.x}% · y: ${box.y}%<br />
-        w: ${box.w}% · h: ${box.h}%
-      `;
+      const extra = currentItem === 'preview'
+        ? `<br />widthScale: ${box.widthScale} · heightScale: ${box.heightScale}<br />boardScale: ${box.boardScale} · centerX: ${box.centerX}`
+        : '';
+      return `<strong>${def?.label || currentItem}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${extra}`;
+    }
+
+    function refresh() {
+      applyStuckRevealLayout(workingLayout, document.documentElement);
+      els.readout.innerHTML = formatReadout();
       els.jsonOut.value = exportJson();
       els.reportOut.value = buildStuckRevealLayoutReport(workingLayout);
       stashStuckRevealLayoutDraft(workingLayout);
       refreshFieldGrid();
+      if (currentItem === 'preview') drawMockBoard();
       scheduleSave();
     }
 
     function onWheel(e) {
       e.preventDefault();
       const dir = e.deltaY < 0 ? 1 : -1;
+
+      if (currentItem === DIALOG_ITEM) {
+        const d = getStuckRevealDialogLayout(workingLayout);
+        patchDialog({
+          previewWidthRatio: Math.max(0.5, Math.min(1, Math.round((d.previewWidthRatio + dir * SCALE_STEP) * 100) / 100)),
+        });
+        return;
+      }
+
       const box = getStuckRevealItemLayout(currentItem, workingLayout);
+
+      if (currentItem === 'preview') {
+        if (e.ctrlKey && e.altKey) {
+          patchItem(currentItem, {
+            boardScale: Math.max(0.5, Math.round((box.boardScale + dir * SCALE_STEP) * 100) / 100),
+          });
+          return;
+        }
+        if (e.ctrlKey && e.shiftKey) {
+          patchItem(currentItem, {
+            widthScale: Math.max(0.3, Math.round((box.widthScale + dir * SCALE_STEP) * 100) / 100),
+          });
+          return;
+        }
+        if (e.altKey && e.shiftKey) {
+          patchItem(currentItem, {
+            heightScale: Math.max(0.2, Math.round((box.heightScale + dir * SCALE_STEP) * 100) / 100),
+          });
+          return;
+        }
+      }
 
       if (e.altKey && e.ctrlKey) {
         patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
@@ -358,6 +447,14 @@
         });
       }
 
+      const dialogBtn = document.createElement('button');
+      dialogBtn.type = 'button';
+      dialogBtn.className = 'field-btn';
+      dialogBtn.dataset.item = DIALOG_ITEM;
+      dialogBtn.textContent = 'Dialog width (95% preview)';
+      dialogBtn.addEventListener('click', () => { currentItem = DIALOG_ITEM; refresh(); });
+      els.fieldGrid.insertBefore(dialogBtn, els.fieldGrid.firstChild);
+
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });
       document.getElementById('reloadBtn').addEventListener('click', async () => {
         clearStuckRevealLayoutCache();
@@ -384,6 +481,9 @@
       }
       refresh();
       els.mockStage.focus();
+      window.addEventListener('resize', () => {
+        if (currentItem === 'preview') drawMockBoard();
+      });
     }
 
     void init();

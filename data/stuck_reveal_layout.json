@@ -1,24 +1,31 @@
 {
+  "dialog": {
+    "previewWidthRatio": 1,
+    "artW": 1402,
+    "artH": 1122
+  },
   "items": {
     "preview": {
-      "x": 57,
-      "y": 24,
-      "w": 36,
+      "x": 76.5,
+      "y": 31,
+      "w": 35,
       "h": 58,
       "widthScale": 0.95,
-      "heightScale": 0.62
+      "heightScale": 0.8,
+      "boardScale": 1.55,
+      "centerX": true
     },
     "keep": {
-      "x": 4.5,
-      "y": 88.5,
-      "w": 27,
+      "x": 12.5,
+      "y": 81,
+      "w": 29.5,
       "h": 9.5
     },
     "close": {
-      "x": 91,
-      "y": 2.5,
-      "w": 7,
-      "h": 7
+      "x": 88.5,
+      "y": 7.5,
+      "w": 6.5,
+      "h": 9
     }
   }
 }

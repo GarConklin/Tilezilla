@@ -477,12 +477,14 @@
   --tz-stuck-view-w: 38.2%;
   --tz-stuck-btn-h: 10.1%;
   /* Reveal art (Imstuckreveal.png) — route preview on the right */
-  --tz-stuck-reveal-preview-x: 57%;
+  --tz-stuck-reveal-preview-x: 74%;
   --tz-stuck-reveal-preview-y: 24%;
   --tz-stuck-reveal-preview-w: 36%;
   --tz-stuck-reveal-preview-h: 58%;
   --tz-stuck-reveal-preview-width-scale: 0.95;
-  --tz-stuck-reveal-preview-height-scale: 0.62;
+  --tz-stuck-reveal-preview-height-scale: 0.45;
+  --tz-stuck-reveal-preview-board-scale: 1.45;
+  --tz-stuck-reveal-preview-center-x: 1;
   --tz-stuck-reveal-keep-x: 4.5%;
   --tz-stuck-reveal-keep-y: 88.5%;
   --tz-stuck-reveal-keep-w: 27%;
@@ -825,12 +827,29 @@ button {
   background: var(--tz-teal-dark);
 }
 
+.tz-main-v2-app .tz-load-screen {
+  background: transparent;
+}
+
+.tz-load-screen__art-wrap {
+  position: absolute;
+  left: var(--tz-load-art-x, 0%);
+  top: var(--tz-load-art-y, 0%);
+  width: var(--tz-load-art-w, 100%);
+  height: var(--tz-load-art-h, 100%);
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .tz-load-screen__art {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  display: block;
+  object-fit: var(--tz-load-art-fit, contain);
+  object-position: var(--tz-load-art-position, top center);
   user-select: none;
   pointer-events: none;
 }
@@ -1426,6 +1445,47 @@ button {
   min-height: 1px;
 }
 
+.tz-preview-hint-slot {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  overflow: visible;
+  box-sizing: border-box;
+  left: calc(var(--tz-preview-hint-preview-x-art) / var(--tz-preview-art-w) * 100%);
+  top: calc(var(--tz-preview-hint-preview-y-art) / var(--tz-preview-art-h) * 100%);
+  width: calc(var(--tz-preview-hint-preview-w-art) / var(--tz-preview-art-w) * 100%);
+  height: calc(var(--tz-preview-hint-preview-h-art) / var(--tz-preview-art-h) * 100%);
+}
+
+.tz-preview-hint-slot > .tz-preview-v2-hint-token-add {
+  pointer-events: auto;
+}
+
+.tz-preview-hint-use-slot {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  overflow: visible;
+  box-sizing: border-box;
+  left: calc(var(--tz-preview-renderer-x-art) / var(--tz-preview-art-w) * 100%);
+  top: calc(var(--tz-preview-renderer-y-art) / var(--tz-preview-art-h) * 100%);
+  width: calc(var(--tz-preview-renderer-w-art) / var(--tz-preview-art-w) * 100%);
+  height: calc(var(--tz-preview-renderer-h-art) / var(--tz-preview-art-h) * 100%);
+}
+
+.tz-preview-hint-use-slot > .tz-preview-v2-hint-use-btn {
+  pointer-events: auto;
+}
+
+.tz-preview-hint-use-slot[hidden] {
+  display: none !important;
+}
+
+.tz-preview-hint-slot[hidden] {
+  display: none !important;
+}
+
+/* Legacy Hint_data zone marker (preview-v2 tuner) */
 .tz-preview-v2-hint-data {
   position: absolute;
   z-index: 4;
@@ -1729,17 +1789,9 @@ button {
   border-color: rgba(232, 185, 35, 0.9) !important;
 }
 
-/* Preview v2 hint sub-layout (inside Hint_data zone) */
+/* Preview v2 hint sub-layout — plaque in hint-preview zone; use-hint hit in tile renderer */
 
-.tz-preview-v2-hint-data > .tz-preview-v2-hint-use-btn,
-.tz-preview-v2-hint-data > .tz-preview-v2-hint-token-add {
-  pointer-events: auto;
-}
-
-.tz-preview-v2-hint-data > [hidden] {
-  display: none !important;
-}
-
+.tz-preview-hint-slot > [hidden],
 .tz-preview-v2-hint-plaque[hidden],
 .tz-preview-v2-hint-use-btn[hidden],
 .tz-preview-v2-hint-token-count[hidden],
@@ -1783,14 +1835,15 @@ button {
   position: absolute;
   z-index: 5;
   padding: 0;
+  margin: 0;
   background: transparent;
   border: none;
   cursor: pointer;
   pointer-events: auto;
-  left: calc(var(--tz-hint-use-btn-x-art) / var(--tz-hint-art-w, 237) * 100%);
-  top: calc(var(--tz-hint-use-btn-y-art) / var(--tz-hint-art-h, 125) * 100%);
-  width: calc(var(--tz-hint-use-btn-w-art) / var(--tz-hint-art-w, 237) * 100%);
-  height: calc(var(--tz-hint-use-btn-h-art) / var(--tz-hint-art-h, 125) * 100%);
+  left: calc(var(--tz-hint-use-btn-x-art) / var(--tz-hint-use-art-w, 222) * 100%);
+  top: calc(var(--tz-hint-use-btn-y-art) / var(--tz-hint-use-art-h, 140) * 100%);
+  width: calc(var(--tz-hint-use-btn-w-art) / var(--tz-hint-use-art-w, 222) * 100%);
+  height: calc(var(--tz-hint-use-btn-h-art) / var(--tz-hint-use-art-h, 140) * 100%);
 }
 
 .tz-preview-v2-hint-use-btn__art {
@@ -1866,16 +1919,17 @@ button {
 }
 
 .tz-app[data-validation="ready"] .tz-preview-v2-data,
-.tz-app[data-validation="ready"] .tz-preview-v2-hint-data,
+.tz-app[data-validation="ready"] .tz-preview-hint-slot,
 .tz-app[data-validation="invalid"] .tz-preview-v2-data,
-.tz-app[data-validation="invalid"] .tz-preview-v2-hint-data,
+.tz-app[data-validation="invalid"] .tz-preview-hint-slot,
 .tz-app.is-discovery-record .tz-preview-v2-data,
-.tz-app.is-discovery-record .tz-preview-v2-hint-data {
+.tz-app.is-discovery-record .tz-preview-hint-slot {
   visibility: hidden;
   pointer-events: none;
 }
 
-.preview-v2-tuner-page .tuner-box--hint-data {
+.preview-v2-tuner-page .tuner-box--hint-data,
+.preview-v2-tuner-page .tuner-box--hint-preview {
   background: rgba(143, 212, 154, 0.18) !important;
   border-color: rgba(143, 212, 154, 0.85) !important;
   z-index: 4;
@@ -4146,9 +4200,10 @@ button {
     var(--tz-stuck-reveal-preview-w) * var(--tz-stuck-reveal-preview-width-scale, 0.95)
   );
   height: calc(
-    var(--tz-stuck-reveal-preview-h) * var(--tz-stuck-reveal-preview-height-scale, 0.62)
+    var(--tz-stuck-reveal-preview-h) * var(--tz-stuck-reveal-preview-height-scale, 0.45)
   );
-  padding: 2.5% 3%;
+  transform: translateX(calc(-50% * var(--tz-stuck-reveal-preview-center-x, 1)));
+  padding: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -4156,8 +4211,8 @@ button {
 
 .tz-stuck-dialog__preview-canvas {
   display: block;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
@@ -6327,6 +6382,12 @@ html.tz-phone-preview .tz-settings-frame {
 /* ── Menu / Settings sheets ── */
 
 body.tz-modal-open { overflow: hidden; }
+
+/* Hide hamburger while profile / modal overlays are open */
+body.tz-modal-open .tz-menu-btn {
+  visibility: hidden;
+  pointer-events: none;
+}
 
 /* Image menu (Menu.png / Menu-devtools.png) */
 .tz-sheet-root--menu .tz-menu-plaque {

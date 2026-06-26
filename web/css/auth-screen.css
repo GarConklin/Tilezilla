@@ -5,9 +5,10 @@
 
 :root {
   --tz-teal-dark: #1a3d3a;
-  --tz-img-bg-sky: url("/img/Background%20Sky%20and%20dock%20without%20water.png");
-  --tz-img-bg-water-a: url("/img/Background%20water1.png");
-  --tz-img-bg-water-b: url("/img/Background%20water2.png");
+  /* Fallbacks match data/main_screen_v2_layout.json — overridden at runtime by auth-screen-chrome.js */
+  --tz-msv2-bg: url("/img/Background%20lake%20and%20sun-no-water.png");
+  --tz-msv2-bg-water-a: url("/img/Background%20lake%20and%20sun-Just-water1.png");
+  --tz-msv2-bg-water-b: url("/img/Background%20lake%20and%20sun-Just-water2.png");
   --tz-profile-art-w: 1418;
   --tz-profile-art-h: 2200;
   --tz-profile-display-pad: calc(
@@ -34,7 +35,7 @@ html, body {
   padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
 }
 
-/* Game background — same layers as tilezilla.html */
+/* Game background — same layers as tilezilla-v2.html */
 .auth-screen__bg.tz-bg {
   position: fixed;
   inset: 0;
@@ -47,7 +48,10 @@ html, body {
 .auth-screen__bg .tz-bg__sky {
   position: absolute;
   inset: 0;
-  background: var(--tz-img-bg-sky) center center / 100% 100% no-repeat;
+  background-image: var(--tz-msv2-bg, url("/img/Background%20lake%20and%20sun-no-water.png"));
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .auth-screen__bg .tz-bg__water {
@@ -65,12 +69,12 @@ html, body {
 }
 
 .auth-screen__bg .tz-bg__water-layer--a {
-  background-image: var(--tz-img-bg-water-a);
+  background-image: var(--tz-msv2-bg-water-a, url("/img/Background%20lake%20and%20sun-Just-water1.png"));
   animation: auth-ripple 18s ease-in-out infinite;
 }
 
 .auth-screen__bg .tz-bg__water-layer--b {
-  background-image: var(--tz-img-bg-water-b);
+  background-image: var(--tz-msv2-bg-water-b, url("/img/Background%20lake%20and%20sun-Just-water2.png"));
   animation: auth-ripple 27s ease-in-out infinite;
 }
 
@@ -94,6 +98,59 @@ html, body {
   display: block;
   min-height: 100dvh;
   padding: 0;
+}
+
+.auth-screen--login,
+.auth-screen--create,
+.auth-screen--profile {
+  position: relative;
+  display: block;
+  min-height: 100dvh;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Hide in-game hamburger while auth / passport flow is active */
+body.auth-screen-chrome .tz-menu-btn,
+body.auth-screen-chrome .tz-menu-root {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.auth-screen__viewport {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 390px);
+  margin: 0 auto;
+  min-height: 100dvh;
+  max-height: 100dvh;
+}
+
+.auth-screen__title {
+  position: absolute;
+  left: var(--auth-chrome-title-x, 20.51%);
+  top: var(--auth-chrome-title-y, 0.47%);
+  width: var(--auth-chrome-title-w, 58.99%);
+  height: var(--auth-chrome-title-h, 6.65%);
+  max-height: calc(var(--auth-chrome-title-h, 6.65%) * 1.05);
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.auth-screen--login .auth-screen__stage,
+.auth-screen--create .auth-screen__stage,
+.auth-screen--profile .auth-screen__stage {
+  position: absolute;
+  left: 50%;
+  top: var(--auth-chrome-stage-top, 7.7%);
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 2;
+  --auth-passport-avail-h: calc(
+    100dvh - var(--auth-chrome-stage-top, 7.7%) - max(8px, env(safe-area-inset-bottom))
+  );
+  max-height: var(--auth-passport-avail-h);
 }
 
 .auth-screen--load .auth-screen__stage--load {
@@ -152,10 +209,20 @@ html, body {
   color: #3d2e1a;
   font: inherit;
   font-size: clamp(0.72rem, 2.8vw, 0.9rem);
-  padding: 0.35em 0.55em;
+  padding: 0 0.45em;
+  line-height: 1;
   border-radius: 4px;
   outline: none;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.auth-screen--login .auth-screen__input,
+.auth-screen--create .auth-screen__input {
+  display: flex;
+  align-items: center;
+  padding: 0 0.4em;
+  font-size: clamp(0.65rem, 2.5vw, 0.82rem);
 }
 
 .auth-screen__input:focus {
@@ -184,10 +251,9 @@ html, body {
     100%,
     var(--tz-profile-max-design-width),
     calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
   aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
-  max-height: calc(100dvh - var(--tz-profile-display-pad));
 }
 
 .auth-screen--login .auth-screen__stage {
@@ -196,7 +262,7 @@ html, body {
     var(--tz-profile-max-design-width),
     var(--auth-login-max-width, 420px),
     calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
 }
 
@@ -206,7 +272,7 @@ html, body {
     var(--tz-profile-max-design-width),
     var(--auth-create-max-width, 420px),
     calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
 }
 
@@ -216,7 +282,7 @@ html, body {
     var(--tz-profile-max-design-width),
     var(--auth-profile-max-width, 420px),
     calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
 }
 
@@ -231,11 +297,7 @@ html, body {
   pointer-events: none;
 }
 
-.auth-screen--login,
-.auth-screen--create,
-.auth-screen--profile {
-  justify-content: center;
-}
+/* Tuner preview chrome lives in auth-screen-tuner.css */
 
 .auth-screen--load .auth-screen__hit--guest {
   left: 4.5%;

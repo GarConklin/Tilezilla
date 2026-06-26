@@ -6,8 +6,25 @@
   <meta name="theme-color" content="#1a3d3a" />
   <title>Tilezilla — Explorer Profile</title>
   <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
-<body class="auth-screen auth-screen--profile">
+<body class="auth-screen auth-screen--profile auth-screen-chrome">
+  <div class="auth-screen__bg tz-bg" aria-hidden="true">
+    <div class="tz-bg__sky"></div>
+    <div class="tz-bg__water">
+      <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+      <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+    </div>
+  </div>
+  <div class="auth-screen__viewport">
+    <img
+      class="auth-screen__title"
+      src="/img/Title.png"
+      alt="Tilezilla — Skiff Lake Games"
+      width="400"
+      height="80"
+      draggable="false"
+    />
   <main class="auth-screen__stage" id="profileStage">
     <img
       class="auth-screen__art"
@@ -17,9 +34,23 @@
       height="2200"
       draggable="false"
     />
-    <p class="auth-screen__profile-name" id="profileName">Explorer</p>
-    <p class="auth-screen__profile-stat" data-profile-slot="rank" id="profileRank">—</p>
-    <p class="auth-screen__profile-stat" data-profile-slot="subLevel" id="profileSubLevel">—</p>
+    <p class="auth-screen__profile-name" id="profileName" data-profile-slot="profileName">Explorer</p>
+    <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
+      <img
+        class="auth-screen__profile-rank-badge"
+        data-profile-slot="rankBadge"
+        id="profileRankBadge"
+        src="/img/ranks/Wanderer.png"
+        alt=""
+      />
+      <img
+        class="auth-screen__profile-rank-sublevel tz-rank-sublevel__img"
+        data-profile-slot="sublevelIcon"
+        id="profileSublevelIcon"
+        src="/img/ranks/gld-1.png"
+        alt=""
+      />
+    </div>
     <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileAdventureProgress">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileRoutes">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="hintTokens" id="profileHints">—</p>
@@ -32,19 +63,20 @@
     <p class="auth-screen__profile-stat" data-profile-slot="mostSolvedPuzzle" id="profileMostSolved">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="latestDiscovery" id="profileLatestDiscovery">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="totalPlayTime" id="profilePlayTime">—</p>
-    <a class="auth-screen__hit auth-screen__hit--back" href="/tilezilla.html" aria-label="Back">
+    <a class="auth-screen__hit auth-screen__hit--back" href="/tilezilla-v2.html" aria-label="Back">
       <img src="/img/BAck-gold-rnd-btn.png" alt="" />
     </a>
-    <a class="auth-screen__hit auth-screen__hit--close-x" href="/tilezilla.html" aria-label="Close">
+    <a class="auth-screen__hit auth-screen__hit--close-x" href="/tilezilla-v2.html" aria-label="Close">
       <img src="/img/X-gold-rnd-btn.png" alt="" />
     </a>
     <nav class="auth-screen__profile-nav" aria-label="Main navigation">
-      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla.html" aria-label="Daily Challenge"></a>
-      <a class="auth-screen__hit auth-screen__hit--nav-adventure" href="/tilezilla.html?screen=adventure" aria-label="Adventure Path"></a>
-      <a class="auth-screen__hit auth-screen__hit--nav-random" href="/tilezilla.html?screen=random" aria-label="Random Puzzle"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla-v2.html" aria-label="Daily Challenge"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-adventure" href="/tilezilla-v2.html?screen=adventure" aria-label="Adventure Path"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-random" href="/tilezilla-v2.html?screen=random" aria-label="Random Puzzle"></a>
       <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="logoutBtn" aria-label="Log out"></button>
     </nav>
   </main>
+  </div>
   <script type="module" src="./js/auth-screen-init.js"></script>
   <script type="module">
     import {
@@ -52,6 +84,7 @@
       isRegisteredUser,
       logoutRegisteredUser,
     } from './js/tilezilla-guest.js';
+    import { refreshProfilePassportStats } from './js/profile-passport-data.js';
 
     if (!isRegisteredUser()) {
       window.location.replace('/login-screen.html');
@@ -60,6 +93,8 @@
     const name = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
     const nameEl = document.getElementById('profileName');
     if (nameEl) nameEl.textContent = name;
+
+    void refreshProfilePassportStats();
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
       void logoutRegisteredUser();

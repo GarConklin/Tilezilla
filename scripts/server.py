@@ -8,6 +8,7 @@ Serves:
 
 from __future__ import annotations
 
+import gzip
 import json
 import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -146,8 +147,34 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
+    def _send_gzip_file(self, file_path: Path) -> bool:
+        if not file_path.is_file():
+            return False
+        accept = self.headers.get("Accept-Encoding", "")
+        if "gzip" not in accept.lower():
+            return False
+        try:
+            raw = file_path.read_bytes()
+        except OSError:
+            return False
+        if len(raw) < 2048:
+            return False
+        body = gzip.compress(raw, compresslevel=6)
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Encoding", "gzip")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Vary", "Accept-Encoding")
+        self.end_headers()
+        self.wfile.write(body)
+        return True
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        req_path = unquote(parsed.path)
+        if req_path.startswith(("/data/", "/solves/")) and req_path.endswith(".json"):
+            if self._send_gzip_file(Path(self.translate_path(req_path))):
+                return
         if parsed.path == "/api/adventure/path":
             status, payload = adventure_path_api_response()
             body = json.dumps(payload).encode("utf-8")
@@ -658,7 +685,28 @@ def validate_preview_v2_data_sublayout(payload: object) -> str | None:
 
 
 def validate_stuck_reveal_layout(payload: object) -> str | None:
-    return validate_preview_layout(payload)
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("previewWidthRatio", "artW", "artH"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "widthScale", "heightScale", "boardScale"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "centerX" in box and not isinstance(box["centerX"], bool):
+                return f"items.{key}.centerX must be a boolean"
+    return None
 
 
 RANDOM_POPUP_ITEM_KEYS = ("remain", "venture", "close")
@@ -793,6 +841,18 @@ def validate_load_screen_layout(payload: object) -> str | None:
     if isinstance(art, dict) and "rendererStageWidthScale" in art:
         if not isinstance(art["rendererStageWidthScale"], (int, float)):
             return "art.rendererStageWidthScale must be a number"
+    if isinstance(art, dict):
+        if "src" in art and not isinstance(art["src"], str):
+            return "art.src must be a string"
+        if "objectFit" in art and not isinstance(art["objectFit"], str):
+            return "art.objectFit must be a string"
+        if "objectPosition" in art and not isinstance(art["objectPosition"], str):
+            return "art.objectPosition must be a string"
+        if "frame" in art and not isinstance(art["frame"], str):
+            return "art.frame must be a string"
+        for dim in ("x", "y", "w", "h"):
+            if dim in art and not isinstance(art[dim], (int, float)):
+                return f"art.{dim} must be a number"
     items = payload.get("items")
     if items is None:
         return "items is required"
@@ -817,8 +877,8 @@ AUTH_SCREEN_ITEM_KEYS = {
     "create": ("name", "email", "pass", "pass2", "submit", "secondary", "navDaily", "navLogout"),
     "profile": (
         "profileName",
-        "rank",
-        "subLevel",
+        "rankBadge",
+        "sublevelIcon",
         "adventureProgress",
         "routesDiscovered",
         "hintTokens",
@@ -976,7 +1036,8 @@ def validate_hint_rules_layout(payload: object) -> str | None:
 JOURNAL_ITEM_KEYS = tuple(
     k for k in (
         "paneTop", "paneBottomLeft", "paneBottomRight",
-        "titleFoundSolutions", "titleRecordedPuzzles", "listScroller", "listContent", "listRow",
+        "listTitleBar", "titleFoundSolutions", "titleRecordedPuzzles",
+        "listScroller", "listContent", "listRow",
         "fieldPuzzleId", "fieldPuzzleType", "fieldBoardSize",
         "fieldTotalKnown", "fieldSolutionsFound", "fieldFirstSolved", "fieldLastPlayed",
         "progressBar", "solutionPreview", "btnBeginSearch",
@@ -988,7 +1049,7 @@ JOURNAL_ITEM_KEYS = tuple(
 
 
 JOURNAL_OVERLAY_KEYS = (
-    "shellBlank", "recordTop", "libraryTop", "bottomBar",
+    "shellBlank", "recordTop", "libraryTop", "statsScreen", "recordsScreen", "bottomBar",
 )
 
 JOURNAL_TAB_KEYS = ("puzzle", "stats", "filter", "records")

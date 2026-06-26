@@ -15,6 +15,15 @@ const profileStat = (label, slot) => ({
   baseClass: '',
 });
 
+const profileIcon = (label, slot, mockSrc) => ({
+  label,
+  kind: 'icon',
+  slot,
+  mockSrc,
+  cssClass: 'auth-screen__profile-icon',
+  baseClass: '',
+});
+
 export const AUTH_SCREEN_DEFS = {
   login: {
     label: 'Logging in',
@@ -47,8 +56,8 @@ export const AUTH_SCREEN_DEFS = {
     art: '/img/Logged-in.png',
     items: {
       profileName: { label: 'Name', kind: 'text', cssClass: 'auth-screen__profile-name', baseClass: '' },
-      rank: profileStat('Rank', 'rank'),
-      subLevel: profileStat('Sub level', 'subLevel'),
+      rankBadge: profileIcon('Rank badge', 'rankBadge', '/img/ranks/Wanderer.png'),
+      sublevelIcon: profileIcon('Sublevel icon', 'sublevelIcon', '/img/ranks/gld-12.png'),
       adventureProgress: profileStat('Adventure progress', 'adventureProgress'),
       routesDiscovered: profileStat('Routes discovered', 'routesDiscovered'),
       hintTokens: profileStat('Hint tokens', 'hintTokens'),
@@ -77,8 +86,8 @@ export const PROFILE_FIELD_SECTIONS = [
     title: 'Passport (top)',
     keys: [
       'profileName',
-      'rank',
-      'subLevel',
+      'rankBadge',
+      'sublevelIcon',
       'adventureProgress',
       'routesDiscovered',
       'hintTokens',
@@ -106,10 +115,13 @@ export const PROFILE_FIELD_SECTIONS = [
   },
 ];
 
+export const PROFILE_ICON_MOCK = {
+  rankBadge: '/img/ranks/Wanderer.png',
+  sublevelIcon: '/img/ranks/gld-12.png',
+};
+
 export const PROFILE_LAYOUT_MOCK = {
   profileName: 'Explorer TileMaster',
-  rank: 'TileMaster',
-  subLevel: '12',
   adventureProgress: '42%',
   routesDiscovered: '128',
   hintTokens: '7',
@@ -153,8 +165,8 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
     dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
     items: {
       profileName: { x: 15, y: 22.5, w: 70, h: 4, fontScale: 1 },
-      rank: { x: 28, y: 19, w: 44, h: 3.5, fontScale: 1 },
-      subLevel: { x: 28, y: 26, w: 44, h: 3.5, fontScale: 1 },
+      rankBadge: { x: 14, y: 15.5, w: 26, h: 10 },
+      sublevelIcon: { x: 42, y: 17.5, w: 14, h: 6 },
       adventureProgress: { x: 10, y: 32, w: 80, h: 2.5, fontScale: 1 },
       routesDiscovered: { x: 22, y: 39, w: 18, h: 4, fontScale: 1 },
       hintTokens: { x: 52, y: 39, w: 18, h: 4, fontScale: 1 },
@@ -179,6 +191,7 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
 
 const LS_LAYOUT_KEY = 'tilezilla:layouts:auth-screen';
 const LS_PENDING_KEY = 'tilezilla:layouts:auth-screen:pending';
+const LS_PENDING_PREFIX = 'tilezilla:layouts:auth-screen:pending:';
 
 let layoutCache = null;
 
@@ -186,25 +199,118 @@ export function clearAuthScreenLayoutCache() {
   layoutCache = null;
 }
 
-export function stashAuthScreenLayoutDraft(layout) {
+function pendingKeyFor(screenKey) {
+  return `${LS_PENDING_PREFIX}${screenKey}`;
+}
+
+export function hasAuthScreenLayoutDraft(screenKey) {
+  try {
+    if (screenKey) return localStorage.getItem(pendingKeyFor(screenKey)) === '1';
+    if (localStorage.getItem(LS_PENDING_KEY) === '1') return true;
+    return Object.keys(AUTH_SCREEN_DEFS).some(
+      (key) => localStorage.getItem(pendingKeyFor(key)) === '1',
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function stashAuthScreenLayoutDraft(layout, screenKey) {
   try {
     localStorage.setItem(LS_LAYOUT_KEY, JSON.stringify(layout));
-    localStorage.setItem(LS_PENDING_KEY, '1');
+    if (screenKey) {
+      localStorage.setItem(pendingKeyFor(screenKey), '1');
+      localStorage.removeItem(LS_PENDING_KEY);
+    } else {
+      localStorage.setItem(LS_PENDING_KEY, '1');
+    }
   } catch {
     /* ignore */
   }
 }
 
-export function clearAuthScreenLayoutDraft() {
+export function clearAuthScreenLayoutDraft(screenKey) {
   try {
+    if (screenKey) {
+      localStorage.removeItem(pendingKeyFor(screenKey));
+      return;
+    }
     localStorage.removeItem(LS_PENDING_KEY);
+    for (const key of Object.keys(AUTH_SCREEN_DEFS)) {
+      localStorage.removeItem(pendingKeyFor(key));
+    }
   } catch {
     /* ignore */
+  }
+}
+
+export async function fetchAuthScreenLayoutRaw() {
+  try {
+    const res = await fetch(`/data/auth_screen_layout.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (res.ok) return await res.json();
+  } catch {
+    /* fall through */
+  }
+  return null;
+}
+
+/** Replace one screen section in a merged layout (login / create / profile). */
+export function mergeAuthScreenSection(layout, screenKey, section) {
+  const merged = mergeAuthScreenLayout(layout);
+  if (!section || typeof section !== 'object') return merged;
+  if (section.dialog && typeof section.dialog === 'object') {
+    merged[screenKey].dialog = { ...merged[screenKey].dialog, ...section.dialog };
+  }
+  if (section.items && typeof section.items === 'object') {
+    if (screenKey === 'profile') migrateProfileIconLayout(section.items);
+    for (const [itemKey, val] of Object.entries(section.items)) {
+      if (!AUTH_SCREEN_DEFS[screenKey].items[itemKey] || typeof val !== 'object') continue;
+      merged[screenKey].items[itemKey] = { ...merged[screenKey].items[itemKey], ...val };
+    }
+  }
+  return merged;
+}
+
+/** Build full file payload: latest on-disk layout with only screenKey overwritten. */
+export async function buildAuthScreenLayoutSavePayload(screenKey, workingLayout) {
+  const fileRaw = await fetchAuthScreenLayoutRaw();
+  const merged = mergeAuthScreenLayout(fileRaw);
+  const section = workingLayout?.[screenKey];
+  if (section) {
+    merged[screenKey] = JSON.parse(JSON.stringify(section));
+  }
+  return merged;
+}
+
+export function readAuthScreenLayoutDraftSection(screenKey) {
+  try {
+    const draft = localStorage.getItem(LS_LAYOUT_KEY);
+    if (!draft) return null;
+    const parsed = JSON.parse(draft);
+    return parsed?.[screenKey] ?? null;
+  } catch {
+    return null;
   }
 }
 
 export function isAuthTextItem(screenKey, itemKey) {
   return AUTH_SCREEN_DEFS[screenKey]?.items?.[itemKey]?.kind === 'text';
+}
+
+export function isAuthIconItem(screenKey, itemKey) {
+  return AUTH_SCREEN_DEFS[screenKey]?.items?.[itemKey]?.kind === 'icon';
+}
+
+function migrateProfileIconLayout(items) {
+  if (!items || typeof items !== 'object') return;
+  if (items.rank && !items.rankBadge) {
+    const { fontScale: _fs, ...box } = items.rank;
+    items.rankBadge = { ...box, h: Math.max(box.h || 3.5, 7) };
+  }
+  if (items.subLevel && !items.sublevelIcon) {
+    const { fontScale: _fs, ...box } = items.subLevel;
+    items.sublevelIcon = box;
+  }
 }
 
 export function mergeAuthScreenLayout(raw) {
@@ -217,6 +323,7 @@ export function mergeAuthScreenLayout(raw) {
       base[screenKey].dialog = { ...base[screenKey].dialog, ...src.dialog };
     }
     if (src.items && typeof src.items === 'object') {
+      if (screenKey === 'profile') migrateProfileIconLayout(src.items);
       for (const [itemKey, val] of Object.entries(src.items)) {
         if (!AUTH_SCREEN_DEFS[screenKey].items[itemKey] || typeof val !== 'object') continue;
         base[screenKey].items[itemKey] = { ...base[screenKey].items[itemKey], ...val };
@@ -226,43 +333,49 @@ export function mergeAuthScreenLayout(raw) {
   return base;
 }
 
-export async function loadAuthScreenLayout({ force = false, preferFile = false } = {}) {
-  if (layoutCache && !force) return layoutCache;
+export async function loadAuthScreenLayout({
+  force = false,
+  preferFile = false,
+  screenKey = null,
+} = {}) {
+  if (layoutCache && !force && !screenKey) return layoutCache;
 
-  let raw = null;
-  let pendingDraft = false;
+  let fileRaw = null;
   try {
-    if (!preferFile) {
-      pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
-      if (pendingDraft) {
-        const draft = localStorage.getItem(LS_LAYOUT_KEY);
-        if (draft) raw = JSON.parse(draft);
-      }
-    }
+    fileRaw = await fetchAuthScreenLayoutRaw();
   } catch {
-    pendingDraft = false;
+    /* fall through */
   }
 
-  if (!raw) {
+  let merged = mergeAuthScreenLayout(fileRaw);
+
+  if (!preferFile) {
     try {
-      const res = await fetch(`/data/auth_screen_layout.json?t=${Date.now()}`, { cache: 'no-store' });
-      if (res.ok) raw = await res.json();
+      const draftText = localStorage.getItem(LS_LAYOUT_KEY);
+      const draft = draftText ? JSON.parse(draftText) : null;
+      if (draft && typeof draft === 'object') {
+        if (screenKey && hasAuthScreenLayoutDraft(screenKey)) {
+          merged = mergeAuthScreenSection(merged, screenKey, draft[screenKey]);
+        } else if (!screenKey && (localStorage.getItem(LS_PENDING_KEY) === '1' || hasAuthScreenLayoutDraft())) {
+          merged = mergeAuthScreenLayout(draft);
+        }
+      }
     } catch {
-      /* fall through */
+      /* ignore bad draft */
     }
   }
 
-  if (!raw && !preferFile) {
+  if (!fileRaw && !preferFile) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
-      if (draft) raw = JSON.parse(draft);
+      if (draft) merged = mergeAuthScreenLayout(JSON.parse(draft));
     } catch {
       /* ignore */
     }
   }
 
-  layoutCache = mergeAuthScreenLayout(raw);
-  return layoutCache;
+  if (!screenKey) layoutCache = merged;
+  return merged;
 }
 
 export async function reloadAuthScreenLayout() {
@@ -319,9 +432,25 @@ export function applyAllAuthScreenLayouts(layout, target = document.documentElem
   }
 }
 
+function authScreenLayoutTarget(screenKey) {
+  if (document.body?.classList?.contains(`auth-screen--${screenKey}`)) {
+    return document.body.querySelector('.auth-screen__stage') || document.body;
+  }
+  return document.documentElement;
+}
+
+/** In-game profile overlay — vars on dialog so width + stat slots share the same frame. */
+export function getProfileOverlayLayoutTarget(root = document) {
+  return (
+    root.querySelector('#profileOverlayRoot .tz-profile-dialog') ||
+    root.querySelector('#profileOverlayRoot .tz-profile-dialog__stage') ||
+    root.getElementById('profileOverlayRoot')
+  );
+}
+
 export async function initAuthScreenLayout(screenKey, { preferFile = false } = {}) {
-  const layout = await loadAuthScreenLayout({ force: preferFile, preferFile });
-  applyAuthScreenLayout(layout, screenKey, document.documentElement);
+  const layout = await loadAuthScreenLayout({ force: preferFile, preferFile, screenKey });
+  applyAuthScreenLayout(layout, screenKey, authScreenLayoutTarget(screenKey));
   return layout;
 }
 

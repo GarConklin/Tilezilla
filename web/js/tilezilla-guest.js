@@ -2,11 +2,22 @@
  * Tilezilla guest identity, permissions, and session helpers.
  */
 
+import { DEFAULT_LOGOUT_REDIRECT_URL, resolveLogoutRedirectUrl } from './system-info.js';
+
 export const GUEST_CODE_KEY = 'guest_code';
 export const AUTH_MODE_KEY = 'tilezilla_auth_mode';
 export const ACTIVE_USER_KEY = 'snake_active_user_v1';
 export const GUEST_ANALYTICS_KEY = 'tilezilla_guest_analytics_v1';
 export const FORCE_STARTUP_KEY = 'tilezilla:force-startup';
+
+/** Primary playable shell (main screen v2). */
+export const TILEZILLA_GAME_URL = '/tilezilla-v2.html';
+
+/** @param {'daily-challenge'|'adventure'|'random'|string} [screen] */
+export function tilezillaGameUrl(screen) {
+  if (!screen) return TILEZILLA_GAME_URL;
+  return `${TILEZILLA_GAME_URL}?screen=${encodeURIComponent(screen)}`;
+}
 
 export function clearAllAuthState() {
   localStorage.removeItem(GUEST_CODE_KEY);
@@ -85,7 +96,8 @@ export function setRegisteredUser(userId) {
   }
 }
 
-export const LOGOUT_REDIRECT_URL = 'https://www.skiflakegames.com';
+/** @deprecated use resolveLogoutRedirectUrl() — sync fallback only */
+export const LOGOUT_REDIRECT_URL = DEFAULT_LOGOUT_REDIRECT_URL;
 
 export async function logoutRegisteredUser() {
   try {
@@ -94,7 +106,7 @@ export async function logoutRegisteredUser() {
     /* ignore — still clear local session */
   }
   clearAllAuthState();
-  window.location.href = LOGOUT_REDIRECT_URL;
+  window.location.href = await resolveLogoutRedirectUrl();
 }
 
 export function clearGuestSession() {

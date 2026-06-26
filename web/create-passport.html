@@ -7,7 +7,23 @@
   <title>Tilezilla — Create Passport</title>
   <link rel="stylesheet" href="css/auth-screen.css" />
 </head>
-<body class="auth-screen auth-screen--create">
+<body class="auth-screen auth-screen--create auth-screen-chrome">
+  <div class="auth-screen__bg tz-bg" aria-hidden="true">
+    <div class="tz-bg__sky"></div>
+    <div class="tz-bg__water">
+      <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+      <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+    </div>
+  </div>
+  <div class="auth-screen__viewport">
+    <img
+      class="auth-screen__title"
+      src="/img/Title.png"
+      alt="Tilezilla — Skiff Lake Games"
+      width="400"
+      height="80"
+      draggable="false"
+    />
   <main class="auth-screen__stage" id="createStage">
     <img
       class="auth-screen__art"
@@ -30,10 +46,11 @@
     </form>
     <a class="auth-screen__hit auth-screen__hit--secondary" href="/login-screen.html" aria-label="I already have a passport"></a>
     <nav class="auth-screen__bottom-nav" aria-label="Shortcuts">
-      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla.html" id="authNavDaily" aria-label="Daily Challenge"></a>
+      <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla-v2.html" id="authNavDaily" aria-label="Daily Challenge"></a>
       <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="authNavLogout" aria-label="Log out"></button>
     </nav>
   </main>
+  </div>
 
   <div class="auth-error-root" id="authErrorRoot" hidden>
     <button type="button" class="auth-error-root__backdrop" id="authErrorBackdrop" aria-label="Close"></button>

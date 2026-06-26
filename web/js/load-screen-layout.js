@@ -3,6 +3,7 @@
 import { DEFAULT_PREVIEW_V2_ART, isBlockedGameImagePath } from './preview-v2-layout.js';
 
 export const LOAD_SCREEN_ITEM_DEFS = {
+  art: { label: 'Load screen image', cssPrefix: 'art', kind: 'art' },
   preview: { label: 'Preview frame overlay', cssPrefix: 'preview' },
   guest: { label: 'Play As Guest', cssPrefix: 'guest' },
   login: { label: 'Login', cssPrefix: 'login' },
@@ -10,7 +11,14 @@ export const LOAD_SCREEN_ITEM_DEFS = {
 
 export const DEFAULT_LOAD_SCREEN_LAYOUT = {
   art: {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
     frame: DEFAULT_PREVIEW_V2_ART.frame,
+    src: '/img/Load-Screen.png',
+    objectFit: 'contain',
+    objectPosition: 'top center',
   },
   items: {
     preview: { x: 11, y: 33, w: 78, h: 24 },
@@ -67,6 +75,12 @@ export function mergeLoadScreenLayout(raw) {
     }
     delete base.art.rendererStage;
     delete base.art.rendererStageWidthScale;
+    if (!base.art.src) base.art.src = DEFAULT_LOAD_SCREEN_LAYOUT.art.src;
+    if (!base.art.objectFit) base.art.objectFit = DEFAULT_LOAD_SCREEN_LAYOUT.art.objectFit;
+    if (!base.art.objectPosition) base.art.objectPosition = DEFAULT_LOAD_SCREEN_LAYOUT.art.objectPosition;
+    for (const dim of ['x', 'y', 'w', 'h']) {
+      if (base.art[dim] == null) base.art[dim] = DEFAULT_LOAD_SCREEN_LAYOUT.art[dim];
+    }
   }
   if (raw.items && typeof raw.items === 'object') {
     for (const [key, val] of Object.entries(raw.items)) {
@@ -139,19 +153,50 @@ function setItemVars(target, cssPrefix, box) {
   target.style.setProperty(`--tz-load-${cssPrefix}-h`, `${box.h}%`);
 }
 
-export function applyLoadScreenArt(layout) {
+export function getLoadScreenArtLayout(layout) {
   const merged = mergeLoadScreenLayout(layout);
   const art = merged.art || DEFAULT_LOAD_SCREEN_LAYOUT.art;
-  const framePath = isBlockedGameImagePath(art.frame) ? DEFAULT_PREVIEW_V2_ART.frame : art.frame;
-  document.documentElement.style.setProperty(
+  const def = DEFAULT_LOAD_SCREEN_LAYOUT.art;
+  return {
+    x: art.x ?? def.x ?? 0,
+    y: art.y ?? def.y ?? 0,
+    w: art.w ?? def.w ?? 100,
+    h: art.h ?? def.h ?? 100,
+    src: art.src || def.src,
+    frame: isBlockedGameImagePath(art.frame) ? DEFAULT_PREVIEW_V2_ART.frame : art.frame,
+    objectFit: art.objectFit || def.objectFit,
+    objectPosition: art.objectPosition || def.objectPosition,
+  };
+}
+
+export function applyLoadScreenArt(layout) {
+  const art = getLoadScreenArtLayout(layout);
+  const root = document.documentElement;
+  root.style.setProperty('--tz-load-art-x', `${art.x}%`);
+  root.style.setProperty('--tz-load-art-y', `${art.y}%`);
+  root.style.setProperty('--tz-load-art-w', `${art.w}%`);
+  root.style.setProperty('--tz-load-art-h', `${art.h}%`);
+  root.style.setProperty('--tz-load-art-fit', art.objectFit);
+  root.style.setProperty('--tz-load-art-position', art.objectPosition);
+  root.style.setProperty(
     '--tz-load-preview-frame-bg',
-    cssBgUrl(framePath),
+    cssBgUrl(art.frame),
   );
+  document.querySelectorAll('.tz-load-screen__art').forEach((img) => {
+    if (img.getAttribute('src') !== art.src) img.setAttribute('src', art.src);
+    img.style.objectFit = art.objectFit;
+    img.style.objectPosition = art.objectPosition;
+  });
+}
+
+function isLoadScreenItemKey(key) {
+  return key !== 'art' && Boolean(LOAD_SCREEN_ITEM_DEFS[key]);
 }
 
 export function applyLoadScreenLayout(layout, target = document.documentElement) {
   const merged = mergeLoadScreenLayout(layout);
   for (const [key, meta] of Object.entries(LOAD_SCREEN_ITEM_DEFS)) {
+    if (!isLoadScreenItemKey(key)) continue;
     setItemVars(target, meta.cssPrefix, getLoadScreenItemLayout(key, merged));
   }
   const preview = getLoadScreenItemLayout('preview', merged);
@@ -163,13 +208,17 @@ export function applyLoadScreenLayout(layout, target = document.documentElement)
 
 export function buildLoadScreenLayoutReport(layout) {
   const merged = mergeLoadScreenLayout(layout);
-  const art = merged.art || DEFAULT_LOAD_SCREEN_LAYOUT.art;
+  const art = getLoadScreenArtLayout(merged);
   const lines = [
-    'Load screen — 390×844 mobile stage',
+    'Load screen — 390×844 mobile stage (background from main_screen_v2_layout.json)',
+    `Art: ${art.src}`,
+    `Art box: x=${art.x}% y=${art.y}% w=${art.w}% h=${art.h}%`,
+    `Art fit: ${art.objectFit} · position: ${art.objectPosition}`,
     `Preview frame: ${art.frame}`,
     '',
   ];
   for (const [key, meta] of Object.entries(LOAD_SCREEN_ITEM_DEFS)) {
+    if (!isLoadScreenItemKey(key)) continue;
     const box = getLoadScreenItemLayout(key, merged);
     const hiddenPart = box.hidden ? ' · hidden' : '';
     lines.push(`${meta.label}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%${hiddenPart}`);

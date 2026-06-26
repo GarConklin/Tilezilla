@@ -56,12 +56,22 @@
     <div class="panel">
       <h2 id="previewTitle">Preview</h2>
       <div class="mock-stage" id="mockStage" tabindex="0">
-        <div class="auth-screen" id="mockWrap">
-          <main class="auth-screen__stage" id="mockFrame">
-            <img class="auth-screen__art" id="mockArt" src="/img/Create-Passport.png" alt="" width="1418" height="2200" />
-            <div class="auth-screen__form" id="mockOverlay"></div>
+        <div class="auth-screen auth-screen--create" id="mockWrap">
+          <div class="auth-screen__bg tz-bg" aria-hidden="true">
+            <div class="tz-bg__sky"></div>
+            <div class="tz-bg__water">
+              <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+              <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+            </div>
+          </div>
+          <div class="auth-screen__viewport" id="mockViewport">
+            <img class="auth-screen__title" src="/img/Title.png" alt="" width="400" height="80" />
+            <main class="auth-screen__stage" id="mockFrame">
+              <img class="auth-screen__art" id="mockArt" src="/img/Create-Passport.png" alt="" width="1418" height="2200" />
+              <div class="auth-screen__form" id="mockOverlay"></div>
+            </main>
             <div id="mockHitsOutside"></div>
-          </main>
+          </div>
         </div>
       </div>
     </div>

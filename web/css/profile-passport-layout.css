@@ -4,6 +4,11 @@
 .tz-profile-dialog__stage [data-profile-slot] {
   position: absolute;
   margin: 0;
+  pointer-events: none;
+}
+
+.auth-screen--profile [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]),
+.tz-profile-dialog__stage [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]) {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -11,7 +16,6 @@
   font-weight: 600;
   color: #3d2e1a;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-  pointer-events: none;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -22,22 +26,85 @@
   pointer-events: auto;
 }
 
-.auth-screen--profile [data-profile-slot="rank"],
-.tz-profile-dialog__stage [data-profile-slot="rank"] {
-  left: var(--auth-profile-rank-x, 28%);
-  top: var(--auth-profile-rank-y, 19%);
-  width: var(--auth-profile-rank-w, 44%);
-  height: var(--auth-profile-rank-h, 3.5%);
-  font-size: calc(clamp(0.62rem, 2.4vw, 0.82rem) * var(--auth-profile-rank-font-scale, 1));
+.auth-screen--profile [data-profile-slot="rankBadge"],
+.tz-profile-dialog__stage [data-profile-slot="rankBadge"],
+.auth-screen--profile [data-profile-slot="sublevelIcon"],
+.tz-profile-dialog__stage [data-profile-slot="sublevelIcon"] {
+  object-fit: contain;
+  pointer-events: none;
 }
 
-.auth-screen--profile [data-profile-slot="subLevel"],
-.tz-profile-dialog__stage [data-profile-slot="subLevel"] {
-  left: var(--auth-profile-subLevel-x, 28%);
-  top: var(--auth-profile-subLevel-y, 26%);
-  width: var(--auth-profile-subLevel-w, 44%);
-  height: var(--auth-profile-subLevel-h, 3.5%);
-  font-size: calc(clamp(0.62rem, 2.4vw, 0.82rem) * var(--auth-profile-subLevel-font-scale, 1));
+.auth-screen--profile [data-profile-slot="rankBadge"],
+.tz-profile-dialog__stage [data-profile-slot="rankBadge"] {
+  left: var(--auth-profile-rankBadge-x, 14%);
+  top: var(--auth-profile-rankBadge-y, 15.5%);
+  width: var(--auth-profile-rankBadge-w, 26%);
+  height: var(--auth-profile-rankBadge-h, 10%);
+}
+
+/* Rank badge + sublevel stack (same composition as rank-badge-preview / game panel) */
+.auth-screen__profile-rank-stack,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack {
+  position: absolute;
+  left: var(--auth-profile-rankBadge-x, 14%);
+  top: var(--auth-profile-rankBadge-y, 15.5%);
+  width: var(--auth-profile-rankBadge-w, 26%);
+  height: var(--auth-profile-rankBadge-h, 10%);
+  margin: 0;
+  pointer-events: none;
+  overflow: visible;
+  text-align: center;
+  --tz-rank-badge-top: 0;
+  --tz-rank-badge-h: 100%;
+  --tz-rank-sublevel-anchor-y: 0.78;
+  --tz-rank-badge-w-scale: 1.13;
+}
+
+.auth-screen__profile-rank-stack .auth-screen__profile-rank-badge,
+.tz-profile-dialog__stage .auth-screen__profile-rank-badge {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: var(--tz-rank-badge-h);
+  margin: 0 auto;
+  transform: scaleX(var(--tz-rank-badge-w-scale, 1.13));
+  transform-origin: center top;
+  object-fit: contain;
+  object-position: center top;
+  pointer-events: none;
+}
+
+.auth-screen__profile-rank-stack .auth-screen__profile-rank-sublevel,
+.tz-profile-dialog__stage .auth-screen__profile-rank-sublevel {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--tz-rank-badge-h) * var(--tz-rank-sublevel-anchor-y));
+  z-index: 1;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: var(--tz-rank-sublevel-icon-h);
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%)
+    translate(
+      var(--tz-rank-sublevel-nudge-x),
+      var(--tz-rank-sublevel-nudge-y)
+    )
+    scaleX(var(--tz-rank-sublevel-w-scale));
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* Legacy separate sublevel img (pre-stack markup) */
+.auth-screen--profile [data-profile-slot="sublevelIcon"]:not(.auth-screen__profile-rank-sublevel),
+.tz-profile-dialog__stage [data-profile-slot="sublevelIcon"]:not(.auth-screen__profile-rank-sublevel) {
+  left: var(--auth-profile-sublevelIcon-x, 42%);
+  top: var(--auth-profile-sublevelIcon-y, 17.5%);
+  width: var(--auth-profile-sublevelIcon-w, 14%);
+  height: var(--auth-profile-sublevelIcon-h, 6%);
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .auth-screen--profile [data-profile-slot="adventureProgress"],
@@ -148,7 +215,22 @@
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalPlayTime-font-scale, 1));
 }
 
+.auth-screen-tuner-page .auth-screen__profile-icon.tuner-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.auth-screen-tuner-page .auth-screen__profile-icon.tuner-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .auth-screen-tuner-page .auth-screen__profile-stat.tuner-box,
+.auth-screen-tuner-page .auth-screen__profile-icon.tuner-box,
 .auth-screen-tuner-page .auth-screen__profile-name.tuner-box,
 .auth-screen-tuner-page .auth-screen__hit.tuner-box {
   pointer-events: auto;

@@ -13,6 +13,16 @@ def normalize_system_info(raw: Optional[dict]) -> Optional[dict]:
     version = str(raw.get("version") or "").strip()
     if not version:
         return None
+    logout_redirect = str(
+        raw.get("logoutRedirectUrl") or raw.get("logout_redirect_url") or ""
+    ).strip()
+    extra = raw.get("extra")
+    if not logout_redirect and isinstance(extra, dict):
+        logout_redirect = str(
+            extra.get("logoutRedirectUrl") or extra.get("logout_redirect_url") or ""
+        ).strip()
+    if not logout_redirect:
+        logout_redirect = "https://www.skifflakegames.com/"
     return {
         "schema": "system-info-v1",
         "version": version,
@@ -21,6 +31,7 @@ def normalize_system_info(raw: Optional[dict]) -> Optional[dict]:
         "creationDate": str(raw.get("creationDate") or raw.get("creation_date") or "").strip(),
         "productName": str(raw.get("productName") or raw.get("product_name") or "Tilezilla").strip(),
         "environment": str(raw.get("environment") or "").strip(),
+        "logoutRedirectUrl": logout_redirect,
     }
 
 
@@ -90,6 +101,8 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
             extra = _parse_extra_json(row["extra_json"])
             if extra:
                 info["extra"] = extra
+                if extra.get("logoutRedirectUrl") and not info.get("logoutRedirectUrl"):
+                    info["logoutRedirectUrl"] = str(extra["logoutRedirectUrl"]).strip()
         return info
     except Exception:
         return None

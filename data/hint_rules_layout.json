@@ -6,8 +6,15 @@
     "widthScale": 0.95,
     "anchorMainScreenV2": true,
     "nudgeX": 0,
-    "nudgeY": 0,
+    "nudgeY": -50,
     "scale": 1
+  },
+  "exit": {
+    "right": 6,
+    "bottom": 6,
+    "size": 48,
+    "nudgeX": 0,
+    "nudgeY": 0
   },
   "scroller": {
     "right": 1.5,
@@ -15,13 +22,6 @@
     "height": 88,
     "trackScale": 1,
     "pinScale": 1,
-    "nudgeX": 0,
-    "nudgeY": 0
-  },
-  "exit": {
-    "right": 6,
-    "bottom": 6,
-    "size": 48,
     "nudgeX": 0,
     "nudgeY": 0
   }

@@ -1,10 +1,32 @@
 {
   "art": {
-    "frame": "/img/preview tile Area bubble.png"
+    "x": 0,
+    "y": 0,
+    "w": 100,
+    "h": 100,
+    "frame": "/img/preview tile Area bubble.png",
+    "src": "/img/Load-Screen.png",
+    "objectFit": "contain",
+    "objectPosition": "top center"
   },
   "items": {
-    "preview": { "x": 11, "y": 33, "w": 78, "h": 24 },
-    "guest": { "x": 4.5, "y": 58.5, "w": 44, "h": 11.5 },
-    "login": { "x": 51, "y": 58.5, "w": 44, "h": 11.5 }
+    "preview": {
+      "x": 4.1,
+      "y": 58.1,
+      "w": 93.5,
+      "h": 24.2
+    },
+    "guest": {
+      "x": 9.5,
+      "y": 39.6,
+      "w": 36.6,
+      "h": 11.3
+    },
+    "login": {
+      "x": 53,
+      "y": 39.7,
+      "w": 38.3,
+      "h": 10.7
+    }
   }
 }

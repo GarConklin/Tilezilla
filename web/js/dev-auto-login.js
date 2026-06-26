@@ -8,11 +8,12 @@ import {
   ACTIVE_USER_KEY,
   getGuestCode,
   setRegisteredUser,
+  TILEZILLA_GAME_URL,
 } from './tilezilla-guest.js';
 
 const DEFAULT_USER = 'test';
 const DEFAULT_PASS = 'test';
-const DEFAULT_REDIRECT = '/tilezilla-v2.html';
+const DEFAULT_REDIRECT = TILEZILLA_GAME_URL;
 
 export async function devAutoLogin(options = {}) {
   const username = options.username || DEFAULT_USER;

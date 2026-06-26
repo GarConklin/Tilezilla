@@ -33,6 +33,8 @@ const PREVIEW_V2_INTERACTION_DEFS = {
 
   tileDir: { label: 'Rotation ° label', cssKey: 'tile-dir' },
 
+  hintPreview: { label: 'Hint plaque (below rotation)', cssKey: 'hint-preview' },
+
   undo: { label: 'Undo', cssKey: 'undo' },
 
   reset: { label: 'Reset', cssKey: 'reset' },
@@ -99,11 +101,13 @@ export const DEFAULT_PREVIEW_V2_LAYOUT = {
 
     rotateCw: { x: 330, y: 100, w: 52, h: 48 },
 
-    tileDir: { x: 118, y: 212, w: 162, h: 12 },
+    tileDir: { x: 202, y: 202, w: 18, h: 8 },
 
-    undo: { x: 8, y: 218, w: 52, h: 32 },
+    hintPreview: { x: 148, y: 212, w: 94, h: 48 },
 
-    reset: { x: 330, y: 218, w: 52, h: 32 },
+    undo: { x: 250, y: 212, w: 64, h: 28 },
+
+    reset: { x: 74, y: 212, w: 64, h: 28 },
 
   },
 
@@ -194,6 +198,10 @@ export function mergePreviewV2Layout(raw) {
 
       base.items[key] = { ...base.items[key], ...val };
 
+    }
+
+    if (raw.items.hintData && !raw.items.hintPreview) {
+      base.items.hintPreview = { ...base.items.hintPreview, ...raw.items.hintData };
     }
 
   }
@@ -471,7 +479,8 @@ export function buildPreviewV2LayoutReport(layout) {
 
   lines.push('Data zone items: game-data-v2-tuner.html · info-data-v2-tuner.html · timer-data-v2-tuner.html · preview-data-v2-tuner.html');
 
-  lines.push('Hint_data zone: tune here · hint items: hint-v2-tuner.html');
+  lines.push('Hint plaque zone: preview-v2-tuner (Hint plaque below rotation) · hint items: hint-v2-tuner.html');
+  lines.push('Use-hint hit: tile renderer zone from preview-v2-tuner (Tile slot)');
 
   lines.push('', '— Preview controls —');
 

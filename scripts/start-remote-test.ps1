@@ -106,6 +106,24 @@ APP_ADMIN_EMAIL=gar@hotmail.ca
 "@ | Set-Content -Path $Path -Encoding UTF8
 }
 
+function Stop-HostGameServerOnPort {
+  param([int]$Port)
+
+  $listeners = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+  if (-not $listeners) { return }
+
+  foreach ($conn in $listeners) {
+    $proc = Get-CimInstance Win32_Process -Filter "ProcessId=$($conn.OwningProcess)" -ErrorAction SilentlyContinue
+    if (-not $proc) { continue }
+
+    $cmd = [string]$proc.CommandLine
+    if ($proc.Name -eq "python.exe" -and $cmd -match "scripts[\\/]+server\.py") {
+      Write-Host "Stopping host Python dev server on port $Port (PID $($proc.ProcessId)) so Docker gateway can own the port." -ForegroundColor Yellow
+      Stop-Process -Id $proc.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+  }
+}
+
 function Wait-ComposeHealthy {
   param(
     [string]$ComposeFile,
@@ -161,6 +179,9 @@ Push-Location $RepoRoot
 try {
   Write-Step "Checking Docker"
   Test-DockerReady
+
+  Write-Step "Ensuring port $Port is free for Docker gateway"
+  Stop-HostGameServerOnPort -Port $Port
 
   $LanIp = Get-LanIpAddress -Preferred $LanIp
   Write-Step "Writing $EnvFile"

@@ -55,7 +55,7 @@ export function initBuyHintsPopup(options = {}) {
 }
 
 export function wireBuyHintsTriggers() {
-  for (const id of ['hintTokenAddBtnUse', 'hintTokenAddBtnCount']) {
+  for (const id of ['hintTokenAddBtnCount']) {
     $(id)?.addEventListener('click', (e) => {
       e.preventDefault();
       openBuyHintsPopup();

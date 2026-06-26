@@ -538,28 +538,14 @@ function updateTilePlacement(tileId, newR, newC, newDeg) {
   const t = state.tiles.find(x => x.id === tileId);
   if (!t) return false;
 
-  const oldCells = cellsForTile(t.tile, t.r, t.c, t.deg);
-  const newCells = cellsForTile(t.tile, newR, newC, newDeg);
+  if (!canPlace(newR, newC, newDeg, tileId, t.tile)) return false;
 
-  // Free old claim
+  const oldCells = cellsForTile(t.tile, t.r, t.c, t.deg);
   for (const [r, c] of oldCells) {
     if (inBounds(r, c)) occ[occIdx(r, c)] = null;
   }
 
-  // Validate new
-  for (const [r, c] of newCells) {
-    if (!inBounds(r, c)) {
-      for (const [rr, cc] of oldCells) if (inBounds(rr, cc)) occ[occIdx(rr, cc)] = tileId;
-      return false;
-    }
-    const k = occIdx(r, c);
-    if (occ[k] !== null && occ[k] !== tileId) {
-      for (const [rr, cc] of oldCells) if (inBounds(rr, cc)) occ[occIdx(rr, cc)] = tileId;
-      return false;
-    }
-  }
-
-  // Commit new
+  const newCells = cellsForTile(t.tile, newR, newC, newDeg);
   claimCells(tileId, newCells);
   t.r = newR; t.c = newC; t.deg = newDeg;
   return true;
@@ -2540,7 +2526,7 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
       status('Hint tiles cannot be moved.');
       return;
     }
-    if(!updateTilePlacement(t.id, r, c, t.deg)) { status(`Move blocked @ (${r},${c}) ${t.deg} (out of bounds or overlap)`); return; }
+    if(!updateTilePlacement(t.id, r, c, t.deg)) { status(`Move blocked @ (${r},${c}) ${t.deg} (out of bounds, overlap, or blocker)`); return; }
     
     await renderTiles();
     clearHover();
@@ -2719,10 +2705,35 @@ if (validateBtn) validateBtn.addEventListener('click', () => {
 
 
 // ---- Load data ----
-async function loadJson(url){
-  const res = await fetch(url, { cache:'no-store' });
-  if(!res.ok) throw new Error(`Failed ${url}: ${res.status}`);
-  return res.json();
+async function loadJson(url, { retries = 3 } = {}){
+  let lastErr;
+  for(let attempt = 0; attempt < retries; attempt++){
+    try{
+      const res = await fetch(url, { cache:'no-store' });
+      if(!res.ok) throw new Error(`Failed ${url}: ${res.status}`);
+      return await res.json();
+    }catch(e){
+      lastErr = e;
+      if(attempt < retries - 1){
+        await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
+async function mapPool(items, concurrency, fn){
+  const out = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while(true){
+      const idx = next++;
+      if(idx >= items.length) break;
+      out[idx] = await fn(items[idx], idx);
+    }
+  });
+  await Promise.all(workers);
+  return out;
 }
 
 const solveDocCache = new Map();
@@ -3181,14 +3192,14 @@ async function loadAllLevels(){
       state.levelBuckets = idx.buckets
         .filter(b => b && typeof b.size === 'string' && typeof b.tier === 'string')
         .map(b => ({ size: b.size, tier: b.tier, file: b.file, count: Number(b.count || 0) }));
-      const docs = await Promise.all(idx.buckets.map(async b => {
+      const docs = await mapPool(idx.buckets, 6, async b => {
         try{
-          return await loadJson(`/data/levels/${b.file}`);
+          return await loadJson(`/data/levels/${b.file}`, { retries: 4 });
         }catch(e){
           console.warn('level bucket unavailable', b?.file, e);
           return null;
         }
-      }));
+      });
       const levels = docs.flatMap(d => Array.isArray(d?.levels) ? d.levels : []);
       if(levels.length) return levels;
     }
@@ -3915,11 +3926,6 @@ async function init(){
             found: state.found,
             total: state.required,
           });
-          if (!state.incomplete) {
-            window.__discoveryRecord?.show?.(
-              window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-            );
-          }
           return;
         }
 
@@ -3953,11 +3959,6 @@ async function init(){
           found: state.found,
           total: state.required,
         });
-        if (!state.incomplete) {
-          window.__discoveryRecord?.show?.(
-            window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-          );
-        }
         return;
       }
 

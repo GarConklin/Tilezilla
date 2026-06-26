@@ -144,6 +144,19 @@
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
       pointer-events: none;
     }
+    .load-screen-tuner-page .tz-load-screen__art-wrap.tuner-box {
+      z-index: 4;
+      pointer-events: auto;
+      cursor: move;
+      background: rgba(255, 180, 80, 0.12) !important;
+      border: 2px dashed rgba(255, 180, 80, 0.75) !important;
+    }
+
+    .load-screen-tuner-page .tz-load-screen__art-wrap .tz-load-screen__art {
+      width: 100%;
+      height: 100%;
+    }
+
     .load-screen-tuner-page .tz-load-screen__preview.tuner-box {
       z-index: 5;
       pointer-events: auto;
@@ -187,8 +200,9 @@
 <body>
   <h1>Load screen tuner</h1>
   <p class="lead">
-    Tune <strong>Play As Guest</strong>, <strong>Login</strong>, and the <strong>preview frame overlay</strong>
-    (replaces the old baked-in illustration) on the 390×844 mobile stage.
+    Tune the <strong>Load-Screen.png</strong> fit/position, <strong>Play As Guest</strong>, <strong>Login</strong>,
+    and <strong>preview frame overlay</strong> on the 390×844 mobile stage.
+    Background matches <code>tilezilla-v2.html</code> via <code>main_screen_v2_layout.json</code>.
     Saves to <code>data/load_screen_layout.json</code>.
     <a href="/dev-player-select.html">Dev tools</a> · <a href="/">Open index</a>
   </p>
@@ -198,6 +212,12 @@
       <h2>Controls</h2>
       <div class="field-grid" id="fieldGrid"></div>
       <p class="mode-hint" id="modeHint">Drag box to move · Handles resize · Arrow keys nudge</p>
+      <div class="btn-row" id="artControls" hidden>
+        <button type="button" class="btn" data-fit="contain">Art: contain</button>
+        <button type="button" class="btn" data-fit="cover">Art: cover</button>
+        <button type="button" class="btn" data-position="top center">Top</button>
+        <button type="button" class="btn" data-position="center center">Center</button>
+      </div>
       <p class="readout" id="readout">—</p>
       <div class="nudge-grid" id="nudgeGrid">
         <span></span>
@@ -212,6 +232,7 @@
         <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
       </div>
       <ul style="margin:8px 0 0;padding-left:1.1rem;font-size:0.65rem;color:#7a8a86;line-height:1.5;">
+        <li><strong>Art</strong> — drag box; wheel: fit · Shift+wheel: position</li>
         <li><strong>Buttons</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H · Tab: cycle</li>
       </ul>
       <div class="btn-row">
@@ -225,7 +246,7 @@
     <div class="panel">
       <h2>Preview — same as index.html</h2>
       <div class="mock-stage" id="mockStage" tabindex="0">
-        <div class="tz-app">
+        <div class="tz-app tz-main-v2-app">
           <div class="tz-bg" aria-hidden="true">
             <div class="tz-bg__sky"></div>
             <div class="tz-bg__water">
@@ -236,7 +257,13 @@
           <div class="tz-scale-host">
             <div class="tz-stage tz-ui-layer">
               <section class="tz-load-screen" id="mockLoadScreen">
-              <img class="tz-load-screen__art" src="/img/Load-Screen.png" alt="" width="1024" height="1536" />
+              <div class="tz-load-screen__art-wrap tuner-box" data-item="art">
+                <span class="hit-label">Art</span>
+                <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                <img class="tz-load-screen__art" src="/img/Load-Screen.png" alt="" width="1024" height="1536" />
+              </div>
               <div class="tz-load-screen__preview tuner-box" data-item="preview">
                 <span class="hit-label">Preview</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
@@ -271,25 +298,38 @@
       applyLoadScreenLayout,
       clearLoadScreenLayoutCache,
       clearLoadScreenLayoutDraft,
+      getLoadScreenArtLayout,
       getLoadScreenItemLayout,
       loadLoadScreenLayout,
       mergeLoadScreenLayout,
       stashLoadScreenLayoutDraft,
     } from './js/load-screen-layout.js';
+    import { applyMainScreenV2Layout, loadMainScreenV2Layout } from './js/main-screen-v2-layout.js';
 
     const POS_STEP = 0.5;
     const SIZE_STEP = 0.5;
     const ARROW_STEP = 0.25;
     const ITEM_ORDER = Object.keys(LOAD_SCREEN_ITEM_DEFS);
+    const POSITION_PRESETS = ['top center', 'center center', 'bottom center', 'top left', 'top right'];
 
     let workingLayout = mergeLoadScreenLayout(null);
-    let currentItem = 'preview';
+    let msv2Layout = null;
+    let currentItem = 'art';
     let dragState = null;
     const els = {};
 
     function patchItem(key, patch) {
+      if (key === 'art') {
+        patchArt(patch);
+        return;
+      }
       if (!workingLayout.items[key]) workingLayout.items[key] = {};
       Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchArt(patch) {
+      workingLayout.art = { ...(workingLayout.art || {}), ...patch };
       refresh();
     }
 
@@ -301,11 +341,21 @@
       return document.getElementById('mockLoadScreen')?.getBoundingClientRect();
     }
 
+    function getTunerBox(key) {
+      if (key === 'art') return getLoadScreenArtLayout(workingLayout);
+      return getLoadScreenItemLayout(key, workingLayout);
+    }
+
+    function patchTunerBox(key, patch) {
+      if (key === 'art') patchArt(patch);
+      else patchItem(key, patch);
+    }
+
     function applyMoveDelta(dxPx, dyPx) {
       const rect = getFrameRect();
       if (!rect?.width || !rect?.height) return;
-      const box = getLoadScreenItemLayout(currentItem, workingLayout);
-      patchItem(currentItem, {
+      const box = getTunerBox(currentItem);
+      patchTunerBox(currentItem, {
         x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
         y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
       });
@@ -314,7 +364,7 @@
     function applyResizeDelta(dxPx, dyPx, edges) {
       const rect = getFrameRect();
       if (!rect?.width || !rect?.height) return;
-      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const box = getTunerBox(currentItem);
       const patch = {};
       if (edges.e || edges.se) {
         patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
@@ -322,7 +372,7 @@
       if (edges.s || edges.se) {
         patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
       }
-      if (Object.keys(patch).length) patchItem(currentItem, patch);
+      if (Object.keys(patch).length) patchTunerBox(currentItem, patch);
     }
 
     let saveTimer = null;
@@ -365,16 +415,26 @@
     }
 
     function formatReadout(key) {
+      if (key === 'art') {
+        const art = getLoadScreenArtLayout(workingLayout);
+        return `<strong>Load screen image</strong><br />x: ${art.x}% · y: ${art.y}%<br />w: ${art.w}% · h: ${art.h}%<br />fit: ${art.objectFit} · position: ${art.objectPosition}<br /><span style="font-size:0.65rem;word-break:break-all">${art.src}</span>`;
+      }
       const box = getLoadScreenItemLayout(key, workingLayout);
       const def = LOAD_SCREEN_ITEM_DEFS[key];
       return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
     }
 
     function refresh() {
+      if (msv2Layout) applyMainScreenV2Layout(msv2Layout);
       applyLoadScreenLayout(workingLayout, document.documentElement);
       els.readout.innerHTML = formatReadout(currentItem);
       els.jsonOut.value = exportJson();
       stashLoadScreenLayoutDraft(workingLayout);
+      const isArt = currentItem === 'art';
+      document.getElementById('artControls')?.toggleAttribute('hidden', !isArt);
+      document.getElementById('modeHint').textContent = isArt
+        ? 'Drag art box to move/resize · Wheel: contain/cover · Shift+wheel: position preset'
+        : 'Drag box to move · Handles resize · Arrow keys nudge';
       for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
         btn.classList.toggle('is-active', btn.dataset.item === currentItem);
       }
@@ -387,34 +447,47 @@
     function onWheel(e) {
       if (e.target.matches('textarea, input')) return;
       e.preventDefault();
+      if (currentItem === 'art') {
+        const art = getLoadScreenArtLayout(workingLayout);
+        if (e.shiftKey) {
+          const idx = Math.max(0, POSITION_PRESETS.indexOf(art.objectPosition));
+          const next = e.deltaY < 0
+            ? (idx - 1 + POSITION_PRESETS.length) % POSITION_PRESETS.length
+            : (idx + 1) % POSITION_PRESETS.length;
+          patchArt({ objectPosition: POSITION_PRESETS[next] });
+          return;
+        }
+        patchArt({ objectFit: art.objectFit === 'contain' ? 'cover' : 'contain' });
+        return;
+      }
       const dir = e.deltaY < 0 ? 1 : -1;
-      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const box = getTunerBox(currentItem);
       if (e.altKey && e.ctrlKey) {
-        patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
+        patchTunerBox(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
         return;
       }
       if (e.ctrlKey) {
-        patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 10) / 10) });
+        patchTunerBox(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 10) / 10) });
         return;
       }
       if (e.shiftKey) {
-        patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
+        patchTunerBox(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
         return;
       }
-      patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
+      patchTunerBox(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
     }
 
     function onNudge(action) {
-      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const box = getTunerBox(currentItem);
       switch (action) {
-        case 'left': patchItem(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
-        case 'right': patchItem(currentItem, { x: Math.round((box.x + ARROW_STEP) * 10) / 10 }); break;
-        case 'up': patchItem(currentItem, { y: Math.max(0, Math.round((box.y - ARROW_STEP) * 10) / 10) }); break;
-        case 'down': patchItem(currentItem, { y: Math.round((box.y + ARROW_STEP) * 10) / 10 }); break;
-        case 'wider': patchItem(currentItem, { w: Math.round((box.w + ARROW_STEP) * 10) / 10 }); break;
-        case 'narrower': patchItem(currentItem, { w: Math.max(1, Math.round((box.w - ARROW_STEP) * 10) / 10) }); break;
-        case 'taller': patchItem(currentItem, { h: Math.round((box.h + ARROW_STEP) * 10) / 10 }); break;
-        case 'shorter': patchItem(currentItem, { h: Math.max(1, Math.round((box.h - ARROW_STEP) * 10) / 10) }); break;
+        case 'left': patchTunerBox(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
+        case 'right': patchTunerBox(currentItem, { x: Math.round((box.x + ARROW_STEP) * 10) / 10 }); break;
+        case 'up': patchTunerBox(currentItem, { y: Math.max(0, Math.round((box.y - ARROW_STEP) * 10) / 10) }); break;
+        case 'down': patchTunerBox(currentItem, { y: Math.round((box.y + ARROW_STEP) * 10) / 10 }); break;
+        case 'wider': patchTunerBox(currentItem, { w: Math.round((box.w + ARROW_STEP) * 10) / 10 }); break;
+        case 'narrower': patchTunerBox(currentItem, { w: Math.max(1, Math.round((box.w - ARROW_STEP) * 10) / 10) }); break;
+        case 'taller': patchTunerBox(currentItem, { h: Math.round((box.h + ARROW_STEP) * 10) / 10 }); break;
+        case 'shorter': patchTunerBox(currentItem, { h: Math.max(1, Math.round((box.h - ARROW_STEP) * 10) / 10) }); break;
         default: break;
       }
     }
@@ -478,12 +551,12 @@
         cycleItem(e.shiftKey);
         return;
       }
-      const box = getLoadScreenItemLayout(currentItem, workingLayout);
+      const box = getTunerBox(currentItem);
       const step = e.shiftKey ? POS_STEP : ARROW_STEP;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); patchItem(currentItem, { x: Math.max(0, Math.round((box.x - step) * 10) / 10) }); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); patchItem(currentItem, { x: Math.round((box.x + step) * 10) / 10 }); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); patchItem(currentItem, { y: Math.max(0, Math.round((box.y - step) * 10) / 10) }); }
-      if (e.key === 'ArrowDown') { e.preventDefault(); patchItem(currentItem, { y: Math.round((box.y + step) * 10) / 10 }); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); patchTunerBox(currentItem, { x: Math.max(0, Math.round((box.x - step) * 10) / 10) }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); patchTunerBox(currentItem, { x: Math.round((box.x + step) * 10) / 10 }); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); patchTunerBox(currentItem, { y: Math.max(0, Math.round((box.y - step) * 10) / 10) }); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); patchTunerBox(currentItem, { y: Math.round((box.y + step) * 10) / 10 }); }
     }
 
     async function init() {
@@ -514,6 +587,13 @@
         els.status.textContent = 'Reloaded from file';
       });
 
+      document.getElementById('artControls')?.querySelectorAll('[data-fit]').forEach((btn) => {
+        btn.addEventListener('click', () => patchArt({ objectFit: btn.dataset.fit }));
+      });
+      document.getElementById('artControls')?.querySelectorAll('[data-position]').forEach((btn) => {
+        btn.addEventListener('click', () => patchArt({ objectPosition: btn.dataset.position }));
+      });
+
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });
       els.mockStage.addEventListener('pointerdown', onPointerDown);
       els.mockStage.addEventListener('pointermove', onPointerMove);
@@ -522,6 +602,7 @@
       els.mockStage.addEventListener('keydown', onKeyDown);
 
       workingLayout = mergeLoadScreenLayout(await loadLoadScreenLayout());
+      msv2Layout = await loadMainScreenV2Layout();
       applyUiScale();
       window.addEventListener('resize', applyUiScale);
       refresh();

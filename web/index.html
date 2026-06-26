@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
 </head>
 <body>
-  <div class="tz-app">
+  <div class="tz-app tz-main-v2-app">
 
     <div class="tz-bg" aria-hidden="true">
       <div class="tz-bg__sky"></div>
@@ -21,14 +21,16 @@
     <div class="tz-scale-host">
       <div class="tz-stage tz-ui-layer">
         <section class="tz-load-screen" id="loadScreen" aria-label="Welcome to Tilezilla">
-          <img
-            class="tz-load-screen__art"
-            src="/img/Load-Screen.png"
-            alt=""
-            width="1024"
-            height="1536"
-            draggable="false"
-          />
+          <div class="tz-load-screen__art-wrap">
+            <img
+              class="tz-load-screen__art"
+              src="/img/Load-Screen.png"
+              alt=""
+              width="1024"
+              height="1536"
+              draggable="false"
+            />
+          </div>
           <div class="tz-load-screen__preview" aria-hidden="true">
             <div class="tz-load-screen__preview-frame"></div>
           </div>

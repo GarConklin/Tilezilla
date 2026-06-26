@@ -1,11 +1,13 @@
-/** Hint sub-layout — local artboard px inside preview Hint_data zone. */
+/** Hint sub-layout — count plaque in hint-preview zone; use-hint hit in tile renderer zone. */
+
+import { getPreviewV2ItemLayout } from './preview-v2-layout.js';
 
 export const HINT_V2_ART = { w: 245, h: 145 };
 
 export const DEFAULT_HINT_V2_ART = {
   hintPlaqueCount: '/img/hintplaque.png',
-  hintPlaqueUse: '/img/hint bubble plaque w room for use hint btn.png',
-  useHintBtn: '/img/use hint bubble.png',
+  hintPlaqueUse: '/img/hintplaque.png',
+  useHintBtn: '',
 };
 
 export const HINT_V2_ITEM_DEFS = {
@@ -79,13 +81,13 @@ export const DEFAULT_HINT_V2_LAYOUT = {
   tokenCountFont: DEFAULT_HINT_TOKEN_COUNT_FONT,
   art: { ...DEFAULT_HINT_V2_ART },
   items: {
-    hintPlaqueUse: { x: 0, y: 0, w: 237, h: 125 },
     hintPlaqueCount: { x: 0, y: 0, w: 237, h: 66 },
-    hintTokenCountUse: { x: 95, y: 36, w: 48, h: 20 },
-    hintTokenAddUse: { x: 205, y: 32, w: 24, h: 24 },
     hintTokenCountCount: { x: 95, y: 28, w: 48, h: 20 },
     hintTokenAddCount: { x: 205, y: 24, w: 24, h: 24 },
-    hintUseBtn: { x: 6, y: 72, w: 225, h: 50 },
+    hintUseBtn: { x: 26, y: 48, w: 170, h: 44 },
+    hintPlaqueUse: { x: 0, y: 0, w: 237, h: 66 },
+    hintTokenCountUse: { x: 95, y: 28, w: 48, h: 20 },
+    hintTokenAddUse: { x: 205, y: 24, w: 24, h: 24 },
   },
 };
 
@@ -246,11 +248,21 @@ export function applyHintV2ArtImages(root = document, layout) {
   });
 }
 
-export function applyHintV2Layout(layout, target = document.documentElement) {
+function rendererUseFrame(previewLayout) {
+  if (previewLayout) {
+    return getPreviewV2ItemLayout('renderer', previewLayout);
+  }
+  return { w: 222, h: 140 };
+}
+
+export function applyHintV2Layout(layout, target = document.documentElement, previewLayout = null) {
   const merged = mergeHintV2Layout(layout);
   const frame = merged.frame || HINT_V2_ART;
   target.style.setProperty('--tz-hint-art-w', String(frame.w ?? HINT_V2_ART.w));
   target.style.setProperty('--tz-hint-art-h', String(frame.h ?? HINT_V2_ART.h));
+  const useFrame = rendererUseFrame(previewLayout);
+  target.style.setProperty('--tz-hint-use-art-w', String(useFrame.w));
+  target.style.setProperty('--tz-hint-use-art-h', String(useFrame.h));
   for (const [key, meta] of Object.entries(HINT_V2_ITEM_DEFS)) {
     setBoxVars(target, meta.cssKey, getHintV2ItemLayout(key, merged));
   }
@@ -264,13 +276,12 @@ export function buildHintV2LayoutReport(layout) {
   const art = merged.art || DEFAULT_HINT_V2_ART;
   const lines = [
     `Hint v2 sub-layout (local artboard ${frame.w}×${frame.h}px)`,
-    'Coordinates are pixels within the preview Hint_data zone',
-    'Hint_data zone position: tune in preview-v2-tuner.html',
+    'Count plaque coords: local px inside hint-preview zone (preview-v2-tuner)',
+    'Use-hint hit coords: local px inside tile renderer zone (preview tile slot)',
     '',
     '— Art —',
-    `count plaque (tiles placed): ${art.hintPlaqueCount || '(none)'}`,
-    `use plaque (empty board): ${art.hintPlaqueUse || '(none)'}`,
-    `use hint button: ${art.useHintBtn || '(none)'}`,
+    `hint plaque: ${art.hintPlaqueCount || '(none)'}`,
+    `use hint hit area: layout hintUseBtn (transparent over plaque)`,
     '',
     `token count font: ${getHintV2TokenCountFont(merged)}`,
     '',

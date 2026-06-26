@@ -30,5 +30,5 @@ INSERT INTO system_info (
     'March 28, 2026',
     'Tilezilla',
     'production',
-    NULL
+    JSON_OBJECT('logoutRedirectUrl', 'https://www.skifflakegames.com/')
 );

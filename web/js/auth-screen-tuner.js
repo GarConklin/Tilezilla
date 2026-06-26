@@ -1,18 +1,26 @@
+import { initAuthScreenChrome } from './auth-screen-chrome.js';
 import {
   AUTH_SCREEN_DEFS,
   PROFILE_FIELD_SECTIONS,
   PROFILE_HIT_ART,
+  PROFILE_ICON_MOCK,
   PROFILE_LAYOUT_MOCK,
   applyAuthScreenLayout,
   authScreenTunerBoxClass,
+  buildAuthScreenLayoutSavePayload,
   clearAuthScreenLayoutCache,
   clearAuthScreenLayoutDraft,
   getAuthScreenItemLayout,
+  hasAuthScreenLayoutDraft,
+  isAuthIconItem,
   isAuthTextItem,
   loadAuthScreenLayout,
   mergeAuthScreenLayout,
+  mergeAuthScreenSection,
+  readAuthScreenLayoutDraftSection,
   stashAuthScreenLayoutDraft,
 } from './auth-screen-layout.js';
+import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
 const POS_STEP = 0.5;
 const SIZE_STEP = 0.5;
@@ -20,8 +28,8 @@ const ARROW_STEP = 0.25;
 const FONT_STEP = 0.05;
 const DIALOG_ITEM = '__dialog__';
 
-const LOGIN_OUTSIDE = new Set(['secondary', 'navDaily', 'navLogout']);
-const CREATE_OUTSIDE = LOGIN_OUTSIDE;
+const LOGIN_OUTSIDE = new Set();
+const CREATE_OUTSIDE = new Set();
 const PROFILE_OUTSIDE = new Set(Object.keys(AUTH_SCREEN_DEFS.profile.items));
 
 function outsideKeysFor(screenKey) {
@@ -32,6 +40,32 @@ function outsideKeysFor(screenKey) {
 
 function mockTextForItem(itemKey) {
   return PROFILE_LAYOUT_MOCK[itemKey] || '…';
+}
+
+function buildProfileRankStack(screenKey) {
+  const stack = document.createElement('div');
+  stack.className = 'auth-screen__profile-rank-stack tuner-box';
+  stack.dataset.item = 'rankBadge';
+
+  const badge = document.createElement('img');
+  badge.className = 'auth-screen__profile-rank-badge';
+  badge.src = PROFILE_ICON_MOCK.rankBadge;
+  badge.alt = 'Rank badge';
+
+  const sub = document.createElement('img');
+  sub.className = 'auth-screen__profile-rank-sublevel tz-rank-sublevel__img';
+  sub.dataset.profileSlot = 'sublevelIcon';
+  sub.alt = 'Sublevel';
+
+  stack.append(badge, sub);
+  stack.insertAdjacentHTML(
+    'beforeend',
+    `<span class="hit-label">Rank stack</span>
+     <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+     <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+     <span class="tuner-handle tuner-handle--se" data-handle="se"></span>`,
+  );
+  return stack;
 }
 
 function buildTunerBox(meta, itemKey, screenKey) {
@@ -50,6 +84,22 @@ function buildTunerBox(meta, itemKey, screenKey) {
     } else {
       box.textContent = label;
     }
+  } else if (meta.kind === 'input') {
+    const input = document.createElement('input');
+    input.readOnly = true;
+    input.tabIndex = -1;
+    input.setAttribute('aria-label', meta.label || itemKey);
+    if (itemKey === 'email') input.type = 'email';
+    else if (itemKey === 'pass' || itemKey === 'pass2') input.type = 'password';
+    else input.type = 'text';
+    input.className = meta.baseClass || 'auth-screen__input';
+    input.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;margin:0;pointer-events:none;';
+    box.appendChild(input);
+  } else if (meta.kind === 'icon') {
+    const src = meta.mockSrc || PROFILE_ICON_MOCK[itemKey] || '';
+    box.innerHTML =
+      `<img class="auth-screen__profile-icon__img" src="${src}" alt="" />` +
+      `<span class="hit-label">${meta.label}</span>`;
   } else if (meta.art || (screenKey === 'profile' && PROFILE_HIT_ART[itemKey])) {
     const src = meta.art || PROFILE_HIT_ART[itemKey];
     box.innerHTML = `<img class="tuner-hit-art" src="${src}" alt="" /><span class="hit-label">${meta.label}</span>`;
@@ -104,7 +154,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
   }
 
   function exportJson() {
-    return JSON.stringify(workingLayout, null, 2);
+    return JSON.stringify({ [screenKey]: workingLayout[screenKey] }, null, 2);
   }
 
   function getFrameRect() {
@@ -163,10 +213,11 @@ export function initAuthScreenTuner(screenKey, root = document) {
     }
     saveInFlight = true;
     try {
+      const payload = await buildAuthScreenLayoutSavePayload(screenKey, workingLayout);
       const res = await fetch('/api/dev/save-auth-screen-layout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: exportJson(),
+        body: JSON.stringify(payload, null, 2),
       });
       if (!res.ok) {
         if (res.status === 404 || res.status === 501) {
@@ -175,10 +226,10 @@ export function initAuthScreenTuner(screenKey, root = document) {
         throw new Error(await readSaveError(res));
       }
       clearAuthScreenLayoutCache();
-      clearAuthScreenLayoutDraft();
+      clearAuthScreenLayoutDraft(screenKey);
       els.status.textContent = quiet
-        ? 'Auto-saved to data/auth_screen_layout.json'
-        : 'Saved to data/auth_screen_layout.json';
+        ? `Auto-saved ${screenKey} section to data/auth_screen_layout.json`
+        : `Saved ${screenKey} section to data/auth_screen_layout.json`;
       return true;
     } catch (err) {
       els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
@@ -207,23 +258,31 @@ export function initAuthScreenTuner(screenKey, root = document) {
     const fs = isAuthTextItem(screenKey, key)
       ? `<br />fontScale: ${box.fontScale}`
       : '';
-    return `<strong>${meta?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${fs}`;
+    const subNote = key === 'sublevelIcon'
+      ? '<br /><span style="font-size:0.65rem;color:#8fd49a">Sublevel on-badge fit: rank-sublevel-tuner.html</span>'
+      : '';
+    return `<strong>${meta?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${fs}${subNote}`;
   }
 
   function applyTunerBoxPositions() {
     for (const box of root.querySelectorAll('.tuner-box[data-item]')) {
       const key = box.dataset.item;
       if (!def.items[key]) continue;
-      const layout = getAuthScreenItemLayout(screenKey, key, workingLayout);
-      box.style.left = `${layout.x}%`;
-      box.style.top = `${layout.y}%`;
-      box.style.width = `${layout.w}%`;
-      box.style.height = `${layout.h}%`;
+      // Geometry comes from the same CSS vars as the live page (applyAuthScreenLayout).
+      box.style.left = '';
+      box.style.top = '';
+      box.style.width = '';
+      box.style.height = '';
       if (isAuthTextItem(screenKey, key)) {
+        const layout = getAuthScreenItemLayout(screenKey, key, workingLayout);
         const base = screenKey === 'profile' ? '0.72rem' : '0.85rem';
         box.style.fontSize = `calc(${base} * ${layout.fontScale})`;
       }
     }
+  }
+
+  function layoutTarget() {
+    return root.getElementById('mockFrame') || root.getElementById('mockWrap') || document.documentElement;
   }
 
   function rebuildPreviewBoxes() {
@@ -237,12 +296,13 @@ export function initAuthScreenTuner(screenKey, root = document) {
     const previewTitle = root.getElementById('previewTitle');
     if (previewTitle) previewTitle.textContent = `Preview — ${def.label}`;
     overlay.innerHTML = '';
-    hitsOutside.innerHTML = '';
+    if (hitsOutside) hitsOutside.innerHTML = '';
     frame.querySelectorAll('.tuner-box[data-item]').forEach((el) => el.remove());
     frame.querySelector('.auth-screen__bottom-nav')?.remove();
     frame.querySelector('.auth-screen__profile-nav')?.remove();
     frame.querySelector('.auth-screen__hit--secondary')?.remove();
 
+    const viewport = root.getElementById('mockViewport');
     const outside = outsideKeysFor(screenKey);
     const navWrapper = document.createElement('nav');
     navWrapper.className = screenKey === 'profile'
@@ -251,6 +311,11 @@ export function initAuthScreenTuner(screenKey, root = document) {
     navWrapper.setAttribute('aria-label', screenKey === 'profile' ? 'Main navigation' : 'Shortcuts');
 
     for (const [key, meta] of Object.entries(def.items)) {
+      if (screenKey === 'profile' && key === 'sublevelIcon') continue;
+      if (screenKey === 'profile' && key === 'rankBadge') {
+        frame.appendChild(buildProfileRankStack(screenKey));
+        continue;
+      }
       const box = buildTunerBox(meta, key, screenKey);
       if (key.startsWith('nav')) {
         navWrapper.appendChild(box);
@@ -259,7 +324,10 @@ export function initAuthScreenTuner(screenKey, root = document) {
         frame.appendChild(box);
       } else if (key === 'secondary') {
         frame.appendChild(box);
-      } else if (outside.has(key)) {
+      } else if (outside.has(key) && hitsOutside) {
+        if (viewport && hitsOutside.parentElement !== viewport) {
+          viewport.appendChild(hitsOutside);
+        }
         hitsOutside.appendChild(box);
       } else {
         overlay.appendChild(box);
@@ -341,11 +409,11 @@ export function initAuthScreenTuner(screenKey, root = document) {
   }
 
   function refresh() {
-    applyAuthScreenLayout(workingLayout, screenKey, document.documentElement);
+    applyAuthScreenLayout(workingLayout, screenKey, layoutTarget());
     applyTunerBoxPositions();
     els.readout.innerHTML = formatReadout(currentItem);
     els.jsonOut.value = exportJson();
-    stashAuthScreenLayoutDraft(workingLayout);
+    stashAuthScreenLayoutDraft(workingLayout, screenKey);
 
     for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
       btn.classList.toggle('is-active', btn.dataset.field === currentItem);
@@ -353,9 +421,17 @@ export function initAuthScreenTuner(screenKey, root = document) {
     for (const box of root.querySelectorAll('.tuner-box[data-item]')) {
       box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
     }
+    root.querySelector('.auth-screen__profile-rank-stack')?.classList.toggle(
+      'is-tuner-active',
+      screenKey === 'profile' && currentItem === 'sublevelIcon',
+    );
 
     if (currentItem !== DIALOG_ITEM) {
       scrollSelectedBoxIntoView();
+    }
+
+    if (screenKey === 'profile') {
+      void refreshProfileRankIcons(null, layoutTarget());
     }
 
     const isDialog = currentItem === DIALOG_ITEM;
@@ -527,7 +603,9 @@ export function initAuthScreenTuner(screenKey, root = document) {
     });
     root.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
     root.getElementById('reloadBtn')?.addEventListener('click', async () => {
-      workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout({ force: true }));
+      await initAuthScreenChrome({ force: true });
+      clearAuthScreenLayoutDraft(screenKey);
+      workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout({ force: true, preferFile: true }));
       rebuildPreviewBoxes();
       rebuildFieldGrid();
       refresh();
@@ -541,7 +619,14 @@ export function initAuthScreenTuner(screenKey, root = document) {
     els.mockStage?.addEventListener('pointercancel', onPointerUp);
     els.mockStage?.addEventListener('keydown', onKeyDown);
 
-    workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout());
+    await initAuthScreenChrome();
+    workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout({ force: true, preferFile: true }));
+    if (hasAuthScreenLayoutDraft(screenKey)) {
+      const section = readAuthScreenLayoutDraftSection(screenKey);
+      if (section) {
+        workingLayout = mergeAuthScreenSection(workingLayout, screenKey, section);
+      }
+    }
     rebuildPreviewBoxes();
     rebuildFieldGrid();
     refresh();

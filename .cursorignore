@@ -1,0 +1,9 @@
+data/solver-runs/
+*.zip
+*.log
+__pycache__/
+.git/
+node_modules/
+solves/
+
+

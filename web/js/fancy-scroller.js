@@ -8,6 +8,7 @@ export function initFancyScroller({
   scrollerRoot,
   trackEl,
   pinEl,
+  alwaysVisible = false,
 } = {}) {
   if (!scrollEl || !scrollerRoot || !trackEl || !pinEl) return null;
 
@@ -45,9 +46,10 @@ export function initFancyScroller({
 
   function syncVisibility() {
     const overflow = scrollEl.scrollHeight > scrollEl.clientHeight + 1;
-    scrollerRoot.classList.toggle('is-hidden', !overflow);
-    scrollerRoot.setAttribute('aria-hidden', overflow ? 'false' : 'true');
-    if (overflow) syncPinFromScroll();
+    const show = alwaysVisible || overflow;
+    scrollerRoot.classList.toggle('is-hidden', !show);
+    scrollerRoot.setAttribute('aria-hidden', show ? 'false' : 'true');
+    if (show) syncPinFromScroll();
   }
 
   function scrollFromPinTop(pinTop) {

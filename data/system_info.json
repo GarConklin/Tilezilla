@@ -5,5 +5,6 @@
   "creator": "Gar Conklin",
   "creationDate": "March 28, 2026",
   "productName": "Tilezilla",
-  "environment": "development"
+  "environment": "development",
+  "logoutRedirectUrl": "https://www.skifflakegames.com/"
 }

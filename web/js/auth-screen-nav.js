@@ -3,6 +3,7 @@
 import {
   logoutRegisteredUser,
   playAsGuest,
+  TILEZILLA_GAME_URL,
   trackGuestEvent,
 } from './tilezilla-guest.js';
 
@@ -11,7 +12,7 @@ export function initAuthScreenNav({ source = 'auth_screen' } = {}) {
     e.preventDefault();
     playAsGuest();
     trackGuestEvent('Daily Challenge Started', { source });
-    window.location.href = '/tilezilla.html';
+    window.location.href = TILEZILLA_GAME_URL;
   });
 
   document.getElementById('authNavLogout')?.addEventListener('click', () => {

@@ -120,7 +120,7 @@
       max-width: 100%;
       margin: 0 auto;
       position: relative;
-      min-height: 640px;
+      height: 640px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       overflow: hidden;
@@ -129,9 +129,35 @@
       position: absolute;
       inset: 0;
       pointer-events: auto;
+      display: flex !important;
+      align-items: stretch;
+      justify-content: center;
     }
     .hint-rules-tuner-page .tz-hint-rules-window {
       position: absolute;
+      top: 0 !important;
+      left: 50% !important;
+      transform: translateX(-50%) scale(var(--tz-hint-rules-scale, 1)) !important;
+      width: min(
+        100%,
+        calc(var(--tz-hint-rules-max-design-width, 390px) * var(--tz-hint-rules-width-scale, 0.95))
+      ) !important;
+      height: 100% !important;
+      max-height: 100% !important;
+    }
+    .hint-rules-tuner-page .tz-hint-rules-window.is-msv2-synced {
+      top: 0 !important;
+      left: 50% !important;
+      width: min(
+        100%,
+        calc(var(--tz-hint-rules-max-design-width, 390px) * var(--tz-hint-rules-width-scale, 0.95))
+      ) !important;
+      height: 100% !important;
+      transform: translateX(-50%) scale(var(--tz-hint-rules-scale, 1)) !important;
+    }
+    .hint-rules-tuner-page .tz-hint-rules-scroller.is-hidden {
+      visibility: visible !important;
+      pointer-events: auto !important;
     }
     .hint-rules-tuner-page .tuner-highlight-window {
       outline: 2px dashed rgba(100, 200, 255, 0.85);
@@ -166,7 +192,7 @@
     Preview matches in-game width (390px). Tune panel, fancy scroller (right edge), and close button.
     Saves to <code>data/hint_rules_layout.json</code>.
     <a href="/dev-player-select.html">Back to player select</a>
-    · <a href="/tilezilla.html">Open game</a>
+    · <a href="/tilezilla-v2.html">Open game</a>
   </p>
 
   <div class="layout">
@@ -218,7 +244,7 @@
                 aria-label="Close"
               >
                 <span class="hit-label">Close</span>
-                <img src="/img/exit-btn.png" alt="" />
+                <img src="/img/X-gold-rnd-btn.png" alt="" />
               </button>
             </div>
           </div>
@@ -540,6 +566,7 @@
         scrollerRoot: document.getElementById('mockHintScroller'),
         trackEl: document.getElementById('mockHintScrollerTrack'),
         pinEl: document.getElementById('mockHintScrollerPin'),
+        alwaysVisible: true,
       });
       els.mockStage.focus();
     }

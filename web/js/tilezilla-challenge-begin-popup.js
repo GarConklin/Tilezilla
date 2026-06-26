@@ -202,14 +202,18 @@ export function gateAdventureChallengeBegin({
 }
 
 export function showChallengeProgressAfterSolve({ found, total } = {}) {
+  const t = Math.max(1, Math.round(Number(total) || 1));
+  const f = Math.min(Math.max(0, Math.round(Number(found) || 0)), t);
+  const complete = f >= t;
+
   return new Promise((resolve) => {
     openChallengeProgressPopup({
-      found,
-      total,
+      found: f,
+      total: t,
       onContinue: async () => {
         closeChallengeBeginPopup();
-        await onContinueSearch();
-        resolve(true);
+        await onContinueSearch({ found: f, total: t, complete });
+        resolve(complete);
       },
       onCancel: () => {
         closeChallengeBeginPopup();

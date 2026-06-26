@@ -25,6 +25,7 @@ import {
 } from './challenge-begin-layout.js';
 import { initPuzzleInfoPopup, openPuzzleInfo } from './tilezilla-puzzle-info.js';
 import { initProfileOverlay, openProfileOverlay } from './tilezilla-profile-overlay.js';
+import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
 import * as guestUser from './tilezilla-guest.js';
@@ -617,6 +618,8 @@ async function updateRankPanel(app) {
       v2Track.setAttribute('aria-label', `Sublevel progress ${pct}%`);
     }
   }
+
+  void refreshProfileRankIcons(app?.progress || window.__app?.progress);
 }
 
 function formatHintTokenLabel(app) {
@@ -631,10 +634,12 @@ function updateGlobalHintCount(app) {
   const count = String(app.getGlobalHintTokens?.() ?? 0);
   const el = $('hintCount');
   if (el) el.textContent = count;
-  const v2Use = $('previewV2HintCountUse');
   const v2Count = $('previewV2HintCountCount');
-  if (v2Use) v2Use.textContent = count;
   if (v2Count) v2Count.textContent = count;
+}
+
+function previewHasActiveTile(app) {
+  return !!(app?.state?.selectedPal || app?.state?.previewTile);
 }
 
 function updateHintMenuAvailable(app) {
@@ -771,41 +776,39 @@ function updateHintButtonState(app) {
   if (guestUser.isGuestUser()) {
     btn.hidden = true;
     if (MAIN_V2_SHELL) {
-      setHintV2Shown($('hintBtn'), false);
-      setHintV2Shown($('hintPlaqueUse'), false);
-      setHintV2Shown($('hintPlaqueCount'), false);
-      setHintV2Shown($('previewV2HintCountUse'), false);
-      setHintV2Shown($('previewV2HintCountCount'), false);
-      setHintV2Shown($('hintTokenAddBtnUse'), false);
-      setHintV2Shown($('hintTokenAddBtnCount'), false);
+      setHintV2Shown($('previewHintSlot'), false);
+      setHintV2Shown($('previewHintUseSlot'), false);
     }
     return;
   }
 
   if (MAIN_V2_SHELL) {
+    const slot = $('previewHintSlot');
+    const useSlot = $('previewHintUseSlot');
     const useBtn = $('hintBtn');
-    const usePlaque = $('hintPlaqueUse');
     const countPlaque = $('hintPlaqueCount');
-    const tokenCountUse = $('previewV2HintCountUse');
-    const addUse = $('hintTokenAddBtnUse');
     const countCount = $('previewV2HintCountCount');
     const addCount = $('hintTokenAddBtnCount');
 
-    // Empty board → use plaque + tokens + add + use-hint btn.
-    // Any tile placed → count plaque + tokens + add.
     const emptyBoard = !(app?.state?.tiles || []).length;
+    const hasPreviewTile = previewHasActiveTile(app);
     const remaining = app.hintsRemainingThisPuzzle?.() ?? 0;
     const exhausted = remaining <= 0;
 
-    if (emptyBoard) {
-      setHintV2Shown(usePlaque, true);
-      setHintV2Shown(useBtn, true);
-      setHintV2Shown(tokenCountUse, true);
-      setHintV2Shown(addUse, true);
-      setHintV2Shown(countPlaque, false);
-      setHintV2Shown(countCount, false);
-      setHintV2Shown(addCount, false);
+    if (hasPreviewTile) {
+      setHintV2Shown(slot, false);
+      setHintV2Shown(useSlot, false);
+      return;
+    }
 
+    setHintV2Shown(slot, true);
+    setHintV2Shown(countPlaque, true);
+    setHintV2Shown(countCount, true);
+    setHintV2Shown(addCount, true);
+
+    if (emptyBoard) {
+      setHintV2Shown(useSlot, true);
+      setHintV2Shown(useBtn, true);
       useBtn?.setAttribute('aria-disabled', exhausted ? 'true' : 'false');
       useBtn.title = exhausted
         ? 'No hints remaining for this puzzle.'
@@ -815,13 +818,8 @@ function updateHintButtonState(app) {
         exhausted ? 'Use hint — no hints remaining for this puzzle' : 'Use hint',
       );
     } else {
-      setHintV2Shown(usePlaque, false);
+      setHintV2Shown(useSlot, false);
       setHintV2Shown(useBtn, false);
-      setHintV2Shown(tokenCountUse, false);
-      setHintV2Shown(addUse, false);
-      setHintV2Shown(countPlaque, true);
-      setHintV2Shown(countCount, true);
-      setHintV2Shown(addCount, true);
     }
     return;
   }
@@ -1276,9 +1274,8 @@ function applyGuestChrome(app) {
   if (MAIN_V2_SHELL) {
     if (guest) {
       for (const id of [
-        'hintBtn', 'hintPlaqueUse', 'hintPlaqueCount',
-        'previewV2HintCountUse', 'previewV2HintCountCount',
-        'hintTokenAddBtnUse', 'hintTokenAddBtnCount',
+        'hintBtn', 'hintPlaqueCount', 'previewHintSlot', 'previewHintUseSlot',
+        'previewV2HintCountCount', 'hintTokenAddBtnCount',
       ]) {
         const el = document.getElementById(id);
         if (el) el.hidden = true;
@@ -1812,7 +1809,7 @@ async function applyShellLayouts() {
     try {
       const previewLayout = await loadPreviewV2Layout();
       applyPreviewV2Layout(previewLayout);
-      applyHintV2Layout(await loadHintV2Layout());
+      applyHintV2Layout(await loadHintV2Layout(), document.documentElement, previewLayout);
       applyHintV2ArtImages(document);
       await applyAllPreviewV2DataSublayouts();
     } catch (err) {
@@ -1879,6 +1876,13 @@ async function init() {
 
   const app = await waitForApp();
   appRef = app;
+  const origRenderActivePreview = app.renderActivePreview?.bind(app);
+  if (origRenderActivePreview) {
+    app.renderActivePreview = async (...args) => {
+      await origRenderActivePreview(...args);
+      updateHintButtonState(app);
+    };
+  }
   app.onBoardStateChanged = () => syncBoardChrome(app);
   wireBottomNav(() => appRef);
   wireBottomMenuV2();
@@ -1901,7 +1905,13 @@ async function init() {
   });
   initChallengeBeginPopup({
     menuApi,
-    onContinueSearch: () => continueDiscoverySearch(appRef),
+    onContinueSearch: async ({ complete } = {}) => {
+      if (complete) {
+        await advanceAdventurePath(appRef);
+        return;
+      }
+      await continueDiscoverySearch(appRef);
+    },
   });
   const journalApi = initJournalUi({
     getApp: () => appRef,
@@ -2141,7 +2151,7 @@ async function refreshPreviewLayoutFromDisk() {
     if (MAIN_V2_SHELL) {
       const previewLayout = await reloadPreviewV2Layout();
       applyPreviewV2Layout(previewLayout);
-      applyHintV2Layout(await loadHintV2Layout());
+      applyHintV2Layout(await loadHintV2Layout(), document.documentElement, previewLayout);
       applyHintV2ArtImages(document);
       await applyAllPreviewV2DataSublayouts();
     } else {
@@ -2155,8 +2165,9 @@ async function refreshPreviewLayoutFromDisk() {
 async function refreshHintV2LayoutFromDisk() {
   if (!MAIN_V2_SHELL) return;
   try {
-    applyPreviewV2Layout(await reloadPreviewV2Layout());
-    applyHintV2Layout(await reloadHintV2Layout());
+    const previewLayout = await reloadPreviewV2Layout();
+    applyPreviewV2Layout(previewLayout);
+    applyHintV2Layout(await reloadHintV2Layout(), document.documentElement, previewLayout);
     applyHintV2ArtImages(document);
     const app = window.__tilezillaApp;
     if (app) updateHintButtonState(app);

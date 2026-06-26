@@ -3,54 +3,54 @@
     "w": 245,
     "h": 145
   },
-  "tokenCountFont": "clamp(4.5px, 13cqi, 10.5px)",
+  "tokenCountFont": "clamp(5px, 13cqi, 11px)",
   "art": {
     "hintPlaqueCount": "/img/hintplaque.png",
-    "hintPlaqueUse": "/img/hint bubble plaque w room for use hint btn.png",
-    "useHintBtn": "/img/use hint bubble.png"
+    "hintPlaqueUse": "/img/hintplaque.png",
+    "useHintBtn": ""
   },
   "items": {
-    "hintPlaqueUse": {
-      "x": 24,
-      "y": 6,
-      "w": 203,
-      "h": 179
-    },
     "hintPlaqueCount": {
-      "x": 26,
-      "y": 2,
-      "w": 193,
-      "h": 156
-    },
-    "hintTokenCountUse": {
-      "x": 37,
-      "y": 10,
-      "w": 42,
-      "h": 28
-    },
-    "hintTokenAddUse": {
-      "x": 183,
-      "y": 12,
-      "w": 30,
-      "h": 26
+      "x": 30,
+      "y": 0,
+      "w": 187,
+      "h": 140
     },
     "hintTokenCountCount": {
-      "x": 95,
-      "y": 52,
-      "w": 48,
-      "h": 26
+      "x": 103,
+      "y": 78,
+      "w": 52,
+      "h": 34
     },
     "hintTokenAddCount": {
-      "x": 161,
-      "y": 50,
-      "w": 30,
-      "h": 30
+      "x": 155,
+      "y": 68,
+      "w": 36,
+      "h": 48
     },
     "hintUseBtn": {
-      "x": 32,
-      "y": 22,
-      "w": 183,
-      "h": 112
+      "x": 26,
+      "y": 48,
+      "w": 170,
+      "h": 44
+    },
+    "hintPlaqueUse": {
+      "x": 0,
+      "y": 0,
+      "w": 237,
+      "h": 66
+    },
+    "hintTokenCountUse": {
+      "x": 95,
+      "y": 28,
+      "w": 48,
+      "h": 20
+    },
+    "hintTokenAddUse": {
+      "x": 205,
+      "y": 24,
+      "w": 24,
+      "h": 24
     }
   }
 }

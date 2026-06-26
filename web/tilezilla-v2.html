@@ -201,53 +201,6 @@
               <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--current" id="previewV2TimerCurrent">00:00</span>
               <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__time--best tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--best" id="previewV2TimerBest">—</span>
             </div>
-            <div class="tz-preview-v2-hint-data" aria-label="Hint controls">
-              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--use" id="hintPlaqueUse" hidden>
-                <img
-                  class="tz-preview-v2-hint-plaque__art"
-                  src="/img/hint%20bubble%20plaque%20w%20room%20for%20use%20hint%20btn.png"
-                  alt=""
-                />
-              </div>
-              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--count" id="hintPlaqueCount" hidden>
-                <img class="tz-preview-v2-hint-plaque__art" src="/img/hintplaque.png" alt="" />
-              </div>
-              <span
-                class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--use"
-                id="previewV2HintCountUse"
-                aria-label="Hint tokens"
-                hidden
-              >0</span>
-              <button
-                type="button"
-                class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--use"
-                id="hintTokenAddBtnUse"
-                aria-label="Get more hint tokens"
-                hidden
-              ></button>
-              <span
-                class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--count"
-                id="previewV2HintCountCount"
-                aria-label="Hint tokens"
-                hidden
-              >0</span>
-              <button
-                type="button"
-                class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--count"
-                id="hintTokenAddBtnCount"
-                aria-label="Get more hint tokens"
-                hidden
-              ></button>
-              <button
-                type="button"
-                class="tz-preview-v2-hint-use-btn"
-                id="hintBtn"
-                aria-label="Use hint"
-                hidden
-              >
-                <img class="tz-preview-v2-hint-use-btn__art" src="/img/use%20hint%20bubble.png" alt="" />
-              </button>
-            </div>
             <h2 class="tz-sr-only" id="previewTitle">Preview Tile</h2>
             <button class="tz-preview-rotate tz-preview-rotate--ccw" type="button" id="rotateCCW" aria-label="Rotate left"></button>
             <div id="activePad" class="activePad tz-active-pad tz-preview-renderer" aria-label="Active tile preview">
@@ -255,8 +208,32 @@
               <div id="activeEmpty" class="activeEmpty">Select a tile below</div>
               <img id="activeImg" class="activeImg" alt="" />
             </div>
+            <div class="tz-preview-hint-use-slot" id="previewHintUseSlot" aria-label="Use hint" hidden>
+              <button
+                type="button"
+                class="tz-preview-v2-hint-use-btn"
+                id="hintBtn"
+                aria-label="Use hint"
+              ></button>
+            </div>
             <button class="tz-preview-rotate tz-preview-rotate--cw" type="button" id="rotateCW" aria-label="Rotate right"></button>
             <p class="tz-preview-tile__dir" id="previewDir" aria-label="Tile rotation">0°</p>
+            <div class="tz-preview-hint-slot" id="previewHintSlot" aria-label="Hint token plaque" hidden>
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--count" id="hintPlaqueCount">
+                <img class="tz-preview-v2-hint-plaque__art" src="/img/hintplaque.png" alt="" />
+              </div>
+              <span
+                class="tz-preview-v2-hint-token-count tz-preview-v2-hint-token-count--count"
+                id="previewV2HintCountCount"
+                aria-label="Hint tokens"
+              >0</span>
+              <button
+                type="button"
+                class="tz-preview-v2-hint-token-add tz-preview-v2-hint-token-add--count"
+                id="hintTokenAddBtnCount"
+                aria-label="Get more hint tokens"
+              ></button>
+            </div>
             <div class="tz-preview-check-solve" id="previewCheckSolve" aria-hidden="true">
               <div class="tz-preview-check-solve__ready">
                 <img
@@ -691,9 +668,23 @@
           height="2200"
           draggable="false"
         />
-        <p class="tz-profile-dialog__name" id="profileOverlayName">Explorer</p>
-        <p class="auth-screen__profile-stat" data-profile-slot="rank" id="profileOverlayRank">—</p>
-        <p class="auth-screen__profile-stat" data-profile-slot="subLevel" id="profileOverlaySubLevel">—</p>
+        <p class="tz-profile-dialog__name" id="profileOverlayName" data-profile-slot="profileName">Explorer</p>
+        <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
+          <img
+            class="auth-screen__profile-rank-badge"
+            data-profile-slot="rankBadge"
+            id="profileOverlayRankBadge"
+            src="/img/ranks/Wanderer.png"
+            alt=""
+          />
+          <img
+            class="auth-screen__profile-rank-sublevel tz-rank-sublevel__img"
+            data-profile-slot="sublevelIcon"
+            id="profileOverlaySublevelIcon"
+            src="/img/ranks/gld-1.png"
+            alt=""
+          />
+        </div>
         <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileOverlayAdventureProgress">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileOverlayRoutes">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="hintTokens" id="profileOverlayHints">—</p>
@@ -1045,7 +1036,7 @@
         </button>
       </div>
       <button type="button" class="tz-hint-rules__exit tz-hint-rules__exit--bottom" id="hintRulesExitBottom" aria-label="Close">
-        <img src="/img/exit-btn.png" alt="" />
+        <img src="/img/X-gold-rnd-btn.png" alt="" />
       </button>
     </div>
   </div>

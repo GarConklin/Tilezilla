@@ -1,5 +1,7 @@
 /** Application metadata (version, creator, dates) for the hamburger menu. */
 
+export const DEFAULT_LOGOUT_REDIRECT_URL = 'https://www.skifflakegames.com/';
+
 let infoCache = null;
 
 function formatIsoDate(iso) {
@@ -34,6 +36,16 @@ export async function fetchSystemInfo() {
     /* fall through */
   }
   return null;
+}
+
+export function getLogoutRedirectUrl(info) {
+  const url = String(info?.logoutRedirectUrl || '').trim();
+  return url || DEFAULT_LOGOUT_REDIRECT_URL;
+}
+
+export async function resolveLogoutRedirectUrl() {
+  const info = await fetchSystemInfo();
+  return getLogoutRedirectUrl(info);
 }
 
 export function renderMenuSystemInfo(info, root = document) {

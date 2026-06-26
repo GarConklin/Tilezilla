@@ -10,7 +10,9 @@ import {
   logoutRegisteredUser,
   showLoginRequired,
 } from './tilezilla-guest.js';
-import { applyAuthScreenLayout, loadAuthScreenLayout } from './auth-screen-layout.js';
+import { applyAuthScreenLayout, getProfileOverlayLayoutTarget, loadAuthScreenLayout } from './auth-screen-layout.js';
+import { refreshProfilePassportStats } from './profile-passport-data.js';
+import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
 function $(id) {
   return document.getElementById(id);
@@ -62,11 +64,15 @@ function closeProfileOverlayPopup() {
 
 export async function openProfileOverlay() {
   try {
-    applyAuthScreenLayout(await loadAuthScreenLayout(), 'profile');
+    const layout = await loadAuthScreenLayout({ preferFile: true, screenKey: 'profile' });
+    const target = getProfileOverlayLayoutTarget(document);
+    if (target) applyAuthScreenLayout(layout, 'profile', target);
   } catch (err) {
     console.warn('Profile overlay layout:', err);
   }
   refreshProfileFields();
+  void refreshProfileRankIcons();
+  void refreshProfilePassportStats({ root: document.getElementById('profileOverlayRoot') || document });
   openProfileOverlayPopup();
 }
 
