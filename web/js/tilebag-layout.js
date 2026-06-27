@@ -44,6 +44,8 @@ export const DEFAULT_TILEBAG_LAYOUT = {
     countW: 60,
     countH: 16,
     countNudgeX: -3,
+    countNudgeY: 0,
+    countExpandedNudgeX: 0,
     countExpandedNudgeY: -3,
     handleXOffset: -55,
     handleYGap: 1,
@@ -53,17 +55,20 @@ export const DEFAULT_TILEBAG_LAYOUT = {
     handleHitH: 12,
     handleExpandedXOffset: -55,
     handleExpandedYGap: 1,
-    handleExpandedNudgeX: -8,
-    handleExpandedNudgeY: -1,
-    titleOffsetX: -70,
-    titleNudgeX: 10,
+    handleExpandedNudgeX: 13,
+    handleExpandedNudgeY: -5,
+    titleX: 143,
+    titleY: 1,
+    titleNudgeX: 0,
     titleNudgeY: 0,
     titleExpandedNudgeX: 0,
     titleExpandedNudgeY: 0,
+    titleOffsetX: -70,
   },
   tiles: {
     cell: 34,
     gap: 5,
+    gapRow: 4,
     thumbHScale: 0.92,
     fitInsetY: 6,
     vNudge: -8,
@@ -84,7 +89,10 @@ export const DEFAULT_TILEBAG_LAYOUT = {
     maxOverlap: 72,
     frameCollapsedH: 94,
     trackCollapsedH: 48,
+    trackExpandedH: 0,
     trackExpandedNudgeY: 0,
+    expandedBottomCapArt: 22,
+    trackExpandedExtraH: 0,
   },
 };
 
@@ -138,7 +146,32 @@ export function mergeTilebagLayout(raw) {
       }
     }
   }
+  base.handle = normalizeTilebagHeaderHandle(base.handle);
   return base;
+}
+
+/** Independent title/count anchors — migrates legacy titleOffset + shared expanded Y. */
+export function normalizeTilebagHeaderHandle(h) {
+  if (!h || typeof h !== 'object') return h;
+  const out = { ...h };
+
+  if (out.titleX == null) {
+    const cx = Number(out.countX) || 213;
+    const off = Number(out.titleOffsetX) || -70;
+    const tnX = Number(out.titleNudgeX) || 0;
+    out.titleX = Math.round(cx + off + tnX);
+    out.titleNudgeX = 0;
+  }
+  if (out.titleY == null) {
+    out.titleY = Number(out.countY) || 1;
+  }
+  if (out.countNudgeY == null) out.countNudgeY = 0;
+  if (out.countExpandedNudgeX == null) out.countExpandedNudgeX = 0;
+  if (out.countExpandedNudgeY == null) out.countExpandedNudgeY = -3;
+  if (out.titleExpandedNudgeX == null) out.titleExpandedNudgeX = 0;
+  if (out.titleExpandedNudgeY == null) out.titleExpandedNudgeY = 0;
+
+  return out;
 }
 
 export async function loadTilebagLayout({ force = false } = {}) {
@@ -215,7 +248,7 @@ function glowCss(glow) {
 
 export function applyTilebagLayout(layout, target = document.documentElement) {
   const merged = mergeTilebagLayout(layout);
-  const h = merged.handle;
+  const h = normalizeTilebagHeaderHandle(merged.handle);
   const t = merged.tiles;
   const g = merged.glow;
   const ex = merged.expandedLayout;
@@ -256,6 +289,8 @@ export function applyTilebagLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-tilebag-count-w', String(h.countW ?? 60));
   target.style.setProperty('--tz-tilebag-count-h', String(h.countH ?? 16));
   target.style.setProperty('--tz-tilebag-count-nudge-x', `${h.countNudgeX ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-count-nudge-y', `${h.countNudgeY ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-count-expanded-nudge-x', `${h.countExpandedNudgeX ?? 0}px`);
   target.style.setProperty('--tz-tilebag-count-expanded-nudge-y', `${h.countExpandedNudgeY ?? 0}px`);
   target.style.setProperty('--tz-tilebag-handle-x-offset', `${h.handleXOffset ?? -55}px`);
   target.style.setProperty('--tz-tilebag-handle-y-gap', `${h.handleYGap ?? 1}px`);
@@ -267,7 +302,8 @@ export function applyTilebagLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-tilebag-handle-expanded-y-gap', `${h.handleExpandedYGap ?? h.handleYGap ?? 1}px`);
   target.style.setProperty('--tz-tilebag-handle-expanded-nudge-x', `${h.handleExpandedNudgeX ?? 0}px`);
   target.style.setProperty('--tz-tilebag-handle-expanded-nudge-y', `${h.handleExpandedNudgeY ?? 0}px`);
-  target.style.setProperty('--tz-tilebag-title-offset-x', `${h.titleOffsetX ?? -70}px`);
+  target.style.setProperty('--tz-tilebag-title-x', String(h.titleX ?? 143));
+  target.style.setProperty('--tz-tilebag-title-y', String(h.titleY ?? h.countY ?? 1));
   target.style.setProperty('--tz-tilebag-title-nudge-x', `${h.titleNudgeX ?? 0}px`);
   target.style.setProperty('--tz-tilebag-title-nudge-y', `${h.titleNudgeY ?? 0}px`);
   target.style.setProperty('--tz-tilebag-title-expanded-nudge-x', `${h.titleExpandedNudgeX ?? 0}px`);
@@ -275,6 +311,7 @@ export function applyTilebagLayout(layout, target = document.documentElement) {
 
   target.style.setProperty('--tz-tilebag-cell', `${t.cell ?? 34}px`);
   target.style.setProperty('--tz-tile-gap', `${t.gap ?? 5}px`);
+  target.style.setProperty('--tz-tilebag-row-gap', `${t.gapRow ?? t.gap ?? 4}px`);
   target.style.setProperty('--tz-tilebag-thumb-h-scale', String(t.thumbHScale ?? 0.92));
   target.style.setProperty('--tz-tilebag-thumb-fit-inset-y', `${t.fitInsetY ?? 6}px`);
   target.style.setProperty('--tz-tilebag-thumb-v-nudge', `${t.vNudge ?? 0}px`);
@@ -291,6 +328,85 @@ export function applyTilebagLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-h-tilebag-frame', `${ex.frameCollapsedH ?? 94}px`);
   target.style.setProperty('--tz-tilebag-track-collapsed-h', `${ex.trackCollapsedH ?? 48}px`);
   target.style.setProperty('--tz-tilebag-track-expanded-nudge-y', `${ex.trackExpandedNudgeY ?? 0}px`);
+  target.style.setProperty(
+    '--tz-tilebag-track-expanded-bottom-cap-art',
+    String(ex.expandedBottomCapArt ?? 22),
+  );
+  target.style.setProperty('--tz-tilebag-track-expanded-extra-h', `${ex.trackExpandedExtraH ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-track-expanded-h', `${ex.trackExpandedH ?? 0}px`);
+}
+
+/**
+ * Apply explicit expanded track height + grow frame to fit (and optional art-height floor).
+ * trackExpandedH 0 = use row-computed height only (+ trackExpandedExtraH).
+ */
+export function resolveExpandedTilebagMetrics({
+  expandedLayout,
+  computedTrackHeight,
+  computedFrameHeight,
+  frameCollapsedH,
+  tabHPx,
+  trackCapBottomPx,
+  trackExpandedNudgeY = 0,
+  trackNudgeYExpanded = 0,
+  frameArtMinHPx = 0,
+}) {
+  const ex = expandedLayout || {};
+  const extraH = ex.trackExpandedExtraH ?? 0;
+  const explicitH = ex.trackExpandedH ?? 0;
+  const topSlot = tabHPx + trackExpandedNudgeY + trackNudgeYExpanded;
+  const baseTrack = explicitH > 0 ? explicitH : computedTrackHeight;
+  let trackHeight = Math.max(8, baseTrack + extraH);
+
+  let frameHeight = Math.max(
+    computedFrameHeight,
+    frameCollapsedH,
+    frameArtMinHPx,
+    topSlot + trackHeight + trackCapBottomPx,
+  );
+
+  let maxTrackH = Math.max(8, frameHeight - topSlot - trackCapBottomPx);
+  if (explicitH <= 0) {
+    trackHeight = Math.min(trackHeight, maxTrackH);
+  } else if (trackHeight > maxTrackH) {
+    frameHeight = topSlot + trackHeight + trackCapBottomPx;
+    maxTrackH = Math.max(8, frameHeight - topSlot - trackCapBottomPx);
+    trackHeight = Math.min(trackHeight, maxTrackH);
+  }
+
+  return { trackHeight, frameHeight, maxTrackH };
+}
+
+/** Expanded bag frame + track heights (skin cap for frame; track cap is CSS max-height only). */
+export function computeExpandedTilebagHeights({
+  maxRows,
+  rowHPx,
+  growScale = 1,
+  heightTrim = 0,
+  trackExpandedExtraH = 0,
+  frameCollapsedH,
+  capTopPx,
+  skinCapBottomPx,
+  trackPad = 4,
+  minTrackHeight = 8,
+}) {
+  let trackHeight = maxRows * rowHPx + trackPad;
+  let frameHeight = capTopPx + trackHeight + skinCapBottomPx;
+
+  if (growScale !== 1) {
+    frameHeight = Math.max(frameCollapsedH, Math.round(frameHeight * growScale));
+    trackHeight = Math.max(minTrackHeight, frameHeight - capTopPx - skinCapBottomPx);
+  }
+
+  if (heightTrim > 0) {
+    frameHeight = Math.max(frameCollapsedH, frameHeight - heightTrim);
+    trackHeight = Math.max(minTrackHeight, frameHeight - capTopPx - skinCapBottomPx);
+  }
+
+  trackHeight = Math.max(minTrackHeight, trackHeight + trackExpandedExtraH);
+  frameHeight = Math.max(frameCollapsedH, capTopPx + trackHeight + skinCapBottomPx);
+
+  return { trackHeight, frameHeight };
 }
 
 export function buildTilebagLayoutReport(layout) {
@@ -312,10 +428,12 @@ export function buildTilebagLayoutReport(layout) {
     lines.push(`${TILEBAG_ITEM_DEFS[key]?.label || key}: left ${b.left} · width ${b.width}${b.hidden ? ' (hidden)' : ''}`);
   }
   const t = merged.tiles;
-  lines.push('', `Tiles: cell ${t.cell}px · gap ${t.gap}px · hScale ${t.thumbHScale} · insetY ${t.fitInsetY} · vNudge ${t.vNudge}`);
+  lines.push('', `Tiles: cell ${t.cell}px · gap ${t.gap}px · row gap ${t.gapRow ?? t.gap ?? 4}px · hScale ${t.thumbHScale} · insetY ${t.fitInsetY} · vNudge ${t.vNudge}`);
   const g = merged.glow;
   lines.push(`Glow: ring ${g.ring}px · blur ${g.blur}px · rgba(${g.r},${g.g},${g.b},${g.alpha})`);
   const ex = merged.expandedLayout;
-  lines.push(`Expanded: maxRows ${ex.maxRows} · grow ${ex.growScale} · trim ${ex.heightTrim}px`);
+  lines.push(
+    `Expanded: maxRows ${ex.maxRows} · grow ${ex.growScale} · trim ${ex.heightTrim}px · track H ${ex.trackExpandedH ?? 0}px (0=auto) · extra H ${ex.trackExpandedExtraH ?? 0}px · bottom cap ${ex.expandedBottomCapArt ?? 22} art px`,
+  );
   return lines.join('\n');
 }

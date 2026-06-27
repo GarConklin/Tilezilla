@@ -10,7 +10,8 @@
 }
 
 /* Logged-in tuner — match live passport art fill (object-fit: contain in stage) */
-.auth-screen-tuner-page .auth-screen--profile .auth-screen__art {
+.auth-screen-tuner-page .auth-screen--login .auth-screen__art,
+.auth-screen-tuner-page .auth-screen--create .auth-screen__art {
   display: block;
   width: 100%;
   height: 100%;
@@ -102,24 +103,6 @@
   );
 }
 
-.auth-screen-tuner-page .auth-screen--profile .auth-screen__stage {
-  position: absolute;
-  left: 50%;
-  top: var(--auth-chrome-stage-top, 7.7%);
-  transform: translateX(-50%);
-  margin: 0;
-  z-index: 2;
-  --auth-passport-avail-h: calc(100% - var(--auth-chrome-stage-top, 7.7%) - 8px);
-  max-height: var(--auth-passport-avail-h);
-  width: min(
-    100%,
-    var(--auth-profile-max-width, 420px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
-  );
-  aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
-}
-
 .auth-screen-tuner-page .auth-screen__profile-rank-stack.tuner-box {
   pointer-events: auto;
   cursor: move;
@@ -128,13 +111,23 @@
   overflow: visible;
 }
 
-.auth-screen-tuner-page .auth-screen__profile-rank-stack .auth-screen__profile-rank-badge,
-.auth-screen-tuner-page .auth-screen__profile-rank-stack .auth-screen__profile-rank-sublevel {
+.auth-screen-tuner-page .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge,
+.auth-screen-tuner-page .auth-screen__profile-rank-stack .tz-preview-v2-user-data__sublevel {
   pointer-events: none;
 }
 
 .auth-screen-tuner-page #mockHitsOutside .tuner-box {
   pointer-events: auto;
+}
+
+.auth-screen-tuner-page .tuner-box.is-game-hidden {
+  opacity: 0.45;
+  border-style: dashed !important;
+}
+
+.auth-screen-tuner-page .field-btn.is-game-hidden {
+  opacity: 0.45;
+  border-style: dashed;
 }
 
 .auth-screen-tuner-page .tuner-box {
@@ -209,7 +202,8 @@
 }
 
 .auth-screen-tuner-page .auth-screen__profile-stat.tuner-box .hit-label,
-.auth-screen-tuner-page .auth-screen__profile-name.tuner-box .hit-label {
+.auth-screen-tuner-page .auth-screen__profile-name.tuner-box .hit-label,
+.auth-screen-tuner-page .tz-profile-dialog__name.tuner-box .hit-label {
   align-items: flex-start;
   justify-content: flex-start;
   padding: 1px 3px;
@@ -221,8 +215,18 @@
 
 .auth-screen-tuner-page .auth-screen__profile-stat.tuner-box .tuner-mock-value {
   align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  padding: 2px 3px 2px 2px;
+  font-size: clamp(7px, 2.2cqi, 11px);
+  color: #e8b923;
+}
+
+.auth-screen-tuner-page .tz-profile-dialog__name.tuner-box .tuner-mock-value {
+  align-items: center;
   justify-content: center;
-  padding-top: 12%;
+  text-align: center;
+  padding: 2px;
   font-size: clamp(7px, 2.2cqi, 11px);
   color: #e8b923;
 }
@@ -271,13 +275,15 @@
   cursor: nwse-resize;
 }
 
-.auth-screen-tuner-page .auth-screen__hit.tuner-box {
+.auth-screen-tuner-page .auth-screen__hit.tuner-box,
+.auth-screen-tuner-page .tz-profile-dialog__hit.tuner-box {
   padding: 0;
   overflow: visible;
   background: rgba(100, 200, 255, 0.18) !important;
 }
 
-.auth-screen-tuner-page .auth-screen__hit.tuner-box .tuner-hit-art {
+.auth-screen-tuner-page .auth-screen__hit.tuner-box .tuner-hit-art,
+.auth-screen-tuner-page .tz-profile-dialog__hit.tuner-box .tuner-hit-art {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -286,7 +292,8 @@
   pointer-events: none;
 }
 
-.auth-screen-tuner-page .auth-screen__hit.tuner-box .hit-label {
+.auth-screen-tuner-page .auth-screen__hit.tuner-box .hit-label,
+.auth-screen-tuner-page .tz-profile-dialog__hit.tuner-box .hit-label {
   z-index: 1;
   font-size: clamp(6px, 1.8cqi, 9px);
   align-items: flex-end;
@@ -302,4 +309,138 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #c4a35a;
+}
+
+/* Logged-in tuner preview matches in-game overlay width cap (390px design frame) */
+.auth-screen-tuner-page:has(.tz-profile-root--tuner) {
+  --tz-profile-max-design-width: 390px;
+}
+.auth-screen-tuner-page:has(.tz-profile-root--tuner) .layout {
+  grid-template-columns: minmax(280px, 340px) minmax(560px, 1fr);
+}
+
+.auth-screen-tuner-page:has(.tz-profile-root--tuner) .mock-stage {
+  max-height: none;
+  overflow: visible;
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-root--tuner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 680px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(8, 20, 18, 0.45);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog {
+  position: relative;
+  flex-shrink: 0;
+  margin: 0 auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width, 390px),
+    var(--auth-profile-max-width, 420px),
+    calc(var(--tz-profile-art-w) * 1px),
+    calc((min(1280px, 96dvh) - 24px) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  );
+  aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__name {
+  position: absolute;
+  left: var(--auth-profile-profileName-x, 15%);
+  top: var(--auth-profile-profileName-y, 22.5%);
+  width: var(--auth-profile-profileName-w, 70%);
+  height: var(--auth-profile-profileName-h, 4%);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(clamp(0.85rem, 3.5vw, 1rem) * var(--auth-profile-profileName-font-scale, 1));
+  font-weight: 600;
+  color: #3d2e1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--nav-daily {
+  left: var(--auth-profile-navDaily-x, 3%);
+  top: var(--auth-profile-navDaily-y, 92%);
+  width: var(--auth-profile-navDaily-w, 22%);
+  height: var(--auth-profile-navDaily-h, 5.5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--nav-adventure {
+  left: var(--auth-profile-navAdventure-x, 27%);
+  top: var(--auth-profile-navAdventure-y, 92%);
+  width: var(--auth-profile-navAdventure-w, 22%);
+  height: var(--auth-profile-navAdventure-h, 5.5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--nav-random {
+  left: var(--auth-profile-navRandom-x, 51%);
+  top: var(--auth-profile-navRandom-y, 92%);
+  width: var(--auth-profile-navRandom-w, 22%);
+  height: var(--auth-profile-navRandom-h, 5.5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--nav-logout {
+  left: var(--auth-profile-navLogout-x, 75%);
+  top: var(--auth-profile-navLogout-y, 92%);
+  width: var(--auth-profile-navLogout-w, 22%);
+  height: var(--auth-profile-navLogout-h, 5.5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--back {
+  left: var(--auth-profile-back-x, 2%);
+  top: var(--auth-profile-back-y, 1.5%);
+  width: var(--auth-profile-back-w, 10%);
+  height: var(--auth-profile-back-h, 5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--close-x {
+  left: var(--auth-profile-closeX-x, 86%);
+  top: var(--auth-profile-closeX-y, 1.5%);
+  width: var(--auth-profile-closeX-w, 10%);
+  height: var(--auth-profile-closeX-h, 5%);
+}
+
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--back img,
+.auth-screen-tuner-page .mock-stage .tz-profile-dialog__hit--close-x img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }

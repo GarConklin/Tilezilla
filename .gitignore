@@ -8,6 +8,9 @@ Thumbs.db
 node_modules/
 *.log
 
+# Docker entrypoint symlink/junction — recreated at container start
+auth/public/api
+
 # Archived / one-off scripts kept locally only
 unused/
 

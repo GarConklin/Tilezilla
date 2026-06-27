@@ -1,10 +1,12 @@
 /** Preview frame hit areas — artboard px within main-screen v2 preview zone (390×259). */
 
-
+import {
+  DEFAULT_PREVIEW_TILE_IN_SLOT,
+  applyPreviewTileInSlot,
+  previewTileInSlotReportLines,
+} from './preview-tile-display.js';
 
 export const PREVIEW_V2_ART = { w: 390, h: 259 };
-
-
 
 export const DEFAULT_PREVIEW_V2_ART = {
   frame: '/img/preview tile Area bubble.png',
@@ -111,12 +113,11 @@ export const DEFAULT_PREVIEW_V2_LAYOUT = {
 
   },
 
+  tileInSlot: { ...DEFAULT_PREVIEW_TILE_IN_SLOT },
+
 };
 
-
-
 const LS_LAYOUT_KEY = 'tilezilla:layouts:preview-v2';
-
 const LS_PENDING_KEY = 'tilezilla:layouts:preview-v2:pending';
 
 
@@ -204,6 +205,10 @@ export function mergePreviewV2Layout(raw) {
       base.items.hintPreview = { ...base.items.hintPreview, ...raw.items.hintData };
     }
 
+  }
+
+  if (raw.tileInSlot && typeof raw.tileInSlot === 'object') {
+    base.tileInSlot = { ...base.tileInSlot, ...raw.tileInSlot };
   }
 
   return base;
@@ -436,9 +441,13 @@ export function applyPreviewV2Layout(layout, target = document.documentElement) 
 
   applyPreviewV2Art(target, merged);
 
+  applyPreviewTileInSlot(merged.tileInSlot, target);
+
 }
 
 
+
+export { applyPreviewTileInSlot, DEFAULT_PREVIEW_TILE_IN_SLOT } from './preview-tile-display.js';
 
 export function buildPreviewV2LayoutReport(layout) {
 
@@ -490,6 +499,12 @@ export function buildPreviewV2LayoutReport(layout) {
 
     lines.push(`${def.label}: x ${box.x} · y ${box.y} · w ${box.w} · h ${box.h}`);
 
+  }
+
+  lines.push('', '— Tile graphic in slot —');
+
+  for (const line of previewTileInSlotReportLines(merged.tileInSlot)) {
+    lines.push(line);
   }
 
   lines.push('', 'Hint zones: tune in hint-v2-tuner.html');

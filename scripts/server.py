@@ -647,6 +647,16 @@ def validate_preview_v2_layout(payload: object) -> str | None:
     if isinstance(art, dict) and "rendererStageWidthScale" in art:
         if not isinstance(art["rendererStageWidthScale"], (int, float)):
             return "art.rendererStageWidthScale must be a number"
+    tile_in_slot = payload.get("tileInSlot")
+    if tile_in_slot is not None:
+        if not isinstance(tile_in_slot, dict):
+            return "tileInSlot must be an object"
+        for key in (
+            "rot0ScaleW", "rot0ScaleH", "rot90ScaleW", "rot90ScaleH",
+            "offsetX", "offsetY", "boardScale", "fitInsetX", "fitInsetY", "clampToSlot",
+        ):
+            if key in tile_in_slot and not isinstance(tile_in_slot[key], (int, float)):
+                return f"tileInSlot.{key} must be a number"
     return None
 
 
@@ -877,6 +887,7 @@ AUTH_SCREEN_ITEM_KEYS = {
     "create": ("name", "email", "pass", "pass2", "submit", "secondary", "navDaily", "navLogout"),
     "profile": (
         "profileName",
+        "guestNote",
         "rankBadge",
         "sublevelIcon",
         "adventureProgress",
@@ -885,6 +896,9 @@ AUTH_SCREEN_ITEM_KEYS = {
         "memberSince",
         "passportId",
         "explorersRegistered",
+        "totalAdventurePuzzles",
+        "totalKnownRoutes",
+        "largestSolution",
         "todaysChallenge",
         "recentPuzzleSolved",
         "recentDailyCompleted",
@@ -932,6 +946,8 @@ def validate_auth_screen_layout(payload: object) -> str | None:
                 for dim in ("x", "y", "w", "h", "fontScale"):
                     if dim in box and not isinstance(box[dim], (int, float)):
                         return f"{screen_key}.items.{key}.{dim} must be a number"
+                if "hidden" in box and not isinstance(box["hidden"], bool):
+                    return f"{screen_key}.items.{key}.hidden must be a boolean"
     return None
 
 
@@ -1038,12 +1054,13 @@ JOURNAL_ITEM_KEYS = tuple(
         "paneTop", "paneBottomLeft", "paneBottomRight",
         "listTitleBar", "titleFoundSolutions", "titleRecordedPuzzles",
         "listScroller", "listContent", "listRow",
+        "listRowMain", "listRowDetail", "listRowSub",
         "fieldPuzzleId", "fieldPuzzleType", "fieldBoardSize",
         "fieldTotalKnown", "fieldSolutionsFound", "fieldFirstSolved", "fieldLastPlayed",
         "progressBar", "solutionPreview", "btnBeginSearch",
         "selectorBoardSize", "selectorPuzzleType", "selectorStatus",
         "tabPuzzle", "tabStats", "tabFilter", "tabRecords",
-        "btnFilter", "btnStats", "btnPrev", "btnNext", "btnExit",
+        "btnFilter", "btnStats", "btnPrev", "btnNext", "btnExit", "btnLibraryBack",
     )
 )
 

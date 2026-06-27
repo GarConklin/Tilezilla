@@ -38,6 +38,11 @@ services:
     environment:
       PORT: "8080"
       PYTHONUNBUFFERED: "1"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
+      MYSQL_USER: ${MYSQL_USER:-tilegame}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
     depends_on:
       mysql:
         condition: service_healthy

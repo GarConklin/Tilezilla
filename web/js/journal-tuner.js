@@ -54,6 +54,11 @@ const EDIT_MODES = {
     label: 'PIN',
     hint: 'Wheel = scroll pin size (scroll bar only) · Shift = fine step',
   },
+  font: {
+    key: 'F',
+    label: 'FONT',
+    hint: 'Wheel = value font scale (dd / title / list row) · Shift+wheel = label font scale (dt, text fields only)',
+  },
   dialog: {
     key: 'P',
     label: 'DIALOG',
@@ -82,22 +87,23 @@ const MOCK_SOLUTIONS = [
 ];
 
 const MOCK_PUZZLES = [
-  { label: '5×6-0A-AUA', sub: '0 / 12', state: 'unstarted', pct: 0 },
-  { label: '5×6-1B-BVB', sub: '3 / 12', state: 'inProgress', pct: 25 },
-  { label: '5×6-2C-CVC', sub: '12 / 12', state: 'complete', pct: 100 },
-  { label: '6×6-0D-DWD', sub: '1 / 8', state: 'inProgress', pct: 12 },
-  { label: '6×6-1E-EWE', sub: '8 / 8', state: 'complete', pct: 100 },
-  { label: '6×6-2F-FXF', sub: '2 / 8', state: 'inProgress', pct: 25 },
+  { label: '5×6-0A-AUA', detail: '· Adv 142', sub: '0 / 12', state: 'unstarted', pct: 0 },
+  { label: '5×6-1B-BVB', detail: '· Adv 143', sub: '3 / 12', state: 'inProgress', pct: 25 },
+  { label: '5×6-2C-CVC', detail: '· Jun 22, 2026', sub: '12 / 12', state: 'complete', pct: 100 },
+  { label: '6×6-0D-DWD', detail: '· Adv 88', sub: '1 / 8', state: 'inProgress', pct: 12 },
+  { label: '6×6-1E-EWE', detail: '· Jun 24, 2026', sub: '8 / 8', state: 'complete', pct: 100 },
+  { label: '6×6-2F-FXF', detail: '· Adv 91', sub: '2 / 8', state: 'inProgress', pct: 25 },
 ];
 
 const RECORD_ONLY_ITEMS = new Set([
   'fieldPuzzleId', 'fieldPuzzleType', 'fieldBoardSize', 'fieldTotalKnown',
   'fieldSolutionsFound', 'fieldFirstSolved', 'fieldLastPlayed', 'progressBar',
-  'titleFoundSolutions', 'solutionPreview', 'btnBeginSearch',
+  'titleFoundSolutions', 'solutionPreview', 'btnBeginSearch', 'btnLibraryBack',
 ]);
 
 const LIBRARY_ONLY_ITEMS = new Set([
-  'selectorBoardSize', 'selectorPuzzleType', 'selectorStatus', 'titleRecordedPuzzles',
+  'selectorBoardSize', 'selectorPuzzleType', 'titleRecordedPuzzles',
+  'listRowDetail',
 ]);
 
 function isItemVisibleInPreview(key) {
@@ -189,15 +195,67 @@ function itemSupportsHeight(meta) {
   return meta && meta.kind !== 'label' && meta.kind !== 'scroller';
 }
 
+function itemSupportsFontTuning(meta) {
+  return meta && (meta.kind === 'text' || meta.kind === 'titleBarChild' || meta.kind === 'list' || meta.kind === 'listPart');
+}
+
+function syncFontTuningPanel() {
+  const panel = document.getElementById('fontTuningPanel');
+  const meta = JOURNAL_ITEM_DEFS[currentItem];
+  if (!panel) return;
+  const show = itemSupportsFontTuning(meta);
+  panel.hidden = !show;
+  if (!show) return;
+
+  const item = getJournalItemLayout(currentItem, workingLayout);
+  const valueInput = document.getElementById('fontValueScaleInput');
+  const labelInput = document.getElementById('fontLabelScaleInput');
+  const labelWrap = document.getElementById('fontLabelScaleWrap');
+
+  if (meta.kind === 'text') {
+    if (labelWrap) labelWrap.hidden = false;
+    if (valueInput && document.activeElement !== valueInput) {
+      valueInput.value = String(item.valueFontScale ?? 1);
+    }
+    if (labelInput && document.activeElement !== labelInput) {
+      labelInput.value = String(item.labelFontScale ?? 1);
+    }
+  } else {
+    if (labelWrap) labelWrap.hidden = true;
+    if (valueInput && document.activeElement !== valueInput) {
+      valueInput.value = String(item.fontScale ?? 1);
+    }
+  }
+}
+
+function patchFontFromInputs() {
+  const meta = JOURNAL_ITEM_DEFS[currentItem];
+  if (!itemSupportsFontTuning(meta)) return;
+  const valueInput = document.getElementById('fontValueScaleInput');
+  const labelInput = document.getElementById('fontLabelScaleInput');
+  const valueScale = Math.max(0.5, Math.min(2.5, parseFloat(valueInput?.value) || 1));
+  if (meta.kind === 'text') {
+    const labelScale = Math.max(0.5, Math.min(2.5, parseFloat(labelInput?.value) || 1));
+    patchItem(currentItem, { valueFontScale: valueScale, labelFontScale: labelScale }, { live: true });
+    return;
+  }
+  patchItem(currentItem, { fontScale: valueScale }, { live: true });
+}
+
 function updateKeysHelp() {
   const ul = document.getElementById('keysList');
   if (!ul) return;
   ul.innerHTML = [
-    '<li><strong>M</strong> move · <strong>W</strong> width · <strong>H</strong> height · <strong>I</strong> pin (scroll bar) · <strong>P</strong> dialog · <strong>Esc</strong> → move</li>',
+    '<li><strong>M</strong> move · <strong>W</strong> width · <strong>H</strong> height · <strong>F</strong> font · <strong>I</strong> pin · <strong>P</strong> dialog · <strong>Esc</strong> → move</li>',
     '<li><strong>Tab</strong> cycle items · Click preview before wheel · Shift/Ctrl = fine/large step</li>',
+    '<li><strong>F</strong> font — text fields: wheel = value (dd) · Shift+wheel = label (dt) · titles/list: wheel = font scale</li>',
+    '<li>Or use the <strong>Font scale</strong> inputs below — saves to journal_layout.json (live game picks up on save / tab focus)</li>',
     '<li>Scroll bar: <strong>W</strong> = track width · <strong>H</strong> = track length (h%) · <strong>I</strong> = pin · <strong>M</strong> = move on art</li>',
     '<li>List content (puzzle rows): <strong>M</strong> = move in pane · <strong>W/H</strong> = box size · Shift+wheel = pixel nudge</li>',
     '<li>List rows (both modes): <strong>W</strong> = font · <strong>H</strong> = row padding · <strong>I</strong> = side padding · <strong>M</strong> + wheel = gap between rows</li>',
+    '<li>Recorded puzzles Adv_ID / date: switch preview to <strong>Library</strong> · select <strong>List row — Adv_ID / release date</strong> · <strong>F</strong> = font scale</li>',
+    '<li>List title bar + titles (Found Solutions / Recorded Puzzles): click text in preview — <strong>M/W/H</strong> move &amp; resize · <strong>F</strong> = font on titles</li>',
+    '<li>Record top stats (Puzzle ID, etc.): yellow boxes + <strong>F</strong> for label (dt) and value (dd) font scales</li>',
     '<li>Solution preview: inside lower-right pane — <strong>M/W/H</strong> move and resize · solution centers in box</li>',
     '<li>Begin Search button: inside lower-right pane (no solutions yet) — <strong>M/W/H</strong> move and resize</li>',
   ].join('');
@@ -339,6 +397,7 @@ function patchItem(key, patch, { live = false } = {}) {
       h: normalized.h,
       nudgeX: normalized.nudgeX ?? 0,
       nudgeY: normalized.nudgeY ?? 0,
+      fontScale: normalized.fontScale ?? 1,
     };
   }
   if (key === 'solutionPreview' || key === 'btnBeginSearch') {
@@ -355,6 +414,7 @@ function patchItem(key, patch, { live = false } = {}) {
   }
   if (live) {
     applyJournalLayoutEverywhere(workingLayout);
+    syncFontTuningPanel();
     els.readout.innerHTML = formatItemReadout(currentItem);
     const ov = document.querySelector(`.tuner-overlay[data-item="${key}"]`);
     if (ov) Object.assign(ov.style, overlayStyleForItem(key));
@@ -577,7 +637,20 @@ function renderMockList() {
 
     const main = document.createElement('span');
     main.className = 'tz-journal-list__row-main';
-    main.textContent = row.label;
+    if (previewMode === 'library') {
+      const idSpan = document.createElement('span');
+      idSpan.className = 'tz-journal-list__row-id';
+      idSpan.textContent = row.label;
+      main.appendChild(idSpan);
+      if (row.detail) {
+        const detail = document.createElement('span');
+        detail.className = 'tz-journal-list__row-detail';
+        detail.textContent = row.detail;
+        main.appendChild(detail);
+      }
+    } else {
+      main.textContent = row.label;
+    }
     btn.appendChild(main);
 
     if (row.sub) {
@@ -644,6 +717,8 @@ function setPreviewMode(mode) {
   if (mode === 'library') previewTab = 'filter';
   else if (previewTab === 'filter') previewTab = 'puzzle';
 
+  document.getElementById('mockJournalRoot')?.setAttribute('data-journal-mode', previewMode);
+
   syncPreviewModeUi();
   ensureCurrentItemInMode();
   syncTabToggleUi();
@@ -702,10 +777,28 @@ function syncPreviewTuningUi() {
   el.classList.toggle('is-preview-tuning', currentItem === 'solutionPreview');
 }
 
-function syncListRowTuningUi() {
+function syncListRowPartTuningUi() {
   const el = document.getElementById('mockList');
   if (!el) return;
   el.classList.toggle('is-list-row-tuning', currentItem === 'listRow');
+  el.classList.toggle('is-list-row-main-tuning', currentItem === 'listRowMain');
+  el.classList.toggle('is-list-row-detail-tuning', currentItem === 'listRowDetail');
+  el.classList.toggle('is-list-row-sub-tuning', currentItem === 'listRowSub');
+}
+
+function syncTitleBarTuningUi() {
+  document.getElementById('mockListTitleBar')?.classList.toggle(
+    'is-title-bar-tuning',
+    currentItem === 'listTitleBar',
+  );
+  document.getElementById('mockTitleFound')?.classList.toggle(
+    'is-title-child-tuning',
+    currentItem === 'titleFoundSolutions',
+  );
+  document.getElementById('mockTitleRecorded')?.classList.toggle(
+    'is-title-child-tuning',
+    currentItem === 'titleRecordedPuzzles',
+  );
 }
 
 function wireListContentTuning() {
@@ -752,6 +845,29 @@ function wireScrollerTuning() {
     const resizeMode = e.target?.dataset?.resize || null;
     onOverlayPointerDown(e, 'listScroller', resizeMode);
   });
+}
+
+function wireTitleBarTuning() {
+  const wire = (el, key) => {
+    if (!el || el.dataset.titleBarTunerWired) return;
+    el.dataset.titleBarTunerWired = '1';
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      if (currentItem !== key) {
+        currentItem = key;
+        if (editMode === 'dialog') setEditMode('move');
+        refreshFieldGrid();
+        updateKeysHelp();
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      const resizeMode = e.target?.dataset?.resize || null;
+      onOverlayPointerDown(e, key, resizeMode);
+    });
+  };
+  wire(document.getElementById('mockListTitleBar'), 'listTitleBar');
+  wire(document.getElementById('mockTitleFound'), 'titleFoundSolutions');
+  wire(document.getElementById('mockTitleRecorded'), 'titleRecordedPuzzles');
 }
 
 function wireBeginSearchTuning() {
@@ -838,7 +954,8 @@ function refreshFieldGrid() {
   syncListContentTuningUi();
   syncPreviewTuningUi();
   syncBeginSearchTuningUi();
-  syncListRowTuningUi();
+  syncListRowPartTuningUi();
+  syncTitleBarTuningUi();
 }
 
 function formatItemReadout(key) {
@@ -875,7 +992,33 @@ function formatItemReadout(key) {
   if (meta?.kind === 'list') {
     return `<strong>${meta.label}</strong><br />`
       + `fontScale ${item.fontScale ?? 1} · pad ${item.padY ?? 6}px×${item.padX ?? 8}px · gap ${item.gap ?? 4}px`
-      + `<br /><em>W = font · H = vertical pad · I = horizontal pad · M + wheel = row gap (Record &amp; Library)</em>`
+      + `<br /><em>F = font scale · W = font (legacy) · H = vertical pad · I = side pad · M + wheel = gap</em>`
+      + modeLine + modeWarn;
+  }
+  if (meta?.kind === 'listPart') {
+    return `<strong>${meta.label}</strong><br />`
+      + `fontScale ${item.fontScale ?? 1}`
+      + `<br /><em>F = font scale · W = font (legacy) · wheel adjusts this part only</em>`
+      + modeLine + modeWarn;
+  }
+  if (meta?.kind === 'text') {
+    const parts = [`x:${item.x}%`, `y:${item.y}%`, `w:${item.w}%`];
+    if (item.h != null) parts.push(`h:${item.h}%`);
+    if (item.nudgeX) parts.push(`nudgeX:${item.nudgeX}px`);
+    if (item.nudgeY) parts.push(`nudgeY:${item.nudgeY}px`);
+    parts.push(`labelFontScale:${item.labelFontScale ?? 1}`);
+    parts.push(`valueFontScale:${item.valueFontScale ?? 1}`);
+    return `<strong>${meta.label}</strong><br />${parts.join(' · ')}`
+      + `<br /><em>F = font — wheel value (dd) · Shift+wheel label (dt) · M/W/H = position &amp; box</em>`
+      + modeLine + modeWarn;
+  }
+  if (meta?.kind === 'titleBarChild') {
+    const parts = [`x:${item.x}%`, `y:${item.y}%`, `w:${item.w}%`, `h:${item.h}%`];
+    if (item.nudgeX) parts.push(`nudgeX:${item.nudgeX}px`);
+    if (item.nudgeY) parts.push(`nudgeY:${item.nudgeY}px`);
+    parts.push(`fontScale:${item.fontScale ?? 1}`);
+    return `<strong>${meta.label}</strong><br />${parts.join(' · ')}`
+      + `<br /><em>F = font scale · M/W/H = position &amp; box</em>`
       + modeLine + modeWarn;
   }
   const parts = [`x:${item.x}%`, `y:${item.y}%`, `w:${item.w}%`];
@@ -889,6 +1032,7 @@ function refresh() {
   applyJournalLayoutEverywhere(workingLayout);
   syncPreviewModeUi();
   syncTunerMockVisibility();
+  syncFontTuningPanel();
   els.readout.innerHTML = formatItemReadout(currentItem);
   els.jsonOut.value = exportJson();
   els.reportOut.value = buildJournalLayoutReport(workingLayout);
@@ -912,6 +1056,7 @@ function wheelShouldTune(e) {
   if (tuningInputBlocked(e.target)) return false;
   if (!e.target.closest('#mockStage')) return false;
   if (currentItem === 'listScroller' || currentItem === 'listContent' || currentItem === 'listRow') return true;
+  if (JOURNAL_ITEM_DEFS[currentItem]?.kind === 'listPart') return true;
   if (e.target.closest('.tz-journal-list-scroll')) return false;
   return true;
 }
@@ -943,6 +1088,38 @@ function onWheel(e) {
   if (!meta) return;
 
   const item = getJournalItemLayout(currentItem, workingLayout);
+
+  if (editMode === 'font') {
+    const step = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+    if (meta.kind === 'text') {
+      if (e.shiftKey) {
+        patchItem(currentItem, {
+          labelFontScale: Math.round(Math.max(0.5, (item.labelFontScale ?? 1) + dir * step) * 100) / 100,
+        }, live);
+      } else {
+        patchItem(currentItem, {
+          valueFontScale: Math.round(Math.max(0.5, (item.valueFontScale ?? 1) + dir * step) * 100) / 100,
+        }, live);
+      }
+      return;
+    }
+    if (meta.kind === 'titleBarChild' || meta.kind === 'list' || meta.kind === 'listPart') {
+      patchItem(currentItem, {
+        fontScale: Math.round(Math.max(0.5, (item.fontScale ?? 1) + dir * step) * 100) / 100,
+      }, live);
+    }
+    return;
+  }
+
+  if (meta.kind === 'listPart') {
+    if (editMode === 'font' || editMode === 'width') {
+      const step = stepForEvent(e, SCALE_FINE, SCALE_MED, SCALE_LARGE);
+      patchItem(currentItem, {
+        fontScale: Math.round(Math.max(0.5, (item.fontScale ?? 1) + dir * step) * 100) / 100,
+      }, live);
+    }
+    return;
+  }
 
   if (meta.kind === 'list') {
     if (editMode === 'width') {
@@ -1066,6 +1243,7 @@ function onKeyDown(e) {
   if (modeKey === 'w') { setEditMode('width'); e.preventDefault(); return; }
   if (modeKey === 'h') { setEditMode('height'); e.preventDefault(); return; }
   if (modeKey === 'i') { setEditMode('pin'); e.preventDefault(); return; }
+  if (modeKey === 'f') { setEditMode('font'); e.preventDefault(); return; }
   if (modeKey === 'p') { setEditMode('dialog'); currentItem = DIALOG_ITEM; refresh(); e.preventDefault(); return; }
   if (e.key === 'Escape') { setEditMode('move'); e.preventDefault(); return; }
   if (e.key === 'Tab') {
@@ -1159,10 +1337,13 @@ async function init() {
     hideMockLabels = e.target.checked;
     applyArtOnlyPreview();
   });
+  document.getElementById('fontValueScaleInput')?.addEventListener('change', patchFontFromInputs);
+  document.getElementById('fontLabelScaleInput')?.addEventListener('change', patchFontFromInputs);
 
   wireTunerItemClicks();
   wireListContentTuning();
   wireScrollerTuning();
+  wireTitleBarTuning();
   wirePreviewTuning();
   wireBeginSearchTuning();
 

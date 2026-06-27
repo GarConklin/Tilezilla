@@ -48,6 +48,8 @@ def load_level_system_steps(csv_path: Path | None = None, repo_root: Path | None
             adv_start = (raw.get("Adv_ID_Start") or raw.get("adv_id_start") or "").strip()
             if not base or not sub or not amt:
                 continue
+            if not re.match(r"^L\d+$", base, re.I) or not sub.isdigit():
+                continue
             levels_required = int(amt)
             if levels_required <= 0:
                 raise ValueError(

@@ -383,9 +383,151 @@
 
       justify-content: center;
 
+      overflow: visible;
+
       color: rgba(255, 255, 255, 0.5);
 
       font-size: 0.65rem;
+
+    }
+
+    .preview-v2-tuner-page .tuner-preview-tile {
+
+      position: relative;
+
+      z-index: 2;
+
+      display: block;
+
+      object-fit: contain;
+
+      transform-origin: center center;
+
+      pointer-events: none;
+
+      min-width: 8px;
+
+      min-height: 8px;
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-renderer.activePad .activeImg {
+
+      transform: none;
+
+    }
+
+    .tile-in-slot-panel {
+
+      margin-bottom: 10px;
+
+      padding: 8px;
+
+      border-radius: 6px;
+
+      background: rgba(0, 0, 0, 0.2);
+
+      border: 1px solid rgba(196, 163, 90, 0.25);
+
+    }
+
+    .tile-in-slot-panel h3 {
+
+      margin: 0 0 8px;
+
+      font-size: 0.72rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.05em;
+
+      color: #c4a35a;
+
+    }
+
+    .tile-in-slot-panel .rot-toggle {
+
+      display: flex;
+
+      gap: 6px;
+
+      margin-bottom: 8px;
+
+    }
+
+    .tile-in-slot-panel .rot-toggle .btn {
+
+      flex: 1;
+
+      padding: 6px 8px;
+
+      font-size: 0.68rem;
+
+    }
+
+    .tile-in-slot-panel .rot-toggle .btn.is-active {
+
+      border-color: #e8b923;
+
+      background: rgba(232, 185, 35, 0.2);
+
+    }
+
+    .tile-in-slot-grid {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 6px;
+
+    }
+
+    .tile-in-slot-grid label {
+
+      font-size: 0.62rem;
+
+      color: #a8b8b4;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 2px;
+
+    }
+
+    .tile-in-slot-grid input {
+
+      width: 100%;
+
+      padding: 4px;
+
+      border-radius: 4px;
+
+      border: 1px solid rgba(196, 163, 90, 0.35);
+
+      background: rgba(0, 0, 0, 0.3);
+
+      color: #f4ecd8;
+
+      font: ui-monospace, monospace;
+
+      font-size: 0.72rem;
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-rotate.tuner-box {
+
+      cursor: pointer;
+
+      z-index: 7;
+
+    }
+
+    .preview-v2-tuner-page .tz-preview-rotate.tuner-box .hit-label {
+
+      pointer-events: none;
 
     }
 
@@ -523,15 +665,59 @@
 
       <h2>Zones</h2>
 
+      <div class="tile-in-slot-panel" id="tileInSlotPanel">
+
+        <h3>Tile graphic in slot</h3>
+
+        <p style="margin:0 0 8px;font-size:0.62rem;color:#7a8a86">Live <strong>UT</strong> tile in the preview slot — use <strong>Rotate L / R</strong> on the plaque (same as in-game). Tuning applies to 0°/180° vs 90°/270° scale groups automatically.</p>
+
+        <p style="margin:0 0 8px;font-size:0.68rem;color:#8fd49a" id="previewTileDegReadout">UT at 0°</p>
+
+        <div class="rot-toggle">
+
+          <button type="button" class="btn" id="previewRotCcwBtn">↺ Rotate left</button>
+
+          <button type="button" class="btn" id="previewRotCwBtn">Rotate right ↻</button>
+
+        </div>
+
+        <div class="rot-toggle" style="margin-top:6px">
+
+          <button type="button" class="btn is-active" id="previewRot0Btn" data-deg="0">Snap 0°</button>
+
+          <button type="button" class="btn" id="previewRot90Btn" data-deg="90">Snap 90°</button>
+
+        </div>
+
+        <div class="tile-in-slot-grid">
+
+          <label>0°/180° width<input id="rot0ScaleW" type="number" min="0.3" max="2" step="0.01" /></label>
+
+          <label>0°/180° height<input id="rot0ScaleH" type="number" min="0.3" max="2" step="0.01" /></label>
+
+          <label>90°/270° width<input id="rot90ScaleW" type="number" min="0.3" max="2" step="0.01" /></label>
+
+          <label>90°/270° height<input id="rot90ScaleH" type="number" min="0.3" max="2" step="0.01" /></label>
+
+          <label>Offset X<input id="tileOffsetX" type="number" min="-40" max="40" step="1" /></label>
+
+          <label>Offset Y<input id="tileOffsetY" type="number" min="-40" max="40" step="1" /></label>
+
+        </div>
+
+      </div>
+
       <div class="field-grid" id="fieldGrid"></div>
 
       <p class="readout" id="readout">—</p>
 
-      <ul class="keys">
+      <ul class="keys" id="keysList">
 
         <li>Scroll — move X (art px) · Shift+scroll — move Y</li>
 
         <li>Ctrl+scroll — width · Alt+Ctrl+scroll — height</li>
+
+        <li><strong>Tile graphic</strong> selected: scroll = width · Alt+scroll = height · Rotate L/R on plaque (or sidebar) cycles UT tile</li>
 
         <li>Click a box on the preview to select it</li>
 
@@ -607,6 +793,8 @@
 
                 <time class="tz-preview-v2-game-data__date">Jun 16, 2026</time>
 
+                <span class="tz-preview-v2-game-data__adv-id">142</span>
+
                 <span class="tz-preview-v2-game-data__id">DC-2026-06-16</span>
 
               </div>
@@ -649,17 +837,19 @@
 
               <img class="tz-preview-renderer__stage" alt="" aria-hidden="true" draggable="false" />
 
+              <img id="mockPreviewTile" class="activeImg tuner-preview-tile" src="" alt="UT" draggable="false" />
+
               <span class="hit-label">Tile slot</span>
 
             </div>
 
-            <button type="button" class="tz-preview-rotate tz-preview-rotate--ccw tuner-box" data-item="rotateCcw">
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--ccw tuner-box" data-item="rotateCcw" id="mockRotateCcw" aria-label="Rotate tile left">
 
               <span class="hit-label">Rotate L</span>
 
             </button>
 
-            <button type="button" class="tz-preview-rotate tz-preview-rotate--cw tuner-box" data-item="rotateCw">
+            <button type="button" class="tz-preview-rotate tz-preview-rotate--cw tuner-box" data-item="rotateCw" id="mockRotateCw" aria-label="Rotate tile right">
 
               <span class="hit-label">Rotate R</span>
 
@@ -667,7 +857,7 @@
 
             <p class="tz-preview-tile__dir tuner-box" data-item="tileDir" aria-hidden="true">
 
-              <span class="hit-label">0°</span>
+              <span class="hit-label" id="mockTileDirLabel">0°</span>
 
             </p>
 
@@ -727,17 +917,29 @@
 
     } from './js/preview-v2-layout.js';
 
+    import {
+      applyPreviewTunerTileMock,
+      computePreviewTileDrawSize,
+      isPreviewTileVerticalDeg,
+      mergePreviewTileInSlot,
+      PREVIEW_TUNER_TILE,
+    } from './js/preview-tile-display.js';
+
 
 
     const POS_STEP = 2;
 
     const SIZE_STEP = 2;
 
+    const TILE_SCALE_STEP = 0.02;
+
 
 
     let workingLayout = mergePreviewV2Layout(null);
 
     let currentItem = 'gameData';
+
+    let previewTileDeg = 0;
 
 
 
@@ -762,6 +964,134 @@
       workingLayout.art = { ...workingLayout.art, ...patch };
 
       refresh();
+
+    }
+
+
+
+    function patchTileInSlot(patch) {
+
+      workingLayout.tileInSlot = { ...(workingLayout.tileInSlot || {}), ...patch };
+
+      refresh();
+
+    }
+
+
+
+    function activeTileScaleKeys() {
+
+      return isPreviewTileVerticalDeg(previewTileDeg)
+
+        ? { w: 'rot90ScaleW', h: 'rot90ScaleH', label: '90°/270°' }
+
+        : { w: 'rot0ScaleW', h: 'rot0ScaleH', label: '0°/180°' };
+
+    }
+
+
+
+    function rotatePreviewTile(delta) {
+
+      previewTileDeg = (((previewTileDeg + delta) % 360) + 360) % 360;
+
+      if (currentItem === 'tileInSlot') {
+
+        els.readout.innerHTML = formatTileInSlotReadout();
+
+      }
+
+      syncTileInSlotInputs();
+
+      void syncMockPreviewTile();
+
+    }
+
+
+
+    function formatTileInSlotReadout() {
+
+      const t = mergePreviewTileInSlot(workingLayout.tileInSlot);
+
+      const group = activeTileScaleKeys();
+
+      return `
+
+        <strong>Tile graphic in slot</strong><br />
+
+        ${PREVIEW_TUNER_TILE.replace(/\.png$/i, '')} at ${previewTileDeg}° · tuning ${group.label}<br />
+
+        width ${t[group.w]} · height ${t[group.h]}<br />
+
+        offset ${t.offsetX}px, ${t.offsetY}px
+
+      `;
+
+    }
+
+
+
+    function syncTileInSlotInputs() {
+
+      const t = mergePreviewTileInSlot(workingLayout.tileInSlot);
+
+      const set = (el, val) => {
+
+        if (el && document.activeElement !== el) el.value = String(val);
+
+      };
+
+      set(els.rot0ScaleW, t.rot0ScaleW);
+
+      set(els.rot0ScaleH, t.rot0ScaleH);
+
+      set(els.rot90ScaleW, t.rot90ScaleW);
+
+      set(els.rot90ScaleH, t.rot90ScaleH);
+
+      set(els.tileOffsetX, t.offsetX);
+
+      set(els.tileOffsetY, t.offsetY);
+
+      els.previewRot0Btn?.classList.toggle('is-active', !isPreviewTileVerticalDeg(previewTileDeg));
+
+      els.previewRot90Btn?.classList.toggle('is-active', isPreviewTileVerticalDeg(previewTileDeg));
+
+      if (els.previewTileDegReadout) {
+
+        els.previewTileDegReadout.textContent = `${PREVIEW_TUNER_TILE.replace(/\.png$/i, '')} at ${previewTileDeg}° · tuning ${activeTileScaleKeys().label}`;
+
+      }
+
+    }
+
+
+
+    async function syncMockPreviewTile() {
+
+      const pad = document.querySelector('.preview-v2-tuner-page .tz-preview-renderer.activePad');
+
+      const img = document.getElementById('mockPreviewTile');
+
+      const dirLabel = document.getElementById('mockTileDirLabel');
+
+      if (!pad || !img) return;
+
+      await applyPreviewTunerTileMock({
+
+        imgEl: img,
+
+        padEl: pad,
+
+        deg: previewTileDeg,
+
+        tileInSlot: workingLayout.tileInSlot,
+
+        tileName: PREVIEW_TUNER_TILE,
+
+        dirLabelEl: dirLabel,
+
+      });
 
     }
 
@@ -875,9 +1205,13 @@
 
 
 
+    function previewLayoutRoot() {
+      return document.querySelector('.preview-v2-tuner-page') || document.documentElement;
+    }
+
     function refresh() {
 
-      applyPreviewV2Layout(workingLayout, document.documentElement);
+      applyPreviewV2Layout(workingLayout, previewLayoutRoot());
 
       els.artFrame.value = workingLayout.art?.frame || '';
 
@@ -885,19 +1219,29 @@
 
       els.artRendererStageWidth.value = String(workingLayout.art?.rendererStageWidthScale ?? 0.9);
 
-      const box = getPreviewV2ItemLayout(currentItem, workingLayout);
+      syncTileInSlotInputs();
 
-      const def = PREVIEW_V2_ITEM_DEFS[currentItem];
+      if (currentItem === 'tileInSlot') {
 
-      els.readout.innerHTML = `
+        els.readout.innerHTML = formatTileInSlotReadout();
 
-        <strong>${def?.label || currentItem}</strong><br />
+      } else {
 
-        x: ${box.x} · y: ${box.y}<br />
+        const box = getPreviewV2ItemLayout(currentItem, workingLayout);
 
-        w: ${box.w} · h: ${box.h} (art px on 390×259)
+        const def = PREVIEW_V2_ITEM_DEFS[currentItem];
 
-      `;
+        els.readout.innerHTML = `
+
+          <strong>${def?.label || currentItem}</strong><br />
+
+          x: ${box.x} · y: ${box.y}<br />
+
+          w: ${box.w} · h: ${box.h} (art px on 390×259)
+
+        `;
+
+      }
 
       els.jsonOut.value = exportJson();
 
@@ -906,6 +1250,10 @@
       stashPreviewV2LayoutDraft(workingLayout);
 
       refreshFieldGrid();
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { void syncMockPreviewTile(); });
+      });
 
       scheduleSave();
 
@@ -918,6 +1266,38 @@
       e.preventDefault();
 
       const dir = e.deltaY < 0 ? 1 : -1;
+
+
+
+      if (currentItem === 'tileInSlot') {
+
+        const keys = activeTileScaleKeys();
+
+        const t = mergePreviewTileInSlot(workingLayout.tileInSlot);
+
+        if (e.altKey) {
+
+          patchTileInSlot({
+
+            [keys.h]: Math.max(0.3, Math.min(2, Number((t[keys.h] + dir * TILE_SCALE_STEP).toFixed(3)))),
+
+          });
+
+        } else {
+
+          patchTileInSlot({
+
+            [keys.w]: Math.max(0.3, Math.min(2, Number((t[keys.w] + dir * TILE_SCALE_STEP).toFixed(3)))),
+
+          });
+
+        }
+
+        return;
+
+      }
+
+
 
       const box = getPreviewV2ItemLayout(currentItem, workingLayout);
 
@@ -955,17 +1335,51 @@
 
     function wireTunerBox(box) {
 
+      const item = box.dataset.item;
+
+      if (item === 'rotateCcw' || item === 'rotateCw') return;
+
       box.addEventListener('pointerdown', (ev) => {
 
         ev.preventDefault();
 
-        currentItem = box.dataset.item;
+        currentItem = item;
 
         refresh();
 
         els.mockStage.focus();
 
       });
+
+    }
+
+
+
+    function wirePreviewTileRotateButtons() {
+
+      const wire = (el, delta) => {
+
+        el?.addEventListener('click', (ev) => {
+
+          ev.preventDefault();
+
+          ev.stopPropagation();
+
+          rotatePreviewTile(delta);
+
+          els.mockStage?.focus({ preventScroll: true });
+
+        });
+
+      };
+
+      wire(document.getElementById('mockRotateCcw'), -90);
+
+      wire(document.getElementById('mockRotateCw'), 90);
+
+      wire(els.previewRotCcwBtn, -90);
+
+      wire(els.previewRotCwBtn, 90);
 
     }
 
@@ -991,6 +1405,76 @@
 
       els.artRendererStageWidth = document.getElementById('artRendererStageWidth');
 
+      els.rot0ScaleW = document.getElementById('rot0ScaleW');
+
+      els.rot0ScaleH = document.getElementById('rot0ScaleH');
+
+      els.rot90ScaleW = document.getElementById('rot90ScaleW');
+
+      els.rot90ScaleH = document.getElementById('rot90ScaleH');
+
+      els.tileOffsetX = document.getElementById('tileOffsetX');
+
+      els.tileOffsetY = document.getElementById('tileOffsetY');
+
+      els.previewRot0Btn = document.getElementById('previewRot0Btn');
+
+      els.previewRot90Btn = document.getElementById('previewRot90Btn');
+
+      els.previewRotCcwBtn = document.getElementById('previewRotCcwBtn');
+
+      els.previewRotCwBtn = document.getElementById('previewRotCwBtn');
+
+      els.previewTileDegReadout = document.getElementById('previewTileDegReadout');
+
+
+
+      const onTileInSlotInputChange = () => {
+
+        patchTileInSlot({
+
+          rot0ScaleW: parseFloat(els.rot0ScaleW?.value) || 0.96,
+
+          rot0ScaleH: parseFloat(els.rot0ScaleH?.value) || 0.96,
+
+          rot90ScaleW: parseFloat(els.rot90ScaleW?.value) || 0.96,
+
+          rot90ScaleH: parseFloat(els.rot90ScaleH?.value) || 0.96,
+
+          offsetX: parseInt(els.tileOffsetX?.value, 10) || 0,
+
+          offsetY: parseInt(els.tileOffsetY?.value, 10) || 0,
+
+        });
+
+      };
+
+      for (const id of ['rot0ScaleW', 'rot0ScaleH', 'rot90ScaleW', 'rot90ScaleH', 'tileOffsetX', 'tileOffsetY']) {
+
+        document.getElementById(id)?.addEventListener('change', onTileInSlotInputChange);
+
+      }
+
+      els.previewRot0Btn?.addEventListener('click', () => {
+
+        previewTileDeg = 0;
+
+        refresh();
+
+      });
+
+      els.previewRot90Btn?.addEventListener('click', () => {
+
+        previewTileDeg = 90;
+
+        refresh();
+
+      });
+
+
+
+      wirePreviewTileRotateButtons();
+
 
 
       for (const [key, def] of Object.entries(PREVIEW_V2_ITEM_DEFS)) {
@@ -1010,6 +1494,22 @@
         els.fieldGrid.appendChild(btn);
 
       }
+
+
+
+      const tileGraphicBtn = document.createElement('button');
+
+      tileGraphicBtn.type = 'button';
+
+      tileGraphicBtn.className = 'field-btn';
+
+      tileGraphicBtn.dataset.item = 'tileInSlot';
+
+      tileGraphicBtn.textContent = 'Tile graphic';
+
+      tileGraphicBtn.addEventListener('click', () => { currentItem = 'tileInSlot'; refresh(); });
+
+      els.fieldGrid.appendChild(tileGraphicBtn);
 
 
 

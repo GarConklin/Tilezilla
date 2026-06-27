@@ -190,6 +190,7 @@
             <div class="tz-preview-v2-data tz-preview-v2-game-data" aria-label="Game data" role="button" tabindex="0">
               <span class="tz-preview-v2-game-data__type tz-preview-v2-game-data__item tz-preview-v2-game-data__item--type" id="previewV2GameType">Daily Challenge</span>
               <time class="tz-preview-v2-game-data__date tz-preview-v2-game-data__item tz-preview-v2-game-data__item--date" id="previewV2GameDate" datetime="">—</time>
+              <span class="tz-preview-v2-game-data__adv-id tz-preview-v2-game-data__item tz-preview-v2-game-data__item--adv-id" id="previewV2AdvId" hidden>—</span>
               <span class="tz-preview-v2-game-data__id tz-preview-v2-game-data__item tz-preview-v2-game-data__item--id" id="previewV2PuzzleId">—</span>
             </div>
             <div class="tz-preview-v2-data tz-preview-v2-info-data" aria-label="Puzzle info">
@@ -405,8 +406,8 @@
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--random" src="/img/BMB-3H.png" alt="" width="325" height="274" aria-hidden="true" />
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--library" src="/img/BMB-4H.png" alt="" width="326" height="274" aria-hidden="true" />
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--profile" src="/img/BMB-5H.png" alt="" width="354" height="274" aria-hidden="true" />
-                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" data-nav="adventure" aria-label="Adventure"></button>
-                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" data-nav="daily-challenge" aria-current="page" aria-label="Daily Challenge"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure tz-bottom-nav__hit--active" data-nav="daily-challenge" aria-current="page" aria-label="Daily Challenge"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge" data-nav="adventure" aria-label="Adventure"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" data-nav="random" aria-label="Random Puzzle"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" data-nav="library" aria-label="Puzzle Library"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" data-nav="profile" aria-label="Profile"></button>
@@ -670,20 +671,10 @@
         />
         <p class="tz-profile-dialog__name" id="profileOverlayName" data-profile-slot="profileName">Explorer</p>
         <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
-          <img
-            class="auth-screen__profile-rank-badge"
-            data-profile-slot="rankBadge"
-            id="profileOverlayRankBadge"
-            src="/img/ranks/Wanderer.png"
-            alt=""
-          />
-          <img
-            class="auth-screen__profile-rank-sublevel tz-rank-sublevel__img"
-            data-profile-slot="sublevelIcon"
-            id="profileOverlaySublevelIcon"
-            src="/img/ranks/gld-1.png"
-            alt=""
-          />
+          <div class="tz-preview-v2-user-data__badge-stack">
+            <img class="tz-preview-v2-user-data__badge" id="profileOverlayRankBadge" alt="" />
+          </div>
+          <img class="tz-preview-v2-user-data__sublevel" id="profileOverlaySublevelIcon" alt="" />
         </div>
         <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileOverlayAdventureProgress">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileOverlayRoutes">—</p>
@@ -691,13 +682,16 @@
         <p class="auth-screen__profile-stat" data-profile-slot="memberSince" id="profileOverlayMemberSince">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="passportId" id="profileOverlayPassportId">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="explorersRegistered" id="profileOverlayExplorers">—</p>
+        <p class="auth-screen__profile-stat" data-profile-slot="totalAdventurePuzzles" id="profileOverlayTotalAdventurePuzzles">—</p>
+        <p class="auth-screen__profile-stat" data-profile-slot="totalKnownRoutes" id="profileOverlayTotalKnownRoutes">—</p>
+        <p class="auth-screen__profile-stat" data-profile-slot="largestSolution" id="profileOverlayLargestSolution">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="todaysChallenge" id="profileOverlayTodaysChallenge">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="recentPuzzleSolved" id="profileOverlayRecentPuzzle">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="recentDailyCompleted" id="profileOverlayRecentDaily">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="mostSolvedPuzzle" id="profileOverlayMostSolved">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="latestDiscovery" id="profileOverlayLatestDiscovery">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="totalPlayTime" id="profileOverlayPlayTime">—</p>
-        <p class="tz-profile-dialog__guest-note" id="profileOverlayGuestNote" hidden>Playing as guest</p>
+        <p class="tz-profile-dialog__guest-note" id="profileOverlayGuestNote" data-profile-slot="guestNote" hidden>Playing as guest</p>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-daily" id="profileOverlayNavDaily" aria-label="Daily Challenge"></button>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-adventure" id="profileOverlayNavAdventure" aria-label="Adventure Path"></button>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-random" id="profileOverlayNavRandom" aria-label="Random Puzzle"></button>
@@ -790,11 +784,6 @@
                 <h3 class="tz-journal-selector__title">Puzzle Type</h3>
                 <div class="tz-journal-selector__btns" id="journalTypeFilters"></div>
               </div>
-              <div class="tz-journal-selector tz-journal-field--selector-status">
-                <h3 class="tz-journal-selector__title">Status</h3>
-                <div class="tz-journal-selector__btns" id="journalStatusFilters"></div>
-                <button type="button" class="tz-journal-show-btn" id="journalShowPuzzlesBtn">Show Puzzles</button>
-              </div>
             </div>
           </div>
         </div>
@@ -841,6 +830,9 @@
         <button type="button" class="tz-journal-hit tz-journal-field--btn-prev" id="journalBtnPrev" aria-label="Previous"></button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-next" id="journalBtnNext" aria-label="Next"></button>
         <button type="button" class="tz-journal-hit tz-journal-field--btn-exit" id="journalBtnExit" aria-label="Exit"></button>
+        <button type="button" class="tz-journal-hit tz-journal-field--btn-library-back" id="journalBtnLibraryBack" hidden aria-label="Back to recorded puzzles">
+          <img src="/img/BAck-gold-rnd-btn.png" alt="" />
+        </button>
 
         <div class="tz-journal-revisit" id="journalLoadConfirm" hidden>
           <button type="button" class="tz-journal-revisit__backdrop" id="journalRevisitBackdrop" aria-label="Cancel revisit"></button>
@@ -1104,7 +1096,7 @@
       window.location.replace('/');
     }
   </script>
-  <script type="module" src="js/app_v16.js"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js"></script>
+  <script type="module" src="js/app_v16.js?v=20250627b"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20250627e"></script>
 </body>
 </html>

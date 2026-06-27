@@ -91,6 +91,9 @@ export const JOURNAL_ITEM_DEFS = {
   listScroller: { cssKey: 'list-scroller', kind: 'scroller', label: 'List scroll bar (track + pin)' },
   listContent: { cssKey: 'list-content', kind: 'listArea', label: 'List content area (puzzles / solutions)' },
   listRow: { cssKey: 'list-row', kind: 'list', label: 'List row size (solutions & puzzles)' },
+  listRowMain: { cssKey: 'list-row-main', kind: 'listPart', label: 'List row — puzzle ID' },
+  listRowDetail: { cssKey: 'list-row-detail', kind: 'listPart', label: 'List row — Adv_ID / release date' },
+  listRowSub: { cssKey: 'list-row-sub', kind: 'listPart', label: 'List row — progress / stats line' },
   fieldPuzzleId: { cssKey: 'field-id', kind: 'text', label: 'Puzzle ID' },
   fieldPuzzleType: { cssKey: 'field-type', kind: 'text', label: 'Puzzle Type' },
   fieldBoardSize: { cssKey: 'field-size', kind: 'text', label: 'Board Size' },
@@ -113,6 +116,7 @@ export const JOURNAL_ITEM_DEFS = {
   btnPrev: { cssKey: 'btn-prev', kind: 'btn', label: 'Bottom — Prev' },
   btnNext: { cssKey: 'btn-next', kind: 'btn', label: 'Bottom — Next' },
   btnExit: { cssKey: 'btn-exit', kind: 'btn', label: 'Bottom — Exit' },
+  btnLibraryBack: { cssKey: 'btn-library-back', kind: 'btn', label: 'Library back (filter → puzzle)' },
 };
 
 /** Canonical puzzle-record journal layout — game + tuner share this via journal_layout.json. */
@@ -124,6 +128,9 @@ export const RECORD_PUZZLE_JOURNAL_ITEMS = {
     space: 'pane', x: 0, y: 2, h: 96, trackScale: 0.34, pinScale: 0.66, nudgeX: 1, nudgeY: 10,
   },
   listRow: { fontScale: 0.62, padX: 4, padY: 2, gap: 1 },
+  listRowMain: { fontScale: 1 },
+  listRowDetail: { fontScale: 0.92 },
+  listRowSub: { fontScale: 1 },
   fieldBoardSize: { x: 10, y: 7, w: 13, h: 5, nudgeX: 0, nudgeY: 0 },
   fieldPuzzleId: { x: 23, y: 7, w: 48, h: 5, nudgeX: 14, nudgeY: 0 },
   fieldPuzzleType: { x: 10, y: 14, w: 28, h: 5, nudgeX: 0, nudgeY: 0 },
@@ -165,6 +172,9 @@ const DEFAULT_ITEMS = {
     space: 'pane', x: 10, y: 12, w: 88, h: 86, nudgeX: 0, nudgeY: 0,
   },
   listRow: { fontScale: 1, padX: 8, padY: 6, gap: 4 },
+  listRowMain: { fontScale: 1 },
+  listRowDetail: { fontScale: 0.92 },
+  listRowSub: { fontScale: 1 },
   fieldPuzzleId: { x: 12, y: 7, w: 76, h: 4.5, nudgeX: 0, nudgeY: 0 },
   fieldPuzzleType: { x: 12, y: 11.5, w: 76, h: 4.5, nudgeX: 0, nudgeY: 0 },
   fieldBoardSize: { x: 12, y: 16, w: 76, h: 4.5, nudgeX: 0, nudgeY: 0 },
@@ -191,6 +201,7 @@ const DEFAULT_ITEMS = {
   btnPrev: { x: 42, y: 88, w: 14, h: 5, nudgeX: 0, nudgeY: 0 },
   btnNext: { x: 58, y: 88, w: 14, h: 5, nudgeX: 0, nudgeY: 0 },
   btnExit: { x: 76, y: 88, w: 14, h: 5, nudgeX: 0, nudgeY: 0 },
+  btnLibraryBack: { x: 94, y: 88, w: 9, h: 5.5, nudgeX: 8, nudgeY: 26 },
 };
 
 export const DEFAULT_JOURNAL_LAYOUT = {
@@ -587,6 +598,15 @@ function applyPaneOrBtn(target, cssKey, item) {
   target.style.setProperty(varName(cssKey, 'nudge-y'), `${item.nudgeY ?? 0}px`);
 }
 
+function applyItemFontScaleVars(target, cssKey, item, kind) {
+  if (kind === 'text') {
+    target.style.setProperty(varName(cssKey, 'label-font-scale'), String(item.labelFontScale ?? 1));
+    target.style.setProperty(varName(cssKey, 'value-font-scale'), String(item.valueFontScale ?? 1));
+  } else if (kind === 'titleBarChild') {
+    target.style.setProperty(varName(cssKey, 'font-scale'), String(item.fontScale ?? 1));
+  }
+}
+
 export function applyJournalLayout(layout, target = document.documentElement) {
   const merged = mergeJournalLayout(layout);
   const d = merged.dialog || DEFAULT_JOURNAL_LAYOUT.dialog;
@@ -637,6 +657,7 @@ export function applyJournalLayout(layout, target = document.documentElement) {
       target.style.setProperty(varName(cssKey, 'h'), String(area.h ?? 100));
       target.style.setProperty(varName(cssKey, 'nudge-x'), `${area.nudgeX ?? 0}px`);
       target.style.setProperty(varName(cssKey, 'nudge-y'), `${area.nudgeY ?? 0}px`);
+      applyItemFontScaleVars(target, cssKey, item, kind);
       continue;
     }
 
@@ -659,7 +680,15 @@ export function applyJournalLayout(layout, target = document.documentElement) {
       continue;
     }
 
+    if (kind === 'listPart') {
+      target.style.setProperty(varName(cssKey, 'font-scale'), String(item.fontScale ?? 1));
+      continue;
+    }
+
     applyPaneOrBtn(target, cssKey, item);
+    if (kind === 'text') {
+      applyItemFontScaleVars(target, cssKey, item, kind);
+    }
   }
 }
 
@@ -884,10 +913,21 @@ export function buildJournalLayoutReport(layout) {
       );
       continue;
     }
+    if (def.kind === 'listPart') {
+      lines.push(`${def.label}: fontScale ${item.fontScale ?? 1}`);
+      continue;
+    }
     const parts = [`x:${item.x}%`, `y:${item.y}%`, `w:${item.w}%`];
     if (item.h != null) parts.push(`h:${item.h}%`);
     if (item.nudgeX) parts.push(`nudgeX:${item.nudgeX}px`);
     if (item.nudgeY) parts.push(`nudgeY:${item.nudgeY}px`);
+    if (def.kind === 'text') {
+      parts.push(`labelFontScale:${item.labelFontScale ?? 1}`);
+      parts.push(`valueFontScale:${item.valueFontScale ?? 1}`);
+    }
+    if (def.kind === 'titleBarChild' && (item.fontScale ?? 1) !== 1) {
+      parts.push(`fontScale:${item.fontScale}`);
+    }
     lines.push(`${def.label}: ${parts.join(' · ')}`);
   }
   return lines.join('\n');

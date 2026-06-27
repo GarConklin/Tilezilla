@@ -137,6 +137,34 @@
       cursor: pointer;
     }
     .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    .font-tuning-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(196, 163, 90, 0.25);
+    }
+    .font-tuning-panel[hidden] { display: none !important; }
+    .font-tuning-panel label {
+      font-size: 0.62rem;
+      color: #a8b8b4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .font-tuning-panel input {
+      width: 100%;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.72rem;
+    }
     #jsonOut, #reportOut {
       width: 100%;
       min-height: 100px;
@@ -391,12 +419,26 @@
     .journal-tuner-page #mockJournalFrame > .tz-journal-hit,
     .journal-tuner-page #mockJournalContent .tz-journal-hit,
     .journal-tuner-page #mockJournalContent .tz-journal-pane-title,
+    .journal-tuner-page #mockJournalContent .tz-journal-list-title-bar,
     .journal-tuner-page #mockJournalContent .tz-journal-field--preview,
     .journal-tuner-page #mockJournalContent .tz-journal-list-scroller {
       pointer-events: auto;
     }
     .journal-tuner-page #mockList.is-list-row-tuning .tz-journal-list__row {
       outline: 1px dashed #e8b923;
+      outline-offset: 1px;
+    }
+    .journal-tuner-page #mockList.is-list-row-main-tuning .tz-journal-list__row-id,
+    .journal-tuner-page #mockList.is-list-row-main-tuning .tz-journal-list__row-main:not(:has(.tz-journal-list__row-id)) {
+      outline: 1px dashed #e8b923;
+      outline-offset: 1px;
+    }
+    .journal-tuner-page #mockList.is-list-row-detail-tuning .tz-journal-list__row-detail {
+      outline: 1px dashed #7ec8ff;
+      outline-offset: 1px;
+    }
+    .journal-tuner-page #mockList.is-list-row-sub-tuning .tz-journal-list__row-sub {
+      outline: 1px dashed #b4e888;
       outline-offset: 1px;
     }
     .journal-tuner-page .tz-journal-hit .tz-journal-tab__art {
@@ -407,6 +449,9 @@
       object-position: right center;
     }
     .journal-tuner-page .tz-journal-hit:has(.tz-journal-tab__art[src]) .tuner-hit-label {
+      display: none;
+    }
+    .journal-tuner-page .tz-journal-field--btn-library-back:has(img[src]) .tuner-hit-label {
       display: none;
     }
     .journal-tuner-page .tz-journal-hit .tuner-hit-label {
@@ -450,7 +495,7 @@
       border-color: #e8b923;
       background: rgba(232, 185, 35, 0.25);
     }
-    .journal-tuner-page [data-tuner-item].is-tuner-active:not(.tz-journal-list-scroller):not(.tz-journal-field--preview):not(.tz-journal-list-scroll) {
+    .journal-tuner-page [data-tuner-item].is-tuner-active:not(.tz-journal-list-scroller):not(.tz-journal-field--preview):not(.tz-journal-list-scroll):not(.tz-journal-list-title-bar):not(.tz-journal-field--title-found):not(.tz-journal-field--title-recorded) {
       outline: 2px solid rgba(100, 200, 255, 0.85);
       outline-offset: 1px;
     }
@@ -553,6 +598,42 @@
     .journal-tuner-page .tz-journal-list-scroll.is-list-content-tuning .tuner-list-content-handle {
       display: block;
     }
+    .journal-tuner-page .tz-journal-list-title-bar.is-title-bar-tuning,
+    .journal-tuner-page .tz-journal-field--title-found.is-title-child-tuning,
+    .journal-tuner-page .tz-journal-field--title-recorded.is-title-child-tuning {
+      outline: 2px dashed #e8b923;
+      outline-offset: 2px;
+      z-index: 25;
+      cursor: move;
+      box-shadow: 0 0 0 4px rgba(232, 185, 35, 0.12);
+      pointer-events: auto !important;
+    }
+    .journal-tuner-page .tz-journal-list-title-bar .tuner-title-bar-tag,
+    .journal-tuner-page .tz-journal-pane-title .tuner-title-tag,
+    .journal-tuner-page .tz-journal-list-title-bar .tuner-title-handle,
+    .journal-tuner-page .tz-journal-pane-title .tuner-title-handle {
+      display: none;
+    }
+    .journal-tuner-page .tz-journal-list-title-bar.is-title-bar-tuning .tuner-title-bar-tag,
+    .journal-tuner-page .tz-journal-field--title-found.is-title-child-tuning .tuner-title-tag,
+    .journal-tuner-page .tz-journal-field--title-recorded.is-title-child-tuning .tuner-title-tag {
+      display: block;
+      position: absolute;
+      top: -12px;
+      left: 0;
+      padding: 1px 5px;
+      font-size: 8px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.72);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .journal-tuner-page .tz-journal-list-title-bar.is-title-bar-tuning .tuner-title-handle,
+    .journal-tuner-page .tz-journal-field--title-found.is-title-child-tuning .tuner-title-handle,
+    .journal-tuner-page .tz-journal-field--title-recorded.is-title-child-tuning .tuner-title-handle {
+      display: block;
+    }
     .overlay-path-grid {
       display: flex;
       flex-direction: column;
@@ -616,6 +697,8 @@
       <p style="margin:0 0 10px;font-size:0.68rem;color:#a8b8b4;line-height:1.45">
         Mode keys match <a href="/discovery-record-tuner.html">discovery record tuner</a> — no Ctrl+Alt+wheel combos.
         Click preview first. Yellow boxes = pane/hit areas; scroll bar and solution preview tune the real elements (drag or M/W/H).
+        <strong>F Font</strong> mode (or inputs below) adjusts each text field’s label + value size — saved to <code>journal_layout.json</code> and applied in the live game.
+        Click <strong>Your Found Solutions</strong> / <strong>Recorded Puzzles</strong> in the preview to tune title position and font (Library mode for Recorded Puzzles).
         <strong>Switch to Library mode</strong> before tuning the puzzle list — Record and Library share the lower-left pane but show different titles.
       </p>
       <div class="field-grid" id="fieldGrid">
@@ -638,13 +721,16 @@
         <button type="button" class="field-btn" data-item="titleRecordedPuzzles">Title — Recorded Puzzles</button>
         <button type="button" class="field-btn" data-item="listContent">List content area (puzzles / solutions)</button>
         <button type="button" class="field-btn" data-item="listRow">List row size (solutions &amp; puzzles)</button>
+        <button type="button" class="field-btn" data-item="listRowMain">List row — puzzle ID</button>
+        <button type="button" class="field-btn" data-item="listRowSub">List row — progress / stats line</button>
         <button type="button" class="field-btn" data-item="listScroller">List scroll bar (track + pin)</button>
         <button type="button" class="field-btn" data-item="solutionPreview">Solution preview canvas</button>
         <button type="button" class="field-btn" data-item="btnBeginSearch">Begin Search button</button>
         <div class="field-grid-section" data-mode="library">Library filters</div>
         <button type="button" class="field-btn" data-item="selectorBoardSize">Library — board size area</button>
         <button type="button" class="field-btn" data-item="selectorPuzzleType">Library — puzzle type area</button>
-        <button type="button" class="field-btn" data-item="selectorStatus">Library — status filter area</button>
+        <div class="field-grid-section" data-mode="library">Library — recorded puzzles list text</div>
+        <button type="button" class="field-btn" data-item="listRowDetail">List row — Adv_ID / release date</button>
         <div class="field-grid-section" data-mode="shared">Tabs &amp; bottom buttons</div>
         <button type="button" class="field-btn" data-item="tabPuzzle">Tab — Puzzle</button>
         <button type="button" class="field-btn" data-item="tabStats">Tab — Stats</button>
@@ -655,6 +741,7 @@
         <button type="button" class="field-btn" data-item="btnPrev">Bottom — Prev</button>
         <button type="button" class="field-btn" data-item="btnNext">Bottom — Next</button>
         <button type="button" class="field-btn" data-item="btnExit">Bottom — Exit</button>
+        <button type="button" class="field-btn" data-item="btnLibraryBack">Library back (filter → puzzle)</button>
       </div>
       <div class="mode-bar" id="modeBar">
         <span class="mode-badge" id="modeBadge" data-mode="move">[MOVE]</span>
@@ -662,8 +749,17 @@
         <button type="button" class="mode-btn" data-mode="width" title="Width (W)">W Width</button>
         <button type="button" class="mode-btn" data-mode="height" title="Height (H)">H Height</button>
         <button type="button" class="mode-btn" data-mode="pin" title="Scroll pin size (I)">I Pin</button>
+        <button type="button" class="mode-btn" data-mode="font" title="Font scale (F)">F Font</button>
         <button type="button" class="mode-btn" data-mode="dialog" title="Dialog (P)">P Dialog</button>
         <p class="mode-hint" id="modeHint">Drag yellow box to move · Arrows = position · Shift+arrows = nudge px</p>
+      </div>
+      <div class="font-tuning-panel" id="fontTuningPanel" hidden>
+        <label>Value / title font scale
+          <input id="fontValueScaleInput" type="number" min="0.5" max="2.5" step="0.05" title="Scales the value (dd), list row text, or pane title" />
+        </label>
+        <label id="fontLabelScaleWrap">Label font scale (dt)
+          <input id="fontLabelScaleInput" type="number" min="0.5" max="2.5" step="0.05" title="Scales the field label (dt) on record-page stats" />
+        </label>
       </div>
       <p class="readout" id="readout">—</p>
       <ul class="keys" id="keysList"></ul>
@@ -763,23 +859,30 @@
                             <button type="button" class="tz-journal-filter-btn">Random</button>
                           </div>
                         </div>
-                        <div class="tz-journal-selector tz-journal-field--selector-status" data-tuner-item="selectorStatus">
-                          <h3 class="tz-journal-selector__title">Status</h3>
-                          <div class="tz-journal-selector__btns">
-                            <button type="button" class="tz-journal-filter-btn is-active">All</button>
-                            <button type="button" class="tz-journal-filter-btn">Started</button>
-                            <button type="button" class="tz-journal-filter-btn">Complete</button>
-                          </div>
-                          <button type="button" class="tz-journal-show-btn">Show Puzzles</button>
-                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div class="tz-journal-pane tz-journal-pane--bl" data-tuner-item="paneBottomLeft">
                     <div class="tz-journal-list-title-bar" id="mockListTitleBar" data-tuner-item="listTitleBar">
-                      <p class="tz-journal-pane-title tz-journal-field--title-found" id="mockTitleFound" data-tuner-item="titleFoundSolutions">Your Found Solutions</p>
-                      <p class="tz-journal-pane-title tz-journal-field--title-recorded" id="mockTitleRecorded" data-tuner-item="titleRecordedPuzzles" hidden>Recorded Puzzles</p>
+                      <span class="tuner-title-bar-tag">List title bar — % inside lower-left pane</span>
+                      <span class="tuner-overlay__resize-e tuner-title-handle" data-resize="w" title="Drag to change width"></span>
+                      <span class="tuner-overlay__resize-s tuner-title-handle" data-resize="h" title="Drag to change height"></span>
+                      <span class="tuner-overlay__resize-se tuner-title-handle" data-resize="wh" title="Drag width and height"></span>
+                      <p class="tz-journal-pane-title tz-journal-field--title-found" id="mockTitleFound" data-tuner-item="titleFoundSolutions">
+                        <span class="tuner-title-tag">Title — Found Solutions</span>
+                        Your Found Solutions
+                        <span class="tuner-overlay__resize-e tuner-title-handle" data-resize="w" title="Drag to change width"></span>
+                        <span class="tuner-overlay__resize-s tuner-title-handle" data-resize="h" title="Drag to change height"></span>
+                        <span class="tuner-overlay__resize-se tuner-title-handle" data-resize="wh" title="Drag width and height"></span>
+                      </p>
+                      <p class="tz-journal-pane-title tz-journal-field--title-recorded" id="mockTitleRecorded" data-tuner-item="titleRecordedPuzzles" hidden>
+                        <span class="tuner-title-tag">Title — Recorded Puzzles</span>
+                        Recorded Puzzles
+                        <span class="tuner-overlay__resize-e tuner-title-handle" data-resize="w" title="Drag to change width"></span>
+                        <span class="tuner-overlay__resize-s tuner-title-handle" data-resize="h" title="Drag to change height"></span>
+                        <span class="tuner-overlay__resize-se tuner-title-handle" data-resize="wh" title="Drag width and height"></span>
+                      </p>
                     </div>
                     <div class="tz-journal-list-scroll" id="mockListScroll" data-tuner-item="listContent">
                       <span class="tuner-list-content-tag">List content — % inside lower-left pane</span>
@@ -848,6 +951,10 @@
                 <button type="button" class="tz-journal-hit tz-journal-field--btn-prev" data-tuner-item="btnPrev" aria-label="Previous"><span class="tuner-hit-label">PREV</span></button>
                 <button type="button" class="tz-journal-hit tz-journal-field--btn-next" data-tuner-item="btnNext" aria-label="Next"><span class="tuner-hit-label">NEXT</span></button>
                 <button type="button" class="tz-journal-hit tz-journal-field--btn-exit" data-tuner-item="btnExit" aria-label="Exit"><span class="tuner-hit-label">EXIT</span></button>
+                <button type="button" class="tz-journal-hit tz-journal-field--btn-library-back" data-tuner-item="btnLibraryBack" aria-label="Back to recorded puzzles">
+                  <img src="/img/BAck-gold-rnd-btn.png" alt="" />
+                  <span class="tuner-hit-label">BACK</span>
+                </button>
 
                 <div id="tunerOverlayLayer"></div>
               </div>

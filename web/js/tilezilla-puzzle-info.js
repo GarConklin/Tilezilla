@@ -246,7 +246,7 @@ function openPuzzleInfoPopup() {
 
 
 
-function closePuzzleInfoPopup() {
+export function closePuzzleInfoPopup() {
 
   const root = $('puzzleInfoRoot');
 
@@ -265,6 +265,12 @@ function closePuzzleInfoPopup() {
     && $('settingsRoot')?.hidden !== false
 
     && $('hintMenuRoot')?.hidden !== false
+
+    && $('hintRulesRoot')?.hidden !== false
+
+    && $('journalRoot')?.hidden !== false
+
+    && $('profileOverlayRoot')?.hidden !== false
 
     && $('stuckPopupRoot')?.hidden !== false
 
@@ -320,7 +326,7 @@ export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu, journalAp
     }
     const levelId = getApp()?.state?.currentLevel?.id;
     closePuzzleInfoPopup();
-    journalApi?.openJournal?.({ mode: 'record', levelId });
+    journalApi?.openJournal?.({ mode: 'record', levelId, resumeGameOnClose: true, resumeLevelId: levelId });
   });
 
   $('puzzleInfoBackdrop')?.addEventListener('click', closePuzzleInfoPopup);

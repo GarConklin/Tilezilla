@@ -2,6 +2,8 @@
  * Puzzle Journal data — aggregates progress + level catalog for record/library views.
  */
 
+import { loadAdventurePath, normalizeCatalogLevelId } from './adventure-path.js';
+
 const CHALLENGE_LABELS = {
   'daily-challenge': 'Daily Challenge',
   adventure: 'Adventure',
@@ -35,6 +37,102 @@ function formatDate(iso) {
   } catch {
     return '—';
   }
+}
+
+function parseDailyCsvDate(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return null;
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (slash) {
+    return `${slash[3]}-${slash[1].padStart(2, '0')}-${slash[2].padStart(2, '0')}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return null;
+}
+
+function formatChallengeDate(raw) {
+  if (!raw) return null;
+  const iso = parseDailyCsvDate(raw) || raw;
+  const formatted = formatDate(iso);
+  return formatted === '—' ? null : formatted;
+}
+
+let dailyReleaseByLevelId = null;
+let adventurePathCache = null;
+let advIdByLevelIdCache = null;
+
+function parseDailyCsv(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const byLevel = new Map();
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const [challenge_date, level_id] = line.split(',');
+    const levelId = normalizeCatalogLevelId(level_id);
+    const date = challenge_date?.trim();
+    if (!levelId || !date || byLevel.has(levelId)) continue;
+    byLevel.set(levelId, date);
+  }
+  return byLevel;
+}
+
+function buildAdvIdByLevelId(path) {
+  const map = new Map();
+  const add = (puzzle) => {
+    if (!puzzle?.levelId || puzzle.advId == null) return;
+    const key = normalizeCatalogLevelId(puzzle.levelId);
+    if (key) map.set(key, puzzle.advId);
+  };
+  for (const puzzle of path?.flat || []) add(puzzle);
+  for (const puzzle of path?.postgame || []) add(puzzle);
+  return map;
+}
+
+async function loadLibraryLookups() {
+  if (!dailyReleaseByLevelId) {
+    dailyReleaseByLevelId = new Map();
+    try {
+      const csv = await fetch('/data/daily_challenges_import.csv').then((r) => r.text());
+      dailyReleaseByLevelId = parseDailyCsv(csv);
+    } catch {
+      dailyReleaseByLevelId = new Map();
+    }
+  }
+  if (!adventurePathCache) {
+    adventurePathCache = await loadAdventurePath();
+    advIdByLevelIdCache = buildAdvIdByLevelId(adventurePathCache);
+  }
+  return {
+    dailyReleaseByLevelId,
+    adventurePath: adventurePathCache,
+    advIdByLevelId: advIdByLevelIdCache || new Map(),
+  };
+}
+
+/** Adventure + random puzzles share the same path — show Adv_ID unless explicitly daily-challenge. */
+function puzzleListDetailLabel(levelId, progress, advIdByLevelId, dailyByLevelId) {
+  const meta = progress?.getLevelMeta?.(levelId);
+  const src = meta?.journalSource || null;
+  const key = normalizeCatalogLevelId(levelId);
+  const advId = advIdByLevelId.get(key) ?? null;
+
+  if (src === 'daily-challenge') {
+    const dateRaw = meta?.challengeDate || dailyByLevelId?.get(key);
+    const formatted = formatChallengeDate(dateRaw);
+    return formatted ? `· ${formatted}` : null;
+  }
+
+  if (advId != null) {
+    return `· Adv ${advId}`;
+  }
+
+  if (dailyByLevelId?.has(key)) {
+    const dateRaw = meta?.challengeDate || dailyByLevelId.get(key);
+    const formatted = formatChallengeDate(dateRaw);
+    return formatted ? `· ${formatted}` : null;
+  }
+
+  return null;
 }
 
 function formatTime(sec) {
@@ -145,7 +243,7 @@ export async function getJournalRecord(app, levelId) {
 }
 
 function levelMatchesFilters(level, progress, filters) {
-  const { boardSize, puzzleType, status } = filters || {};
+  const { boardSize, puzzleType } = filters || {};
   const levelId = level?.id;
   if (!levelId || !progress?.hasJournalEntry?.(levelId)) return false;
 
@@ -161,13 +259,6 @@ function levelMatchesFilters(level, progress, filters) {
     if (puzzleType === 'random' && src !== 'random') return false;
   }
 
-  const found = countUniqueFoundSolutions(progress.getFoundForLevel(levelId));
-  const total = Number(level.totalUniqueSolutions) || 0;
-
-  if (status === 'started' && found <= 0) return false;
-  if (status === 'solved' && found <= 0) return false;
-  if (status === 'complete' && !(total > 0 && found >= total)) return false;
-
   return true;
 }
 
@@ -178,6 +269,8 @@ export async function getJournalLibraryIndex(app, filters = {}) {
   if (!progress) {
     return { sizeCounts: [], puzzles: [], filters };
   }
+
+  const { dailyReleaseByLevelId: dailyByLevelId, advIdByLevelId } = await loadLibraryLookups();
 
   const sizeCountsMap = new Map();
   const puzzles = [];
@@ -200,9 +293,12 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     const progressState = getPuzzleProgressState(found, total);
     const pct = total > 0 ? Math.round((found / total) * 100) : 0;
 
+    const meta = progress.getLevelMeta(levelId);
     puzzles.push({
       levelId: level.id,
       label: level.id || level.name,
+      journalSource: meta?.journalSource || null,
+      detailLabel: puzzleListDetailLabel(levelId, progress, advIdByLevelId, dailyByLevelId),
       boardSize: boardSizeLabel(level),
       boardSizeKey: key,
       found,

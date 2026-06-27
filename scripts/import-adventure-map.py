@@ -3,13 +3,12 @@
 
 Authoritative source: data/adventure_solution_distribution.csv
   Adv_ID     → global adventure sequence
-  CH-lvl=T   → ends an adventure step (challenge puzzle)
+  CH-lvl=T   → challenge puzzle; ends a ranked step (L1-1 … L9-10 only)
   level_id   → FK target in levels
 
-Step identity (L1-1 … L9-10) follows data/LevelSystem.csv (90 steps, 6739 ranked puzzles when fully mapped).
-Puzzle level_id assignments come from this CSV via CH-lvl=T step boundaries (currently 82 steps through L9-2).
-
-Rows after the last CH-lvl=T → adventure_postgame_puzzle.
+Ranked adventure stops at L9-10 (90 steps). Rows after the L9-10 challenge
+→ adventure_postgame_puzzle. Extra CH-lvl=T markers in postgame are challenge
+gates (every ~100 puzzles), not new ranks.
 
 Populates:
   adventure_rank, adventure_progression, adventure_puzzle, adventure_postgame_puzzle
@@ -34,7 +33,7 @@ except ImportError:
     pymysql = None  # type: ignore
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib.adventure_ranks import load_adventure_ranks
+from lib.adventure_ranks import ADVENTURE_RANK_COUNT, load_adventure_ranks
 from lib.level_system import derive_progression_from_level_system, load_level_system_steps
 
 STEPS_PER_RANK = 10
@@ -86,6 +85,7 @@ def load_map_entries(map_path: Path) -> List[dict]:
 def build_adventure_rows(
     entries: List[dict],
     level_system_steps: List[dict] | None = None,
+    max_ranked_steps: int = ADVENTURE_RANK_COUNT * STEPS_PER_RANK,
 ) -> Tuple[List[dict], List[dict], List[str]]:
     challenge_adv = sorted(e["adv_id"] for e in entries if e["is_challenge"])
     if not challenge_adv:
@@ -96,7 +96,15 @@ def build_adventure_rows(
     postgame: List[dict] = []
     prev_adv = 0
 
-    for step_idx, end_adv in enumerate(challenge_adv):
+    ranked_challenge_adv = challenge_adv[:max_ranked_steps]
+    if len(challenge_adv) > max_ranked_steps:
+        extra = challenge_adv[max_ranked_steps:]
+        warnings.append(
+            f"Ranked adventure caps at L{ADVENTURE_RANK_COUNT}-10 (Adv_ID {ranked_challenge_adv[-1]}); "
+            f"{len(extra)} later CH-lvl=T marker(s) at Adv_ID {extra} are postgame challenge gates"
+        )
+
+    for step_idx, end_adv in enumerate(ranked_challenge_adv):
         rank_id, sub_level = step_to_rank_sub(step_idx)
 
         step_entries = [e for e in entries if prev_adv < e["adv_id"] <= end_adv]
@@ -140,14 +148,14 @@ def build_adventure_rows(
 
         prev_adv = end_adv
 
-    if level_system_steps and len(challenge_adv) < len(level_system_steps):
-        last_mapped = challenge_adv[-1]
-        pending = level_system_steps[len(challenge_adv) :]
+    if level_system_steps and len(ranked_challenge_adv) < len(level_system_steps):
+        last_mapped = ranked_challenge_adv[-1]
+        pending = level_system_steps[len(ranked_challenge_adv) :]
         first_pending = pending[0]
         planned_total = sum(s["levels_required"] for s in level_system_steps)
         warnings.append(
             f"LevelSystem defines {len(level_system_steps)} steps ({planned_total} ranked puzzles) "
-            f"but map CSV has {len(challenge_adv)} CH-lvl=T markers (through Adv_ID {last_mapped}); "
+            f"but map CSV has {len(ranked_challenge_adv)} ranked CH-lvl=T markers (through Adv_ID {last_mapped}); "
             f"next planned step L{first_pending['rank_id']}-{first_pending['sub_level']} "
             f"(Adv_ID_Start {first_pending['adv_id_start']}) has no puzzles yet"
         )
@@ -313,12 +321,13 @@ def main() -> None:
         f"L{last_step['rank_id']}-{last_step['sub_level']}" if last_step else "?"
     )
     mapped_steps = len({(p['rank_id'], p['sub_level']) for p in puzzles})
-    last_mapped = progression[mapped_steps - 1] if mapped_steps else None
+    prog_idx = min(mapped_steps, len(progression)) - 1 if mapped_steps and progression else -1
+    last_mapped = progression[prog_idx] if prog_idx >= 0 else None
     last_mapped_label = (
         f"L{last_mapped['rank_id']}-{last_mapped['sub_level']}" if last_mapped else "?"
     )
-    print(f"mapped steps in CSV: {mapped_steps} (through {last_mapped_label})")
-    print(f"postgame puzzles (after {last_mapped_label}): {len(postgame)}")
+    print(f"mapped ranked steps in CSV: {mapped_steps} (through {last_mapped_label})")
+    print(f"postgame puzzles (after ranked L{ADVENTURE_RANK_COUNT}-10): {len(postgame)}")
     print(f"total puzzle rows: {len(puzzles) + len(postgame)}")
     print(f"challenges in map: {sum(1 for p in puzzles if p['is_challenge'])}")
     if progression:

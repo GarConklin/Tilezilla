@@ -54,7 +54,7 @@ export function adventureLevelContext(app) {
 
 
 
-function findLevel(levelContext, levelId) {
+export function findLevel(levelContext, levelId) {
 
   const levels = levelContext?.levels;
 
@@ -399,15 +399,36 @@ function findPuzzleInPath(path, levelId) {
 
   if (!levelId) return null;
 
-  const inStep = path.flat.find((p) => p.levelId === levelId);
+  const normalized = normalizeCatalogLevelId(levelId);
+
+  const inStep = path.flat.find((p) => normalizeCatalogLevelId(p.levelId) === normalized);
 
   if (inStep) return { puzzle: inStep, step: path.steps[inStep.stepIndex], postgame: false };
 
-  const pg = path.postgame.find((p) => p.levelId === levelId);
+  const pg = path.postgame.find((p) => normalizeCatalogLevelId(p.levelId) === normalized);
 
   if (pg) return { puzzle: pg, step: null, postgame: true };
 
   return null;
+
+}
+
+
+
+/** Normalize catalog level ids for path / progress lookups (5x6 vs 5×6, strip .json). */
+export function normalizeCatalogLevelId(levelId) {
+  return String(levelId || '').trim().replace(/×/g, 'x').replace(/\.json$/i, '');
+}
+
+
+
+/** Adventure sequence number (Adv_ID) for a catalog level, if it appears on the path. */
+
+export function getAdvIdForLevel(path, levelId) {
+
+  const hit = findPuzzleInPath(path, levelId);
+
+  return hit?.puzzle?.advId ?? null;
 
 }
 
@@ -696,6 +717,8 @@ export function buildAdventureMeta(path, location, progress, levelContext = {}) 
     advStep: puzzle?.flatIndex != null ? puzzle.flatIndex + 1 : stepProgress + 1,
 
     advTotal: path.flat.length + path.postgame.length,
+
+    advId: puzzle?.advId ?? null,
 
   };
 

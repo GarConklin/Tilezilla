@@ -13,12 +13,15 @@
 <body>
   <h1>Logged-in tuner</h1>
   <p class="lead">
-    Tune <code>Logged-in.png</code> — passport stats, <strong>rank badge stack</strong> (badge + sublevel like
+    Tune <code>Logged-in.png</code> — passport stats, <strong>guest progress note</strong> (guest overlay only),
+    <strong>rank badge stack</strong> (badge + sublevel like
     <a href="/rank-badge-preview.html">rank-badge-preview</a>), journal panels, bottom nav, and gold
     <strong>Back</strong> / <strong>Close X</strong> buttons. Saves to <code>data/auth_screen_layout.json</code> (profile section).
     Sublevel on-badge fit uses <a href="/rank-sublevel-tuner.html">rank-sublevel-tuner</a> (not passport x/y).
-    <a href="/profile-screen.html">Live profile</a> ·
+    Preview matches the <strong>in-game profile overlay</strong> (not the standalone profile page with title chrome).
+    New <strong>Catalog stats</strong> fields (adventure puzzle count, total known routes, largest solution) load from the adventure path + level catalog; use <strong>Hide in game</strong> / <strong>Restore</strong> to toggle visibility.
     <a href="/tilezilla-v2.html">In-game overlay</a> ·
+    <a href="/profile-screen.html">Standalone profile</a> ·
     <a href="/dev-player-select.html">Dev tools</a>
   </p>
   <nav class="tuner-nav" aria-label="Auth tuners">
@@ -49,10 +52,15 @@
         <button type="button" class="btn" data-nudge="fontDown">Smaller text</button>
         <button type="button" class="btn" data-nudge="fontUp">Larger text</button>
       </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="hideHitBtn">Hide in game</button>
+        <button type="button" class="btn" id="restoreHitBtn">Restore in game</button>
+      </div>
       <ul class="keys">
         <li><strong>Frame</strong> — wheel: max width px</li>
         <li><strong>Fields</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H</li>
         <li><strong>Text</strong> — Ctrl+Shift+wheel or buttons: fontScale</li>
+        <li><strong>Delete / Backspace</strong> — hide field in game · <strong>R</strong> — restore</li>
         <li><strong>Tab</strong> — cycle selection</li>
       </ul>
       <div class="btn-row">
@@ -65,20 +73,17 @@
     <div class="panel">
       <h2 id="previewTitle">Preview</h2>
       <div class="mock-stage" id="mockStage" tabindex="0">
-        <div class="auth-screen auth-screen--profile" id="mockWrap">
-          <div class="auth-screen__bg tz-bg" aria-hidden="true">
-            <div class="tz-bg__sky"></div>
-            <div class="tz-bg__water">
-              <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
-              <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
-            </div>
-          </div>
-          <div class="auth-screen__viewport" id="mockViewport">
-            <img class="auth-screen__title" src="/img/Title.png" alt="" width="400" height="80" />
-            <main class="auth-screen__stage" id="mockFrame">
-              <img class="auth-screen__art" id="mockArt" src="/img/Logged-in.png" alt="" width="1418" height="2200" />
-              <div class="auth-screen__form" id="mockOverlay"></div>
-              <div id="mockHitsOutside"></div>
+        <div class="tz-profile-root tz-profile-root--tuner" id="mockWrap">
+          <div class="tz-profile-dialog" id="mockDialog">
+            <main class="tz-profile-dialog__stage" id="mockFrame">
+              <img
+                class="tz-profile-dialog__art"
+                id="mockArt"
+                src="/img/Logged-in.png"
+                alt=""
+                width="1418"
+                height="2200"
+              />
             </main>
           </div>
         </div>
@@ -86,7 +91,7 @@
     </div>
   </div>
   <script type="module">
-    import { initAuthScreenTuner } from './js/auth-screen-tuner.js';
+    import { initAuthScreenTuner } from './js/auth-screen-tuner.js?v=20250627';
     initAuthScreenTuner('profile');
   </script>
 </body>

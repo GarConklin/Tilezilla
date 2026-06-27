@@ -81,5 +81,17 @@
       "w": 64,
       "h": 28
     }
+  },
+  "tileInSlot": {
+    "rot0ScaleW": 1.04,
+    "rot0ScaleH": 1.04,
+    "rot90ScaleW": 1.04,
+    "rot90ScaleH": 1.04,
+    "offsetX": 0,
+    "offsetY": -1,
+    "boardScale": 1,
+    "fitInsetX": 2,
+    "fitInsetY": 2,
+    "clampToSlot": 0
   }
 }

@@ -13,10 +13,12 @@ import {
 import { getJournalRecord, getJournalLibraryIndex } from './journal-data.js';
 import { applyRevisitLayout, loadRevisitLayout, reloadRevisitLayout } from './revisit-layout.js';
 import { initJournalListScroller } from './journal-scroller.js';
+import { closePuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 
 let getApp = () => null;
 let menuApi = null;
 let loadPuzzleLevel = async () => false;
+let onResumeGame = null;
 let listScroller = null;
 let journalLayoutCache = null;
 let previewRenderToken = 0;
@@ -27,9 +29,13 @@ let state = {
   mode: 'record',
   levelId: null,
   selectedSolutionIndex: null,
-  libraryFilters: { boardSize: '', puzzleType: '', status: 'all' },
+  libraryFilters: { boardSize: '', puzzleType: '' },
   libraryPuzzles: [],
   activeTab: 'puzzle',
+  resumeGameOnClose: false,
+  resumeLevelId: null,
+  resumeScreen: null,
+  returnToLibrary: false,
 };
 
 function $(id) {
@@ -119,20 +125,51 @@ function setModalOpen(on) {
   document.body.classList.toggle('tz-modal-open', on);
 }
 
+function isOverlayOpen(id) {
+  const el = $(id);
+  return !!el && !el.hidden;
+}
+
+function syncModalOpenState() {
+  const anyOpen = [
+    'menuRoot',
+    'menuPanelRoot',
+    'settingsRoot',
+    'puzzleInfoRoot',
+    'journalRoot',
+    'profileOverlayRoot',
+    'hintMenuRoot',
+    'hintRulesRoot',
+    'stuckPopupRoot',
+    'randomPopupRoot',
+    'tilesetPickerRoot',
+  ].some(isOverlayOpen);
+  setModalOpen(anyOpen);
+}
+
+function clearJournalResumeState() {
+  state.resumeGameOnClose = false;
+  state.resumeLevelId = null;
+  state.resumeScreen = null;
+}
+
 function closeJournal() {
   const root = $('journalRoot');
   if (!root) return;
+  const resumeGame = state.resumeGameOnClose;
+  const resumeLevelId = state.resumeLevelId;
+  const resumeScreen = state.resumeScreen;
+  clearJournalResumeState();
+  state.returnToLibrary = false;
+
   root.hidden = true;
   $('journalLoadConfirm')?.setAttribute('hidden', '');
-  if (
-    $('menuRoot')?.hidden !== false
-    && $('menuPanelRoot')?.hidden !== false
-    && $('settingsRoot')?.hidden !== false
-    && $('puzzleInfoRoot')?.hidden !== false
-    && $('hintRulesRoot')?.hidden !== false
-    && $('stuckPopupRoot')?.hidden !== false
-  ) {
-    setModalOpen(false);
+
+  closePuzzleInfoPopup();
+  syncModalOpenState();
+
+  if (resumeGame) {
+    onResumeGame?.({ levelId: resumeLevelId, resumeScreen });
   }
 }
 
@@ -199,18 +236,27 @@ function syncJournalTabContent() {
   }
 }
 
+function syncBackButtonVisibility() {
+  const btn = $('journalBtnLibraryBack');
+  if (!btn) return;
+  const show = state.mode === 'record' && state.returnToLibrary && !isJournalArtTab();
+  btn.toggleAttribute('hidden', !show);
+}
+
 function setModeUi(mode) {
   const root = $('journalRoot');
   if (root) root.dataset.journalMode = mode;
   applyEffectiveJournalLayout();
   syncJournalTabContent();
   syncJournalOverlays();
+  syncBackButtonVisibility();
 }
 
 async function activateJournalTab(tab) {
   state.activeTab = tab;
   syncJournalTabContent();
   syncJournalOverlays();
+  syncBackButtonVisibility();
 
   if (tab === 'stats' || tab === 'records') return;
 
@@ -278,16 +324,29 @@ function renderSolutionList(entries, { mode = 'solutions' } = {}) {
     if (entry.progressState) {
       btn.classList.add(`tz-journal-list__row--${entry.progressState}`);
     }
-    if (entry.index != null && entry.index === state.selectedSolutionIndex) {
-      btn.classList.add('tz-journal-list__row--active');
+    if (mode === 'solutions' && entry.index != null) {
+      btn.dataset.solutionIndex = String(entry.index);
     }
-    if (entry.levelId === state.levelId && mode === 'puzzles') {
-      btn.classList.add('tz-journal-list__row--active');
+    if (mode === 'puzzles' && entry.levelId) {
+      btn.dataset.levelId = entry.levelId;
     }
 
     const main = document.createElement('span');
     main.className = 'tz-journal-list__row-main';
-    main.textContent = entry.label;
+    if (mode === 'puzzles') {
+      const idSpan = document.createElement('span');
+      idSpan.className = 'tz-journal-list__row-id';
+      idSpan.textContent = entry.label;
+      main.appendChild(idSpan);
+      if (entry.detailLabel) {
+        const detail = document.createElement('span');
+        detail.className = 'tz-journal-list__row-detail';
+        detail.textContent = entry.detailLabel;
+        main.appendChild(detail);
+      }
+    } else {
+      main.textContent = entry.label;
+    }
 
     const sub = document.createElement('span');
     sub.className = 'tz-journal-list__row-sub';
@@ -311,14 +370,62 @@ function renderSolutionList(entries, { mode = 'solutions' } = {}) {
       if (mode === 'solutions') {
         void selectSolution(entry);
       } else {
-        void openJournal({ mode: 'record', levelId: entry.levelId });
+        void openJournal({ mode: 'record', levelId: entry.levelId, fromLibrary: true });
       }
     });
 
     list.appendChild(btn);
   }
 
+  syncActiveSolutionRowHighlight();
   listScroller?.sync?.();
+}
+
+function syncActiveSolutionRowHighlight({ pulse = false } = {}) {
+  const list = $('journalList');
+  if (!list) return;
+
+  let activeRow = null;
+  for (const row of list.querySelectorAll('.tz-journal-list__row')) {
+    const solutionIndex = row.dataset.solutionIndex != null
+      ? Number(row.dataset.solutionIndex)
+      : null;
+    const levelId = row.dataset.levelId || null;
+    const isActive = (state.mode === 'record'
+      && solutionIndex != null
+      && solutionIndex === state.selectedSolutionIndex)
+      || (state.mode === 'library' && levelId && levelId === state.levelId);
+
+    row.classList.toggle('tz-journal-list__row--active', isActive);
+    row.toggleAttribute('aria-current', isActive);
+    if (isActive) activeRow = row;
+  }
+
+  if (activeRow && pulse) {
+    activeRow.classList.remove('tz-journal-list__row--nav-pulse');
+    // Force reflow so repeated prev/next replays the pulse.
+    void activeRow.offsetWidth;
+    activeRow.classList.add('tz-journal-list__row--nav-pulse');
+    activeRow.addEventListener(
+      'animationend',
+      () => activeRow.classList.remove('tz-journal-list__row--nav-pulse'),
+      { once: true },
+    );
+  }
+
+  if (activeRow) scrollActiveListRowIntoView();
+}
+
+function syncPreviewSolutionHighlight(entry) {
+  const wrap = $('journalPreviewWrap');
+  if (!wrap) return;
+  const hasSolution = !!entry?.placements?.length;
+  wrap.classList.toggle('tz-journal-preview-wrap--active-solution', hasSolution);
+  if (hasSolution && entry.index != null) {
+    wrap.dataset.solutionIndex = String(entry.index);
+  } else {
+    delete wrap.dataset.solutionIndex;
+  }
 }
 
 function nextFrame() {
@@ -333,6 +440,8 @@ function clearSolutionPreview() {
   previewRenderToken += 1;
   previewContext = null;
   wrap.hidden = true;
+  wrap.classList.remove('tz-journal-preview-wrap--active-solution');
+  delete wrap.dataset.solutionIndex;
   showLoadConfirm(false);
 
   const ctx = canvas.getContext('2d');
@@ -374,6 +483,7 @@ async function renderSolutionPreview(record, entry) {
   }
 
   syncBeginSearchButton(false);
+  syncPreviewSolutionHighlight(entry);
 
   previewContext = { record, entry };
   const token = ++previewRenderToken;
@@ -422,20 +532,20 @@ function installPreviewResizeObserver() {
   previewResizeObserver.observe(wrap);
 }
 
-async function selectSolution(entry) {
+async function selectSolution(entry, { pulse = false } = {}) {
   const app = getApp();
   if (!app || !state.levelId) return;
   state.selectedSolutionIndex = entry.index;
   const record = await getJournalRecord(app, state.levelId);
-  renderSolutionList(record?.entries || [], { mode: 'solutions' });
+  const list = $('journalList');
+  const hasSolutionRows = list?.querySelector('[data-solution-index]');
+  if (!hasSolutionRows) {
+    renderSolutionList(record?.entries || [], { mode: 'solutions' });
+  } else {
+    syncActiveSolutionRowHighlight({ pulse });
+  }
   await renderSolutionPreview(record, entry);
-  scrollActiveListRowIntoView();
   listScroller?.sync?.();
-}
-
-function scrollActiveListRowIntoView() {
-  const active = $('journalList')?.querySelector('.tz-journal-list__row--active');
-  active?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 async function navigateRecordSolution(delta) {
@@ -448,7 +558,7 @@ async function navigateRecordSolution(delta) {
   const curPos = entries.findIndex((e) => e.index === state.selectedSolutionIndex);
   const from = curPos >= 0 ? curPos : 0;
   const nextPos = (from + delta + entries.length) % entries.length;
-  await selectSolution(entries[nextPos]);
+  await selectSolution(entries[nextPos], { pulse: true });
 }
 
 function navigateLibraryPuzzle(delta) {
@@ -459,14 +569,23 @@ function navigateLibraryPuzzle(delta) {
   if (idx < 0) idx = delta > 0 ? -1 : 0;
   const nextIdx = (idx + delta + puzzles.length) % puzzles.length;
   state.levelId = puzzles[nextIdx].levelId;
-  renderSolutionList(
-    puzzles.map((p) => ({ ...p, label: p.label })),
-    { mode: 'puzzles' },
-  );
+  const hasPuzzleRows = $('journalList')?.querySelector('[data-level-id]');
+  if (!hasPuzzleRows) {
+    renderSolutionList(
+      puzzles.map((p) => ({ ...p, label: p.label })),
+      { mode: 'puzzles' },
+    );
+  } else {
+    syncActiveSolutionRowHighlight({ pulse: true });
+  }
   clearSolutionPreview();
   syncBeginSearchButton(false);
-  scrollActiveListRowIntoView();
   listScroller?.sync?.();
+}
+
+function scrollActiveListRowIntoView() {
+  const active = $('journalList')?.querySelector('.tz-journal-list__row--active');
+  active?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 async function loadBeginSearchToBoard() {
@@ -478,6 +597,7 @@ async function loadBeginSearchToBoard() {
 
   window.__discoveryRecord?.hide?.();
   showLoadConfirm(false);
+  clearJournalResumeState();
   closeJournal();
   menuApi?.closeAll?.();
 }
@@ -510,8 +630,7 @@ async function refreshRecordView() {
 function renderLibrarySelectors(data) {
   const sizeWrap = $('journalSizeFilters');
   const typeWrap = $('journalTypeFilters');
-  const statusWrap = $('journalStatusFilters');
-  if (!sizeWrap || !typeWrap || !statusWrap) return;
+  if (!sizeWrap || !typeWrap) return;
 
   sizeWrap.replaceChildren();
   for (const s of data.sizeCounts || []) {
@@ -545,26 +664,6 @@ function renderLibrarySelectors(data) {
     });
     typeWrap.appendChild(btn);
   }
-
-  const statuses = [
-    { key: 'all', label: 'All' },
-    { key: 'started', label: 'Started' },
-    { key: 'solved', label: 'Solved' },
-    { key: 'complete', label: 'Complete' },
-  ];
-  statusWrap.replaceChildren();
-  for (const s of statuses) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'tz-journal-filter-btn';
-    btn.classList.toggle('is-active', state.libraryFilters.status === s.key);
-    btn.textContent = s.label;
-    btn.addEventListener('click', () => {
-      state.libraryFilters.status = s.key;
-      void refreshLibraryView();
-    });
-    statusWrap.appendChild(btn);
-  }
 }
 
 async function refreshLibraryView() {
@@ -573,7 +672,6 @@ async function refreshLibraryView() {
   const data = await getJournalLibraryIndex(app, {
     boardSize: state.libraryFilters.boardSize || undefined,
     puzzleType: state.libraryFilters.puzzleType || undefined,
-    status: state.libraryFilters.status === 'all' ? undefined : state.libraryFilters.status,
   });
   state.libraryPuzzles = data.puzzles || [];
   renderLibrarySelectors(data);
@@ -608,12 +706,21 @@ async function loadSelectedSolutionToBoard() {
   });
   if (ok) {
     showLoadConfirm(false);
+    clearJournalResumeState();
     closeJournal();
     menuApi?.closeAll?.();
   }
 }
 
-export async function openJournal({ mode = 'record', levelId, solutionIndex } = {}) {
+export async function openJournal({
+  mode = 'record',
+  levelId,
+  solutionIndex,
+  resumeGameOnClose,
+  resumeLevelId = null,
+  resumeScreen = null,
+  fromLibrary = false,
+} = {}) {
   const root = $('journalRoot');
   const app = getApp();
   if (!root || !app) return;
@@ -622,11 +729,22 @@ export async function openJournal({ mode = 'record', levelId, solutionIndex } = 
 
   menuApi?.closeMenu?.();
   menuApi?.closePanel?.();
-  const pinfo = $('puzzleInfoRoot');
-  if (pinfo) pinfo.hidden = true;
+  closePuzzleInfoPopup();
 
   state.mode = mode;
+  if (typeof resumeGameOnClose === 'boolean') {
+    state.resumeGameOnClose = resumeGameOnClose;
+    state.resumeLevelId = resumeLevelId || app.state?.currentLevel?.id || null;
+    state.resumeScreen = resumeScreen || null;
+  }
   state.activeTab = mode === 'library' ? 'filter' : 'puzzle';
+  if (fromLibrary) {
+    state.returnToLibrary = true;
+  } else if (mode === 'library') {
+    state.returnToLibrary = false;
+  } else if (mode === 'record') {
+    state.returnToLibrary = false;
+  }
   if (levelId) state.levelId = levelId;
   if (mode === 'record' && !state.levelId) {
     state.levelId = app.state?.currentLevel?.id || null;
@@ -661,10 +779,16 @@ export async function openJournal({ mode = 'record', levelId, solutionIndex } = 
   });
 }
 
-export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel: loadPuzzleLevelFn } = {}) {
+export function initJournalUi({
+  getApp: getAppFn,
+  menuApi: menu,
+  loadPuzzleLevel: loadPuzzleLevelFn,
+  onResumeGame: onResumeGameFn,
+} = {}) {
   getApp = getAppFn || (() => null);
   menuApi = menu || null;
   loadPuzzleLevel = loadPuzzleLevelFn || (async () => false);
+  onResumeGame = onResumeGameFn || null;
 
   const root = $('journalRoot');
   if (!root) return null;
@@ -678,6 +802,9 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
 
   $('journalBackdrop')?.addEventListener('click', closeJournal);
   $('journalBtnExit')?.addEventListener('click', closeJournal);
+  $('journalBtnLibraryBack')?.addEventListener('click', () => {
+    void openJournal({ mode: 'library' });
+  });
 
   $('journalPreviewCanvas')?.addEventListener('click', () => {
     if (state.mode !== 'record' || state.selectedSolutionIndex == null) return;
@@ -699,10 +826,6 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
     void loadBeginSearchToBoard();
   });
 
-  $('journalShowPuzzlesBtn')?.addEventListener('click', () => {
-    void refreshLibraryView();
-  });
-
   const tabMap = {
     journalTabPuzzle: 'puzzle',
     journalTabStats: 'stats',
@@ -719,6 +842,7 @@ export function initJournalUi({ getApp: getAppFn, menuApi: menu, loadPuzzleLevel
         void openJournal({
           mode: 'record',
           levelId: state.levelId || getApp()?.state?.currentLevel?.id,
+          fromLibrary: true,
         });
         return;
       }

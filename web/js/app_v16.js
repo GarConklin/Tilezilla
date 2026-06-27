@@ -214,8 +214,8 @@ const state = {
   levelBuckets: null, // [{size,tier,file,count}]
   currentLevel: null,
   levelTileCounts: null,
-  imgCache: new Map(),  // key: tileName -> HTMLImageElement
-  rotatedCache: new Map(), // key: tileName|deg -> dataURL
+  imgCache: new Map(),  // key: tilesetId|tileName -> HTMLImageElement
+  rotatedCache: new Map(), // key: tilesetId|tileName|deg -> dataURL
   blockerCells: new Set(), // keys: 'r,c'
   blockerTypeByCell: new Map(), // key: 'r,c' -> tile id (B1/B2)
   /** Fixed blockers as placements — anchor r,c,deg like playable tiles. */
@@ -561,6 +561,7 @@ function removeTileById(tileId) {
 
   state.used.delete(t.instanceId);
   setPaletteUsed(t.instanceId, false);
+  void ensureBagThumbAtZero(t.instanceId);
   return t;
 }
 
@@ -657,10 +658,11 @@ function logSolver(msg){ solver.log(msg); } // wired after solver init
 
 // ---- Image rotation (canvas) ----
 async function loadImage(tileName, tilesetName){
-  const cacheKey = tilesetName ? `${tilesetName}|${tileName}` : tileName;
+  const setKey = tilesetName || state.activeTileset;
+  const cacheKey = `${setKey}|${tileName}`;
   if(state.imgCache.has(cacheKey)) return state.imgCache.get(cacheKey);
   const img = new Image();
-  img.src = 'img/' + resolveTileAsset(tileName, tilesetName);
+  img.src = 'img/' + resolveTileAsset(tileName, setKey);
   try {
     await img.decode();
   } catch (e) {
@@ -687,9 +689,10 @@ async function loadBgTileImage(tilesetName){
 }
 
 async function rotatedDataURL(tileName, deg, tilesetName){
-  const key = tilesetName ? `${tilesetName}|${tileName}|${deg}` : `${tileName}|${deg}`;
+  const setKey = tilesetName || state.activeTileset;
+  const key = `${setKey}|${tileName}|${deg}`;
   if(state.rotatedCache.has(key)) return state.rotatedCache.get(key);
-  const img = await loadImage(tileName, tilesetName);
+  const img = await loadImage(tileName, setKey);
 
   // Source is a 2x1 image. Normalize to that ratio.
   const srcW = img.naturalWidth;
@@ -703,7 +706,6 @@ async function rotatedDataURL(tileName, deg, tilesetName){
   c.width = dstW; c.height = dstH;
   const g = c.getContext('2d');
 
-  const setKey = tilesetName || state.activeTileset;
   if (isEnhancedTileBgSetup(state.tileSets, setKey)) {
     const bgImg = await loadBgTileImage(setKey);
     drawBgTileUnderlay(g, bgImg, dstW, dstH, r, tileCellCount(tileName));
@@ -1463,26 +1465,32 @@ async function renderActivePreview(){
   const size = boardTilePixelSize(tileName, state.deg);
   let drawW = size.w;
   let drawH = size.h;
-  let cell = CONFIG.cellPx;
 
   const rot = ((state.deg % 360) + 360) % 360;
   const boardScale = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-board-scale')) || 1;
-  const rotScale = (rot === 90 || rot === 270)
-    ? (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot90-scale')) || 1)
-    : (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot0-scale')) || 1);
+  const { scaleW, scaleH } = (() => {
+    const is90 = rot === 90 || rot === 270;
+    const legacy = is90
+      ? (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot90-scale')) || 1)
+      : (parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-rot0-scale')) || 1);
+    return {
+      scaleW: parseFloat(rootStyle.getPropertyValue(is90 ? '--tz-preview-tile-rot90-scale-w' : '--tz-preview-tile-rot0-scale-w')) || legacy,
+      scaleH: parseFloat(rootStyle.getPropertyValue(is90 ? '--tz-preview-tile-rot90-scale-h' : '--tz-preview-tile-rot0-scale-h')) || legacy,
+    };
+  })();
   const clampToSlot = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-clamp-to-slot')) || 0;
 
-  const scale = boardScale * rotScale;
-  drawW *= scale;
-  drawH *= scale;
-  cell *= scale;
+  const scaleX = boardScale * scaleW;
+  const scaleY = boardScale * scaleH;
+  drawW *= scaleX;
+  drawH *= scaleY;
 
+  let shrink = 1;
   // Default: true board pixels (may extend past slot — overflow is visible). Set clamp-to-slot to 1 to shrink.
   if (clampToSlot > 0 && (drawW > fitW || drawH > fitH)) {
-    const shrink = Math.min(fitW / drawW, fitH / drawH);
+    shrink = Math.min(fitW / drawW, fitH / drawH);
     drawW *= shrink;
     drawH *= shrink;
-    cell *= shrink;
   }
 
   const tileOffsetX = parseFloat(rootStyle.getPropertyValue('--tz-preview-tile-offset-x')) || 0;
@@ -1503,11 +1511,17 @@ async function renderActivePreview(){
 
   const offX = (padW - drawW) / 2;
   const offY = (padH - drawH) / 2;
-  const cx = offX + (a.c + 0.5) * cell + tileOffsetX;
-  const cy = offY + (a.r + 0.5) * cell + tileOffsetY;
+  const cellX = CONFIG.cellPx * scaleX * shrink;
+  const cellY = CONFIG.cellPx * scaleY * shrink;
+  const cx = offX + (a.c + 0.5) * cellX + tileOffsetX;
+  const cy = offY + (a.r + 0.5) * cellY + tileOffsetY;
   anchor.style.display = 'block';
   anchor.style.left = `${cx}px`;
   anchor.style.top = `${cy}px`;
+
+  if (state.selectedPal && state.deg !== 0) {
+    await ensureBagThumbAtZero(state.selectedPal);
+  }
 }
 
 function buildPaletteInstances(){
@@ -1516,7 +1530,7 @@ function buildPaletteInstances(){
     for (const [tileName, c] of Object.entries(state.levelTileCounts)) {
       const count = Math.max(0, Number(c) || 0);
       for (let i = 1; i <= count; i++) {
-        instances.push({ instanceId: `${tileName}#${i}`, tile: tileName, deg: 0 });
+        instances.push({ instanceId: `${tileName}#${i}`, tile: tileName });
       }
     }
     return sortPaletteInstances(instances);
@@ -1528,7 +1542,6 @@ function buildPaletteInstances(){
       instances.push({
         instanceId: `${tileName}#${i}`,
         tile: tileName,
-        deg: 0
       });
     }
   }
@@ -1560,21 +1573,52 @@ function paletteThumbCellPx(){
   return Number.isFinite(v) && v > 0 ? v : 36;
 }
 
-function paletteThumbHeightScale(tileName){
-  if (tileCellCount(tileName) <= 1) return 1;
+function paletteThumbHeightScale() {
   const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz-tilebag-thumb-h-scale'));
-  return Number.isFinite(v) && v > 0 ? v : 0.8;
+  return Number.isFinite(v) && v > 0 ? v : 1;
 }
 
-function paletteThumbPixelSize(tileName, deg = 0){
+function paletteThumbPixelSize(tileName){
   const cell = paletteThumbCellPx();
   const scale = cell / CONFIG.cellPx;
-  const size = boardTilePixelSize(tileName, deg);
-  const w = Math.round(size.w * scale);
+  const size = boardTilePixelSize(tileName, 0);
+  const hScale = paletteThumbHeightScale();
+  let w = Math.round(size.w * scale);
   let h = Math.round(size.h * scale);
-  const hScale = paletteThumbHeightScale(tileName);
-  if (hScale !== 1) h = Math.max(1, Math.round(h * hScale));
+  if (tileCellCount(tileName) <= 1) {
+    w = Math.max(1, Math.round(w * hScale));
+    h = Math.max(1, Math.round(h * hScale));
+  } else if (hScale !== 1) {
+    h = Math.max(1, Math.round(h * hScale));
+  }
   return { w, h };
+}
+
+/** Tile bag always shows tiles at 0° — never preview/board rotation. */
+const PALETTE_BAG_ROTATION_DEG = 0;
+
+async function ensureBagThumbAtZero(instanceId) {
+  if (!paletteEl || !instanceId) return;
+  const inst = getInstance(instanceId);
+  if (!inst) return;
+  if (inst.deg) inst.deg = 0;
+  const item = paletteEl.querySelector(`[data-tile="${CSS.escape(instanceId)}"]`);
+  if (!item) return;
+  const thumb = item.querySelector('.palThumb');
+  const img = thumb?.querySelector('img');
+  if (!thumb || !img) return;
+  const tileName = inst.tile;
+  const { w, h } = paletteThumbPixelSize(tileName);
+  thumb.style.width = `${w}px`;
+  thumb.style.height = `${h}px`;
+  img.style.transform = 'none';
+  img.style.rotate = 'none';
+  try {
+    img.src = await rotatedDataURL(tileName, PALETTE_BAG_ROTATION_DEG);
+  } catch (err) {
+    console.error(err);
+    img.src = 'img/' + resolveTileAsset(tileName);
+  }
 }
 
 function selectPaletteInstance(instanceId) {
@@ -1587,7 +1631,7 @@ function selectPaletteInstance(instanceId) {
   state.previewTile = tileName;
   state.selectedTileId = null;
   syncActionButtons();
-  state.deg = inst.deg || 0;
+  state.deg = 0;
   rotHud.textContent = state.deg + '';
   markPaletteSelected(instanceId);
   void renderActivePreview();
@@ -1599,7 +1643,6 @@ async function buildPalette(){
   for(const inst of (state.paletteInstances || [])){
     const tileName = inst.tile;
     const instanceId = inst.instanceId;
-    const deg = inst.deg || 0;
 
     const item=document.createElement('div');
     item.className='palItem';
@@ -1607,17 +1650,12 @@ async function buildPalette(){
 
     const thumb=document.createElement('div');
     thumb.className = 'palThumb' + (tileCellCount(tileName) <= 1 ? ' palThumb--single' : '');
-    const { w, h } = paletteThumbPixelSize(tileName, deg);
+    const { w, h } = paletteThumbPixelSize(tileName);
     thumb.style.width = w + 'px';
     thumb.style.height = h + 'px';
     const img=document.createElement('img');
     img.alt=tileName;
-    try {
-      img.src = await rotatedDataURL(tileName, deg);
-    } catch (err) {
-      console.error(err);
-      img.src = 'img/' + resolveTileAsset(tileName);
-    }
+    img.style.transform = 'none';
     thumb.appendChild(img);
 
     const meta=document.createElement('div');
@@ -1641,6 +1679,7 @@ async function buildPalette(){
       selectPaletteInstance(instanceId);
     });
     paletteEl.appendChild(item);
+    await ensureBagThumbAtZero(instanceId);
   }
   for (const inst of (state.paletteInstances || [])) syncPaletteItemPresentation(inst.instanceId);
 }
@@ -2412,6 +2451,7 @@ async function placeHintTile(placement) {
   rebuildOccFromTiles();
   await renderTiles();
   clearHover();
+  window.__app?.onBoardStateChanged?.();
   return { ok: true, tile: t };
 }
 
@@ -2472,7 +2512,7 @@ async function placeSelectedPaletteTileAt(r, c) {
   claimCells(t.id, cellsForTile(t.tile, r, c, t.deg));
   state.used.add(inst.instanceId);
   setPaletteUsed(inst.instanceId, true);
-  inst.deg = state.deg;
+  void ensureBagThumbAtZero(inst.instanceId);
   state.selectedTileId = t.id;
   syncActionButtons();
   state.selectedPal = null;
@@ -2567,12 +2607,11 @@ async function rotateBy(delta) {
 
   // Rotating preview tile (Active Tile Preview)
   if (state.selectedPal || state.previewTile) {
-    const inst = getSelectedInstance();
     const nextDeg = (state.deg + delta + 360) % 360;
     state.deg = nextDeg;
-    if(inst) inst.deg = nextDeg;
     rotHud.textContent = nextDeg + '';
-    renderActivePreview();
+    await renderActivePreview();
+    if (state.selectedPal) await ensureBagThumbAtZero(state.selectedPal);
   }
 }
 
@@ -2640,6 +2679,40 @@ async function clearBoard(){
   await renderTiles();
   clearHover();
   if(solver) solver.reset();
+}
+
+function cloneBoardState() {
+  return {
+    tiles: (state.tiles || []).map((t) => ({ ...t })),
+    used: [...(state.used || [])],
+    hintsUsedThisPuzzle: state.hintsUsedThisPuzzle ?? 0,
+  };
+}
+
+async function restoreBoardFromSnapshot(snapshot) {
+  if (!snapshot?.tiles?.length) return false;
+
+  state.tiles = snapshot.tiles.map((t) => ({ ...t }));
+  state.used = new Set(snapshot.used || []);
+  state.hintsUsedThisPuzzle = snapshot.hintsUsedThisPuzzle ?? 0;
+  state.selectedTileId = null;
+  state.selectedPal = null;
+  state.previewTile = null;
+  state.deg = 0;
+  if (rotHud) rotHud.textContent = '0';
+  markPaletteSelected(null);
+  for (const inst of (state.paletteInstances || [])) {
+    setPaletteUsed(inst.instanceId, state.used.has(inst.instanceId));
+  }
+  nextId = state.tiles.reduce((max, t) => Math.max(max, Number(t.id) || 0), 0) + 1;
+  syncActionButtons();
+  renderActivePreview();
+  rebuildOccFromTiles();
+  await renderTiles();
+  clearHover();
+  if (solver) solver.reset();
+  window.__app?.onBoardStateChanged?.();
+  return true;
 }
 
 const clearBtn = document.getElementById('clearBtn');
@@ -3724,6 +3797,9 @@ async function applyLevel(level){
   if (progress && level?.id) {
     progress.touchLevelPlayed(level.id, {
       journalSource: ['adventure', 'daily-challenge', 'random'].includes(screen) ? screen : null,
+      challengeDate: screen === 'daily-challenge'
+        ? (window.__dailyChallengeMeta?.date || null)
+        : undefined,
     });
   }
   const knownSolutions = await loadKnownSolutionsForLevel(level);
@@ -4152,10 +4228,13 @@ async function init(){
     if (!tilesetId || !state.tileSets?.tilesets?.[tilesetId]) return false;
     state.activeTileset = tilesetId;
     saveActiveTilesetPreference(tilesetId);
+    state.imgCache.clear();
+    state.rotatedCache.clear();
     applyTileBoardBackground(state.tileSets, tilesetId);
     await buildPalette();
     renderActivePreview?.();
     await renderTiles();
+    window.__app?.onBoardStateChanged?.();
     return true;
   }
 
@@ -4174,6 +4253,7 @@ async function init(){
     getExampleRoutePlacements, selectSolutionForReveal, getRevealSolutionPlacements,
     applyKnownSolutionToBoard, loadFirstValidKnownSolution, applyPlacementsToBoard,
     clearBoard, setCheckMessage, isDevUser,
+    cloneBoardState, restoreBoardFromSnapshot,
     canAffordExampleRoute, getExampleRouteTokenCost, purchaseExampleRoute,
     hasViewedExampleRoute, hasLeaderboardForfeit, hasHintCompletionRewardForfeit,
     renderSolutionPreview, findClosestSolutionPlacements,

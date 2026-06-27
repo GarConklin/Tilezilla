@@ -107,6 +107,8 @@ async function openFoundSolutionAt(solutionIndex) {
     mode: 'record',
     levelId: app?.state?.currentLevel?.id,
     solutionIndex,
+    resumeGameOnClose: true,
+    resumeLevelId: app?.state?.currentLevel?.id,
   });
 }
 
@@ -200,6 +202,8 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     void openJournal({
       mode: 'record',
       levelId: getApp()?.state?.currentLevel?.id,
+      resumeGameOnClose: true,
+      resumeLevelId: getApp()?.state?.currentLevel?.id,
     });
   });
   $('menuStuckBtn')?.addEventListener('click', () => {

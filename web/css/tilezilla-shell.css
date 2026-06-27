@@ -147,9 +147,19 @@
   --tz-tilebag-tab-h: calc(var(--tz-tilebag-art-cap-top) / var(--tz-tilebag-art-w) * var(--tz-w-tilebag));
   --tz-tilebag-expanded-cap-top: var(--tz-tilebag-tab-h);
   --tz-tilebag-expanded-cap-bottom: calc(var(--tz-tilebag-art-cap-bottom) / var(--tz-tilebag-art-w) * var(--tz-w-tilebag));
+  /* Track slot bottom inset (art px) — can be less than skin cap so tiles sit lower in the graphic */
+  --tz-tilebag-track-expanded-bottom-cap-art: var(--tz-tilebag-art-cap-bottom);
+  --tz-tilebag-track-expanded-cap-bottom: calc(
+    var(--tz-tilebag-track-expanded-bottom-cap-art) / var(--tz-tilebag-art-w) * var(--tz-w-tilebag)
+  );
   --tz-tilebag-collapsed-cap-bottom: calc(var(--tz-tilebag-art-cap-bottom-collapsed) / var(--tz-tilebag-art-w) * var(--tz-w-tilebag));
-  --tz-tilebag-tab-count-top: calc(var(--tz-tilebag-count-y) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h));
   --tz-tilebag-tab-count-h: calc(var(--tz-tilebag-count-h) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h));
+  --tz-tilebag-art-offset-x: 0px;
+  --tz-tilebag-art-offset-y: 0px;
+  --tz-tilebag-art-scale: 1;
+  --tz-tilebag-art-expanded-offset-x: 0px;
+  --tz-tilebag-art-expanded-offset-y: 0px;
+  --tz-tilebag-art-expanded-scale: 1;
   --tz-tilebag-tab-handle-top: calc(
     (var(--tz-tilebag-count-y) + var(--tz-tilebag-count-h)) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h)
   );
@@ -158,13 +168,18 @@
   --tz-tilebag-count-w: 60;
   --tz-tilebag-count-h: 16;
   --tz-tilebag-count-nudge-x: -3px;
+  --tz-tilebag-count-nudge-y: 0px;
+  --tz-tilebag-count-expanded-nudge-x: 0px;
   --tz-tilebag-count-expanded-nudge-y: -3px;
-  /* “Tile Bag” title — same row as count, left of count */
-  --tz-tilebag-title-offset-x: -70px;
-  --tz-tilebag-title-nudge-x: 10px;
+  /* “Tile Bag” title — independent art anchor from count badge */
+  --tz-tilebag-title-x: 143;
+  --tz-tilebag-title-y: 1;
+  --tz-tilebag-title-nudge-x: 0px;
   --tz-tilebag-title-nudge-y: 0px;
   --tz-tilebag-title-expanded-nudge-x: 0px;
   --tz-tilebag-title-expanded-nudge-y: 0px;
+  /* Legacy — migrated to --tz-tilebag-title-x on load */
+  --tz-tilebag-title-offset-x: -70px;
   --tz-tilebag-handle-x-offset: -55px;
   --tz-tilebag-handle-y-gap: 1px;
   --tz-tilebag-handle-nudge-x: 24px;
@@ -375,7 +390,7 @@
   --tz-tilebag-expanded-grow-scale: 1.65;
   /* Subtract from computed expanded frame height */
   --tz-tilebag-expanded-height-trim: 40px;
-  --tz-tilebag-row-h: calc(var(--tz-tilebag-cell) * var(--tz-tilebag-thumb-h-scale) + var(--tz-tile-gap));
+  --tz-tilebag-row-h: calc(var(--tz-tilebag-cell) * var(--tz-tilebag-thumb-h-scale) + var(--tz-tilebag-row-gap));
   --tz-h-tilebag: var(--tz-h-tilebag-frame);
   --tz-x-tilebag: calc((var(--tz-design-width) - var(--tz-w-tilebag)) / 2);
   --tz-w-tilebag: 381px;
@@ -393,6 +408,7 @@
   --tz-tilebag-arrow-width-art: 15;
   --tz-tilebag-arrow-next-width-art: 15;
   --tz-tile-gap: 5px;
+  --tz-tilebag-row-gap: 4px;
   /* Action bar (demo 917×1715 → 390×844) */
   --tz-x-actions: 4px;
   --tz-w-actions: 382px;
@@ -764,6 +780,10 @@
   /* Extra multiplier per rotation (1 = same as board size for that orientation) */
   --tz-preview-tile-rot0-scale: .96;
   --tz-preview-tile-rot90-scale: .96;
+  --tz-preview-tile-rot0-scale-w: .96;
+  --tz-preview-tile-rot0-scale-h: .96;
+  --tz-preview-tile-rot90-scale-w: .96;
+  --tz-preview-tile-rot90-scale-h: .96;
   --tz-preview-dir-font-size: calc(0.9rem * 0.9);
   --tz-preview-tile-dir-nudge-x: 0px;
   --tz-preview-tile-dir-nudge-y: 0px;
@@ -1038,7 +1058,7 @@ button {
 
 .tz-main-v2__zone--info-bar {
   left: var(--tz-msv2-info-bar-x, 0%);
-  top: var(--tz-msv2-info-bar-y, 54.15%);
+  top: var(--tz-msv2-info-bar-y, var(--tz-msv2-board-y, 7.7%));
   width: var(--tz-msv2-info-bar-w, 100%);
   height: var(--tz-msv2-info-bar-h, 1.78%);
 }
@@ -1148,6 +1168,11 @@ button {
   display: none;
 }
 
+.main-screen-v2-tuner-page .tz-info-bar--tuner-mock {
+  z-index: 1;
+  pointer-events: none;
+}
+
 .main-screen-v2-tuner-page .tz-main-v2__zone-hit {
   position: absolute;
   border: none;
@@ -1175,9 +1200,40 @@ button {
 .tz-main-v2-app .tz-status,
 .tz-main-v2-app .tz-hints,
 .tz-main-v2-app .tz-guest-banner,
-.tz-main-v2-app .tz-game-message,
-.tz-main-v2-app .tz-info-bar {
+.tz-main-v2-app .tz-game-message {
   display: none !important;
+}
+
+/* Info bar — overlay on board (position from main-screen v2 layout tuner) */
+.tz-main-v2-app .tz-info-bar {
+  position: absolute;
+  left: var(--tz-msv2-info-bar-x, 0%);
+  top: var(--tz-msv2-info-bar-y, var(--tz-msv2-board-y, 7.7%));
+  width: var(--tz-msv2-info-bar-w, 100%);
+  height: var(--tz-msv2-info-bar-h, 1.78%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  container-type: size;
+}
+
+.tz-main-v2-app .tz-info-bar__text {
+  margin: 0;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: clamp(8px, 65cqh, 14px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--tz-gold-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 .tz-main-v2-app .tz-header {
@@ -1273,10 +1329,12 @@ button {
 
 .tz-main-v2-app .tz-tilebag-container {
   top: var(--tz-msv2-tilebag-y, 88.15%);
-  left: var(--tz-msv2-tilebag-x, 0%);
-  width: var(--tz-msv2-tilebag-w, 100%);
+  /* Match preview zone horizontally so left/right edges line up */
+  left: var(--tz-msv2-preview-x, var(--tz-msv2-tilebag-x, 0%));
+  width: var(--tz-msv2-preview-w, var(--tz-msv2-tilebag-w, 100%));
   height: var(--tz-msv2-tilebag-h, 11.85%);
   --tz-y-tilebag-nudge: 0px;
+  --tz-x-tilebag: 0;
   --tz-w-tilebag: 100%;
   --tz-h-tilebag-frame: 100%;
 }
@@ -1540,6 +1598,14 @@ button {
   width: calc(var(--tz-user-data-sublevel-w-art, 44) / var(--tz-user-data-art-w, 104) * 100%);
   height: calc(var(--tz-user-data-sublevel-h-art, 24) / var(--tz-user-data-art-h, 72) * 100%);
   object-fit: contain;
+  object-position: center center;
+  transform: translate(
+      var(--tz-rank-sublevel-nudge-x, 0px),
+      var(--tz-rank-sublevel-nudge-y, 0px)
+    )
+    scaleX(var(--tz-rank-sublevel-w-scale, 1));
+  transform-origin: center center;
+  pointer-events: none;
 }
 
 .tz-preview-v2-user-data__sublevel-slot {
@@ -1649,6 +1715,15 @@ button {
   height: calc(var(--tz-game-data-date-h-art, 14) / var(--tz-game-data-art-h, 46) * 100%);
   justify-content: var(--tz-game-data-date-justify, center);
   align-items: var(--tz-game-data-date-align, center);
+}
+
+.tz-preview-v2-game-data__item--adv-id {
+  left: calc(var(--tz-game-data-adv-id-x-art, 0) / var(--tz-game-data-art-w, 70) * 100%);
+  top: calc(var(--tz-game-data-adv-id-y-art, 15) / var(--tz-game-data-art-h, 46) * 100%);
+  width: calc(var(--tz-game-data-adv-id-w-art, 70) / var(--tz-game-data-art-w, 70) * 100%);
+  height: calc(var(--tz-game-data-adv-id-h-art, 14) / var(--tz-game-data-art-h, 46) * 100%);
+  justify-content: var(--tz-game-data-adv-id-justify, center);
+  align-items: var(--tz-game-data-adv-id-align, center);
 }
 
 .tz-preview-v2-game-data__item--id {
@@ -1773,6 +1848,13 @@ button {
 .tz-preview-v2-game-data__date {
   font-variant-numeric: tabular-nums;
   font-size: calc(0.95em * var(--tz-game-data-date-font-scale, 1));
+}
+
+.tz-preview-v2-game-data__adv-id {
+  font-variant-numeric: tabular-nums;
+  font-size: calc(0.92em * var(--tz-game-data-adv-id-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .tz-preview-v2-game-data__id {
@@ -3212,6 +3294,9 @@ button {
     center top,
     center calc(-1 * var(--tz-tilebag-tab-h) * var(--tz-tilebag-skin-mid-h) / var(--tz-tilebag-skin-mid-art-h)),
     center bottom;
+  transform: translate(var(--tz-tilebag-art-offset-x), var(--tz-tilebag-art-offset-y))
+    scale(var(--tz-tilebag-art-scale));
+  transform-origin: center bottom;
 }
 
 .tz-tilebag-container.is-expanded .tz-tilebag-frame__skin {
@@ -3222,6 +3307,9 @@ button {
     var(--tz-tilebag-art-expanded-h) - var(--tz-tilebag-art-cap-top) - var(--tz-tilebag-art-cap-bottom)
   );
   --tz-tilebag-skin-art-h-scaled: calc(var(--tz-tilebag-art-expanded-h) / var(--tz-tilebag-art-w) * var(--tz-w-tilebag));
+  transform: translate(var(--tz-tilebag-art-expanded-offset-x), var(--tz-tilebag-art-expanded-offset-y))
+    scale(var(--tz-tilebag-art-expanded-scale));
+  transform-origin: center bottom;
 }
 
 .tz-tilebag-title-overlay,
@@ -3297,16 +3385,15 @@ button {
 }
 
 .tz-tilebag-container.is-expanded .tz-tilebag-expand-handle {
+  /* Expanded handle position is fully independent from collapsed nudges */
   top: calc(
     var(--tz-tilebag-tab-handle-top)
     + var(--tz-tilebag-handle-expanded-y-gap)
-    + var(--tz-tilebag-handle-nudge-y)
     + var(--tz-tilebag-handle-expanded-nudge-y)
   );
   left: calc(
     var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100%
     + var(--tz-tilebag-handle-expanded-x-offset)
-    + var(--tz-tilebag-handle-nudge-x)
     + var(--tz-tilebag-handle-expanded-nudge-x)
   );
 }
@@ -3318,7 +3405,6 @@ button {
 .tz-tilebag-title-overlay,
 .tz-tilebag-count-overlay {
   position: absolute;
-  top: var(--tz-tilebag-tab-count-top);
   z-index: 3;
   display: flex;
   align-items: center;
@@ -3328,37 +3414,48 @@ button {
 
 .tz-tilebag-title-overlay {
   left: calc(
-    var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100%
-    + var(--tz-tilebag-count-nudge-x)
-    + var(--tz-tilebag-title-offset-x)
+    var(--tz-tilebag-title-x) / var(--tz-tilebag-art-w) * 100%
     + var(--tz-tilebag-title-nudge-x)
   );
-  top: calc(var(--tz-tilebag-tab-count-top) + var(--tz-tilebag-title-nudge-y));
+  top: calc(
+    var(--tz-tilebag-title-y) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h)
+    + var(--tz-tilebag-title-nudge-y)
+  );
   width: max-content;
 }
 
 .tz-tilebag-count-overlay {
-  left: calc(var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100% + var(--tz-tilebag-count-nudge-x));
+  left: calc(
+    var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100%
+    + var(--tz-tilebag-count-nudge-x)
+  );
+  top: calc(
+    var(--tz-tilebag-count-y) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h)
+    + var(--tz-tilebag-count-nudge-y)
+  );
   width: calc(var(--tz-tilebag-count-w) / var(--tz-tilebag-art-w) * 100%);
 }
 
 .tz-tilebag-container.is-expanded .tz-tilebag-title-overlay {
-  top: calc(
-    var(--tz-tilebag-tab-count-top)
-    + var(--tz-tilebag-count-expanded-nudge-y)
-    + var(--tz-tilebag-title-expanded-nudge-y)
-  );
   left: calc(
-    var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100%
-    + var(--tz-tilebag-count-nudge-x)
-    + var(--tz-tilebag-title-offset-x)
-    + var(--tz-tilebag-title-nudge-x)
+    var(--tz-tilebag-title-x) / var(--tz-tilebag-art-w) * 100%
     + var(--tz-tilebag-title-expanded-nudge-x)
+  );
+  top: calc(
+    var(--tz-tilebag-title-y) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h)
+    + var(--tz-tilebag-title-expanded-nudge-y)
   );
 }
 
 .tz-tilebag-container.is-expanded .tz-tilebag-count-overlay {
-  top: calc(var(--tz-tilebag-tab-count-top) + var(--tz-tilebag-count-expanded-nudge-y));
+  left: calc(
+    var(--tz-tilebag-count-x) / var(--tz-tilebag-art-w) * 100%
+    + var(--tz-tilebag-count-expanded-nudge-x)
+  );
+  top: calc(
+    var(--tz-tilebag-count-y) / var(--tz-tilebag-art-cap-top) * var(--tz-tilebag-tab-h)
+    + var(--tz-tilebag-count-expanded-nudge-y)
+  );
 }
 
 .tz-tilebag-header__title {
@@ -3447,6 +3544,35 @@ button {
   transition: height var(--tz-tilebag-expand-duration) ease;
 }
 
+/* Collapsed bag: bottom horizontal scrollbar when more than 3 tiles (see wireBagScroll). */
+.tz-tilebag-container:not(.is-expanded) .tz-tilebag-track.tz-tilebag-track--h-scrollbar {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 163, 90, 0.65) rgba(0, 0, 0, 0.22);
+  padding-bottom: 1px;
+  box-sizing: border-box;
+}
+
+.tz-tilebag-container:not(.is-expanded) .tz-tilebag-track.tz-tilebag-track--h-scrollbar::-webkit-scrollbar {
+  display: block;
+  height: var(--tz-tilebag-h-scrollbar-size, 6px);
+}
+
+.tz-tilebag-container:not(.is-expanded) .tz-tilebag-track.tz-tilebag-track--h-scrollbar::-webkit-scrollbar-track {
+  margin: 0 2px;
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 999px;
+}
+
+.tz-tilebag-container:not(.is-expanded) .tz-tilebag-track.tz-tilebag-track--h-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(196, 163, 90, 0.72);
+  border-radius: 999px;
+}
+
+.tz-tilebag-container:not(.is-expanded) .tz-tilebag-track.tz-tilebag-track--h-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 176, 74, 0.9);
+}
+
 .tz-tilebag-container.is-expanded .tz-tilebag-track {
   left: calc(
     var(--tz-tilebag-track-left-art-expanded, var(--tz-tilebag-track-left-art)) / var(--tz-tilebag-art-w) * 100%
@@ -3462,7 +3588,7 @@ button {
   max-height: calc(
     var(--tz-tilebag-frame-h, var(--tz-h-tilebag-frame))
     - var(--tz-tilebag-tab-h)
-    - var(--tz-tilebag-expanded-cap-bottom)
+    - var(--tz-tilebag-track-expanded-cap-bottom)
     - var(--tz-tilebag-track-expanded-nudge-y)
     - var(--tz-tilebag-track-nudge-y-expanded, 0px)
   );
@@ -3533,6 +3659,7 @@ button {
   align-content: center;
   justify-content: center;
   width: 100%;
+  gap: var(--tz-tilebag-row-gap) var(--tz-tile-gap);
 }
 
 .tz-palette-h .palItem {
@@ -4673,6 +4800,8 @@ html.tz-phone-preview .tz-buy-hints-dialog {
   margin: 0 auto;
   max-width: 100%;
   box-sizing: border-box;
+  /* Same passport frame cap as auth-screen--profile (profile-screen.html). */
+  --tz-profile-max-design-width: min(100%, 420px);
   width: min(
     100%,
     var(--tz-profile-max-design-width),
@@ -4731,16 +4860,11 @@ html.tz-phone-preview .tz-profile-dialog {
 
 .tz-profile-dialog__guest-note {
   position: absolute;
-  left: var(--auth-profile-profileName-x, 15%);
-  top: calc(var(--auth-profile-profileName-y, 22.5%) + var(--auth-profile-profileName-h, 4%) + 0.5%);
-  width: var(--auth-profile-profileName-w, 70%);
-  margin: 0;
-  text-align: center;
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: #5c4028;
   pointer-events: none;
+}
+
+.tz-profile-dialog__guest-note[hidden] {
+  display: none !important;
 }
 
 .tz-profile-dialog__hit {
@@ -4838,21 +4962,23 @@ html.tz-phone-preview .tz-profile-dialog {
   z-index: 1;
   flex-shrink: 0;
   margin: auto;
-  /* Match game width (390px) — maxDesignWidth from puzzle_info_layout.json */
+  box-sizing: border-box;
   width: min(
-    100vw,
+    calc(100vw - 32px),
+    100%,
     var(--tz-pinfo-max-design-width, var(--tz-design-width)),
-    calc(var(--tz-pinfo-art-w) * 1px),
     calc((100svh - var(--tz-pinfo-display-pad)) * var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h))
   );
+  max-width: 100%;
+  max-height: calc(100svh - var(--tz-pinfo-display-pad));
   aspect-ratio: calc(var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
 }
 
 html.tz-phone-preview .tz-pinfo-dialog {
   width: min(
+    100%,
     var(--tz-pinfo-max-design-width, var(--tz-design-width)),
-    calc(var(--tz-pinfo-art-w) * 1px),
     calc((100svh - var(--tz-pinfo-display-pad)) * var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h))
   );
 }
@@ -5237,11 +5363,12 @@ html.tz-phone-preview .tz-pinfo-dialog {
 
 .tz-journal-root[data-journal-mode="record"] .tz-journal-list__row-main {
   line-height: 1.15;
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-list-row-font-scale, 1) * var(--tz-journal-list-row-main-font-scale, 1));
 }
 
 .tz-journal-root[data-journal-mode="record"] .tz-journal-list__row-sub {
   line-height: 1.1;
-  font-size: 0.8em;
+  font-size: calc(0.8em * var(--tz-journal-list-row-sub-font-scale, 1));
 }
 
 .tz-journal-root[data-journal-mode="record"] .tz-journal-field--id {
@@ -5256,7 +5383,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
 .tz-journal-root[data-journal-mode="record"] .tz-journal-field--id dd {
   white-space: nowrap;
   overflow: visible;
-  font-size: calc(var(--tz-journal-field-font-lg) * 0.9);
+  font-size: calc(var(--tz-journal-field-font-lg) * 0.9 * var(--tz-journal-field-id-value-font-scale, 1));
   letter-spacing: -0.01em;
 }
 
@@ -5283,6 +5410,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
   top: calc(var(--tz-journal-title-found-y, 10) * 1% + var(--tz-journal-title-found-nudge-y, 0px));
   width: calc(var(--tz-journal-title-found-w, 92) * 1%);
   height: calc(var(--tz-journal-title-found-h, 80) * 1%);
+  font-size: calc(var(--tz-journal-label-font) * var(--tz-journal-title-found-font-scale, 1));
 }
 
 .tz-journal-pane--bl .tz-journal-list-title-bar .tz-journal-field--title-recorded {
@@ -5290,6 +5418,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
   top: calc(var(--tz-journal-title-recorded-y, 10) * 1% + var(--tz-journal-title-recorded-nudge-y, 0px));
   width: calc(var(--tz-journal-title-recorded-w, 92) * 1%);
   height: calc(var(--tz-journal-title-recorded-h, 80) * 1%);
+  font-size: calc(var(--tz-journal-label-font) * var(--tz-journal-title-recorded-font-scale, 1));
 }
 
 .tz-journal-record-top {
@@ -5310,14 +5439,12 @@ html.tz-phone-preview .tz-pinfo-dialog {
 }
 
 .tz-journal-record-top .tz-journal-stat dt {
-  font-size: 0.78em;
   opacity: 0.8;
   margin: 0 0 1px;
   line-height: 1.15;
 }
 
 .tz-journal-record-top .tz-journal-stat dd {
-  font-size: var(--tz-journal-field-font-lg);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -5350,6 +5477,49 @@ html.tz-phone-preview .tz-pinfo-dialog {
   margin: 0;
   font-size: var(--tz-journal-field-font-lg);
   font-weight: 700;
+}
+
+.tz-journal-field--id dt {
+  font-size: calc(0.85em * var(--tz-journal-field-id-label-font-scale, 1));
+}
+.tz-journal-field--id dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-id-value-font-scale, 1));
+}
+.tz-journal-field--type dt {
+  font-size: calc(0.85em * var(--tz-journal-field-type-label-font-scale, 1));
+}
+.tz-journal-field--type dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-type-value-font-scale, 1));
+}
+.tz-journal-field--size dt {
+  font-size: calc(0.85em * var(--tz-journal-field-size-label-font-scale, 1));
+}
+.tz-journal-field--size dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-size-value-font-scale, 1));
+}
+.tz-journal-field--total dt {
+  font-size: calc(0.85em * var(--tz-journal-field-total-label-font-scale, 1));
+}
+.tz-journal-field--total dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-total-value-font-scale, 1));
+}
+.tz-journal-field--found dt {
+  font-size: calc(0.85em * var(--tz-journal-field-found-label-font-scale, 1));
+}
+.tz-journal-field--found dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-found-value-font-scale, 1));
+}
+.tz-journal-field--first dt {
+  font-size: calc(0.85em * var(--tz-journal-field-first-label-font-scale, 1));
+}
+.tz-journal-field--first dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-first-value-font-scale, 1));
+}
+.tz-journal-field--last dt {
+  font-size: calc(0.85em * var(--tz-journal-field-last-label-font-scale, 1));
+}
+.tz-journal-field--last dd {
+  font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-field-last-value-font-scale, 1));
 }
 
 .tz-journal-field--id {
@@ -5547,17 +5717,72 @@ html.tz-phone-preview .tz-pinfo-dialog {
 }
 
 .tz-journal-list__row--active {
-  outline: 2px solid rgba(212, 168, 48, 0.75);
-  outline-offset: 1px;
+  z-index: 1;
+  border-color: rgba(180, 120, 20, 0.95);
+  background: rgba(255, 232, 150, 0.78);
+  box-shadow:
+    inset 4px 0 0 rgba(212, 168, 48, 0.98),
+    0 0 0 1px rgba(212, 168, 48, 0.55);
+}
+
+.tz-journal-list__row--active.tz-journal-list__row--inProgress {
+  background: rgba(210, 236, 170, 0.82);
+}
+
+.tz-journal-list__row--active.tz-journal-list__row--complete {
+  background: rgba(190, 228, 150, 0.88);
+}
+
+.tz-journal-list__row--active .tz-journal-list__row-main {
+  color: #3d2808;
+}
+
+.tz-journal-list__row--nav-pulse {
+  animation: tz-journal-row-nav-pulse 0.45s ease-out;
+}
+
+@keyframes tz-journal-row-nav-pulse {
+  0% {
+    box-shadow:
+      inset 4px 0 0 rgba(212, 168, 48, 0.98),
+      0 0 0 1px rgba(212, 168, 48, 0.55),
+      0 0 0 0 rgba(255, 210, 80, 0.85);
+  }
+  45% {
+    box-shadow:
+      inset 4px 0 0 rgba(212, 168, 48, 0.98),
+      0 0 0 2px rgba(212, 168, 48, 0.85),
+      0 0 0 6px rgba(255, 210, 80, 0.45);
+  }
+  100% {
+    box-shadow:
+      inset 4px 0 0 rgba(212, 168, 48, 0.98),
+      0 0 0 1px rgba(212, 168, 48, 0.55),
+      0 0 0 0 rgba(255, 210, 80, 0);
+  }
 }
 
 .tz-journal-list__row-main {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2em;
   font-weight: 700;
   font-size: calc(var(--tz-journal-field-font-lg) * var(--tz-journal-list-row-font-scale, 1));
 }
 
+.tz-journal-list__row-id {
+  font-size: calc(1em * var(--tz-journal-list-row-main-font-scale, 1));
+}
+
+.tz-journal-list__row-detail {
+  font-weight: 500;
+  opacity: 0.88;
+  font-size: calc(0.92em * var(--tz-journal-list-row-detail-font-scale, 1));
+}
+
 .tz-journal-list__row-sub {
-  font-size: 0.85em;
+  font-size: calc(0.85em * var(--tz-journal-list-row-sub-font-scale, 1));
   opacity: 0.85;
 }
 
@@ -5625,6 +5850,10 @@ html.tz-phone-preview .tz-pinfo-dialog {
   box-sizing: border-box;
   overflow: hidden;
   pointer-events: auto;
+}
+
+.tz-journal-preview-wrap--active-solution {
+  box-shadow: inset 0 0 0 2px rgba(212, 168, 48, 0.72);
 }
 
 .tz-journal-preview-wrap[hidden] {
@@ -5795,6 +6024,36 @@ html.tz-phone-preview .tz-pinfo-dialog {
   top: calc(var(--tz-journal-btn-exit-y) * 1% + var(--tz-journal-btn-exit-nudge-y));
   width: calc(var(--tz-journal-btn-exit-w) * 1%);
   height: calc(var(--tz-journal-btn-exit-h) * 1%);
+}
+
+.tz-journal-field--btn-library-back {
+  left: calc(var(--tz-journal-btn-library-back-x, 94) * 1% + var(--tz-journal-btn-library-back-nudge-x, 0px));
+  top: calc(var(--tz-journal-btn-library-back-y, 88) * 1% + var(--tz-journal-btn-library-back-nudge-y, 0px));
+  width: calc(var(--tz-journal-btn-library-back-w, 9) * 1%);
+  height: calc(var(--tz-journal-btn-library-back-h, 5.5) * 1%);
+  z-index: 5;
+  overflow: visible;
+}
+
+.tz-journal-field--btn-library-back[hidden] {
+  display: none !important;
+}
+
+.tz-journal-field--btn-library-back img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-journal-field--btn-library-back:hover img {
+  filter: brightness(1.08);
+}
+
+.tz-journal-field--btn-library-back:active img {
+  filter: brightness(1.14) drop-shadow(0 0 6px rgba(232, 185, 35, 0.55));
 }
 
 .tz-journal-revisit {
@@ -6397,11 +6656,28 @@ body.tz-modal-open .tz-menu-btn {
 .tz-menu-plaque {
   position: relative;
   z-index: 1;
-  width: min(var(--tz-menu-display-w), calc(88vh * var(--tz-menu-art-w) / var(--tz-menu-art-h)));
+  box-sizing: border-box;
+  width: min(
+    var(--tz-menu-display-w),
+    calc(100vw - 32px),
+    var(--tz-design-width),
+    calc((100svh - 32px) * var(--tz-menu-art-w) / var(--tz-menu-art-h))
+  );
+  max-width: 100%;
+  max-height: calc(100svh - 32px);
   aspect-ratio: calc(var(--tz-menu-art-w) / var(--tz-menu-art-h));
   container-type: inline-size;
   overflow: visible;
   filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.5));
+}
+
+html.tz-phone-preview .tz-menu-plaque {
+  width: min(
+    var(--tz-menu-display-w),
+    100%,
+    var(--tz-design-width),
+    calc((100svh - 32px) * var(--tz-menu-art-w) / var(--tz-menu-art-h))
+  );
 }
 
 .tz-menu-plaque__bg {

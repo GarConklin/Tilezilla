@@ -1,14 +1,48 @@
 {
-  "container": { "yNudge": 25 },
+  "container": {
+    "yNudge": 25
+  },
   "collapsed": {
-    "track": { "left": 18, "width": 345, "nudgeX": 0, "nudgeY": 0 },
-    "arrowPrev": { "left": 0, "width": 15, "nudgeX": 0, "nudgeY": 0 },
-    "arrowNext": { "left": 366, "width": 15, "nudgeX": 0, "nudgeY": 0 }
+    "track": {
+      "left": 18,
+      "width": 345,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "arrowPrev": {
+      "left": 0,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "arrowNext": {
+      "left": 366,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0
+    }
   },
   "expanded": {
-    "track": { "left": 18, "width": 345, "nudgeX": 0, "nudgeY": 0 },
-    "arrowPrev": { "left": 0, "width": 15, "nudgeX": 0, "nudgeY": 0, "hidden": true },
-    "arrowNext": { "left": 366, "width": 15, "nudgeX": 0, "nudgeY": 0, "hidden": true }
+    "track": {
+      "left": 18,
+      "width": 345,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "arrowPrev": {
+      "left": 0,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    },
+    "arrowNext": {
+      "left": 366,
+      "width": 15,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    }
   },
   "handle": {
     "countX": 213,
@@ -36,6 +70,7 @@
   "tiles": {
     "cell": 34,
     "gap": 5,
+    "gapRow": 4,
     "thumbHScale": 0.92,
     "fitInsetY": 6,
     "vNudge": -8
@@ -56,6 +91,8 @@
     "maxOverlap": 72,
     "frameCollapsedH": 94,
     "trackCollapsedH": 48,
-    "trackExpandedNudgeY": 0
+    "trackExpandedNudgeY": 0,
+    "expandedBottomCapArt": 22,
+    "trackExpandedExtraH": 0
   }
 }

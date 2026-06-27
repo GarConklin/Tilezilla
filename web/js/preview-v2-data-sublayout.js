@@ -33,12 +33,14 @@ export const PREVIEW_V2_DATA_SECTIONS = {
     items: {
       gameType: { label: 'Challenge type', cssKey: 'type' },
       gameDate: { label: 'Date', cssKey: 'date' },
+      advId: { label: 'Adv_ID', cssKey: 'adv-id' },
       puzzleId: { label: 'Puzzle ID', cssKey: 'id' },
     },
     textLayout: true,
     defaults: {
       gameType: { x: 0, y: 2, w: 70, h: 14, fontScale: 1, justify: 'center', align: 'center' },
       gameDate: { x: 0, y: 15, w: 70, h: 14, fontScale: 1, justify: 'center', align: 'center' },
+      advId: { x: 0, y: 15, w: 70, h: 14, fontScale: 0.92, justify: 'center', align: 'center' },
       puzzleId: { x: 0, y: 29, w: 70, h: 15, fontScale: 1, justify: 'center', align: 'center' },
     },
   },

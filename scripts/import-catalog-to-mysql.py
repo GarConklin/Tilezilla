@@ -77,7 +77,7 @@ def parse_challenge_date(raw: str) -> str:
         return s
     from datetime import datetime
 
-    for fmt in ("%d-%b-%y", "%d-%b-%Y", "%Y-%m-%d"):
+    for fmt in ("%m/%d/%Y", "%m/%d/%y", "%d-%b-%y", "%d-%b-%Y", "%Y-%m-%d"):
         try:
             return datetime.strptime(s, fmt).strftime("%Y-%m-%d")
         except ValueError:

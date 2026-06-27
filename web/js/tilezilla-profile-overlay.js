@@ -10,7 +10,7 @@ import {
   logoutRegisteredUser,
   showLoginRequired,
 } from './tilezilla-guest.js';
-import { applyAuthScreenLayout, getProfileOverlayLayoutTarget, loadAuthScreenLayout } from './auth-screen-layout.js';
+import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
 import { refreshProfilePassportStats } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
@@ -62,17 +62,21 @@ function closeProfileOverlayPopup() {
   document.body.classList.remove('tz-modal-open');
 }
 
-export async function openProfileOverlay() {
+async function ensureProfileOverlayLayout(root = document) {
   try {
-    const layout = await loadAuthScreenLayout({ preferFile: true, screenKey: 'profile' });
-    const target = getProfileOverlayLayoutTarget(document);
-    if (target) applyAuthScreenLayout(layout, 'profile', target);
+    await refreshProfileOverlayLayoutFromDisk(root);
   } catch (err) {
     console.warn('Profile overlay layout:', err);
   }
+}
+
+export async function openProfileOverlay() {
+  const overlayRoot = document.getElementById('profileOverlayRoot');
+  await ensureProfileOverlayLayout(document);
   refreshProfileFields();
-  void refreshProfileRankIcons();
-  void refreshProfilePassportStats({ root: document.getElementById('profileOverlayRoot') || document });
+  await refreshProfileRankIcons(window.__app?.progress ?? null, overlayRoot || document);
+  await refreshProfilePassportStats({ root: overlayRoot || document });
+  await ensureProfileOverlayLayout(document);
   openProfileOverlayPopup();
 }
 
@@ -129,5 +133,33 @@ export function initProfileOverlay({
     closeProfileOverlayPopup();
   });
 
+  void ensureProfileOverlayLayout(document).then(() => {
+    refreshProfileFields();
+    void refreshProfileRankIcons(window.__app?.progress ?? null, root).then(() => {
+      void refreshProfilePassportStats({ root });
+    });
+  });
+
+  window.addEventListener('tilezilla:auth-screen-layout-saved', () => {
+    void ensureProfileOverlayLayout(document);
+  });
+
+  window.addEventListener('focus', () => {
+    if (!root.hidden) {
+      void ensureProfileOverlayLayout(document);
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'tilezilla:auth-screen-layout-version') {
+      void ensureProfileOverlayLayout(document);
+    }
+  });
+
   return { openProfileOverlay, closeProfileOverlayPopup };
+}
+
+// Apply tuned layout as soon as overlay markup exists (tilezilla-v2.html body is parsed before modules run).
+if (document.getElementById('profileOverlayRoot')) {
+  void refreshProfileOverlayLayoutFromDisk();
 }

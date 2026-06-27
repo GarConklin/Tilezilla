@@ -5,6 +5,7 @@ import {
   buildTilebagLayoutReport,
   clearTilebagLayoutCache,
   clearTilebagLayoutDraft,
+  computeExpandedTilebagHeights,
   getTilebagBoxItem,
   loadTilebagLayout,
   mergeTilebagLayout,
@@ -183,32 +184,26 @@ function readCssPxVar(name, fallback) {
 function measureMockExpansion() {
   const ex = workingLayout.expandedLayout || {};
   const capTop = readCssPxVar('--tz-tilebag-expanded-cap-top', 26);
-  const capBottom = readCssPxVar('--tz-tilebag-expanded-cap-bottom', 24);
+  const skinCapBottom = readCssPxVar('--tz-tilebag-expanded-cap-bottom', 22);
   const frameCollapsedH = ex.frameCollapsedH ?? 94;
-  const trackCollapsedH = ex.trackCollapsedH ?? 48;
   const maxRows = ex.maxRows ?? 3;
   const gap = readCssPxVar('--tz-tile-gap', 5);
+  const rowGap = readCssPxVar('--tz-tilebag-row-gap', gap);
   const cell = readCssPxVar('--tz-tilebag-cell', 34);
   const hScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz-tilebag-thumb-h-scale')) || 0.92;
-  const rowH = Math.ceil(cell * hScale) + gap;
-  const trackPad = 4;
+  const rowH = Math.ceil(cell * hScale) + rowGap;
 
-  let trackHeight = maxRows * rowH + trackPad;
-  let frameHeight = capTop + trackHeight + capBottom;
-
-  const growScale = ex.growScale ?? 1.65;
-  if (growScale !== 1) {
-    frameHeight = Math.max(frameCollapsedH, Math.round(frameHeight * growScale));
-    trackHeight = Math.max(trackCollapsedH, frameHeight - capTop - capBottom);
-  }
-
-  const heightTrim = ex.heightTrim ?? 40;
-  if (heightTrim > 0) {
-    frameHeight = Math.max(frameCollapsedH, frameHeight - heightTrim);
-    trackHeight = Math.max(trackCollapsedH, frameHeight - capTop - capBottom);
-  }
-
-  return { trackHeight, frameHeight };
+  return computeExpandedTilebagHeights({
+    maxRows,
+    rowHPx: rowH,
+    growScale: ex.growScale ?? 1.65,
+    heightTrim: ex.heightTrim ?? 40,
+    trackExpandedExtraH: ex.trackExpandedExtraH ?? 0,
+    frameCollapsedH,
+    capTopPx: capTop,
+    skinCapBottomPx: skinCapBottom,
+    trackPad: 4,
+  });
 }
 
 function applyExpandedPreviewMetrics() {

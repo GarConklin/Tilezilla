@@ -25,6 +25,7 @@ import {
 } from './challenge-begin-layout.js';
 import { initPuzzleInfoPopup, openPuzzleInfo } from './tilezilla-puzzle-info.js';
 import { initProfileOverlay, openProfileOverlay } from './tilezilla-profile-overlay.js';
+import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
@@ -103,8 +104,10 @@ import {
 import {
   applyTilebagLayout,
   clearTilebagLayoutCache,
+  computeExpandedTilebagHeights,
   loadTilebagLayout,
   reloadTilebagLayout,
+  resolveExpandedTilebagMetrics,
 } from './tilebag-layout.js';
 import {
   applyTilebagV2Layout,
@@ -129,6 +132,7 @@ import {
   buildAdventureMetaForLevel,
   findNextUnsolved,
   getPuzzleRequirement,
+  getAdvIdForLevel,
   getRankPanelState,
   isAdventurePuzzleComplete,
   isPuzzleSatisfied,
@@ -157,8 +161,22 @@ async function waitForApp() {
   return window.__app;
 }
 
-function formatDateLabel(iso) {
+function parseDailyCsvDate(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return null;
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (slash) {
+    return `${slash[3]}-${slash[1].padStart(2, '0')}-${slash[2].padStart(2, '0')}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return null;
+}
+
+function formatDateLabel(raw) {
+  const iso = parseDailyCsvDate(raw) || String(raw || '').trim();
+  if (!iso) return '—';
   const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return '—';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
@@ -178,7 +196,7 @@ function parseDailyCsv(text) {
     if (!line) continue;
     const [challenge_date, level_id, total_solutions] = line.split(',');
     rows.push({
-      date: challenge_date?.trim(),
+      date: parseDailyCsvDate(challenge_date?.trim()) || challenge_date?.trim(),
       levelId: (level_id || '').trim().replace(/\.json$/i, ''),
       totalSolutions: Number(total_solutions) || 0,
     });
@@ -190,9 +208,12 @@ async function resolveDailyChallenge(app) {
   const today = todayIso();
   let row = null;
   try {
-    const csv = await fetch('/data/daily_challenges_import.csv').then((r) => r.text());
+    const csv = await fetch(`/data/daily_challenges_import.csv?t=${today}`).then((r) => r.text());
     const rows = parseDailyCsv(csv);
-    row = rows.find((r) => r.date === today) || rows[0] || null;
+    row = rows.find((r) => {
+      const rowDate = parseDailyCsvDate(r.date) || r.date;
+      return rowDate === today;
+    }) || rows[0] || null;
   } catch (e) {
     console.warn('Daily challenge CSV unavailable', e);
   }
@@ -230,9 +251,24 @@ function resetPreviewAfterSolve() {
   window.__invalidSolve?.hide?.();
 }
 
+/** Saved board state so Undo can restore after Reset. Cleared on new placements or level load. */
+let boardBeforeResetSnapshot = null;
+
+function clearBoardResetSnapshot() {
+  boardBeforeResetSnapshot = null;
+}
+
 async function undoLastPlacedTile(app) {
   const tiles = app.state.tiles || [];
-  if (!tiles.length) return false;
+  if (!tiles.length) {
+    if (boardBeforeResetSnapshot) {
+      const snapshot = boardBeforeResetSnapshot;
+      boardBeforeResetSnapshot = null;
+      const restored = await app.restoreBoardFromSnapshot?.(snapshot);
+      if (restored) return 'restored';
+    }
+    return false;
+  }
 
   let last = null;
   for (let i = tiles.length - 1; i >= 0; i -= 1) {
@@ -403,6 +439,7 @@ async function afterLevelApplied(app) {
 }
 
 async function loadLevelOnBoard(app, level) {
+  clearBoardResetSnapshot();
   ensureBoardCellMetrics(app);
   await app.applyLevel(level);
   await afterLevelApplied(app);
@@ -474,7 +511,9 @@ function updateChallengePanel(level, meta) {
       dateEl.hidden = true;
     } else {
       dateEl.hidden = false;
-      dateEl.dateTime = meta?.date || '';
+      const dateIso = parseDailyCsvDate(meta?.date) || meta?.date || '';
+      if (dateIso) dateEl.setAttribute('datetime', dateIso);
+      else dateEl.removeAttribute('datetime');
       dateEl.textContent = meta?.date ? formatDateLabel(meta.date) : '—';
     }
   }
@@ -487,6 +526,7 @@ function updateChallengePanel(level, meta) {
   if (MAIN_V2_SHELL) {
     const typeV2 = $('previewV2GameType');
     const dateV2 = $('previewV2GameDate');
+    const advIdV2 = $('previewV2AdvId');
     const idV2 = $('previewV2PuzzleId');
     const solutionV2 = $('previewV2SolutionCount');
     if (typeV2 && eyebrow) typeV2.textContent = eyebrow.textContent;
@@ -497,8 +537,20 @@ function updateChallengePanel(level, meta) {
         dateV2.hidden = true;
       } else {
         dateV2.hidden = false;
-        dateV2.dateTime = meta?.date || '';
+        const dateIso = parseDailyCsvDate(meta?.date) || meta?.date || '';
+        if (dateIso) dateV2.setAttribute('datetime', dateIso);
+        else dateV2.removeAttribute('datetime');
         dateV2.textContent = meta?.date ? formatDateLabel(meta.date) : '—';
+      }
+    }
+    if (advIdV2) {
+      if (screen === 'adventure' || screen === 'random') {
+        const advId = meta?.advId;
+        advIdV2.hidden = false;
+        advIdV2.textContent = Number.isFinite(advId) ? String(advId) : '—';
+      } else {
+        advIdV2.hidden = true;
+        advIdV2.textContent = '';
       }
     }
     if (idV2) idV2.textContent = level?.id || meta?.levelId || '—';
@@ -899,6 +951,17 @@ function showGameMessage(msg, kind = '') {
   el.className = `tz-game-message${kind ? ` tz-game-message--${kind}` : ''}`;
 }
 
+function syncTileBagHorizontalScrollbar(track, container) {
+  if (!track) return;
+  const isExpanded = tileBagExpanded || container?.classList.contains('is-expanded');
+  if (isExpanded) {
+    track.classList.remove('tz-tilebag-track--h-scrollbar');
+    return;
+  }
+  const tileCount = track.querySelectorAll('.palItem:not(.palItem--removed)').length;
+  track.classList.toggle('tz-tilebag-track--h-scrollbar', tileCount > 3);
+}
+
 function wireBagScroll() {
   const track = $('tileBagTrack');
   const prev = $('bagPrev');
@@ -910,6 +973,8 @@ function wireBagScroll() {
     if (!tileBagExpanded && container?.classList.contains('is-expanded')) {
       applyTileBagExpandedLayout(container, false);
     }
+
+    syncTileBagHorizontalScrollbar(track, container);
 
     if (tileBagExpanded || container?.classList.contains('is-expanded')) {
       if (prev) prev.disabled = true;
@@ -971,31 +1036,68 @@ function readCssInt(varName, fallback) {
 
 function getTileRowHeightPx() {
   const root = getComputedStyle(document.documentElement);
-  const gap = parseFloat(root.getPropertyValue('--tz-tile-gap')) || 5;
+  const rowGap = parseFloat(root.getPropertyValue('--tz-tilebag-row-gap'))
+    || parseFloat(root.getPropertyValue('--tz-tile-gap'))
+    || 4;
   const thumbs = document.querySelectorAll('.tz-palette-h .palItem:not(.palItem--removed) .palThumb');
   if (thumbs.length) {
     let maxH = 0;
     for (const thumb of thumbs) {
       maxH = Math.max(maxH, thumb.getBoundingClientRect().height);
     }
-    if (maxH > 0) return maxH + gap;
+    if (maxH > 0) return maxH + rowGap;
   }
   const cell = parseFloat(root.getPropertyValue('--tz-tilebag-cell')) || 34;
   const hScale = parseFloat(root.getPropertyValue('--tz-tilebag-thumb-h-scale')) || 0.8;
-  return Math.ceil(cell * hScale) + gap;
+  return Math.ceil(cell * hScale) + rowGap;
+}
+
+function readCssPxSigned(varName, fallback) {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName));
+  return Number.isFinite(v) ? v : fallback;
 }
 
 function measureTileBagExpansion(container) {
   const preview = document.querySelector('.tz-preview-section');
   const frame = container?.querySelector('.tz-tilebag-frame');
+  const frameCollapsedH = readCssPx('--tz-h-tilebag-frame', TILE_BAG.frameCollapsedH);
   const maxRows = readCssInt('--tz-tilebag-expanded-max-rows', TILE_BAG.maxRows);
   const capTop = readCssPx('--tz-tilebag-expanded-cap-top', 26);
-  const capBottom = readCssPx('--tz-tilebag-expanded-cap-bottom', 24);
+  const skinCapBottom = readCssPx('--tz-tilebag-expanded-cap-bottom', 22);
   const rowH = getTileRowHeightPx();
-  const rows = maxRows;
+  const growScale = readCssFloat('--tz-tilebag-expanded-grow-scale', 1);
+  const heightTrim = readCssPx('--tz-tilebag-expanded-height-trim', 0);
+  const trackExpandedExtraH = readCssPxSigned('--tz-tilebag-track-expanded-extra-h', 0);
+  const trackExpandedH = readCssPx('--tz-tilebag-track-expanded-h', 0);
+  const trackExpandedNudgeY = readCssPxSigned('--tz-tilebag-track-expanded-nudge-y', 0);
+  const trackNudgeYExpanded = readCssPxSigned('--tz-tilebag-track-nudge-y-expanded', 0);
+  const tabH = readCssPx('--tz-tilebag-tab-h', 26);
+  const trackCapBottom = readCssPx('--tz-tilebag-track-expanded-cap-bottom', 22);
+  const frameArtMinH = MAIN_V2_SHELL ? readCssPx('--tz-tilebag-art-expanded-h', 0) : 0;
 
-  let trackHeight = rows * rowH + TILE_BAG.trackPad;
-  let frameHeight = capTop + trackHeight + capBottom;
+  let { trackHeight, frameHeight } = computeExpandedTilebagHeights({
+    maxRows,
+    rowHPx: rowH,
+    growScale,
+    heightTrim,
+    trackExpandedExtraH: 0,
+    frameCollapsedH,
+    capTopPx: capTop,
+    skinCapBottomPx: skinCapBottom,
+    trackPad: TILE_BAG.trackPad,
+  });
+
+  ({ trackHeight, frameHeight } = resolveExpandedTilebagMetrics({
+    expandedLayout: { trackExpandedH, trackExpandedExtraH, trackExpandedNudgeY },
+    computedTrackHeight: trackHeight,
+    computedFrameHeight: frameHeight,
+    frameCollapsedH,
+    tabHPx: tabH,
+    trackCapBottomPx: trackCapBottom,
+    trackExpandedNudgeY,
+    trackNudgeYExpanded,
+    frameArtMinHPx: frameArtMinH,
+  }));
 
   if (preview && frame) {
     const previewRect = preview.getBoundingClientRect();
@@ -1004,41 +1106,20 @@ function measureTileBagExpansion(container) {
     const gapAbove = frameRect.top - previewRect.bottom;
     const maxUpwardGrow = readCssPx('--tz-tilebag-expanded-max-overlap', 72);
     const maxFrameHeight =
-      TILE_BAG.frameCollapsedH + Math.max(0, gapAbove - margin) + maxUpwardGrow;
+      frameCollapsedH + Math.max(0, gapAbove - margin) + maxUpwardGrow;
     if (frameHeight > maxFrameHeight) {
-      frameHeight = Math.max(TILE_BAG.frameCollapsedH, maxFrameHeight);
-      trackHeight = Math.max(
-        TILE_BAG.trackCollapsedH,
-        frameHeight - capTop - capBottom,
+      frameHeight = Math.max(frameCollapsedH, maxFrameHeight);
+      const maxTrackH = Math.max(
+        8,
+        frameHeight - tabH - trackCapBottom - trackExpandedNudgeY - trackNudgeYExpanded,
       );
+      trackHeight = trackExpandedH > 0
+        ? Math.min(trackExpandedH + trackExpandedExtraH, maxTrackH)
+        : Math.min(trackHeight, maxTrackH);
     }
   }
 
-  const growScale = readCssFloat('--tz-tilebag-expanded-grow-scale', 1);
-  if (growScale !== 1) {
-    frameHeight = Math.max(
-      TILE_BAG.frameCollapsedH,
-      Math.round(frameHeight * growScale),
-    );
-    trackHeight = Math.max(
-      TILE_BAG.trackCollapsedH,
-      frameHeight - capTop - capBottom,
-    );
-  }
-
-  const heightTrim = readCssPx('--tz-tilebag-expanded-height-trim', 0);
-  if (heightTrim > 0) {
-    frameHeight = Math.max(
-      TILE_BAG.frameCollapsedH,
-      frameHeight - heightTrim,
-    );
-    trackHeight = Math.max(
-      TILE_BAG.trackCollapsedH,
-      frameHeight - capTop - capBottom,
-    );
-  }
-
-  return { rows, trackHeight, frameHeight };
+  return { rows: maxRows, trackHeight, frameHeight };
 }
 
 function applyTileBagExpandedLayout(container, expanded) {
@@ -1247,9 +1328,11 @@ async function loadRandomVenturePuzzle(app) {
     resetPuzzleTimer();
     displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     await refreshPaletteIfReady(app);
+    const path = await loadAdventurePath();
     updateChallengePanel(level, {
       screen: 'random',
       totalSolutions: level.totalUniqueSolutions,
+      advId: getAdvIdForLevel(path, level.id),
     });
     updateTileBagCount(app);
     updateValidationState(app);
@@ -1415,6 +1498,18 @@ function wireBottomNav(getApp) {
         return;
       }
 
+      if (screen === 'library') {
+        if (MAIN_V2_SHELL) closeBottomMenuV2();
+        const returnScreen = appRoot?.dataset?.screen || 'daily-challenge';
+        window.__journalApi?.openJournal?.({
+          mode: 'library',
+          resumeGameOnClose: true,
+          resumeLevelId: app?.state?.currentLevel?.id || null,
+          resumeScreen: returnScreen,
+        });
+        return;
+      }
+
       document.querySelectorAll('.tz-bottom-nav__hit').forEach((i) => {
         i.classList.toggle('tz-bottom-nav__hit--active', i === item);
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
@@ -1430,8 +1525,6 @@ function wireBottomNav(getApp) {
         await loadDailyPuzzle(app);
       } else if (screen === 'adventure') {
         await loadAdventurePuzzle(app);
-      } else if (screen === 'library') {
-        window.__journalApi?.openJournal?.({ mode: 'library' });
       } else {
         showGameMessage(`${BOTTOM_NAV_LABELS[screen] || screen} — coming soon`, 'info');
       }
@@ -1442,6 +1535,11 @@ function wireBottomNav(getApp) {
 function wireActions(app) {
   $('resetBtn')?.addEventListener('click', async () => {
     if (app.boardHasHintTiles?.() && !confirm('Remove hint tiles from the board?')) return;
+    if ((app.state.tiles || []).length) {
+      boardBeforeResetSnapshot = app.cloneBoardState?.() ?? null;
+    } else {
+      clearBoardResetSnapshot();
+    }
     await app.clearBoard();
     resetPuzzleTimer();
     dismissDiscoveryForBoardEdit();
@@ -1451,6 +1549,13 @@ function wireActions(app) {
 
   $('undoBtn')?.addEventListener('click', async () => {
     const removed = await undoLastPlacedTile(app);
+    if (removed === 'restored') {
+      syncBoardChrome(app);
+      app.syncPreviewFromBoardSelection?.({ preferLastPlaced: true });
+      app.renderActivePreview?.();
+      showGameMessage('Board restored.', 'info');
+      return;
+    }
     if (!removed) {
       showGameMessage(
         (app.state.tiles || []).length
@@ -1639,6 +1744,7 @@ function wirePuzzleTimer(app) {
   resetPuzzleTimer();
   app.onManualTilePlaced = (tile) => {
     if (tile?.fromHint) return;
+    clearBoardResetSnapshot();
     startPuzzleTimerOnFirstPlacement();
   };
 
@@ -1711,9 +1817,16 @@ async function loadJournalPuzzleOnBoard(app, levelId) {
   } else if (journalSource === 'daily-challenge') {
     updateChallengePanel(level, { screen: 'daily-challenge' });
   } else {
-    updateChallengePanel(level, {
-      screen: journalSource || appRoot?.dataset?.screen || 'daily-challenge',
-    });
+    const screen = journalSource || appRoot?.dataset?.screen || 'daily-challenge';
+    const panelMeta = {
+      screen,
+      totalSolutions: level.totalUniqueSolutions,
+    };
+    if (screen === 'random') {
+      const path = await loadAdventurePath();
+      panelMeta.advId = getAdvIdForLevel(path, levelId);
+    }
+    updateChallengePanel(level, panelMeta);
   }
 
   resetPuzzleTimer();
@@ -1856,6 +1969,11 @@ async function applyShellLayouts() {
   } catch (err) {
     console.warn('Challenge begin layout:', err);
   }
+  try {
+    await refreshProfileOverlayLayoutFromDisk();
+  } catch (err) {
+    console.warn('Profile overlay layout:', err);
+  }
 }
 
 async function init() {
@@ -1883,7 +2001,12 @@ async function init() {
       updateHintButtonState(app);
     };
   }
-  app.onBoardStateChanged = () => syncBoardChrome(app);
+  app.onBoardStateChanged = () => {
+    if (boardBeforeResetSnapshot && (app.state.tiles || []).length) {
+      clearBoardResetSnapshot();
+    }
+    syncBoardChrome(app);
+  };
   wireBottomNav(() => appRef);
   wireBottomMenuV2();
   updateGlobalHintCount(app);
@@ -1917,6 +2040,21 @@ async function init() {
     getApp: () => appRef,
     menuApi,
     loadPuzzleLevel: (levelId) => loadJournalPuzzleOnBoard(appRef, levelId),
+    onResumeGame: ({ levelId: _levelId, resumeScreen } = {}) => {
+      const app = appRef;
+      if (!app) return;
+      const appRoot = document.querySelector('.tz-app');
+      if (resumeScreen && appRoot) {
+        appRoot.setAttribute('data-screen', resumeScreen);
+        setActiveBottomNav(resumeScreen);
+        guestUser.syncGuestBanner();
+      }
+      const pinfo = $('puzzleInfoRoot');
+      if (pinfo) pinfo.hidden = true;
+      dismissDiscoveryForBoardEdit();
+      syncBoardChrome(app);
+      void app.renderActivePreview?.();
+    },
   });
   window.__journalApi = journalApi;
 
@@ -1939,6 +2077,13 @@ async function init() {
     },
     onRandom: () => openRandomPuzzlePopup(),
   });
+
+  try {
+    await refreshProfileOverlayLayoutFromDisk();
+  } catch (err) {
+    console.warn('Profile overlay layout (post-init):', err);
+  }
+
   initHintRules({ menuApi });
   initBuyHintsPopup({ menuApi });
   wireBuyHintsTriggers();
@@ -1959,6 +2104,8 @@ async function init() {
       void journalApi?.openJournal?.({
         mode: 'record',
         levelId: appRef?.state?.currentLevel?.id,
+        resumeGameOnClose: true,
+        resumeLevelId: appRef?.state?.currentLevel?.id,
       });
     },
     onResumeBoardEdit: () => {
@@ -1975,7 +2122,9 @@ async function init() {
       app.clearActivePreviewSelection?.();
       syncBoardChrome(app);
       await app.renderActivePreview?.();
-      if (removed) {
+      if (removed === 'restored') {
+        showGameMessage('Board restored.', 'info');
+      } else if (removed) {
         showGameMessage('Last tile removed.', 'info');
       }
     },
@@ -1997,7 +2146,8 @@ async function init() {
     getApp: () => appRef,
     menuApi,
     settingsApi,
-    onEquipped: () => {
+    onEquipped: async () => {
+      await refreshPaletteIfReady(appRef);
       updateTileBagCount(appRef);
       syncBoardChrome(appRef);
     },
@@ -2201,16 +2351,25 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-window.addEventListener('focus', () => {
+function refreshMainScreenV2LayoutsOnReturn() {
+  void refreshMainScreenV2LayoutFromDisk();
   void refreshPreviewLayoutFromDisk();
   void refreshHintV2LayoutFromDisk();
+}
+
+window.addEventListener('focus', refreshMainScreenV2LayoutsOnReturn);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') refreshMainScreenV2LayoutsOnReturn();
 });
 
 async function refreshMainScreenV2LayoutFromDisk() {
   if (!MAIN_V2_SHELL) return;
   try {
     applyMainScreenV2Layout(await reloadMainScreenV2Layout());
-    requestAnimationFrame(() => syncHintRulesWindowGeometry());
+    requestAnimationFrame(() => {
+      updateMainV2BoardFit();
+      syncHintRulesWindowGeometry();
+    });
   } catch (err) {
     console.warn('Main screen v2 layout reload:', err);
   }
@@ -2224,6 +2383,7 @@ window.addEventListener('storage', (e) => {
   if (
     e.key === 'tilezilla:layouts:main-screen-v2'
     || e.key === 'tilezilla:layouts:main-screen-v2:pending'
+    || e.key === 'tilezilla:main-screen-v2-layout-version'
   ) {
     void refreshMainScreenV2LayoutFromDisk();
   }
@@ -2375,6 +2535,10 @@ window.addEventListener('focus', () => {
   void refreshHintRulesLayoutFromDisk();
 });
 
+window.addEventListener('tilezilla:auth-screen-layout-saved', () => {
+  void refreshProfileOverlayLayoutFromDisk();
+});
+
 async function refreshJournalLayoutFromDisk() {
   clearJournalLayoutCache();
   try {
@@ -2409,6 +2573,9 @@ async function refreshTilebagLayoutFromDisk() {
     if (container && tileBagExpanded) {
       applyTileBagExpandedLayout(container, true);
     }
+    if (window.__app) {
+      await refreshPaletteIfReady(window.__app);
+    }
   } catch (err) {
     console.warn('Tile bag layout reload:', err);
   }
@@ -2426,6 +2593,9 @@ window.addEventListener('storage', (e) => {
   if (e.key === 'tilezilla:journal-layout-version') {
     void refreshJournalLayoutFromDisk();
   }
+  if (e.key === 'tilezilla:auth-screen-layout-version') {
+    void refreshProfileOverlayLayoutFromDisk();
+  }
   if (e.key === 'tilezilla:tilebag-layout-version' && !MAIN_V2_SHELL) {
     void refreshTilebagLayoutFromDisk();
   }
@@ -2437,6 +2607,7 @@ window.addEventListener('storage', (e) => {
 window.addEventListener('focus', () => {
   void refreshJournalLayoutFromDisk();
   void refreshTilebagLayoutFromDisk();
+  void refreshProfileOverlayLayoutFromDisk();
 });
 
 window.addEventListener('tilezilla:sublevel-layout-saved', () => {

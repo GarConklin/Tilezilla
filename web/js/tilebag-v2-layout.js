@@ -20,20 +20,26 @@ export const DEFAULT_TILEBAG_V2_LAYOUT = {
     w: 390,
     collapsedH: 100,
     expandedH: 260,
+    offsetX: 0,
+    offsetY: 0,
+    scale: 1,
+    expandedOffsetX: 0,
+    expandedOffsetY: 0,
+    expandedScale: 1,
     collapsed: '/img/390x840-tile bag.png',
     expanded: '/img/expanded-tile bag.png',
     handlebar: '/img/handlebar-tilebag.png',
   },
   container: { yNudge: 0 },
   collapsed: {
-    track: { left: 18, width: 353, nudgeX: 0, nudgeY: 0 },
+    track: { left: 14, width: 361, nudgeX: 0, nudgeY: 0 },
     arrowPrev: { left: 0, width: 15, nudgeX: 0, nudgeY: 0 },
-    arrowNext: { left: 374, width: 15, nudgeX: 0, nudgeY: 0 },
+    arrowNext: { left: 375, width: 15, nudgeX: 0, nudgeY: 0 },
   },
   expanded: {
-    track: { left: 18, width: 353, nudgeX: 0, nudgeY: 0 },
+    track: { left: 6, width: 384, nudgeX: 0, nudgeY: 0 },
     arrowPrev: { left: 0, width: 15, nudgeX: 0, nudgeY: 0, hidden: true },
-    arrowNext: { left: 374, width: 15, nudgeX: 0, nudgeY: 0, hidden: true },
+    arrowNext: { left: 375, width: 15, nudgeX: 0, nudgeY: 0, hidden: true },
   },
   handle: {
     countX: 216,
@@ -41,6 +47,8 @@ export const DEFAULT_TILEBAG_V2_LAYOUT = {
     countW: 60,
     countH: 14,
     countNudgeX: -3,
+    countNudgeY: 0,
+    countExpandedNudgeX: 0,
     countExpandedNudgeY: -3,
     handleXOffset: -55,
     handleYGap: 1,
@@ -50,17 +58,20 @@ export const DEFAULT_TILEBAG_V2_LAYOUT = {
     handleHitH: 12,
     handleExpandedXOffset: -55,
     handleExpandedYGap: 1,
-    handleExpandedNudgeX: -8,
-    handleExpandedNudgeY: -1,
-    titleOffsetX: -70,
-    titleNudgeX: 10,
+    handleExpandedNudgeX: 13,
+    handleExpandedNudgeY: -5,
+    titleX: 146,
+    titleY: 1,
+    titleNudgeX: 0,
     titleNudgeY: 0,
     titleExpandedNudgeX: 0,
     titleExpandedNudgeY: 0,
+    titleOffsetX: -70,
   },
   tiles: {
     cell: 34,
     gap: 4,
+    gapRow: 4,
     thumbHScale: 0.94,
     fitInsetY: 2,
     vNudge: -2,
@@ -81,7 +92,10 @@ export const DEFAULT_TILEBAG_V2_LAYOUT = {
     maxOverlap: 56,
     frameCollapsedH: 100,
     trackCollapsedH: 49,
+    trackExpandedH: 0,
     trackExpandedNudgeY: 0,
+    expandedBottomCapArt: 22,
+    trackExpandedExtraH: 0,
   },
 };
 
@@ -132,9 +146,9 @@ export async function loadTilebagV2Layout({ force = false } = {}) {
   }
 
   let raw = null;
-  const tunerDraft = isTilebagV2TunerPage() && localStorage.getItem(LS_PENDING_KEY) === '1';
+  const hasDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
 
-  if (tunerDraft) {
+  if (hasDraft) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -143,7 +157,7 @@ export async function loadTilebagV2Layout({ force = false } = {}) {
     }
   }
 
-  if (!tunerDraft) {
+  if (!raw) {
     try {
       const res = await fetch(`/data/tilebag_v2_layout.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) raw = await res.json();
@@ -152,7 +166,7 @@ export async function loadTilebagV2Layout({ force = false } = {}) {
     }
   }
 
-  if (!raw && !tunerDraft) {
+  if (!raw) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -196,6 +210,13 @@ export function applyTilebagV2Layout(layout, target = document.documentElement) 
   if (collapsedUrl) target.style.setProperty('--tz-img-tilebag', collapsedUrl);
   if (expandedUrl) target.style.setProperty('--tz-img-tilebag-expanded', expandedUrl);
   if (handleUrl) target.style.setProperty('--tz-img-tilebag-handlebar', handleUrl);
+
+  target.style.setProperty('--tz-tilebag-art-offset-x', `${art.offsetX ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-art-offset-y', `${art.offsetY ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-art-scale', String(art.scale ?? 1));
+  target.style.setProperty('--tz-tilebag-art-expanded-offset-x', `${art.expandedOffsetX ?? art.offsetX ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-art-expanded-offset-y', `${art.expandedOffsetY ?? art.offsetY ?? 0}px`);
+  target.style.setProperty('--tz-tilebag-art-expanded-scale', String(art.expandedScale ?? art.scale ?? 1));
 }
 
 export function buildTilebagV2LayoutReport(layout) {
@@ -206,6 +227,8 @@ export function buildTilebagV2LayoutReport(layout) {
     `collapsed PNG: ${art.collapsed || '(default)'}`,
     `expanded PNG: ${art.expanded || '(default)'}`,
     `handlebar PNG: ${art.handlebar || '(default)'}`,
+    `graphic offset (collapsed): ${art.offsetX ?? 0}, ${art.offsetY ?? 0} · scale ${art.scale ?? 1}`,
+    `graphic offset (expanded): ${art.expandedOffsetX ?? art.offsetX ?? 0}, ${art.expandedOffsetY ?? art.offsetY ?? 0} · scale ${art.expandedScale ?? art.scale ?? 1}`,
     '',
     `Container Y nudge: ${merged.container?.yNudge ?? 0}px`,
     '',
@@ -221,10 +244,12 @@ export function buildTilebagV2LayoutReport(layout) {
     lines.push(`${TILEBAG_ITEM_DEFS[key]?.label || key}: left ${b.left} · width ${b.width}${b.hidden ? ' (hidden)' : ''}`);
   }
   const t = merged.tiles;
-  lines.push('', `Tiles: cell ${t.cell}px · gap ${t.gap}px · hScale ${t.thumbHScale} · insetY ${t.fitInsetY} · vNudge ${t.vNudge}`);
+  lines.push('', `Tiles: cell ${t.cell}px · gap ${t.gap}px · row gap ${t.gapRow ?? t.gap ?? 4}px · hScale ${t.thumbHScale} · insetY ${t.fitInsetY} · vNudge ${t.vNudge}`);
   const g = merged.glow;
   lines.push(`Glow: ring ${g.ring}px · blur ${g.blur}px · rgba(${g.r},${g.g},${g.b},${g.alpha})`);
   const ex = merged.expandedLayout;
-  lines.push(`Expanded: maxRows ${ex.maxRows} · grow ${ex.growScale} · trim ${ex.heightTrim}px`);
+  lines.push(
+    `Expanded: maxRows ${ex.maxRows} · grow ${ex.growScale} · trim ${ex.heightTrim}px · track H ${ex.trackExpandedH ?? 0}px (0=auto) · extra H ${ex.trackExpandedExtraH ?? 0}px · bottom cap ${ex.expandedBottomCapArt ?? 22} art px`,
+  );
   return lines.join('\n');
 }

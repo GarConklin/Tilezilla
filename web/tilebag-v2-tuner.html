@@ -82,7 +82,9 @@
       width: 390px;
       margin: 0 auto;
       position: relative;
-      min-height: 120px;
+      min-height: 148px;
+      padding: 24px 0 20px;
+      overflow: visible;
       background: rgba(0, 0, 0, 0.25);
     }
     .tilebag-v2-tuner-page .mock-wrap .tz-tilebag-container {
@@ -90,10 +92,9 @@
       top: auto;
       left: auto;
       width: 100%;
-      height: 100px;
-      margin: 24px auto 0;
+      margin: 0 auto;
       --tz-w-tilebag: 100%;
-      --tz-h-tilebag-frame: 100%;
+      /* height + --tz-tilebag-frame-h set by applyExpandedPreviewMetrics() */
     }
     .tilebag-v2-tuner-page #tunerOverlayLayer {
       position: absolute;
@@ -133,6 +134,114 @@
       border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
       background: rgba(0, 0, 0, 0.3); color: #f4ecd8; font: inherit; font-size: 0.78rem;
     }
+    .tile-sizing-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(196, 163, 90, 0.2);
+    }
+    .tile-sizing-panel label {
+      font-size: 0.62rem;
+      color: #a8b8b4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .tile-sizing-panel input {
+      width: 100%;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.72rem;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay--ghost {
+      border-color: rgba(100, 200, 255, 0.55);
+      background: rgba(100, 200, 255, 0.07);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay:not(.tuner-overlay--ghost) {
+      z-index: 1;
+    }
+    .collapsed-track-panel {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(196, 163, 90, 0.2);
+    }
+    .collapsed-track-panel label {
+      font-size: 0.65rem;
+      color: #a8b8b4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .collapsed-track-panel input {
+      width: 100%;
+      margin-top: 2px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.72rem;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay .tuner-handle--s {
+      position: absolute;
+      left: 20%;
+      right: 20%;
+      bottom: -4px;
+      height: 8px;
+      cursor: ns-resize;
+      background: rgba(232, 185, 35, 0.85);
+      border-radius: 2px;
+      pointer-events: auto;
+    }
+    .tilebag-v2-tuner-page #tunerOverlayLayer .tuner-overlay .tuner-handle--se {
+      position: absolute;
+      right: -4px;
+      bottom: -4px;
+      width: 12px;
+      height: 12px;
+      cursor: nwse-resize;
+      background: rgba(232, 185, 35, 0.85);
+      border-radius: 2px;
+      pointer-events: auto;
+    }
+    .expanded-track-panel {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(196, 163, 90, 0.2);
+    }
+    .expanded-track-panel label {
+      font-size: 0.65rem;
+      color: #a8b8b4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .expanded-track-panel input {
+      width: 100%;
+      margin-top: 2px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.72rem;
+    }
   </style>
 </head>
 <body class="tilebag-v2-tuner-page">
@@ -164,6 +273,31 @@
         <option value="collapsed">Collapsed — horizontal scroll</option>
         <option value="expanded">Expanded — multi-row grid</option>
       </select>
+      <div class="tile-sizing-panel" id="tileSizingPanel">
+        <label>Tile width<input id="tileCellInput" type="number" min="16" max="72" step="1" title="Cell px — thumb width" /></label>
+        <label>Tile height<input id="tileHScaleInput" type="number" min="0.5" max="1.5" step="0.02" title="Height scale multiplier" /></label>
+        <label>Col gap<input id="tileGapInput" type="number" min="0" max="24" step="1" title="Space between tiles in a row" /></label>
+        <label>Row gap<input id="tileRowGapInput" type="number" min="0" max="24" step="1" title="Space between rows when expanded (e.g. 4px)" /></label>
+        <button type="button" class="btn" id="tileScaleDownBtn" style="grid-column:1" title="Shrink tiles 5% (collapsed-friendly)">Tile −5%</button>
+        <button type="button" class="btn" id="tileScaleUpBtn" style="grid-column:2" title="Grow tiles 5%; collapsed track height auto-grows">Tile +5%</button>
+      </div>
+      <div class="collapsed-track-panel" id="collapsedTrackPanel" hidden>
+        <label>Track height (collapsed px)
+          <input id="trackCollapsedHInput" type="number" min="8" max="120" step="1" title="Height of the horizontal scroll track when bag is collapsed." />
+        </label>
+      </div>
+      <div class="expanded-track-panel" id="expandedTrackPanel" hidden>
+        <label>Track height (expanded px, 0=auto)
+          <input id="trackExpandedHInput" type="number" min="0" max="240" step="1" title="Direct track slot height when expanded. 0 = auto from row count." />
+        </label>
+        <label style="margin-top:6px">Track bottom cap (art px)
+          <input id="trackBottomCapInput" type="number" min="0" max="40" step="1" title="Inset from frame bottom for the track slot. Use 0 to reach the graphic bottom." />
+        </label>
+        <label style="margin-top:6px">Track height fine-tune (px)
+          <input id="trackExtraHInput" type="number" min="-120" max="120" step="1" title="Added on top of track height (auto or explicit)." />
+        </label>
+        <button type="button" class="btn" id="fillTrackBtn" style="width:100%;margin-top:8px">Fill to art bottom</button>
+      </div>
       <div class="field-grid" id="fieldGrid"></div>
       <p class="readout" id="readout">—</p>
       <ul class="keys" id="keysList"></ul>
@@ -178,8 +312,8 @@
     </div>
 
     <div class="panel">
-      <h2>Preview — 390×100 v2 zone</h2>
-      <p style="margin:0 0 8px;font-size:0.65rem;color:#7a8a86">Click preview to focus. This tuner uses <strong>yellow overlay boxes</strong> (not click-on-item like hint/preview-data tuners). For tile <strong>height</strong>: select <strong>Tile size &amp; spacing</strong>, then <strong>Alt+scroll</strong> (or Tab to <em>tile height scale</em>, then scroll).</p>
+      <h2>Preview — tile bag v2 zone</h2>
+      <p style="margin:0 0 8px;font-size:0.65rem;color:#7a8a86">Expanded track: set <strong>Track height</strong> (or Ctrl+Shift+scroll / drag bottom edge). <strong>Bottom cap 0</strong> + <strong>Fill to art bottom</strong> reaches the PNG bottom. Width = Ctrl+scroll.</p>
       <div class="mock-stage" id="mockStage" tabindex="0">
         <div class="mock-wrap" id="mockWrap">
           <section class="tz-tilebag-container" id="mockTileBag">

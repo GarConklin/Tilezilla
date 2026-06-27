@@ -1,5 +1,10 @@
 /* Logged-in passport stat slots — shared by auth pages and in-game overlay */
 
+.auth-screen--profile [data-profile-slot][hidden],
+.tz-profile-dialog__stage [data-profile-slot][hidden] {
+  display: none !important;
+}
+
 .auth-screen--profile [data-profile-slot],
 .tz-profile-dialog__stage [data-profile-slot] {
   position: absolute;
@@ -7,12 +12,12 @@
   pointer-events: none;
 }
 
-.auth-screen--profile [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]),
-.tz-profile-dialog__stage [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]) {
+.auth-screen--profile [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]):not([data-profile-slot="profileName"]):not([data-profile-slot="guestNote"]),
+.tz-profile-dialog__stage [data-profile-slot]:not([data-profile-slot="rankBadge"]):not([data-profile-slot="sublevelIcon"]):not([data-profile-slot="profileName"]):not([data-profile-slot="guestNote"]) {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  text-align: left;
+  justify-content: flex-end;
+  text-align: right;
   font-weight: 600;
   color: #3d2e1a;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -20,6 +25,13 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   line-height: 1.15;
+}
+
+/* Logged-in tuner — stat slots: vertically centered, right-aligned (matches in-game) */
+.auth-screen-tuner-page .auth-screen__profile-stat.tuner-box[data-profile-slot] {
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .auth-screen-tuner-page [data-profile-slot].tuner-box {
@@ -34,15 +46,15 @@
   pointer-events: none;
 }
 
-.auth-screen--profile [data-profile-slot="rankBadge"],
-.tz-profile-dialog__stage [data-profile-slot="rankBadge"] {
+.auth-screen--profile [data-profile-slot="rankBadge"]:not(.auth-screen__profile-rank-badge),
+.tz-profile-dialog__stage [data-profile-slot="rankBadge"]:not(.auth-screen__profile-rank-badge) {
   left: var(--auth-profile-rankBadge-x, 14%);
   top: var(--auth-profile-rankBadge-y, 15.5%);
   width: var(--auth-profile-rankBadge-w, 26%);
   height: var(--auth-profile-rankBadge-h, 10%);
 }
 
-/* Rank badge + sublevel stack (same composition as rank-badge-preview / game panel) */
+/* Passport layout box (logged-in tuner rankBadge slot) — same geometry as preview user_data */
 .auth-screen__profile-rank-stack,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack {
   position: absolute;
@@ -53,45 +65,53 @@
   margin: 0;
   pointer-events: none;
   overflow: visible;
-  text-align: center;
-  --tz-rank-badge-top: 0;
-  --tz-rank-badge-h: 100%;
-  --tz-rank-sublevel-anchor-y: 0.78;
-  --tz-rank-badge-w-scale: 1.13;
+  --tz-user-data-art-w: 104;
+  --tz-user-data-art-h: 72;
 }
 
-.auth-screen__profile-rank-stack .auth-screen__profile-rank-badge,
-.tz-profile-dialog__stage .auth-screen__profile-rank-badge {
+.auth-screen__profile-rank-stack:not(.is-rank-ready),
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack:not(.is-rank-ready) {
+  visibility: hidden;
+}
+
+/* user_data_v2_layout.json art coords (scoped on stack; profile-screen has no shell.css) */
+.auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge-stack,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge-stack {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
+  top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-badge-stack-h-art, 42) / var(--tz-user-data-art-h, 72) * 100%);
+}
+
+.auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge {
   display: block;
-  width: auto;
-  max-width: 100%;
-  height: var(--tz-rank-badge-h);
-  margin: 0 auto;
-  transform: scaleX(var(--tz-rank-badge-w-scale, 1.13));
-  transform-origin: center top;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center top;
   pointer-events: none;
 }
 
-.auth-screen__profile-rank-stack .auth-screen__profile-rank-sublevel,
-.tz-profile-dialog__stage .auth-screen__profile-rank-sublevel {
+.auth-screen__profile-rank-stack .tz-preview-v2-user-data__sublevel,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__sublevel {
   position: absolute;
-  left: 50%;
-  top: calc(var(--tz-rank-badge-h) * var(--tz-rank-sublevel-anchor-y));
-  z-index: 1;
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: var(--tz-rank-sublevel-icon-h);
+  z-index: 2;
+  left: calc(var(--tz-user-data-sublevel-x-art, 30) / var(--tz-user-data-art-w, 104) * 100%);
+  top: calc(var(--tz-user-data-sublevel-y-art, 30) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-sublevel-w-art, 44) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-sublevel-h-art, 24) / var(--tz-user-data-art-h, 72) * 100%);
   object-fit: contain;
-  object-position: center;
-  transform: translate(-50%, -50%)
-    translate(
-      var(--tz-rank-sublevel-nudge-x),
-      var(--tz-rank-sublevel-nudge-y)
+  object-position: center center;
+  transform: translate(
+      var(--tz-rank-sublevel-nudge-x, 0px),
+      var(--tz-rank-sublevel-nudge-y, 0px)
     )
-    scaleX(var(--tz-rank-sublevel-w-scale));
+    scaleX(var(--tz-rank-sublevel-w-scale, 1));
   transform-origin: center center;
   pointer-events: none;
 }
@@ -152,6 +172,26 @@
   font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-passportId-font-scale, 1));
 }
 
+.auth-screen--profile [data-profile-slot="guestNote"],
+.tz-profile-dialog__stage [data-profile-slot="guestNote"],
+.tz-profile-dialog__guest-note[data-profile-slot="guestNote"] {
+  left: var(--auth-profile-guestNote-x, 15%);
+  top: var(--auth-profile-guestNote-y, 27%);
+  width: var(--auth-profile-guestNote-w, 70%);
+  height: var(--auth-profile-guestNote-h, 2%);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(clamp(0.55rem, 2vw, 0.62rem) * var(--auth-profile-guestNote-font-scale, 0.85));
+  font-weight: 600;
+  line-height: 1.25;
+  color: #5c4028;
+  pointer-events: none;
+  overflow: hidden;
+}
+
 .auth-screen--profile [data-profile-slot="explorersRegistered"],
 .tz-profile-dialog__stage [data-profile-slot="explorersRegistered"] {
   left: var(--auth-profile-explorersRegistered-x, 10%);
@@ -159,6 +199,33 @@
   width: var(--auth-profile-explorersRegistered-w, 35%);
   height: var(--auth-profile-explorersRegistered-h, 3.5%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-explorersRegistered-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="totalAdventurePuzzles"],
+.tz-profile-dialog__stage [data-profile-slot="totalAdventurePuzzles"] {
+  left: var(--auth-profile-totalAdventurePuzzles-x, 10%);
+  top: var(--auth-profile-totalAdventurePuzzles-y, 50%);
+  width: var(--auth-profile-totalAdventurePuzzles-w, 35%);
+  height: var(--auth-profile-totalAdventurePuzzles-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalAdventurePuzzles-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="totalKnownRoutes"],
+.tz-profile-dialog__stage [data-profile-slot="totalKnownRoutes"] {
+  left: var(--auth-profile-totalKnownRoutes-x, 10%);
+  top: var(--auth-profile-totalKnownRoutes-y, 53.5%);
+  width: var(--auth-profile-totalKnownRoutes-w, 35%);
+  height: var(--auth-profile-totalKnownRoutes-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalKnownRoutes-font-scale, 1));
+}
+
+.auth-screen--profile [data-profile-slot="largestSolution"],
+.tz-profile-dialog__stage [data-profile-slot="largestSolution"] {
+  left: var(--auth-profile-largestSolution-x, 54%);
+  top: var(--auth-profile-largestSolution-y, 50%);
+  width: var(--auth-profile-largestSolution-w, 38%);
+  height: var(--auth-profile-largestSolution-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-largestSolution-font-scale, 1));
 }
 
 .auth-screen--profile [data-profile-slot="todaysChallenge"],
@@ -215,6 +282,65 @@
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalPlayTime-font-scale, 1));
 }
 
+.auth-screen--profile .auth-screen__hit--nav-daily,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--nav-daily {
+  left: var(--auth-profile-navDaily-x, 3%);
+  top: var(--auth-profile-navDaily-y, 92%);
+  width: var(--auth-profile-navDaily-w, 22%);
+  height: var(--auth-profile-navDaily-h, 5.5%);
+}
+
+.auth-screen--profile .auth-screen__hit--nav-adventure,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--nav-adventure {
+  left: var(--auth-profile-navAdventure-x, 27%);
+  top: var(--auth-profile-navAdventure-y, 92%);
+  width: var(--auth-profile-navAdventure-w, 22%);
+  height: var(--auth-profile-navAdventure-h, 5.5%);
+}
+
+.auth-screen--profile .auth-screen__hit--nav-random,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--nav-random {
+  left: var(--auth-profile-navRandom-x, 51%);
+  top: var(--auth-profile-navRandom-y, 92%);
+  width: var(--auth-profile-navRandom-w, 22%);
+  height: var(--auth-profile-navRandom-h, 5.5%);
+}
+
+.auth-screen--profile .auth-screen__hit--nav-logout,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--nav-logout {
+  left: var(--auth-profile-navLogout-x, 75%);
+  top: var(--auth-profile-navLogout-y, 92%);
+  width: var(--auth-profile-navLogout-w, 22%);
+  height: var(--auth-profile-navLogout-h, 5.5%);
+}
+
+.auth-screen--profile .auth-screen__hit--back,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--back {
+  left: var(--auth-profile-back-x, 2%);
+  top: var(--auth-profile-back-y, 1.5%);
+  width: var(--auth-profile-back-w, 10%);
+  height: var(--auth-profile-back-h, 5%);
+}
+
+.auth-screen--profile .auth-screen__hit--close-x,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--close-x {
+  left: var(--auth-profile-closeX-x, 86%);
+  top: var(--auth-profile-closeX-y, 1.5%);
+  width: var(--auth-profile-closeX-w, 10%);
+  height: var(--auth-profile-closeX-h, 5%);
+}
+
+.auth-screen--profile .auth-screen__hit--back img,
+.auth-screen--profile .auth-screen__hit--close-x img,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--back img,
+.tz-profile-dialog__stage .tz-profile-dialog__hit--close-x img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
 .auth-screen-tuner-page .auth-screen__profile-icon.tuner-box {
   display: flex;
   align-items: center;
@@ -230,9 +356,42 @@
 }
 
 .auth-screen-tuner-page .auth-screen__profile-stat.tuner-box,
-.auth-screen-tuner-page .auth-screen__profile-icon.tuner-box,
+.auth-screen-tuner-page .auth-screen__profile-icon.tuner-box {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  background: rgba(100, 200, 255, 0.28) !important;
+  border: 2px solid rgba(100, 200, 255, 0.85) !important;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
 .auth-screen-tuner-page .auth-screen__profile-name.tuner-box,
-.auth-screen-tuner-page .auth-screen__hit.tuner-box {
+.auth-screen-tuner-page .tz-profile-dialog__name.tuner-box,
+.auth-screen-tuner-page .tz-profile-dialog__guest-note.tuner-box {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(100, 200, 255, 0.28) !important;
+  border: 2px solid rgba(100, 200, 255, 0.85) !important;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.auth-screen-tuner-page .tz-profile-dialog__guest-note.tuner-box {
+  white-space: normal;
+  line-height: 1.2;
+  padding: 2px 4px;
+}
+
+.auth-screen-tuner-page .auth-screen__hit.tuner-box,
+.auth-screen-tuner-page .tz-profile-dialog__hit.tuner-box {
   pointer-events: auto;
   justify-content: center;
   text-align: center;

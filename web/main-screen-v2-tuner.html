@@ -191,11 +191,11 @@
 <body>
   <h1>Main screen v2 tuner</h1>
   <p class="lead">
-  390×844 mobile stage (2× on desktop). Bottom nav is in the hamburger menu — not on this screen.
-  <a href="/tilezilla-v2.html">Open game</a> ·
-  <a href="/preview-v2-tuner.html">Preview v2 tuner</a> ·
-  <a href="/bottom-menu-v2-tuner.html">Bottom menu v2 tuner</a> ·
-  <a href="/dev-player-select.html">Dev tools</a>
+  390×844 mobile stage (2× on desktop). Saves to <code>data/main_screen_v2_layout.json</code> — zone positions for board, preview slot, tilebag slot, info bar, bottom menu tab/panel on <a href="/tilezilla-v2.html">tilezilla-v2</a>.
+  Run <code>python scripts/server.py</code> so Save works; after saving, focus the game tab or hard-refresh it (Ctrl+F5).
+  Preview <em>internals</em> and tilebag <em>internals</em> use separate JSON (<a href="/preview-v2-tuner.html">preview v2</a>, <a href="/tilebag-v2-tuner.html">tilebag v2</a> tuners).
+  <a href="/bottom-menu-v2-tuner.html">Bottom menu v2 tuner</a> also writes this same file.
+  · <a href="/dev-player-select.html">Dev tools</a>
   </p>
 
   <div class="layout">
@@ -365,6 +365,8 @@
         }
         clearMainScreenV2LayoutCache();
         clearMainScreenV2LayoutDraft();
+        localStorage.setItem('tilezilla:main-screen-v2-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:main-screen-v2-layout-saved'));
         els.status.textContent = quiet
           ? 'Auto-saved to data/main_screen_v2_layout.json'
           : 'Saved to data/main_screen_v2_layout.json';
@@ -387,6 +389,16 @@
       const box = getMainScreenV2ItemLayout(key, workingLayout);
       const def = MAIN_SCREEN_V2_ITEM_DEFS[key];
       return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+    }
+
+    function ensureInfoBarMock() {
+      const frame = document.getElementById('mockFrame');
+      if (!frame || frame.querySelector('.tz-info-bar--tuner-mock')) return;
+      const mock = document.createElement('section');
+      mock.className = 'tz-info-bar tz-info-bar--tuner-mock';
+      mock.setAttribute('aria-hidden', 'true');
+      mock.innerHTML = '<p class="tz-info-bar__text">42 Possible Solutions</p>';
+      frame.appendChild(mock);
     }
 
     function ensureZoneHits() {
@@ -584,6 +596,7 @@
       document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
 
       ensureZoneHits();
+      ensureInfoBarMock();
       workingLayout = await loadMainScreenV2Layout();
       refresh();
 

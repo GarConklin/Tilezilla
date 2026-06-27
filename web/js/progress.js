@@ -102,7 +102,7 @@ export class Progress {
   /**
    * Record that the player opened/played a level (journal + session tracking).
    * @param {string} levelId
-   * @param {{ journalSource?: string }} meta
+   * @param {{ journalSource?: string, challengeDate?: string|null }} meta
    */
   touchLevelPlayed(levelId, meta = {}) {
     if (!levelId) return;
@@ -113,6 +113,9 @@ export class Progress {
       lastPlayedAt: new Date().toISOString(),
       playCount: (Number(prev.playCount) || 0) + 1,
       journalSource: meta.journalSource ?? prev.journalSource ?? null,
+      challengeDate: meta.challengeDate !== undefined
+        ? meta.challengeDate
+        : (prev.challengeDate ?? null),
     };
     this.save();
   }

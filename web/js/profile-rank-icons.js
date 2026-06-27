@@ -1,4 +1,4 @@
-/** Rank badge + sublevel roman icon on logged-in passport (profile screen & overlay). */
+/** Rank badge + sublevel on logged-in passport — same model as preview user_data. */
 
 import {
   adventureLevelContext,
@@ -6,7 +6,11 @@ import {
   loadAdventurePath,
 } from './adventure-path.js';
 import {
-  applySublevelIconElement,
+  applyPreviewV2DataSublayout,
+  loadPreviewV2DataSublayout,
+} from './preview-v2-data-sublayout.js';
+import {
+  applySublevelIconOnUserDataStack,
   loadSublevelIconLayout,
   romanForSubLevel,
 } from './sublevel-icon.js';
@@ -27,14 +31,104 @@ function rankElements(root = document) {
   const badges = [];
   const subs = [];
   for (const stack of stacks) {
-    const badge = stack.querySelector('.auth-screen__profile-rank-badge');
-    const sub = stack.querySelector('.auth-screen__profile-rank-sublevel');
+    const badge = stack.querySelector('.tz-preview-v2-user-data__badge');
+    const sub = stack.querySelector('.tz-preview-v2-user-data__sublevel');
     if (badge) badges.push(badge);
     if (sub) subs.push(sub);
   }
-  badges.push(...root.querySelectorAll('[data-profile-slot="rankBadge"]:not(.auth-screen__profile-rank-badge)'));
-  subs.push(...root.querySelectorAll('[data-profile-slot="sublevelIcon"]:not(.auth-screen__profile-rank-sublevel)'));
-  return { badges, subs };
+  return { badges, subs, stacks };
+}
+
+function setRankStacksReady(stacks, ready) {
+  for (const stack of stacks) {
+    stack.classList.toggle('is-rank-ready', ready);
+  }
+}
+
+async function applyUserDataLayoutToStacks(stacks) {
+  let layout;
+  try {
+    layout = await loadPreviewV2DataSublayout('userData');
+  } catch {
+    return;
+  }
+  for (const stack of stacks) {
+    applyPreviewV2DataSublayout('userData', layout, stack);
+  }
+}
+
+function syncBadgeFromPreview(badges) {
+  const refBadge = document.getElementById('previewV2RankBadge');
+  if (!refBadge?.getAttribute('src')) return false;
+  for (const el of badges) {
+    el.src = refBadge.src;
+    el.alt = refBadge.alt || '';
+  }
+  return true;
+}
+
+async function resolveRankSublevel(progress) {
+  const refSub = document.getElementById('previewV2SubLevelIcon');
+  if (refSub?.dataset.sublevel) {
+    return {
+      subLevel: Number(refSub.dataset.sublevel) || 1,
+      badge: refSub.dataset.sublevelBadge || 'gld',
+    };
+  }
+
+  const path = await loadAdventurePath();
+  const prog = progress ?? window.__app?.progress ?? null;
+  const ctx = adventureLevelContext(window.__app || {});
+  const rankState = getRankPanelState(prog, path, ctx);
+  const ranks = await loadAdventureRanks();
+  const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
+  return { subLevel: rankState.subLevel, badge: rank.sublevel_badge, rank };
+}
+
+async function applyPassportSublevels(subs, progress, layout) {
+  const resolved = await resolveRankSublevel(progress);
+  const roman = romanForSubLevel(resolved.subLevel);
+  for (const el of subs) {
+    applySublevelIconOnUserDataStack(el, resolved.subLevel, resolved.badge, layout);
+    el.alt = `Sublevel ${roman}`;
+  }
+  return resolved;
+}
+
+async function rescalePassportSublevels(subs) {
+  let layout = null;
+  try {
+    layout = await loadSublevelIconLayout();
+  } catch {
+    /* defaults in applySublevelIconOnUserDataStack */
+  }
+  for (const el of subs) {
+    if (!el.closest('.auth-screen__profile-rank-stack')) continue;
+    const subLevel = Number(el.dataset.sublevel) || 1;
+    const badge = el.dataset.sublevelBadge || 'gld';
+    applySublevelIconOnUserDataStack(el, subLevel, badge, layout);
+  }
+}
+
+async function applyPassportRankState(badges, subs, stacks, progress) {
+  await applyUserDataLayoutToStacks(stacks);
+
+  let layout = null;
+  try {
+    layout = await loadSublevelIconLayout();
+  } catch {
+    /* defaults */
+  }
+
+  const syncedBadge = syncBadgeFromPreview(badges);
+  const resolved = await applyPassportSublevels(subs, progress, layout);
+
+  if (!syncedBadge && resolved.rank) {
+    for (const el of badges) {
+      el.src = resolved.rank.badge_image;
+      el.alt = `${resolved.rank.rank_name} rank`;
+    }
+  }
 }
 
 /**
@@ -43,41 +137,32 @@ function rankElements(root = document) {
  * @param {Document|HTMLElement} [root]
  */
 export async function refreshProfileRankIcons(progress, root = document) {
-  const { badges, subs } = rankElements(root);
+  const { badges, subs, stacks } = rankElements(root);
   if (!badges.length && !subs.length) return;
 
-  let layout = null;
-  try {
-    layout = await loadSublevelIconLayout();
-  } catch {
-    /* defaults in applySublevelIconElement */
-  }
+  setRankStacksReady(stacks, false);
 
   try {
-    const path = await loadAdventurePath();
-    const prog = progress ?? window.__app?.progress ?? null;
-    const ctx = adventureLevelContext(window.__app || {});
-    const rankState = getRankPanelState(prog, path, ctx);
-    const ranks = await loadAdventureRanks();
-    const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
-    const roman = romanForSubLevel(rankState.subLevel);
-
-    for (const el of badges) {
-      el.src = rank.badge_image;
-      el.alt = `${rank.rank_name} rank`;
-    }
-    for (const el of subs) {
-      applySublevelIconElement(el, rankState.subLevel, rank.sublevel_badge, layout);
-      el.alt = `Sublevel ${roman}`;
-    }
+    await applyPassportRankState(badges, subs, stacks, progress);
   } catch (err) {
     console.warn('Profile rank icons:', err);
+    let layout = null;
+    try {
+      layout = await loadSublevelIconLayout();
+    } catch {
+      /* defaults */
+    }
     for (const el of badges) {
       if (!el.getAttribute('src')) el.src = '/img/ranks/Wanderer.png';
     }
     for (const el of subs) {
-      applySublevelIconElement(el, 1, 'gld', layout);
+      applySublevelIconOnUserDataStack(el, 1, 'gld', layout);
       if (!el.alt) el.alt = 'Sublevel I';
     }
+  } finally {
+    setRankStacksReady(stacks, true);
+    requestAnimationFrame(() => {
+      void rescalePassportSublevels(subs);
+    });
   }
 }

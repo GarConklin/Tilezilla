@@ -1,33 +1,34 @@
 {
   "plaque": {
-    "offsetY": 2,
-    "wScale": 0.87,
-    "hScale": 0.505
+    "offsetY": 38,
+    "wScale": 0.93,
+    "hScale": 0.85
   },
   "hits": {
-    "w": 21,
-    "h": 88,
+    "w": 20,
+    "h": 95,
     "y": 50
   },
   "items": {
     "adventure": {
       "x": 11,
-      "y": 50.5
+      "y": 49
     },
     "dailyChallenge": {
-      "x": 31
-    },
-    "random": {
-      "x": 50.5,
-      "y": 50
-    },
-    "library": {
-      "x": 70,
+      "x": 31.5,
       "y": 50.5
     },
+    "random": {
+      "x": 51.5,
+      "y": 49.5
+    },
+    "library": {
+      "x": 71.5,
+      "y": 50
+    },
     "profile": {
-      "x": 90,
-      "y": 51
+      "x": 91.5,
+      "y": 50
     }
   }
 }

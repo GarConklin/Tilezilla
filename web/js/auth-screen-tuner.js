@@ -6,11 +6,13 @@ import {
   PROFILE_ICON_MOCK,
   PROFILE_LAYOUT_MOCK,
   applyAuthScreenLayout,
+  applyProfileOverlayLayout,
   authScreenTunerBoxClass,
   buildAuthScreenLayoutSavePayload,
   clearAuthScreenLayoutCache,
   clearAuthScreenLayoutDraft,
   getAuthScreenItemLayout,
+  getProfileOverlayLayoutTarget,
   hasAuthScreenLayoutDraft,
   isAuthIconItem,
   isAuthTextItem,
@@ -20,6 +22,7 @@ import {
   readAuthScreenLayoutDraftSection,
   stashAuthScreenLayoutDraft,
 } from './auth-screen-layout.js';
+import { refreshProfilePassportStats } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
 const POS_STEP = 0.5;
@@ -31,6 +34,31 @@ const DIALOG_ITEM = '__dialog__';
 const LOGIN_OUTSIDE = new Set();
 const CREATE_OUTSIDE = new Set();
 const PROFILE_OUTSIDE = new Set(Object.keys(AUTH_SCREEN_DEFS.profile.items));
+
+const PROFILE_OVERLAY_HIT_CLASS = {
+  navDaily: 'tz-profile-dialog__hit--nav-daily',
+  navAdventure: 'tz-profile-dialog__hit--nav-adventure',
+  navRandom: 'tz-profile-dialog__hit--nav-random',
+  navLogout: 'tz-profile-dialog__hit--nav-logout',
+  back: 'tz-profile-dialog__hit--back',
+  closeX: 'tz-profile-dialog__hit--close-x',
+};
+
+function applyProfileOverlayTunerClasses(box, itemKey, meta) {
+  if (itemKey === 'profileName') {
+    box.className = 'tz-profile-dialog__name tuner-box';
+    box.dataset.profileSlot = 'profileName';
+    return;
+  }
+  if (itemKey === 'guestNote') {
+    box.className = 'tz-profile-dialog__guest-note tuner-box';
+    box.dataset.profileSlot = 'guestNote';
+    return;
+  }
+  if (meta.kind === 'hit' && PROFILE_OVERLAY_HIT_CLASS[itemKey]) {
+    box.className = `tz-profile-dialog__hit ${PROFILE_OVERLAY_HIT_CLASS[itemKey]} tuner-box`;
+  }
+}
 
 function outsideKeysFor(screenKey) {
   if (screenKey === 'profile') return PROFILE_OUTSIDE;
@@ -47,17 +75,21 @@ function buildProfileRankStack(screenKey) {
   stack.className = 'auth-screen__profile-rank-stack tuner-box';
   stack.dataset.item = 'rankBadge';
 
+  const badgeStack = document.createElement('div');
+  badgeStack.className = 'tz-preview-v2-user-data__badge-stack';
+
   const badge = document.createElement('img');
-  badge.className = 'auth-screen__profile-rank-badge';
+  badge.className = 'tz-preview-v2-user-data__badge';
   badge.src = PROFILE_ICON_MOCK.rankBadge;
   badge.alt = 'Rank badge';
 
   const sub = document.createElement('img');
-  sub.className = 'auth-screen__profile-rank-sublevel tz-rank-sublevel__img';
-  sub.dataset.profileSlot = 'sublevelIcon';
+  sub.className = 'tz-preview-v2-user-data__sublevel';
+  sub.src = PROFILE_ICON_MOCK.sublevelIcon;
   sub.alt = 'Sublevel';
 
-  stack.append(badge, sub);
+  badgeStack.append(badge);
+  stack.append(badgeStack, sub);
   stack.insertAdjacentHTML(
     'beforeend',
     `<span class="hit-label">Rank stack</span>
@@ -227,6 +259,8 @@ export function initAuthScreenTuner(screenKey, root = document) {
       }
       clearAuthScreenLayoutCache();
       clearAuthScreenLayoutDraft(screenKey);
+      localStorage.setItem('tilezilla:auth-screen-layout-version', String(Date.now()));
+      window.dispatchEvent(new CustomEvent('tilezilla:auth-screen-layout-saved'));
       els.status.textContent = quiet
         ? `Auto-saved ${screenKey} section to data/auth_screen_layout.json`
         : `Saved ${screenKey} section to data/auth_screen_layout.json`;
@@ -258,10 +292,25 @@ export function initAuthScreenTuner(screenKey, root = document) {
     const fs = isAuthTextItem(screenKey, key)
       ? `<br />fontScale: ${box.fontScale}`
       : '';
+    const hiddenNote = box.hidden ? '<br /><em>Hidden in game</em>' : '';
     const subNote = key === 'sublevelIcon'
       ? '<br /><span style="font-size:0.65rem;color:#8fd49a">Sublevel on-badge fit: rank-sublevel-tuner.html</span>'
       : '';
-    return `<strong>${meta?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${fs}${subNote}`;
+    return `<strong>${meta?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${fs}${hiddenNote}${subNote}`;
+  }
+
+  function hideCurrentInGame() {
+    if (currentItem === DIALOG_ITEM) return;
+    patchItem(currentItem, { hidden: true });
+    els.status.textContent = `${def.items[currentItem]?.label || currentItem} hidden in game`;
+    refresh();
+  }
+
+  function restoreCurrentInGame() {
+    if (currentItem === DIALOG_ITEM) return;
+    patchItem(currentItem, { hidden: false });
+    els.status.textContent = `${def.items[currentItem]?.label || currentItem} restored in game`;
+    refresh();
   }
 
   function applyTunerBoxPositions() {
@@ -274,18 +323,43 @@ export function initAuthScreenTuner(screenKey, root = document) {
       box.style.width = '';
       box.style.height = '';
       if (isAuthTextItem(screenKey, key)) {
-        const layout = getAuthScreenItemLayout(screenKey, key, workingLayout);
-        const base = screenKey === 'profile' ? '0.72rem' : '0.85rem';
-        box.style.fontSize = `calc(${base} * ${layout.fontScale})`;
+        // Profile uses the same clamp()+fontScale rules as the in-game overlay.
+        box.style.fontSize = screenKey === 'profile' ? '' : `calc(0.85rem * ${getAuthScreenItemLayout(screenKey, key, workingLayout).fontScale})`;
       }
     }
   }
 
   function layoutTarget() {
+    if (screenKey === 'profile') {
+      return getProfileOverlayLayoutTarget(root) || root.getElementById('mockFrame') || document.documentElement;
+    }
     return root.getElementById('mockFrame') || root.getElementById('mockWrap') || document.documentElement;
   }
 
+  function rebuildProfilePreviewBoxes() {
+    const frame = root.getElementById('mockFrame');
+    if (!frame) return;
+    frame.querySelectorAll('.tuner-box[data-item]').forEach((el) => el.remove());
+    frame.querySelector('.auth-screen__profile-rank-stack')?.remove();
+
+    for (const [key, meta] of Object.entries(def.items)) {
+      if (key === 'sublevelIcon') continue;
+      if (key === 'rankBadge') {
+        frame.appendChild(buildProfileRankStack(screenKey));
+        continue;
+      }
+      const box = buildTunerBox(meta, key, screenKey);
+      applyProfileOverlayTunerClasses(box, key, meta);
+      frame.appendChild(box);
+    }
+  }
+
   function rebuildPreviewBoxes() {
+    if (screenKey === 'profile') {
+      rebuildProfilePreviewBoxes();
+      return;
+    }
+
     const wrap = root.getElementById('mockWrap');
     const frame = root.getElementById('mockFrame');
     const art = root.getElementById('mockArt');
@@ -409,17 +483,30 @@ export function initAuthScreenTuner(screenKey, root = document) {
   }
 
   function refresh() {
-    applyAuthScreenLayout(workingLayout, screenKey, layoutTarget());
+    if (screenKey === 'profile') {
+      applyProfileOverlayLayout(workingLayout, root);
+    } else {
+      applyAuthScreenLayout(workingLayout, screenKey, layoutTarget());
+    }
     applyTunerBoxPositions();
+    const previewRoot = root.getElementById('mockFrame') || layoutTarget();
     els.readout.innerHTML = formatReadout(currentItem);
     els.jsonOut.value = exportJson();
     stashAuthScreenLayoutDraft(workingLayout, screenKey);
 
     for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
-      btn.classList.toggle('is-active', btn.dataset.field === currentItem);
+      const key = btn.dataset.field;
+      btn.classList.toggle('is-active', key === currentItem);
+      if (key && key !== DIALOG_ITEM) {
+        btn.classList.toggle('is-game-hidden', Boolean(getAuthScreenItemLayout(screenKey, key, workingLayout).hidden));
+      }
     }
     for (const box of root.querySelectorAll('.tuner-box[data-item]')) {
-      box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      const key = box.dataset.item;
+      box.classList.toggle('is-tuner-active', key === currentItem);
+      if (key) {
+        box.classList.toggle('is-game-hidden', Boolean(getAuthScreenItemLayout(screenKey, key, workingLayout).hidden));
+      }
     }
     root.querySelector('.auth-screen__profile-rank-stack')?.classList.toggle(
       'is-tuner-active',
@@ -431,11 +518,16 @@ export function initAuthScreenTuner(screenKey, root = document) {
     }
 
     if (screenKey === 'profile') {
-      void refreshProfileRankIcons(null, layoutTarget());
+      void refreshProfileRankIcons(null, previewRoot);
+      void refreshProfilePassportStats({ root: previewRoot });
     }
 
     const isDialog = currentItem === DIALOG_ITEM;
+    const itemHidden = currentItem !== DIALOG_ITEM
+      && Boolean(getAuthScreenItemLayout(screenKey, currentItem, workingLayout).hidden);
     els.nudgeGrid.hidden = isDialog;
+    if (els.hideHitBtn) els.hideHitBtn.disabled = isDialog || itemHidden;
+    if (els.restoreHitBtn) els.restoreHitBtn.disabled = isDialog || !itemHidden;
     if (els.fontNudgeRow) {
       els.fontNudgeRow.hidden = isDialog || !isAuthTextItem(screenKey, currentItem);
     }
@@ -576,6 +668,16 @@ export function initAuthScreenTuner(screenKey, root = document) {
       cycleItem(e.shiftKey);
       return;
     }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      hideCurrentInGame();
+      return;
+    }
+    if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault();
+      restoreCurrentInGame();
+      return;
+    }
     if (currentItem === DIALOG_ITEM) return;
     const box = getAuthScreenItemLayout(screenKey, currentItem, workingLayout);
     const step = e.shiftKey ? POS_STEP : ARROW_STEP;
@@ -598,12 +700,18 @@ export function initAuthScreenTuner(screenKey, root = document) {
   }
 
   async function boot() {
+    els.hideHitBtn = root.getElementById('hideHitBtn');
+    els.restoreHitBtn = root.getElementById('restoreHitBtn');
     els.nudgeGrid?.querySelectorAll('[data-nudge]').forEach((btn) => {
       btn.addEventListener('click', () => onNudge(btn.dataset.nudge));
     });
+    els.hideHitBtn?.addEventListener('click', hideCurrentInGame);
+    els.restoreHitBtn?.addEventListener('click', restoreCurrentInGame);
     root.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
     root.getElementById('reloadBtn')?.addEventListener('click', async () => {
-      await initAuthScreenChrome({ force: true });
+      if (screenKey !== 'profile') {
+        await initAuthScreenChrome({ force: true });
+      }
       clearAuthScreenLayoutDraft(screenKey);
       workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout({ force: true, preferFile: true }));
       rebuildPreviewBoxes();
@@ -619,7 +727,9 @@ export function initAuthScreenTuner(screenKey, root = document) {
     els.mockStage?.addEventListener('pointercancel', onPointerUp);
     els.mockStage?.addEventListener('keydown', onKeyDown);
 
-    await initAuthScreenChrome();
+    if (screenKey !== 'profile') {
+      await initAuthScreenChrome();
+    }
     workingLayout = mergeAuthScreenLayout(await loadAuthScreenLayout({ force: true, preferFile: true }));
     if (hasAuthScreenLayoutDraft(screenKey)) {
       const section = readAuthScreenLayoutDraftSection(screenKey);

@@ -36,20 +36,10 @@
     />
     <p class="auth-screen__profile-name" id="profileName" data-profile-slot="profileName">Explorer</p>
     <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
-      <img
-        class="auth-screen__profile-rank-badge"
-        data-profile-slot="rankBadge"
-        id="profileRankBadge"
-        src="/img/ranks/Wanderer.png"
-        alt=""
-      />
-      <img
-        class="auth-screen__profile-rank-sublevel tz-rank-sublevel__img"
-        data-profile-slot="sublevelIcon"
-        id="profileSublevelIcon"
-        src="/img/ranks/gld-1.png"
-        alt=""
-      />
+      <div class="tz-preview-v2-user-data__badge-stack">
+        <img class="tz-preview-v2-user-data__badge" id="profileRankBadge" alt="" />
+      </div>
+      <img class="tz-preview-v2-user-data__sublevel" id="profileSublevelIcon" alt="" />
     </div>
     <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileAdventureProgress">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileRoutes">—</p>
@@ -57,6 +47,9 @@
     <p class="auth-screen__profile-stat" data-profile-slot="memberSince" id="profileMemberSince">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="passportId" id="profilePassportId">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="explorersRegistered" id="profileExplorers">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="totalAdventurePuzzles" id="profileTotalAdventurePuzzles">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="totalKnownRoutes" id="profileTotalKnownRoutes">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="largestSolution" id="profileLargestSolution">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="todaysChallenge" id="profileTodaysChallenge">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="recentPuzzleSolved" id="profileRecentPuzzle">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="recentDailyCompleted" id="profileRecentDaily">—</p>
@@ -77,7 +70,7 @@
     </nav>
   </main>
   </div>
-  <script type="module" src="./js/auth-screen-init.js"></script>
+  <script type="module" src="./js/auth-screen-init.js?v=20250627"></script>
   <script type="module">
     import {
       ACTIVE_USER_KEY,

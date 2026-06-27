@@ -41,23 +41,23 @@
   "items": {
     "paneTop": {
       "x": 9.1,
-      "y": 2.3,
-      "w": 74.8,
+      "y": 2,
+      "w": 76.6,
       "h": 43.6,
       "nudgeX": 0,
       "nudgeY": 8
     },
     "paneBottomLeft": {
-      "x": 3.4,
-      "y": 50.5,
+      "x": 3.8,
+      "y": 50.7,
       "w": 38.1,
       "h": 36.4,
       "nudgeX": 7,
       "nudgeY": 40
     },
     "paneBottomRight": {
-      "x": 48.9,
-      "y": 50.7,
+      "x": 50.3,
+      "y": 51.2,
       "w": 38.1,
       "h": 35.9,
       "nudgeX": -10,
@@ -74,12 +74,13 @@
     },
     "titleFoundSolutions": {
       "space": "titleBar",
-      "x": 6,
-      "y": 8,
+      "x": 12.8,
+      "y": 6.8,
       "w": 94,
       "h": 84,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": 0,
+      "fontScale": 1
     },
     "titleRecordedPuzzles": {
       "space": "titleBar",
@@ -115,6 +116,15 @@
       "padY": 2,
       "gap": 1
     },
+    "listRowMain": {
+      "fontScale": 1
+    },
+    "listRowDetail": {
+      "fontScale": 0.92
+    },
+    "listRowSub": {
+      "fontScale": 1
+    },
     "fieldPuzzleId": {
       "x": 23,
       "y": 7,
@@ -124,32 +134,34 @@
       "nudgeY": 0
     },
     "fieldPuzzleType": {
-      "x": 10,
-      "y": 14,
-      "w": 28,
+      "x": 9.9,
+      "y": 14.6,
+      "w": 44.2,
       "h": 5,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": 0,
+      "valueFontScale": 1,
+      "labelFontScale": 0.85
     },
     "fieldBoardSize": {
       "x": 10,
-      "y": 7,
-      "w": 13,
-      "h": 5,
+      "y": 6.9,
+      "w": 14.4,
+      "h": 4.7,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldTotalKnown": {
-      "x": 10,
-      "y": 20,
+      "x": 10.2,
+      "y": 20.6,
       "w": 28,
       "h": 5,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldSolutionsFound": {
-      "x": 42,
-      "y": 20,
+      "x": 42.6,
+      "y": 19.8,
       "w": 34,
       "h": 5,
       "nudgeX": 0,
@@ -190,33 +202,33 @@
     },
     "btnBeginSearch": {
       "space": "pane",
-      "x": 5,
-      "y": 38,
+      "x": 6.6,
+      "y": 5.6,
       "w": 90,
-      "h": 22,
+      "h": 16.5,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "selectorBoardSize": {
-      "x": 10.6,
-      "y": 8.1,
-      "w": 38,
-      "h": 31.8,
+      "x": 6.7,
+      "y": 3.1,
+      "w": 45.4,
+      "h": 45.9,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "selectorPuzzleType": {
-      "x": 50,
-      "y": 8,
-      "w": 38,
-      "h": 32,
+      "x": 54.1,
+      "y": 1.4,
+      "w": 33,
+      "h": 32.7,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "selectorStatus": {
-      "x": 8.5,
-      "y": 40.1,
-      "w": 78,
+      "x": 55.2,
+      "y": 38.9,
+      "w": 28.1,
       "h": 11.1,
       "nudgeX": 0,
       "nudgeY": 0
@@ -292,6 +304,14 @@
       "h": 4.2,
       "nudgeX": -2,
       "nudgeY": 46
+    },
+    "btnLibraryBack": {
+      "x": 86.3,
+      "y": 84.5,
+      "w": 9,
+      "h": 5.5,
+      "nudgeX": 8,
+      "nudgeY": 26
     }
   }
 }

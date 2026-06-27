@@ -5,7 +5,16 @@ import {
   getRankPanelState,
   loadAdventurePath,
 } from './adventure-path.js';
-import { PROFILE_LAYOUT_MOCK } from './auth-screen-layout.js';
+import {
+  loadAuthScreenLayout,
+  PROFILE_LAYOUT_MOCK,
+  applyProfileOverlayLayout,
+  syncAuthScreenItemVisibility,
+} from './auth-screen-layout.js';
+import {
+  formatCatalogStatNumber,
+  loadAdventureCatalogStats,
+} from './passport-catalog-stats.js';
 import { ACTIVE_USER_KEY } from './tilezilla-guest.js';
 
 function $(id) {
@@ -132,6 +141,36 @@ export async function refreshProfilePassportStats({ root = document } = {}) {
   setProfileSlot(root, 'memberSince', formatMemberSince());
   setProfileSlot(root, 'passportId', passportIdForUser(userId));
   setProfileSlot(root, 'explorersRegistered', mock.explorersRegistered);
+
+  const catalog = await loadAdventureCatalogStats(window.__app);
+  setProfileSlot(
+    root,
+    'totalAdventurePuzzles',
+    catalog ? formatCatalogStatNumber(catalog.totalAdventurePuzzles) : mock.totalAdventurePuzzles,
+  );
+  setProfileSlot(
+    root,
+    'totalKnownRoutes',
+    catalog ? formatCatalogStatNumber(catalog.totalKnownRoutes) : mock.totalKnownRoutes,
+  );
+  setProfileSlot(
+    root,
+    'largestSolution',
+    catalog ? formatCatalogStatNumber(catalog.largestSolution) : mock.largestSolution,
+  );
+
+  try {
+    const docRoot = root.ownerDocument || document;
+    const layout = await loadAuthScreenLayout({ force: true, preferFile: true, screenKey: 'profile' });
+    if (docRoot.querySelector('#profileOverlayRoot')) {
+      applyProfileOverlayLayout(layout, docRoot);
+    } else {
+      syncAuthScreenItemVisibility(layout, 'profile', root);
+    }
+  } catch {
+    /* optional */
+  }
+
   setProfileSlot(
     root,
     'todaysChallenge',

@@ -1,33 +1,33 @@
 {
   "container": {
-    "yNudge": 0
+    "yNudge": 3
   },
   "collapsed": {
     "track": {
-      "left": 18,
-      "width": 351,
-      "nudgeX": 0,
-      "nudgeY": -9
+      "left": 14,
+      "width": 343,
+      "nudgeX": 7,
+      "nudgeY": 1
     },
     "arrowPrev": {
-      "left": -2,
-      "width": 17,
-      "nudgeX": 0,
-      "nudgeY": -2
+      "left": 0,
+      "width": 24,
+      "nudgeX": -1,
+      "nudgeY": -12
     },
     "arrowNext": {
-      "left": 374,
-      "width": 17,
-      "nudgeX": -6,
-      "nudgeY": -2
+      "left": 375,
+      "width": 21,
+      "nudgeX": -13,
+      "nudgeY": -10
     }
   },
   "expanded": {
     "track": {
-      "left": 18,
-      "width": 353,
+      "left": 3,
+      "width": 374,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": -96
     },
     "arrowPrev": {
       "left": 0,
@@ -49,30 +49,35 @@
     "countY": 1,
     "countW": 60,
     "countH": 14,
-    "countNudgeX": -3,
-    "countExpandedNudgeY": -3,
+    "countNudgeX": 119,
+    "countNudgeY": 7,
+    "countExpandedNudgeX": 130,
+    "countExpandedNudgeY": 7,
     "handleXOffset": -55,
     "handleYGap": 1,
-    "handleNudgeX": 24,
-    "handleNudgeY": -4,
-    "handleW": 32,
+    "handleNudgeX": 18,
+    "handleNudgeY": -3,
+    "handleW": 42,
     "handleHitH": 12,
     "handleExpandedXOffset": -55,
     "handleExpandedYGap": 1,
-    "handleExpandedNudgeX": -8,
-    "handleExpandedNudgeY": -1,
-    "titleOffsetX": -70,
-    "titleNudgeX": 10,
-    "titleNudgeY": 0,
-    "titleExpandedNudgeX": 0,
-    "titleExpandedNudgeY": 0
+    "handleExpandedNudgeX": -13,
+    "handleExpandedNudgeY": -14,
+    "titleX": -110,
+    "titleY": 1,
+    "titleNudgeX": 122,
+    "titleNudgeY": 6,
+    "titleExpandedNudgeX": 4,
+    "titleExpandedNudgeY": 0,
+    "titleOffsetX": -70
   },
   "tiles": {
     "cell": 34,
-    "gap": 5,
-    "thumbHScale": 0.94,
+    "gap": 6,
+    "gapRow": 6,
+    "thumbHScale": 1.166,
     "fitInsetY": 2,
-    "vNudge": -1
+    "vNudge": 1
   },
   "glow": {
     "ring": 2,
@@ -84,18 +89,27 @@
     "alpha": 0.55
   },
   "expandedLayout": {
-    "maxRows": 3,
+    "maxRows": 2,
     "growScale": 1.5,
     "heightTrim": 24,
     "maxOverlap": 56,
     "frameCollapsedH": 100,
-    "trackCollapsedH": 49,
-    "trackExpandedNudgeY": 0
+    "trackCollapsedH": 74,
+    "trackExpandedH": 216,
+    "trackExpandedNudgeY": 97,
+    "expandedBottomCapArt": 22,
+    "trackExpandedExtraH": -2
   },
   "art": {
-    "w": 390,
+    "w": 388,
     "collapsedH": 100,
-    "expandedH": 261,
+    "expandedH": 250,
+    "offsetX": 3,
+    "offsetY": 0,
+    "scale": 1,
+    "expandedOffsetX": 0,
+    "expandedOffsetY": 0,
+    "expandedScale": 1,
     "collapsed": "/img/390x840-tile bag.png",
     "expanded": "/img/expanded-tile bag.png",
     "handlebar": "/img/handlebar-tilebag.png"

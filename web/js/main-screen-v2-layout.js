@@ -29,7 +29,7 @@ export const DEFAULT_MAIN_SCREEN_V2_LAYOUT = {
     menu: { x: 2.05, y: 0.95, w: 11.69, h: 5.41 },
     title: { x: 20.51, y: 0.47, w: 58.99, h: 6.65 },
     board: { x: 0, y: 7.7, w: 100, h: 46.21 },
-    infoBar: { x: 0, y: 54.15, w: 100, h: 1.78 },
+    infoBar: { x: 0, y: 7.7, w: 100, h: 1.78 },
     preview: { x: 0, y: 56.17, w: 100, h: 30.69 },
     tilebag: { x: 0, y: 88.15, w: 100, h: 11.85 },
     bottomMenuTab: { x: 22, y: 96.2, w: 56, h: 3.8 },
@@ -42,6 +42,10 @@ const LS_LAYOUT_KEY = 'tilezilla:layouts:main-screen-v2';
 const LS_PENDING_KEY = 'tilezilla:layouts:main-screen-v2:pending';
 
 let layoutCache = null;
+
+export function isMainScreenV2TunerPage() {
+  return /main-screen-v2-tuner(?:\.html)?$/i.test(window.location.pathname);
+}
 
 export function clearMainScreenV2LayoutCache() {
   layoutCache = null;
@@ -83,22 +87,24 @@ export function mergeMainScreenV2Layout(raw) {
   return base;
 }
 
-export async function loadMainScreenV2Layout({ force = false } = {}) {
+export async function loadMainScreenV2Layout({ force = false, fromDisk = false } = {}) {
   if (layoutCache && !force) return layoutCache;
 
   let raw = null;
-  let pendingDraft = false;
-  try {
-    pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
-    if (pendingDraft) {
+  const onTuner = isMainScreenV2TunerPage();
+  const hasPending = localStorage.getItem(LS_PENDING_KEY) === '1';
+
+  // Only the tuner prefers an in-progress browser draft. The live game always reads JSON from disk.
+  if (!fromDisk && onTuner && hasPending) {
+    try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
+    } catch {
+      /* fall through */
     }
-  } catch {
-    pendingDraft = false;
   }
 
-  if (!pendingDraft) {
+  if (!raw) {
     try {
       const res = await fetch(`/data/main_screen_v2_layout.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) raw = await res.json();
@@ -107,7 +113,7 @@ export async function loadMainScreenV2Layout({ force = false } = {}) {
     }
   }
 
-  if (!raw && !pendingDraft) {
+  if (!raw) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -122,7 +128,7 @@ export async function loadMainScreenV2Layout({ force = false } = {}) {
 
 export async function reloadMainScreenV2Layout() {
   clearMainScreenV2LayoutCache();
-  return loadMainScreenV2Layout({ force: true });
+  return loadMainScreenV2Layout({ force: true, fromDisk: true });
 }
 
 export function getMainScreenV2ItemLayout(itemKey, layout) {
