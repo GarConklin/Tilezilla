@@ -183,6 +183,12 @@ try {
   Write-Step "Ensuring port $Port is free for Docker gateway"
   Stop-HostGameServerOnPort -Port $Port
 
+  Write-Step "Ensuring shared MySQL volume (preserves registered accounts)"
+  $ensureVol = Join-Path $RepoRoot "scripts\ensure-shared-mysql-volume.ps1"
+  if (Test-Path $ensureVol) {
+    & $ensureVol
+  }
+
   $LanIp = Get-LanIpAddress -Preferred $LanIp
   Write-Step "Writing $EnvFile"
   Write-EnvFile -Path $EnvFile -Port $Port -LanIp $LanIp

@@ -140,7 +140,8 @@ body.auth-screen-chrome .tz-menu-root {
 
 .auth-screen--login .auth-screen__stage,
 .auth-screen--create .auth-screen__stage,
-.auth-screen--profile .auth-screen__stage {
+.auth-screen--profile .auth-screen__stage,
+.auth-screen--verify-pending .auth-screen__stage {
   position: absolute;
   left: 50%;
   top: var(--auth-chrome-stage-top, 7.7%);
@@ -276,6 +277,66 @@ body.auth-screen-chrome .tz-menu-root {
   );
 }
 
+.auth-screen--verify-pending .auth-screen__stage {
+  --auth-verify-art-w: 1301;
+  --auth-verify-art-h: 1120;
+  width: min(
+    100%,
+    var(--tz-profile-max-design-width),
+    var(--auth-verify-max-width, 420px),
+    calc(var(--auth-verify-art-w) * 1px),
+    calc(var(--auth-passport-avail-h) * var(--auth-verify-art-w) / var(--auth-verify-art-h))
+  );
+  aspect-ratio: calc(var(--auth-verify-art-w) / var(--auth-verify-art-h));
+}
+
+.auth-screen--verify-pending .auth-screen__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.auth-screen--verify-pending .verify-pending__email {
+  position: absolute;
+  left: var(--auth-verify-email-x, 16%);
+  top: var(--auth-verify-email-y, 41.8%);
+  width: var(--auth-verify-email-w, 68%);
+  height: var(--auth-verify-email-h, 4.4%);
+  margin: 0;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.74rem, 3.5vw, 1rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1a4030;
+  background: rgba(235, 216, 168, 0.94);
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.auth-screen--verify-pending .auth-screen__hit--verify-login {
+  left: var(--auth-verify-login-x, 22%);
+  top: var(--auth-verify-login-y, 73.8%);
+  width: var(--auth-verify-login-w, 56%);
+  height: var(--auth-verify-login-h, 7.2%);
+}
+
+.auth-screen--verify-pending .auth-screen__hit--verify-guest {
+  left: var(--auth-verify-guest-x, 22%);
+  top: var(--auth-verify-guest-y, 83.8%);
+  width: var(--auth-verify-guest-w, 56%);
+  height: var(--auth-verify-guest-h, 7.2%);
+}
+
 .auth-screen--profile .auth-screen__stage {
   width: min(
     100%,
@@ -325,6 +386,14 @@ body.auth-screen-chrome .tz-menu-root {
   top: var(--auth-login-pass-y, 34.8%);
   width: var(--auth-login-pass-w, 64%);
   height: var(--auth-login-pass-h, 3.2%);
+}
+
+.auth-screen--login .auth-screen__hit--pass-reveal {
+  left: var(--auth-login-passReveal-x, 78%);
+  top: var(--auth-login-passReveal-y, 34.8%);
+  width: var(--auth-login-passReveal-w, 8%);
+  height: var(--auth-login-passReveal-h, 3.2%);
+  z-index: 2;
 }
 
 .auth-screen--login .auth-screen__hit--submit {
@@ -383,6 +452,22 @@ body.auth-screen-chrome .tz-menu-root {
   height: var(--auth-create-pass2-h, 2.8%);
 }
 
+.auth-screen--create .auth-screen__hit--pass-reveal {
+  left: var(--auth-create-passReveal-x, 78%);
+  top: var(--auth-create-passReveal-y, 34.5%);
+  width: var(--auth-create-passReveal-w, 8%);
+  height: var(--auth-create-passReveal-h, 2.8%);
+  z-index: 2;
+}
+
+.auth-screen--create .auth-screen__hit--pass2-reveal {
+  left: var(--auth-create-pass2Reveal-x, 78%);
+  top: var(--auth-create-pass2Reveal-y, 39.5%);
+  width: var(--auth-create-pass2Reveal-w, 8%);
+  height: var(--auth-create-pass2Reveal-h, 2.8%);
+  z-index: 2;
+}
+
 .auth-screen--create .auth-screen__hit--submit {
   left: var(--auth-create-submit-x, 22%);
   top: var(--auth-create-submit-y, 45%);
@@ -422,7 +507,15 @@ body.auth-screen-chrome .tz-menu-root {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: calc(clamp(0.85rem, 3.5vw, 1rem) * var(--auth-profile-profileName-font-scale, 1));
+  font-size: clamp(
+    0.42rem,
+    calc(7.6cqw * var(--auth-profile-profileName-font-scale, 1)),
+    calc(0.74rem * var(--auth-profile-profileName-font-scale, 1))
+  );
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.05;
+  container-type: inline-size;
   font-weight: 600;
   color: #3d2e1a;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);

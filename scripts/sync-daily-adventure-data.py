@@ -14,11 +14,14 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 DAILY_ORG = ROOT / "data" / "daily_challenges_import-org.csv"
 DAILY_OUT = ROOT / "data" / "daily_challenges_import.csv"
 ADVENTURE_CSV = ROOT / "data" / "adventure_solution_distribution.csv"
@@ -150,6 +153,24 @@ def sync_docs_copies(dry_run: bool) -> None:
             print(f"Copied {src.name} -> {dest}")
 
 
+def rebuild_adventure_path_json(dry_run: bool) -> None:
+    from lib.adventure_path_build import build_adventure_path_from_csv
+
+    out = ROOT / "data" / "adventure_path.json"
+    if dry_run:
+        print(f"[dry-run] would rebuild {out} from {ADVENTURE_CSV.name}")
+        return
+    doc = build_adventure_path_from_csv(ADVENTURE_CSV)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8") as f:
+        json.dump(doc, f, indent=2)
+        f.write("\n")
+    print(
+        f"Wrote {out.name} — {doc['stepCount']} steps, "
+        f"{len(doc['flat'])} ranked puzzles, {len(doc['postgame'])} postgame"
+    )
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
@@ -157,6 +178,7 @@ def main() -> None:
 
     normalize_daily(args.dry_run)
     validate_adventure_and_level_system()
+    rebuild_adventure_path_json(args.dry_run)
     sync_docs_copies(args.dry_run)
 
 

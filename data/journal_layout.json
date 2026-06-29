@@ -48,8 +48,8 @@
       "nudgeY": 8
     },
     "paneBottomLeft": {
-      "x": 3.8,
-      "y": 50.7,
+      "x": 4,
+      "y": 50.9,
       "w": 38.1,
       "h": 36.4,
       "nudgeX": 7,
@@ -84,12 +84,13 @@
     },
     "titleRecordedPuzzles": {
       "space": "titleBar",
-      "x": 3,
-      "y": 8,
+      "x": 12.6,
+      "y": 28,
       "w": 94,
-      "h": 84,
+      "h": 36,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": 0,
+      "fontScale": 1
     },
     "listScroller": {
       "space": "pane",
@@ -210,8 +211,8 @@
       "nudgeY": 0
     },
     "selectorBoardSize": {
-      "x": 6.7,
-      "y": 3.1,
+      "x": 5.7,
+      "y": 2.7,
       "w": 45.4,
       "h": 45.9,
       "nudgeX": 0,
@@ -306,8 +307,8 @@
       "nudgeY": 46
     },
     "btnLibraryBack": {
-      "x": 86.3,
-      "y": 84.5,
+      "x": 94,
+      "y": 88,
       "w": 9,
       "h": 5.5,
       "nudgeX": 8,

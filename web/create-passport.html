@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#1a3d3a" />
   <title>Tilezilla — Create Passport</title>
   <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body class="auth-screen auth-screen--create auth-screen-chrome">
   <div class="auth-screen__bg tz-bg" aria-hidden="true">
@@ -33,6 +34,10 @@
       height="2200"
       draggable="false"
     />
+    <p class="auth-screen__profile-stat" data-profile-slot="totalAdventurePuzzles">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="ranksToEarn">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="challengeGates">—</p>
+    <p class="auth-screen__profile-stat" data-profile-slot="totalKnownRoutes">—</p>
     <form class="auth-screen__form auth-screen__form--create" id="createForm">
       <label class="auth-screen__sr" for="createName">Explorer name</label>
       <input class="auth-screen__input auth-screen__input--name" id="createName" name="name" autocomplete="username" />
@@ -40,8 +45,10 @@
       <input class="auth-screen__input auth-screen__input--email" id="createEmail" name="email" type="email" autocomplete="email" />
       <label class="auth-screen__sr" for="createPass">Secret passphrase</label>
       <input class="auth-screen__input auth-screen__input--pass" id="createPass" name="pass" type="password" autocomplete="new-password" />
+      <button type="button" class="auth-screen__hit auth-screen__hit--pass-reveal" data-pass-reveal-for="createPass" aria-label="Show passphrase" aria-pressed="false"></button>
       <label class="auth-screen__sr" for="createPass2">Confirm passphrase</label>
       <input class="auth-screen__input auth-screen__input--pass2" id="createPass2" name="pass2" type="password" autocomplete="new-password" />
+      <button type="button" class="auth-screen__hit auth-screen__hit--pass2-reveal" data-pass-reveal-for="createPass2" aria-label="Show confirm passphrase" aria-pressed="false"></button>
       <button type="submit" class="auth-screen__hit auth-screen__hit--submit" aria-label="Issue passport"></button>
     </form>
     <a class="auth-screen__hit auth-screen__hit--secondary" href="/login-screen.html" aria-label="I already have a passport"></a>
@@ -72,13 +79,8 @@
 
   <script type="module" src="./js/auth-screen-init.js"></script>
   <script type="module">
-    import {
-      ACTIVE_USER_KEY,
-      AUTH_MODE_KEY,
-      setRegisteredUser,
-      trackGuestEvent,
-      getGuestCode,
-    } from './js/tilezilla-guest.js';
+    import { getGuestCode, setConvertedGuestCode, trackGuestEvent } from './js/tilezilla-guest.js';
+    import { storePendingVerifyEmail } from './js/tilezilla-auth.js';
     import { initAuthErrorPopup, showAuthErrorPopup } from './js/auth-error-popup.js';
     import { initAuthScreenNav } from './js/auth-screen-nav.js';
 
@@ -119,17 +121,17 @@
           showAuthErrorPopup(data?.error || 'Could not create passport.');
           return;
         }
-        const userId = data.user?.username || name;
-        setRegisteredUser(userId);
-        localStorage.setItem(ACTIVE_USER_KEY, userId);
-        localStorage.setItem(AUTH_MODE_KEY, 'registered');
-        trackGuestEvent('Account Created', { user_id: userId, converted_from: getGuestCode() });
-        window.location.href = '/profile-screen.html';
+        trackGuestEvent('Account Created', {
+          user_id: name,
+          converted_from: getGuestCode() || null,
+        });
+        if (data.guest_code) {
+          setConvertedGuestCode(data.guest_code);
+        }
+        storePendingVerifyEmail(email);
+        window.location.href = '/verify-email-pending.html';
       } catch {
-        setRegisteredUser(name);
-        localStorage.setItem(ACTIVE_USER_KEY, name);
-        localStorage.setItem(AUTH_MODE_KEY, 'registered');
-        window.location.href = '/profile-screen.html';
+        showAuthErrorPopup('Could not reach the passport office. Check your connection and try again.');
       }
     });
   </script>

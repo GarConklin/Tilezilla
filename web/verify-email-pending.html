@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Verify Email</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+</head>
+<body class="auth-screen auth-screen--verify-pending auth-screen-chrome">
+  <div class="auth-screen__bg tz-bg" aria-hidden="true">
+    <div class="tz-bg__sky"></div>
+    <div class="tz-bg__water">
+      <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+      <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+    </div>
+  </div>
+  <div class="auth-screen__viewport">
+    <img
+      class="auth-screen__title"
+      src="/img/Title.png"
+      alt="Tilezilla — Skiff Lake Games"
+      width="400"
+      height="80"
+      draggable="false"
+    />
+    <main class="auth-screen__stage" id="verifyPendingStage" aria-labelledby="verifyTitle">
+      <h1 class="auth-screen__sr" id="verifyTitle">Check your email</h1>
+      <img
+        class="auth-screen__art"
+        src="/img/CheckYerMail.png"
+        alt="Check your email"
+        width="1301"
+        height="1120"
+        draggable="false"
+      />
+      <p class="verify-pending__email" id="verifyEmail" aria-live="polite">your email</p>
+      <a class="auth-screen__hit auth-screen__hit--verify-login" href="/login-screen.html" aria-label="Go to login"></a>
+      <button type="button" class="auth-screen__hit auth-screen__hit--verify-guest" id="verifyGuestLink" aria-label="Continue as guest"></button>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAuthScreenChrome } from './js/auth-screen-chrome.js';
+    import { readPendingVerifyEmail } from './js/tilezilla-auth.js';
+    import { playAsGuest, TILEZILLA_GAME_URL, trackGuestEvent } from './js/tilezilla-guest.js';
+
+    void initAuthScreenChrome();
+
+    const email = readPendingVerifyEmail();
+    const emailEl = document.getElementById('verifyEmail');
+    if (emailEl) emailEl.textContent = email || 'your email';
+
+    document.getElementById('verifyGuestLink')?.addEventListener('click', () => {
+      playAsGuest();
+      trackGuestEvent('Daily Challenge Started', { source: 'verify_pending' });
+      window.location.href = TILEZILLA_GAME_URL;
+    });
+  </script>
+</body>
+</html>

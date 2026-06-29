@@ -8,7 +8,8 @@ degree 1 (endpoint) or 2 (corridor). Branches and cycles are reported.
   python scripts/audit-solution-loops.py --size 3x4
   python scripts/audit-solution-loops.py --level 3x4-0B-AAA
   python scripts/audit-solution-loops.py --fix --size 3x4
-  python scripts/audit-solution-loops.py --json-out data/solution-loop-audit.json
+  python scripts/audit-solution-loops.py --max-size 4x5
+  python scripts/audit-solution-loops.py --fix --max-size 4x5
 """
 
 from __future__ import annotations
@@ -53,12 +54,64 @@ def load_level_meta(level_id: str) -> dict:
     return {}
 
 
-def iter_solve_files(*, size: Optional[str] = None, level_id: Optional[str] = None) -> List[Path]:
+def parse_board_size(size: str) -> tuple[int, int, int]:
+    m = re.match(r"^(\d+)x(\d+)$", size or "")
+    if not m:
+        raise ValueError(f"Invalid board size: {size!r}")
+    rows, cols = int(m.group(1)), int(m.group(2))
+    return rows * cols, rows, cols
+
+
+def size_sort_key(size: str) -> tuple[int, int, int]:
+    try:
+        return parse_board_size(size)
+    except ValueError:
+        return (999999, 999, 999)
+
+
+def size_in_range(size: Optional[str], *, min_size: Optional[str], max_size: Optional[str]) -> bool:
+    if not size:
+        return False
+    key = size_sort_key(size)
+    if min_size and key < size_sort_key(min_size):
+        return False
+    if max_size and key > size_sort_key(max_size):
+        return False
+    return True
+
+
+def iter_solve_files(
+    *,
+    size: Optional[str] = None,
+    level_id: Optional[str] = None,
+    min_size: Optional[str] = None,
+    max_size: Optional[str] = None,
+) -> List[Path]:
     if level_id:
         path = SOLVES / f"{level_id}.json"
-        return [path] if path.is_file() else []
-    pattern = f"{size}-*.json" if size else "*.json"
-    return sorted(SOLVES.glob(pattern))
+        if not path.is_file():
+            return []
+        if min_size or max_size:
+            bucket = board_size_from_level_id(level_id)
+            if not size_in_range(bucket, min_size=min_size, max_size=max_size):
+                return []
+        return [path]
+    if size:
+        if min_size or max_size:
+            if not size_in_range(size, min_size=min_size, max_size=max_size):
+                return []
+        pattern = f"{size}-*.json"
+    else:
+        pattern = "*.json"
+    files = sorted(SOLVES.glob(pattern))
+    if not min_size and not max_size:
+        return files
+    kept: List[Path] = []
+    for path in files:
+        bucket = board_size_from_level_id(path.stem)
+        if size_in_range(bucket, min_size=min_size, max_size=max_size):
+            kept.append(path)
+    return kept
 
 
 def audit_file(path: Path, live_edges: dict) -> List[dict]:
@@ -125,6 +178,10 @@ def fix_file(path: Path, live_edges: dict) -> tuple[int, int]:
     path_count = int(meta.get("pathCount") or doc.get("pathCount") or 0)
     level_tiles = meta.get("tiles") or doc.get("tiles")
 
+    # Two-snake (pathCount >= 2) validation is not reliable yet — never auto-remove.
+    if path_count >= 2:
+        return 0, len(doc.get("solutions") or [])
+
     kept = []
     removed = 0
     for idx, sol in enumerate(doc.get("solutions") or []):
@@ -187,7 +244,7 @@ def print_report(findings: List[dict], *, by_size: bool) -> None:
         grouped: Dict[str, List[dict]] = defaultdict(list)
         for row in findings:
             grouped[board_size_from_level_id(row["levelId"]) or "?"].append(row)
-        for size in sorted(grouped):
+        for size in sorted(grouped, key=size_sort_key):
             rows = grouped[size]
             print(f"## {size} ({len(rows)} issue(s))")
             for row in rows:
@@ -207,6 +264,8 @@ def print_report(findings: List[dict], *, by_size: bool) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit solve JSON files for path loops/branches.")
     parser.add_argument("--size", help="Board size filter, e.g. 3x4")
+    parser.add_argument("--min-size", help="Smallest board size (by area), e.g. 3x3")
+    parser.add_argument("--max-size", help="Largest board size (by area), e.g. 4x5")
     parser.add_argument("--level", help="Single level id, e.g. 3x4-0B-AAA")
     parser.add_argument("--fix", action="store_true", help="Remove invalid solutions and update counts")
     parser.add_argument("--json-out", type=Path, help="Write full findings JSON report")
@@ -219,7 +278,12 @@ def main() -> int:
     args = parser.parse_args()
 
     live_edges = load_live_edges(ROOT)
-    files = iter_solve_files(size=args.size, level_id=args.level)
+    files = iter_solve_files(
+        size=args.size,
+        level_id=args.level,
+        min_size=args.min_size,
+        max_size=args.max_size,
+    )
     if not files:
         print("No solve files matched.", file=sys.stderr)
         return 1
@@ -262,7 +326,7 @@ def main() -> int:
         for row in all_findings:
             by_size_counts[board_size_from_level_id(row["levelId"]) or "?"] += 1
         print("\nBy board size:")
-        for size in sorted(by_size_counts):
+        for size in sorted(by_size_counts, key=size_sort_key):
             print(f"  {size}: {by_size_counts[size]}")
 
     return 0 if not all_findings or args.fix else 1

@@ -78,18 +78,22 @@ function buildProfileRankStack(screenKey) {
   const badgeStack = document.createElement('div');
   badgeStack.className = 'tz-preview-v2-user-data__badge-stack';
 
+  const rankBubble = document.createElement('div');
+  rankBubble.className = 'tz-rank-badge-stack';
+
   const badge = document.createElement('img');
-  badge.className = 'tz-preview-v2-user-data__badge';
+  badge.className = 'tz-rank-badge__img';
   badge.src = PROFILE_ICON_MOCK.rankBadge;
   badge.alt = 'Rank badge';
 
   const sub = document.createElement('img');
-  sub.className = 'tz-preview-v2-user-data__sublevel';
+  sub.className = 'tz-rank-sublevel__img';
   sub.src = PROFILE_ICON_MOCK.sublevelIcon;
   sub.alt = 'Sublevel';
 
-  badgeStack.append(badge);
-  stack.append(badgeStack, sub);
+  rankBubble.append(badge, sub);
+  badgeStack.append(rankBubble);
+  stack.append(badgeStack);
   stack.insertAdjacentHTML(
     'beforeend',
     `<span class="hit-label">Rank stack</span>
@@ -108,11 +112,11 @@ function buildTunerBox(meta, itemKey, screenKey) {
 
   if (meta.kind === 'text') {
     const label = meta.label || itemKey;
-    if (screenKey === 'profile') {
-      const mock = mockTextForItem(itemKey);
+    const mock = mockTextForItem(itemKey);
+    if (screenKey === 'profile' || ((screenKey === 'login' || screenKey === 'create') && mock && mock !== '…')) {
       box.innerHTML =
         `<span class="hit-label">${label}</span>` +
-        `<span class="tuner-mock-value">${mock}</span>`;
+        `<span class="tuner-mock-value">${mock.replace(/\n/g, '<br>')}</span>`;
     } else {
       box.textContent = label;
     }
@@ -266,6 +270,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
         : `Saved ${screenKey} section to data/auth_screen_layout.json`;
       return true;
     } catch (err) {
+      console.error('[auth-screen-tuner] Save failed:', err);
       els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
       return false;
     } finally {
@@ -323,8 +328,17 @@ export function initAuthScreenTuner(screenKey, root = document) {
       box.style.width = '';
       box.style.height = '';
       if (isAuthTextItem(screenKey, key)) {
-        // Profile uses the same clamp()+fontScale rules as the in-game overlay.
-        box.style.fontSize = screenKey === 'profile' ? '' : `calc(0.85rem * ${getAuthScreenItemLayout(screenKey, key, workingLayout).fontScale})`;
+        const scale = getAuthScreenItemLayout(screenKey, key, workingLayout).fontScale;
+        if (screenKey === 'profile') {
+          box.style.fontSize = '';
+          box.style.setProperty('--auth-tuner-font-scale', String(scale));
+          const mock = box.querySelector('.tuner-mock-value');
+          if (mock) {
+            mock.style.fontSize = `calc(clamp(7px, 2.2cqi, 11px) * ${scale})`;
+          }
+        } else {
+          box.style.fontSize = `calc(0.85rem * ${scale})`;
+        }
       }
     }
   }
@@ -699,12 +713,17 @@ export function initAuthScreenTuner(screenKey, root = document) {
     }
   }
 
+  function wireNudgeButtons(container) {
+    container?.querySelectorAll('[data-nudge]').forEach((btn) => {
+      btn.addEventListener('click', () => onNudge(btn.dataset.nudge));
+    });
+  }
+
   async function boot() {
     els.hideHitBtn = root.getElementById('hideHitBtn');
     els.restoreHitBtn = root.getElementById('restoreHitBtn');
-    els.nudgeGrid?.querySelectorAll('[data-nudge]').forEach((btn) => {
-      btn.addEventListener('click', () => onNudge(btn.dataset.nudge));
-    });
+    wireNudgeButtons(els.nudgeGrid);
+    wireNudgeButtons(els.fontNudgeRow);
     els.hideHitBtn?.addEventListener('click', hideCurrentInGame);
     els.restoreHitBtn?.addEventListener('click', restoreCurrentInGame);
     root.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());

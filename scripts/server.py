@@ -13,7 +13,9 @@ import json
 import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urlparse
+from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +23,21 @@ WEB = ROOT / "web"
 SCRIPTS = ROOT / "scripts"
 # Default 8081 avoids Docker Desktop binding host port 8080 (docker-compose web service).
 PORT = int(os.environ.get("PORT", "8081"))
+# Proxy /auth/* to PHP auth (nginx remote-test gateway does the same rewrite).
+AUTH_UPSTREAM = os.environ.get("AUTH_UPSTREAM", "http://php-auth").rstrip("/")
+_AUTH_HOP_BY_HOP = frozenset(
+    {
+        "connection",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailers",
+        "transfer-encoding",
+        "upgrade",
+    }
+)
+_AUTH_FORWARD_REQUEST_HEADERS = frozenset({"content-type", "cookie", "accept"})
 SUBLEVEL_LAYOUT_PATH = ROOT / "data" / "sublevel_icon_layout.json"
 DISCOVERY_LAYOUT_PATH = ROOT / "data" / "discovery_record_layout.json"
 MENU_LAYOUT_PATH = ROOT / "data" / "menu_layout.json"
@@ -39,6 +56,7 @@ JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
 TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 TILEBAG_V2_LAYOUT_PATH = ROOT / "data" / "tilebag_v2_layout.json"
 RANDOM_POPUP_LAYOUT_PATH = ROOT / "data" / "random_popup_layout.json"
+GUEST_LOGIN_REQUIRED_LAYOUT_PATH = ROOT / "data" / "guest_login_required_layout.json"
 REVISIT_LAYOUT_PATH = ROOT / "data" / "revisit_layout.json"
 LOAD_SCREEN_LAYOUT_PATH = ROOT / "data" / "load_screen_layout.json"
 AUTH_SCREEN_LAYOUT_PATH = ROOT / "data" / "auth_screen_layout.json"
@@ -147,6 +165,61 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
+    def _proxy_auth_request(self, method: str) -> bool:
+        parsed = urlparse(self.path)
+        req_path = unquote(parsed.path)
+        if not req_path.startswith("/auth/"):
+            return False
+        if not AUTH_UPSTREAM:
+            self.send_error(503, "Auth proxy disabled (AUTH_UPSTREAM not set)")
+            return True
+
+        upstream_path = req_path[len("/auth") :] or "/"
+        if parsed.query:
+            upstream_path += "?" + parsed.query
+        url = AUTH_UPSTREAM + upstream_path
+
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        body = (
+            self.rfile.read(length)
+            if length > 0 and method in ("POST", "PUT", "PATCH")
+            else None
+        )
+
+        headers = {
+            key: val
+            for key, val in self.headers.items()
+            if key.lower() in _AUTH_FORWARD_REQUEST_HEADERS
+        }
+
+        req = Request(url, data=body, headers=headers, method=method)
+        try:
+            with urlopen(req, timeout=30) as resp:
+                self.send_response(resp.status)
+                for key in resp.headers:
+                    if key.lower() in _AUTH_HOP_BY_HOP:
+                        continue
+                    self.send_header(key, resp.headers[key])
+                self.end_headers()
+                self.wfile.write(resp.read())
+        except HTTPError as exc:
+            self.send_response(exc.code)
+            for key in exc.headers:
+                if key.lower() in _AUTH_HOP_BY_HOP:
+                    continue
+                self.send_header(key, exc.headers[key])
+            self.end_headers()
+            err_body = exc.read()
+            if err_body:
+                self.wfile.write(err_body)
+        except URLError as exc:
+            self.send_error(
+                502,
+                f"Auth service unavailable ({exc.reason}). "
+                "Start php-auth (remote-test stack or docker-compose.remote-test.yml).",
+            )
+        return True
+
     def _send_gzip_file(self, file_path: Path) -> bool:
         if not file_path.is_file():
             return False
@@ -172,6 +245,9 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         req_path = unquote(parsed.path)
+        if req_path.startswith("/auth/"):
+            if self._proxy_auth_request("GET"):
+                return
         if req_path.startswith(("/data/", "/solves/")) and req_path.endswith(".json"):
             if self._send_gzip_file(Path(self.translate_path(req_path))):
                 return
@@ -373,6 +449,16 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-guest-login-required-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/guest_login_required_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/dev/save-revisit-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/revisit_layout.json"}
@@ -437,6 +523,9 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path.startswith("/auth/"):
+            if self._proxy_auth_request("POST"):
+                return
         if parsed.path == "/api/guest/event":
             self._log_guest_event(parsed)
             return
@@ -493,6 +582,11 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-random-popup-layout":
             self._save_json_layout(parsed, RANDOM_POPUP_LAYOUT_PATH, validate_random_popup_layout)
+            return
+        if parsed.path == "/api/dev/save-guest-login-required-layout":
+            self._save_json_layout(
+                parsed, GUEST_LOGIN_REQUIRED_LAYOUT_PATH, validate_guest_login_required_layout
+            )
             return
         if parsed.path == "/api/dev/save-revisit-layout":
             self._save_json_layout(parsed, REVISIT_LAYOUT_PATH, validate_revisit_layout)
@@ -749,6 +843,45 @@ def validate_random_popup_layout(payload: object) -> str | None:
     return None
 
 
+GUEST_LOGIN_REQUIRED_ITEM_KEYS = ("message", "create", "login", "cancel", "close")
+
+
+def validate_guest_login_required_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+        if "baseSrc" in dialog and not isinstance(dialog["baseSrc"], str):
+            return "dialog.baseSrc must be a string"
+    buttons = payload.get("buttons")
+    if buttons is not None and not isinstance(buttons, dict):
+        return "buttons must be an object"
+    if isinstance(buttons, dict):
+        for key in ("create", "login", "cancel"):
+            if key in buttons and not isinstance(buttons[key], str):
+                return f"buttons.{key} must be a string"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in GUEST_LOGIN_REQUIRED_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "fontScale"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
 REVISIT_ITEM_KEYS = ("puzzleId", "solutions", "solved", "cancel", "revisit")
 
 
@@ -883,8 +1016,8 @@ def validate_load_screen_layout(payload: object) -> str | None:
 
 AUTH_SCREEN_KEYS = ("login", "create", "profile")
 AUTH_SCREEN_ITEM_KEYS = {
-    "login": ("user", "pass", "submit", "secondary", "navDaily", "navLogout"),
-    "create": ("name", "email", "pass", "pass2", "submit", "secondary", "navDaily", "navLogout"),
+    "login": ("user", "pass", "passReveal", "submit", "secondary", "navDaily", "navLogout", "explorersRegistered", "totalAdventurePuzzles", "totalKnownRoutes", "largestSolution", "todaysChallenge", "recentPuzzleSolved", "recentDailyCompleted", "mostSolvedPuzzle", "latestDiscovery", "totalPlayTime"),
+    "create": ("name", "email", "pass", "passReveal", "pass2", "pass2Reveal", "submit", "secondary", "navDaily", "navLogout", "totalAdventurePuzzles", "ranksToEarn", "challengeGates", "totalKnownRoutes"),
     "profile": (
         "profileName",
         "guestNote",
@@ -1209,6 +1342,7 @@ def main() -> None:
     print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
     print("Tile bag v2 tuner save API: POST /api/dev/save-tilebag-v2-layout")
     print("Random popup tuner save API: POST /api/dev/save-random-popup-layout")
+    print("Guest login required tuner save API: POST /api/dev/save-guest-login-required-layout")
     print("Revisit popup tuner save API: POST /api/dev/save-revisit-layout")
     print("Load screen tuner save API: POST /api/dev/save-load-screen-layout")
     print("Auth screen tuner save API: POST /api/dev/save-auth-screen-layout")

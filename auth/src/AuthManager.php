@@ -150,7 +150,7 @@ class AuthManager {
     public function getUserById($userId) {
         $stmt = $this->conn->prepare(
             "SELECT id, username, email, paid, status, is_admin, created_at, last_login, active_until, email_verified,
-                    COALESCE(NULLIF(player_name, ''), username) as player_name
+                    guest_code
              FROM users WHERE id = ?"
         );
         $stmt->bind_param("i", $userId);
@@ -162,6 +162,7 @@ class AuthManager {
         }
         $user = $result->fetch_assoc();
         $stmt->close();
+        $user['player_name'] = $user['username'];
         return $user;
     }
 

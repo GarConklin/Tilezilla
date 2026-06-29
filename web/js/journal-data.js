@@ -58,22 +58,27 @@ function formatChallengeDate(raw) {
 }
 
 let dailyReleaseByLevelId = null;
+let dailyDatesByLevelId = null;
 let adventurePathCache = null;
 let advIdByLevelIdCache = null;
 
 function parseDailyCsv(text) {
   const lines = text.trim().split(/\r?\n/);
   const byLevel = new Map();
+  const datesByLevel = new Map();
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
     const [challenge_date, level_id] = line.split(',');
     const levelId = normalizeCatalogLevelId(level_id);
     const date = challenge_date?.trim();
-    if (!levelId || !date || byLevel.has(levelId)) continue;
-    byLevel.set(levelId, date);
+    if (!levelId || !date) continue;
+    const iso = parseDailyCsvDate(date) || date;
+    if (!byLevel.has(levelId)) byLevel.set(levelId, date);
+    if (!datesByLevel.has(levelId)) datesByLevel.set(levelId, []);
+    datesByLevel.get(levelId).push(iso);
   }
-  return byLevel;
+  return { byLevel, datesByLevel };
 }
 
 function buildAdvIdByLevelId(path) {
@@ -91,11 +96,15 @@ function buildAdvIdByLevelId(path) {
 async function loadLibraryLookups() {
   if (!dailyReleaseByLevelId) {
     dailyReleaseByLevelId = new Map();
+    dailyDatesByLevelId = new Map();
     try {
       const csv = await fetch('/data/daily_challenges_import.csv').then((r) => r.text());
-      dailyReleaseByLevelId = parseDailyCsv(csv);
+      const parsed = parseDailyCsv(csv);
+      dailyReleaseByLevelId = parsed.byLevel;
+      dailyDatesByLevelId = parsed.datesByLevel;
     } catch {
       dailyReleaseByLevelId = new Map();
+      dailyDatesByLevelId = new Map();
     }
   }
   if (!adventurePathCache) {
@@ -104,32 +113,37 @@ async function loadLibraryLookups() {
   }
   return {
     dailyReleaseByLevelId,
+    dailyDatesByLevelId,
     adventurePath: adventurePathCache,
     advIdByLevelId: advIdByLevelIdCache || new Map(),
   };
 }
 
 /** Adventure + random puzzles share the same path — show Adv_ID unless explicitly daily-challenge. */
-function puzzleListDetailLabel(levelId, progress, advIdByLevelId, dailyByLevelId) {
+function puzzleListDetailLabel(levelId, progress, advIdByLevelId, dailyByLevelId, dailyDatesByLevel) {
   const meta = progress?.getLevelMeta?.(levelId);
   const src = meta?.journalSource || null;
   const key = normalizeCatalogLevelId(levelId);
   const advId = advIdByLevelId.get(key) ?? null;
 
   if (src === 'daily-challenge') {
-    const dateRaw = meta?.challengeDate || dailyByLevelId?.get(key);
+    const dateRaw = bestDailyChallengeDate(levelId, progress, dailyByLevelId, dailyDatesByLevel)
+      || meta?.challengeDate
+      || dailyByLevelId?.get(key);
     const formatted = formatChallengeDate(dateRaw);
     return formatted ? `· ${formatted}` : null;
+  }
+
+  if (dailyByLevelId?.has(key) || dailyDatesByLevel?.has(key)) {
+    const dateRaw = bestDailyChallengeDate(levelId, progress, dailyByLevelId, dailyDatesByLevel)
+      || meta?.challengeDate
+      || dailyByLevelId.get(key);
+    const formatted = formatChallengeDate(dateRaw);
+    if (formatted) return `· ${formatted}`;
   }
 
   if (advId != null) {
     return `· Adv ${advId}`;
-  }
-
-  if (dailyByLevelId?.has(key)) {
-    const dateRaw = meta?.challengeDate || dailyByLevelId.get(key);
-    const formatted = formatChallengeDate(dateRaw);
-    return formatted ? `· ${formatted}` : null;
   }
 
   return null;
@@ -242,7 +256,60 @@ export async function getJournalRecord(app, levelId) {
   };
 }
 
-function levelMatchesFilters(level, progress, filters) {
+const DAILY_CHALLENGE_LOOKBACK_DAYS = 30;
+
+function parseChallengeDateIso(raw) {
+  if (!raw) return null;
+  const iso = parseDailyCsvDate(raw) || String(raw).trim();
+  const d = new Date(`${iso}T12:00:00`);
+  return Number.isNaN(d.getTime()) ? null : iso;
+}
+
+function isWithinDailyLookback(dateRaw, days = DAILY_CHALLENGE_LOOKBACK_DAYS) {
+  const iso = parseChallengeDateIso(dateRaw);
+  if (!iso) return false;
+  const d = new Date(`${iso}T12:00:00`);
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const cutoff = new Date(today);
+  cutoff.setDate(cutoff.getDate() - days);
+  return d >= cutoff && d <= today;
+}
+
+function bestDailyChallengeDate(levelId, progress, dailyByLevelId, dailyDatesByLevel) {
+  const key = normalizeCatalogLevelId(levelId);
+  const meta = progress?.getLevelMeta?.(levelId);
+  const candidates = [];
+  if (meta?.challengeDate) candidates.push(meta.challengeDate);
+  const csvDate = dailyByLevelId?.get(key);
+  if (csvDate) candidates.push(csvDate);
+  for (const iso of dailyDatesByLevel?.get(key) || []) {
+    candidates.push(iso);
+  }
+  let best = null;
+  for (const raw of candidates) {
+    const iso = parseChallengeDateIso(raw);
+    if (!iso || !isWithinDailyLookback(iso)) continue;
+    if (!best || iso > best) best = iso;
+  }
+  return best;
+}
+
+function isDailyChallengePuzzle(levelId, progress, dailyByLevelId, dailyDatesByLevel) {
+  const key = normalizeCatalogLevelId(levelId);
+  const meta = progress?.getLevelMeta?.(levelId);
+  if (meta?.journalSource === 'daily-challenge') {
+    const dateRaw = meta.challengeDate || dailyByLevelId?.get(key);
+    if (!dateRaw) return true;
+    return isWithinDailyLookback(dateRaw);
+  }
+  for (const iso of dailyDatesByLevel?.get(key) || []) {
+    if (isWithinDailyLookback(iso)) return true;
+  }
+  return false;
+}
+
+function levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDatesByLevel) {
   const { boardSize, puzzleType } = filters || {};
   const levelId = level?.id;
   if (!levelId || !progress?.hasJournalEntry?.(levelId)) return false;
@@ -255,7 +322,9 @@ function levelMatchesFilters(level, progress, filters) {
     const meta = progress.getLevelMeta(levelId);
     const src = meta?.journalSource;
     if (puzzleType === 'adventure' && src !== 'adventure') return false;
-    if (puzzleType === 'daily-challenge' && src !== 'daily-challenge') return false;
+    if (puzzleType === 'daily-challenge') {
+      if (!isDailyChallengePuzzle(levelId, progress, dailyByLevelId, dailyDatesByLevel)) return false;
+    }
     if (puzzleType === 'random' && src !== 'random') return false;
   }
 
@@ -270,7 +339,7 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     return { sizeCounts: [], puzzles: [], filters };
   }
 
-  const { dailyReleaseByLevelId: dailyByLevelId, advIdByLevelId } = await loadLibraryLookups();
+  const { dailyReleaseByLevelId: dailyByLevelId, dailyDatesByLevelId, advIdByLevelId } = await loadLibraryLookups();
 
   const sizeCountsMap = new Map();
   const puzzles = [];
@@ -285,7 +354,7 @@ export async function getJournalLibraryIndex(app, filters = {}) {
 
     const key = boardSizeKey(level);
     if (key) sizeCountsMap.set(key, (sizeCountsMap.get(key) || 0) + 1);
-    if (!levelMatchesFilters(level, progress, filters)) continue;
+    if (!levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDatesByLevelId)) continue;
 
     const known = await app.loadKnownSolutionsForLevel?.(level) || [];
     const found = countUniqueFoundSolutions(progress.getFoundForLevel(levelId));
@@ -294,11 +363,24 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     const pct = total > 0 ? Math.round((found / total) * 100) : 0;
 
     const meta = progress.getLevelMeta(levelId);
+    const challengeDateIso = bestDailyChallengeDate(
+      levelId,
+      progress,
+      dailyByLevelId,
+      dailyDatesByLevelId,
+    );
     puzzles.push({
       levelId: level.id,
       label: level.id || level.name,
       journalSource: meta?.journalSource || null,
-      detailLabel: puzzleListDetailLabel(levelId, progress, advIdByLevelId, dailyByLevelId),
+      challengeDateIso,
+      detailLabel: puzzleListDetailLabel(
+        levelId,
+        progress,
+        advIdByLevelId,
+        dailyByLevelId,
+        dailyDatesByLevelId,
+      ),
       boardSize: boardSizeLabel(level),
       boardSizeKey: key,
       found,
@@ -310,7 +392,16 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     });
   }
 
-  puzzles.sort((a, b) => a.label.localeCompare(b.label));
+  if (filters?.puzzleType === 'daily-challenge') {
+    puzzles.sort((a, b) => {
+      const da = a.challengeDateIso || '';
+      const db = b.challengeDateIso || '';
+      if (da !== db) return db.localeCompare(da);
+      return a.label.localeCompare(b.label);
+    });
+  } else {
+    puzzles.sort((a, b) => a.label.localeCompare(b.label));
+  }
 
   const sizeCounts = [...sizeCountsMap.entries()]
     .map(([key, count]) => {

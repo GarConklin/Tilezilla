@@ -8,6 +8,7 @@
 node_modules
 unused/
 unused_old/
+auth/public/api
 /img/Stuff/**
 /invalid solutions/**
 invalid solutions/**

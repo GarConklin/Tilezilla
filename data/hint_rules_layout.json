@@ -17,9 +17,9 @@
     "nudgeY": 0
   },
   "scroller": {
-    "right": 1.5,
-    "top": 4,
-    "height": 88,
+    "right": 5,
+    "top": 26,
+    "height": 49,
     "trackScale": 1,
     "pinScale": 1,
     "nudgeX": 0,

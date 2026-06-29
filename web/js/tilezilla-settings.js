@@ -7,6 +7,8 @@ export const GAMEPLAY_DEFAULTS = {
   showTileBorders: 'ON',
   usedTileBehavior: 'REMOVE',
   phonePreview: 'OFF',
+  previewPlacementAnchor: 'ON',
+  previewPlacementAnchorStyle: 'LIGHT',
 };
 
 const STORAGE_KEY = 'tilezilla-gameplay-settings';
@@ -21,6 +23,8 @@ export function loadGameplaySettings() {
       showTileBorders: parsed.showTileBorders === 'OFF' ? 'OFF' : 'ON',
       usedTileBehavior: parsed.usedTileBehavior === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
       phonePreview: parsed.phonePreview === 'ON' ? 'ON' : 'OFF',
+      previewPlacementAnchor: parsed.previewPlacementAnchor === 'OFF' ? 'OFF' : 'ON',
+      previewPlacementAnchorStyle: parsed.previewPlacementAnchorStyle === 'DARK' ? 'DARK' : 'LIGHT',
     };
   } catch {
     return { ...GAMEPLAY_DEFAULTS };
@@ -46,7 +50,14 @@ function readPanel(panel) {
     showTileBorders: read('showTileBorders') === 'OFF' ? 'OFF' : 'ON',
     usedTileBehavior: read('usedTileBehavior') === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
     phonePreview: read('phonePreview') === 'ON' ? 'ON' : 'OFF',
+    previewPlacementAnchor: read('previewPlacementAnchor') === 'OFF' ? 'OFF' : 'ON',
+    previewPlacementAnchorStyle: read('previewPlacementAnchorStyle') === 'DARK' ? 'DARK' : 'LIGHT',
   };
+}
+
+function syncAnchorStyleRowVisibility(panel, settings) {
+  const row = panel.querySelector('[data-setting="previewPlacementAnchorStyle"]');
+  if (row) row.hidden = settings.previewPlacementAnchor === 'OFF';
 }
 
 function bindSegment(root, onChange) {
@@ -65,6 +76,7 @@ function renderPanel(root, settings) {
     const key = group.dataset.setting;
     syncSegment(group, settings[key] ?? GAMEPLAY_DEFAULTS[key]);
   });
+  syncAnchorStyleRowVisibility(root, settings);
 }
 
 export function isPhonePreviewMode() {

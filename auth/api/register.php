@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 session_start();
 
 require_once __DIR__ . '/../src/AuthManager.php';
+require_once __DIR__ . '/../src/GuestManager.php';
 $config = require __DIR__ . '/../config/config.php';
 
 try {
@@ -32,12 +33,20 @@ try {
     $verificationToken = $registerResult['verification_token'];
     $conn->close();
 
+    $linkedGuestCode = null;
+    $guestCodeInput = GuestManager::normalizeGuestCode($input['guest_code'] ?? '');
+    if ($guestCodeInput) {
+        $guestManager = new GuestManager($config);
+        $linkedGuestCode = $guestManager->linkGuestToUser($userId, $guestCodeInput, 'register');
+    }
+
     $responseData = [
         'success' => true,
         'message' => 'Account created. Please check your email to verify your account.',
         'user_id' => $userId,
         'email_verification_required' => true,
         'account_created' => true,
+        'guest_code' => $linkedGuestCode,
     ];
 
     echo json_encode($responseData);

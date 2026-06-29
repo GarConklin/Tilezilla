@@ -3,6 +3,8 @@
 
 param(
     [string]$Size,
+    [string]$MinSize,
+    [string]$MaxSize,
     [string]$Level,
     [switch]$Fix,
     [string]$JsonOut = ""
@@ -14,6 +16,8 @@ $py = Join-Path $root "scripts\audit-solution-loops.py"
 
 $args = @()
 if ($Size) { $args += @("--size", $Size) }
+if ($MinSize) { $args += @("--min-size", $MinSize) }
+if ($MaxSize) { $args += @("--max-size", $MaxSize) }
 if ($Level) { $args += @("--level", $Level) }
 if ($Fix) { $args += "--fix" }
 if ($JsonOut) { $args += @("--json-out", $JsonOut) }

@@ -1,18 +1,28 @@
 import {
   consumeForceStartup,
-  isGuestUser,
-  isRegisteredUser,
   playAsGuest,
   TILEZILLA_GAME_URL,
   trackGuestEvent,
 } from './tilezilla-guest.js';
+import { applyServerSession, fetchServerSession, isDevAuthBypass } from './tilezilla-auth.js';
 import { applyUiScale, wireUiScaleListeners } from './tilezilla-ui-scale.js';
 import { applyLoadScreenLayout, loadLoadScreenLayout } from './load-screen-layout.js';
 import { applyMainScreenV2Layout, loadMainScreenV2Layout } from './main-screen-v2-layout.js';
 
-if (!consumeForceStartup() && (isRegisteredUser() || isGuestUser())) {
-  window.location.replace(TILEZILLA_GAME_URL);
+async function bootLoadScreen() {
+  if (consumeForceStartup()) return;
+
+  if (!isDevAuthBypass()) {
+    const session = await fetchServerSession();
+    if (session.ok) {
+      applyServerSession(session.user);
+      window.location.replace(TILEZILLA_GAME_URL);
+      return;
+    }
+  }
 }
+
+void bootLoadScreen();
 
 void Promise.all([loadLoadScreenLayout(), loadMainScreenV2Layout()]).then(([loadLayout, msv2]) => {
   applyMainScreenV2Layout(msv2);

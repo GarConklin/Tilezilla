@@ -1,6 +1,8 @@
-/** Load screen button hits (% of 390×844 stage). */
+/** Load screen button hits (% of Load-Screen.png art frame). */
 
 import { DEFAULT_PREVIEW_V2_ART, isBlockedGameImagePath } from './preview-v2-layout.js';
+
+export const LOAD_SCREEN_ART_PIXELS = { w: 375, h: 467 };
 
 export const LOAD_SCREEN_ITEM_DEFS = {
   art: { label: 'Load screen image', cssPrefix: 'art', kind: 'art' },
@@ -15,15 +17,17 @@ export const DEFAULT_LOAD_SCREEN_LAYOUT = {
     y: 0,
     w: 100,
     h: 100,
+    artPixelW: LOAD_SCREEN_ART_PIXELS.w,
+    artPixelH: LOAD_SCREEN_ART_PIXELS.h,
     frame: DEFAULT_PREVIEW_V2_ART.frame,
     src: '/img/Load-Screen.png',
-    objectFit: 'contain',
+    objectFit: 'fill',
     objectPosition: 'top center',
   },
   items: {
-    preview: { x: 11, y: 33, w: 78, h: 24 },
-    guest: { x: 4.5, y: 58.5, w: 44, h: 11.5 },
-    login: { x: 51, y: 58.5, w: 44, h: 11.5 },
+    preview: { x: 11, y: 33, w: 78, h: 24, hidden: true },
+    guest: { x: 8, y: 67.5, w: 36, h: 8.5 },
+    login: { x: 56, y: 67.5, w: 36, h: 8.5 },
   },
 };
 
@@ -78,6 +82,8 @@ export function mergeLoadScreenLayout(raw) {
     if (!base.art.src) base.art.src = DEFAULT_LOAD_SCREEN_LAYOUT.art.src;
     if (!base.art.objectFit) base.art.objectFit = DEFAULT_LOAD_SCREEN_LAYOUT.art.objectFit;
     if (!base.art.objectPosition) base.art.objectPosition = DEFAULT_LOAD_SCREEN_LAYOUT.art.objectPosition;
+    if (!base.art.artPixelW) base.art.artPixelW = DEFAULT_LOAD_SCREEN_LAYOUT.art.artPixelW;
+    if (!base.art.artPixelH) base.art.artPixelH = DEFAULT_LOAD_SCREEN_LAYOUT.art.artPixelH;
     for (const dim of ['x', 'y', 'w', 'h']) {
       if (base.art[dim] == null) base.art[dim] = DEFAULT_LOAD_SCREEN_LAYOUT.art[dim];
     }
@@ -166,6 +172,8 @@ export function getLoadScreenArtLayout(layout) {
     frame: isBlockedGameImagePath(art.frame) ? DEFAULT_PREVIEW_V2_ART.frame : art.frame,
     objectFit: art.objectFit || def.objectFit,
     objectPosition: art.objectPosition || def.objectPosition,
+    artPixelW: art.artPixelW ?? def.artPixelW ?? LOAD_SCREEN_ART_PIXELS.w,
+    artPixelH: art.artPixelH ?? def.artPixelH ?? LOAD_SCREEN_ART_PIXELS.h,
   };
 }
 
@@ -176,6 +184,7 @@ export function applyLoadScreenArt(layout) {
   root.style.setProperty('--tz-load-art-y', `${art.y}%`);
   root.style.setProperty('--tz-load-art-w', `${art.w}%`);
   root.style.setProperty('--tz-load-art-h', `${art.h}%`);
+  root.style.setProperty('--tz-load-art-aspect', `${art.artPixelW} / ${art.artPixelH}`);
   root.style.setProperty('--tz-load-art-fit', art.objectFit);
   root.style.setProperty('--tz-load-art-position', art.objectPosition);
   root.style.setProperty(
@@ -210,10 +219,10 @@ export function buildLoadScreenLayoutReport(layout) {
   const merged = mergeLoadScreenLayout(layout);
   const art = getLoadScreenArtLayout(merged);
   const lines = [
-    'Load screen — 390×844 mobile stage (background from main_screen_v2_layout.json)',
+    'Load screen — hits are % of Load-Screen.png art frame (inside art-wrap)',
     `Art: ${art.src}`,
     `Art box: x=${art.x}% y=${art.y}% w=${art.w}% h=${art.h}%`,
-    `Art fit: ${art.objectFit} · position: ${art.objectPosition}`,
+    `Art pixels: ${art.artPixelW}×${art.artPixelH} · fit: ${art.objectFit} · position: ${art.objectPosition}`,
     `Preview frame: ${art.frame}`,
     '',
   ];

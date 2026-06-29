@@ -1,15 +1,10 @@
 /**
  * Dev-only: sign in and jump straight to the game (skips load/login screens).
- * Tries /auth/api/login.php first; falls back to local session if auth is unavailable.
+ * Requires a working auth service and verified test account.
  */
 
-import {
-  AUTH_MODE_KEY,
-  ACTIVE_USER_KEY,
-  getGuestCode,
-  setRegisteredUser,
-  TILEZILLA_GAME_URL,
-} from './tilezilla-guest.js';
+import { getGuestCode, TILEZILLA_GAME_URL } from './tilezilla-guest.js';
+import { completeLoginFromServer } from './tilezilla-auth.js';
 
 const DEFAULT_USER = 'test';
 const DEFAULT_PASS = 'test';
@@ -32,18 +27,14 @@ export async function devAutoLogin(options = {}) {
       }),
     });
     const data = await res.json().catch(() => ({}));
-    if (res.ok && data?.success && data?.user?.username) {
-      setRegisteredUser(data.user.username);
+    if (res.ok && data?.success && data?.user?.id) {
+      await completeLoginFromServer(data, { source: 'dev_auto_login' });
       window.location.replace(redirect);
       return { mode: 'server', username: data.user.username };
     }
   } catch {
-    /* auth container down — use local dev session below */
+    /* auth container down */
   }
 
-  setRegisteredUser(username);
-  localStorage.setItem(ACTIVE_USER_KEY, username);
-  localStorage.setItem(AUTH_MODE_KEY, 'registered');
-  window.location.replace(redirect);
-  return { mode: 'local', username };
+  throw new Error('Dev auto-login failed — start the auth service or use a verified test account.');
 }

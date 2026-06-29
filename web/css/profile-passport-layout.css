@@ -74,21 +74,70 @@
   visibility: hidden;
 }
 
-/* user_data_v2_layout.json art coords (scoped on stack; profile-screen has no shell.css) */
-.auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge-stack,
-.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge-stack {
+/* Passport rank slot — badge stack fills the tuned rankBadge box (not user_data inset) */
+.auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack {
   position: absolute;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
-  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
-  top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-badge-stack-h-art, 42) / var(--tz-user-data-art-h, 72) * 100%);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge,
-.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge {
+/* Same rank bubble + sublevel model as rank-sublevel-tuner / status panel */
+.auth-screen__profile-rank-stack .tz-rank-badge-stack,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 100%;
+  height: 100%;
+  --tz-rank-sublevel-anchor-y: 0.78;
+}
+
+.auth-screen__profile-rank-stack .tz-rank-badge__img,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge__img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  transform: scaleX(var(--tz-rank-badge-w-scale, 1));
+  transform-origin: center top;
+  object-fit: contain;
+  object-position: center top;
+  pointer-events: none;
+}
+
+.auth-screen__profile-rank-stack .tz-rank-sublevel__img,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-sublevel__img {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--tz-rank-badge-h, 100%) * var(--tz-rank-sublevel-anchor-y, 0.78));
+  z-index: 2;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: var(--tz-rank-sublevel-icon-h, 9.6px);
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%)
+    translate(
+      var(--tz-rank-sublevel-nudge-x, 0px),
+      var(--tz-rank-sublevel-nudge-y, 0px)
+    )
+    scaleX(var(--tz-rank-sublevel-w-scale, 1));
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* Legacy preview user_data markup (pre rank-bubble stack) */
+.auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge:not(.tz-rank-badge__img),
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-preview-v2-user-data__badge:not(.tz-rank-badge__img) {
   display: block;
   width: 100%;
   height: 100%;
@@ -163,6 +212,28 @@
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-memberSince-font-scale, 1));
 }
 
+.auth-screen--profile [data-profile-slot="profileName"],
+.auth-screen--profile .auth-screen__profile-name,
+.tz-profile-dialog__name,
+.tz-profile-dialog__stage [data-profile-slot="profileName"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  color: #3d2e1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.05;
+  container-type: inline-size;
+  font-size: clamp(
+    0.42rem,
+    calc(7.6cqw * var(--auth-profile-profileName-font-scale, 1)),
+    calc(0.74rem * var(--auth-profile-profileName-font-scale, 1))
+  );
+}
+
 .auth-screen--profile [data-profile-slot="passportId"],
 .tz-profile-dialog__stage [data-profile-slot="passportId"] {
   left: var(--auth-profile-passportId-x, 52%);
@@ -184,100 +255,111 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: calc(clamp(0.55rem, 2vw, 0.62rem) * var(--auth-profile-guestNote-font-scale, 0.85));
+  font-size: clamp(
+    0.38rem,
+    calc(5.8cqw * var(--auth-profile-guestNote-font-scale, 0.85)),
+    calc(0.58rem * var(--auth-profile-guestNote-font-scale, 0.85))
+  );
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.05;
   color: #5c4028;
   pointer-events: none;
   overflow: hidden;
+  white-space: nowrap;
+  container-type: inline-size;
 }
 
 .auth-screen--profile [data-profile-slot="explorersRegistered"],
 .tz-profile-dialog__stage [data-profile-slot="explorersRegistered"] {
-  left: var(--auth-profile-explorersRegistered-x, 10%);
-  top: var(--auth-profile-explorersRegistered-y, 56%);
-  width: var(--auth-profile-explorersRegistered-w, 35%);
-  height: var(--auth-profile-explorersRegistered-h, 3.5%);
+  left: var(--auth-profile-explorersRegistered-x, 30.8%);
+  top: var(--auth-profile-explorersRegistered-y, 60.9%);
+  width: var(--auth-profile-explorersRegistered-w, 14.8%);
+  height: var(--auth-profile-explorersRegistered-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-explorersRegistered-font-scale, 1));
 }
 
 .auth-screen--profile [data-profile-slot="totalAdventurePuzzles"],
 .tz-profile-dialog__stage [data-profile-slot="totalAdventurePuzzles"] {
-  left: var(--auth-profile-totalAdventurePuzzles-x, 10%);
-  top: var(--auth-profile-totalAdventurePuzzles-y, 50%);
-  width: var(--auth-profile-totalAdventurePuzzles-w, 35%);
-  height: var(--auth-profile-totalAdventurePuzzles-h, 3.5%);
+  left: var(--auth-profile-totalAdventurePuzzles-x, 30.8%);
+  top: var(--auth-profile-totalAdventurePuzzles-y, 64.7%);
+  width: var(--auth-profile-totalAdventurePuzzles-w, 14.8%);
+  height: var(--auth-profile-totalAdventurePuzzles-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalAdventurePuzzles-font-scale, 1));
 }
 
 .auth-screen--profile [data-profile-slot="totalKnownRoutes"],
 .tz-profile-dialog__stage [data-profile-slot="totalKnownRoutes"] {
-  left: var(--auth-profile-totalKnownRoutes-x, 10%);
-  top: var(--auth-profile-totalKnownRoutes-y, 53.5%);
-  width: var(--auth-profile-totalKnownRoutes-w, 35%);
-  height: var(--auth-profile-totalKnownRoutes-h, 3.5%);
+  left: var(--auth-profile-totalKnownRoutes-x, 30.8%);
+  top: var(--auth-profile-totalKnownRoutes-y, 68.6%);
+  width: var(--auth-profile-totalKnownRoutes-w, 14.8%);
+  height: var(--auth-profile-totalKnownRoutes-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalKnownRoutes-font-scale, 1));
 }
 
 .auth-screen--profile [data-profile-slot="largestSolution"],
 .tz-profile-dialog__stage [data-profile-slot="largestSolution"] {
-  left: var(--auth-profile-largestSolution-x, 54%);
-  top: var(--auth-profile-largestSolution-y, 50%);
-  width: var(--auth-profile-largestSolution-w, 38%);
-  height: var(--auth-profile-largestSolution-h, 3.5%);
-  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-largestSolution-font-scale, 1));
+  left: var(--auth-profile-largestSolution-x, 30.8%);
+  top: var(--auth-profile-largestSolution-y, 73.2%);
+  width: var(--auth-profile-largestSolution-w, 18%);
+  height: var(--auth-profile-largestSolution-h, 4.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-largestSolution-font-scale, 0.85));
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.05;
 }
 
 .auth-screen--profile [data-profile-slot="todaysChallenge"],
 .tz-profile-dialog__stage [data-profile-slot="todaysChallenge"] {
-  left: var(--auth-profile-todaysChallenge-x, 10%);
-  top: var(--auth-profile-todaysChallenge-y, 74%);
-  width: var(--auth-profile-todaysChallenge-w, 35%);
-  height: var(--auth-profile-todaysChallenge-h, 3.5%);
-  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-todaysChallenge-font-scale, 1));
+  left: var(--auth-profile-todaysChallenge-x, 30.8%);
+  top: var(--auth-profile-todaysChallenge-y, 77.2%);
+  width: var(--auth-profile-todaysChallenge-w, 18%);
+  height: var(--auth-profile-todaysChallenge-h, 2.9%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-todaysChallenge-font-scale, 0.92));
 }
 
 .auth-screen--profile [data-profile-slot="recentPuzzleSolved"],
 .tz-profile-dialog__stage [data-profile-slot="recentPuzzleSolved"] {
-  left: var(--auth-profile-recentPuzzleSolved-x, 54%);
-  top: var(--auth-profile-recentPuzzleSolved-y, 56%);
-  width: var(--auth-profile-recentPuzzleSolved-w, 38%);
-  height: var(--auth-profile-recentPuzzleSolved-h, 3.5%);
-  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentPuzzleSolved-font-scale, 1));
+  left: var(--auth-profile-recentPuzzleSolved-x, 58.8%);
+  top: var(--auth-profile-recentPuzzleSolved-y, 62.8%);
+  width: var(--auth-profile-recentPuzzleSolved-w, 21%);
+  height: var(--auth-profile-recentPuzzleSolved-h, 3.3%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentPuzzleSolved-font-scale, 0.92));
 }
 
 .auth-screen--profile [data-profile-slot="recentDailyCompleted"],
 .tz-profile-dialog__stage [data-profile-slot="recentDailyCompleted"] {
-  left: var(--auth-profile-recentDailyCompleted-x, 54%);
-  top: var(--auth-profile-recentDailyCompleted-y, 62%);
-  width: var(--auth-profile-recentDailyCompleted-w, 38%);
-  height: var(--auth-profile-recentDailyCompleted-h, 3.5%);
-  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentDailyCompleted-font-scale, 1));
+  left: var(--auth-profile-recentDailyCompleted-x, 58.9%);
+  top: var(--auth-profile-recentDailyCompleted-y, 67.7%);
+  width: var(--auth-profile-recentDailyCompleted-w, 20.8%);
+  height: var(--auth-profile-recentDailyCompleted-h, 3.1%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-recentDailyCompleted-font-scale, 0.92));
 }
 
 .auth-screen--profile [data-profile-slot="mostSolvedPuzzle"],
 .tz-profile-dialog__stage [data-profile-slot="mostSolvedPuzzle"] {
-  left: var(--auth-profile-mostSolvedPuzzle-x, 54%);
-  top: var(--auth-profile-mostSolvedPuzzle-y, 68%);
-  width: var(--auth-profile-mostSolvedPuzzle-w, 38%);
-  height: var(--auth-profile-mostSolvedPuzzle-h, 3.5%);
-  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-mostSolvedPuzzle-font-scale, 1));
+  left: var(--auth-profile-mostSolvedPuzzle-x, 58.9%);
+  top: var(--auth-profile-mostSolvedPuzzle-y, 72.4%);
+  width: var(--auth-profile-mostSolvedPuzzle-w, 20.7%);
+  height: var(--auth-profile-mostSolvedPuzzle-h, 2.7%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-mostSolvedPuzzle-font-scale, 0.92));
 }
 
 .auth-screen--profile [data-profile-slot="latestDiscovery"],
 .tz-profile-dialog__stage [data-profile-slot="latestDiscovery"] {
-  left: var(--auth-profile-latestDiscovery-x, 54%);
-  top: var(--auth-profile-latestDiscovery-y, 74%);
-  width: var(--auth-profile-latestDiscovery-w, 38%);
-  height: var(--auth-profile-latestDiscovery-h, 3.5%);
-  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-latestDiscovery-font-scale, 1));
+  left: var(--auth-profile-latestDiscovery-x, 59.2%);
+  top: var(--auth-profile-latestDiscovery-y, 76.2%);
+  width: var(--auth-profile-latestDiscovery-w, 20.2%);
+  height: var(--auth-profile-latestDiscovery-h, 3.3%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-profile-latestDiscovery-font-scale, 0.92));
 }
 
 .auth-screen--profile [data-profile-slot="totalPlayTime"],
 .tz-profile-dialog__stage [data-profile-slot="totalPlayTime"] {
-  left: var(--auth-profile-totalPlayTime-x, 54%);
-  top: var(--auth-profile-totalPlayTime-y, 80%);
-  width: var(--auth-profile-totalPlayTime-w, 38%);
+  left: var(--auth-profile-totalPlayTime-x, 62.5%);
+  top: var(--auth-profile-totalPlayTime-y, 79.7%);
+  width: var(--auth-profile-totalPlayTime-w, 16.7%);
   height: var(--auth-profile-totalPlayTime-h, 3.5%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-profile-totalPlayTime-font-scale, 1));
 }
@@ -400,4 +482,141 @@
   border-radius: 4px;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* Login / create passport — global journal stats */
+.auth-screen--login [data-profile-slot],
+.auth-screen--create [data-profile-slot] {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  font-weight: 600;
+  color: #3d2e1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.15;
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-stat-font-scale, 1));
+}
+
+.auth-screen--login [data-profile-slot="explorersRegistered"] {
+  left: var(--auth-login-explorersRegistered-x, 30.8%);
+  top: var(--auth-login-explorersRegistered-y, 60.9%);
+  width: var(--auth-login-explorersRegistered-w, 14.8%);
+  height: var(--auth-login-explorersRegistered-h, 2.9%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-explorersRegistered-font-scale, 1));
+}
+
+.auth-screen--login [data-profile-slot="totalAdventurePuzzles"] {
+  left: var(--auth-login-totalAdventurePuzzles-x, 30.8%);
+  top: var(--auth-login-totalAdventurePuzzles-y, 64.7%);
+  width: var(--auth-login-totalAdventurePuzzles-w, 14.8%);
+  height: var(--auth-login-totalAdventurePuzzles-h, 2.9%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-totalAdventurePuzzles-font-scale, 1));
+}
+
+.auth-screen--login [data-profile-slot="totalKnownRoutes"] {
+  left: var(--auth-login-totalKnownRoutes-x, 30.8%);
+  top: var(--auth-login-totalKnownRoutes-y, 68.6%);
+  width: var(--auth-login-totalKnownRoutes-w, 14.8%);
+  height: var(--auth-login-totalKnownRoutes-h, 2.9%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-totalKnownRoutes-font-scale, 1));
+}
+
+.auth-screen--login [data-profile-slot="largestSolution"] {
+  left: var(--auth-login-largestSolution-x, 30.8%);
+  top: var(--auth-login-largestSolution-y, 73.2%);
+  width: var(--auth-login-largestSolution-w, 18%);
+  height: var(--auth-login-largestSolution-h, 4.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-largestSolution-font-scale, 0.85));
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.05;
+}
+
+.auth-screen--login [data-profile-slot="todaysChallenge"] {
+  left: var(--auth-login-todaysChallenge-x, 30.8%);
+  top: var(--auth-login-todaysChallenge-y, 77.2%);
+  width: var(--auth-login-todaysChallenge-w, 18%);
+  height: var(--auth-login-todaysChallenge-h, 2.9%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-login-todaysChallenge-font-scale, 0.92));
+}
+
+.auth-screen--login [data-profile-slot="recentPuzzleSolved"] {
+  left: var(--auth-login-recentPuzzleSolved-x, 58.8%);
+  top: var(--auth-login-recentPuzzleSolved-y, 62.8%);
+  width: var(--auth-login-recentPuzzleSolved-w, 21%);
+  height: var(--auth-login-recentPuzzleSolved-h, 3.3%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-login-recentPuzzleSolved-font-scale, 0.92));
+}
+
+.auth-screen--login [data-profile-slot="recentDailyCompleted"] {
+  left: var(--auth-login-recentDailyCompleted-x, 58.9%);
+  top: var(--auth-login-recentDailyCompleted-y, 67.7%);
+  width: var(--auth-login-recentDailyCompleted-w, 20.8%);
+  height: var(--auth-login-recentDailyCompleted-h, 3.1%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-login-recentDailyCompleted-font-scale, 0.92));
+}
+
+.auth-screen--login [data-profile-slot="mostSolvedPuzzle"] {
+  left: var(--auth-login-mostSolvedPuzzle-x, 58.9%);
+  top: var(--auth-login-mostSolvedPuzzle-y, 72.4%);
+  width: var(--auth-login-mostSolvedPuzzle-w, 20.7%);
+  height: var(--auth-login-mostSolvedPuzzle-h, 2.7%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-login-mostSolvedPuzzle-font-scale, 0.92));
+}
+
+.auth-screen--login [data-profile-slot="latestDiscovery"] {
+  left: var(--auth-login-latestDiscovery-x, 59.2%);
+  top: var(--auth-login-latestDiscovery-y, 76.2%);
+  width: var(--auth-login-latestDiscovery-w, 20.2%);
+  height: var(--auth-login-latestDiscovery-h, 3.3%);
+  font-size: calc(clamp(0.55rem, 2vw, 0.72rem) * var(--auth-login-latestDiscovery-font-scale, 0.92));
+}
+
+.auth-screen--login [data-profile-slot="totalPlayTime"] {
+  left: var(--auth-login-totalPlayTime-x, 62.5%);
+  top: var(--auth-login-totalPlayTime-y, 79.7%);
+  width: var(--auth-login-totalPlayTime-w, 16.7%);
+  height: var(--auth-login-totalPlayTime-h, 3.5%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-totalPlayTime-font-scale, 1));
+}
+
+.auth-screen--create [data-profile-slot="totalAdventurePuzzles"] {
+  left: var(--auth-create-totalAdventurePuzzles-x, 58%);
+  top: var(--auth-create-totalAdventurePuzzles-y, 58.5%);
+  width: var(--auth-create-totalAdventurePuzzles-w, 12%);
+  height: var(--auth-create-totalAdventurePuzzles-h, 2.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-create-totalAdventurePuzzles-font-scale, 1));
+}
+
+.auth-screen--create [data-profile-slot="ranksToEarn"] {
+  left: var(--auth-create-ranksToEarn-x, 58%);
+  top: var(--auth-create-ranksToEarn-y, 62.5%);
+  width: var(--auth-create-ranksToEarn-w, 12%);
+  height: var(--auth-create-ranksToEarn-h, 2.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-create-ranksToEarn-font-scale, 1));
+}
+
+.auth-screen--create [data-profile-slot="challengeGates"] {
+  left: var(--auth-create-challengeGates-x, 58%);
+  top: var(--auth-create-challengeGates-y, 66.5%);
+  width: var(--auth-create-challengeGates-w, 12%);
+  height: var(--auth-create-challengeGates-h, 2.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-create-challengeGates-font-scale, 1));
+}
+
+.auth-screen--create [data-profile-slot="totalKnownRoutes"] {
+  left: var(--auth-create-totalKnownRoutes-x, 58%);
+  top: var(--auth-create-totalKnownRoutes-y, 70.5%);
+  width: var(--auth-create-totalKnownRoutes-w, 12%);
+  height: var(--auth-create-totalKnownRoutes-h, 2.8%);
+  font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-create-totalKnownRoutes-font-scale, 1));
 }

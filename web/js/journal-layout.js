@@ -163,7 +163,7 @@ const DEFAULT_ITEMS = {
     space: 'titleBar', x: 4, y: 10, w: 92, h: 80, nudgeX: 0, nudgeY: 0,
   },
   titleRecordedPuzzles: {
-    space: 'titleBar', x: 4, y: 10, w: 92, h: 80, nudgeX: 0, nudgeY: 0,
+    space: 'titleBar', x: 4, y: 28, w: 92, h: 36, nudgeX: 0, nudgeY: 0,
   },
   listScroller: {
     space: 'pane', x: 1, y: 10, h: 88, trackScale: 0.22, pinScale: 1, nudgeX: 0, nudgeY: 0,

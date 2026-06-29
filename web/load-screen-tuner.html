@@ -148,6 +148,7 @@
       z-index: 4;
       pointer-events: auto;
       cursor: move;
+      overflow: visible;
       background: rgba(255, 180, 80, 0.12) !important;
       border: 2px dashed rgba(255, 180, 80, 0.75) !important;
     }
@@ -200,8 +201,8 @@
 <body>
   <h1>Load screen tuner</h1>
   <p class="lead">
-    Tune the <strong>Load-Screen.png</strong> fit/position, <strong>Play As Guest</strong>, <strong>Login</strong>,
-    and <strong>preview frame overlay</strong> on the 390×844 mobile stage.
+    Tune the <strong>Load-Screen.png</strong> fit/position, <strong>Play As Guest</strong>, and <strong>Login</strong>
+    hit areas (% of the art frame, not the full stage).
     Background matches <code>tilezilla-v2.html</code> via <code>main_screen_v2_layout.json</code>.
     Saves to <code>data/load_screen_layout.json</code>.
     <a href="/dev-player-select.html">Dev tools</a> · <a href="/">Open index</a>
@@ -262,27 +263,27 @@
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
                 <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
                 <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-                <img class="tz-load-screen__art" src="/img/Load-Screen.png" alt="" width="1024" height="1536" />
+                <img class="tz-load-screen__art" src="/img/Load-Screen.png" alt="" width="375" height="467" />
+                <div class="tz-load-screen__preview tuner-box" data-item="preview" hidden>
+                  <span class="hit-label">Preview</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                  <div class="tz-load-screen__preview-frame"></div>
+                </div>
+                <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest tuner-box" data-item="guest">
+                  <span class="hit-label">Guest</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </button>
+                <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login tuner-box" data-item="login">
+                  <span class="hit-label">Login</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </button>
               </div>
-              <div class="tz-load-screen__preview tuner-box" data-item="preview">
-                <span class="hit-label">Preview</span>
-                <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
-                <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
-                <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-                <div class="tz-load-screen__preview-frame"></div>
-              </div>
-              <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest tuner-box" data-item="guest">
-                <span class="hit-label">Guest</span>
-                <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
-                <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
-                <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-              </button>
-              <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login tuner-box" data-item="login">
-                <span class="hit-label">Login</span>
-                <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
-                <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
-                <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-              </button>
             </section>
             </div>
           </div>
@@ -338,7 +339,10 @@
     }
 
     function getFrameRect() {
-      return document.getElementById('mockLoadScreen')?.getBoundingClientRect();
+      const root = document.getElementById('mockLoadScreen');
+      if (currentItem === 'art') return root?.getBoundingClientRect();
+      const artWrap = root?.querySelector('.tz-load-screen__art-wrap');
+      return artWrap?.getBoundingClientRect() || root?.getBoundingClientRect();
     }
 
     function getTunerBox(key) {

@@ -36,6 +36,7 @@ let state = {
   resumeLevelId: null,
   resumeScreen: null,
   returnToLibrary: false,
+  challengeDate: null,
 };
 
 function $(id) {
@@ -370,7 +371,12 @@ function renderSolutionList(entries, { mode = 'solutions' } = {}) {
       if (mode === 'solutions') {
         void selectSolution(entry);
       } else {
-        void openJournal({ mode: 'record', levelId: entry.levelId, fromLibrary: true });
+        void openJournal({
+          mode: 'record',
+          levelId: entry.levelId,
+          fromLibrary: true,
+          challengeDate: entry.challengeDateIso || null,
+        });
       }
     });
 
@@ -569,6 +575,7 @@ function navigateLibraryPuzzle(delta) {
   if (idx < 0) idx = delta > 0 ? -1 : 0;
   const nextIdx = (idx + delta + puzzles.length) % puzzles.length;
   state.levelId = puzzles[nextIdx].levelId;
+  state.challengeDate = puzzles[nextIdx].challengeDateIso || null;
   const hasPuzzleRows = $('journalList')?.querySelector('[data-level-id]');
   if (!hasPuzzleRows) {
     renderSolutionList(
@@ -592,7 +599,9 @@ async function loadBeginSearchToBoard() {
   const app = getApp();
   if (!app || !state.levelId || state.mode !== 'record') return;
 
-  const levelReady = await loadPuzzleLevel(state.levelId);
+  const levelReady = await loadPuzzleLevel(state.levelId, {
+    challengeDate: state.challengeDate || null,
+  });
   if (!levelReady) return;
 
   window.__discoveryRecord?.hide?.();
@@ -677,6 +686,7 @@ async function refreshLibraryView() {
   renderLibrarySelectors(data);
   if (!state.levelId && state.libraryPuzzles.length) {
     state.levelId = state.libraryPuzzles[0].levelId;
+    state.challengeDate = state.libraryPuzzles[0].challengeDateIso || null;
   }
   renderSolutionList(
     state.libraryPuzzles.map((p) => ({ ...p, label: p.label })),
@@ -697,7 +707,9 @@ async function loadSelectedSolutionToBoard() {
     : null;
   if (!entry?.placements?.length) return;
 
-  const levelReady = await loadPuzzleLevel(state.levelId);
+  const levelReady = await loadPuzzleLevel(state.levelId, {
+    challengeDate: state.challengeDate || null,
+  });
   if (!levelReady) return;
 
   window.__discoveryRecord?.hide?.();
@@ -720,6 +732,7 @@ export async function openJournal({
   resumeLevelId = null,
   resumeScreen = null,
   fromLibrary = false,
+  challengeDate = null,
 } = {}) {
   const root = $('journalRoot');
   const app = getApp();
@@ -746,6 +759,7 @@ export async function openJournal({
     state.returnToLibrary = false;
   }
   if (levelId) state.levelId = levelId;
+  state.challengeDate = challengeDate || null;
   if (mode === 'record' && !state.levelId) {
     state.levelId = app.state?.currentLevel?.id || null;
   }

@@ -62,13 +62,22 @@ export function applySublevelIconElement(img, subLevel, badge, layout) {
 
 /** Scale tuner px values when badge stack is taller/shorter than the status rank bubble. */
 export function rankBadgeStackHeightPx(img) {
-  const stack =
-    img?.closest?.('.tz-rank-badge-stack')
-    || img?.closest?.('.auth-screen__profile-rank-stack, .tz-preview-v2-user-data')
+  const rankStack = img?.closest?.('.tz-rank-badge-stack');
+  if (rankStack) {
+    const badgeImg = rankStack.querySelector('.tz-rank-badge__img');
+    const imgH = badgeImg?.getBoundingClientRect()?.height;
+    if (imgH > 0) return imgH;
+    const stackH = rankStack.getBoundingClientRect().height;
+    if (stackH > 0) return stackH;
+  }
+  const legacyStack =
+    img?.closest?.('.auth-screen__profile-rank-stack, .tz-preview-v2-user-data')
       ?.querySelector?.('.tz-preview-v2-user-data__badge-stack');
-  if (!stack) return RANK_BADGE_REF_PX;
-  const h = stack.getBoundingClientRect().height;
-  return h > 0 ? h : RANK_BADGE_REF_PX;
+  if (legacyStack) {
+    const h = legacyStack.getBoundingClientRect().height;
+    if (h > 0) return h;
+  }
+  return RANK_BADGE_REF_PX;
 }
 
 /**

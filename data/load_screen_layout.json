@@ -4,29 +4,32 @@
     "y": 0,
     "w": 100,
     "h": 100,
+    "artPixelW": 375,
+    "artPixelH": 467,
     "frame": "/img/preview tile Area bubble.png",
     "src": "/img/Load-Screen.png",
-    "objectFit": "contain",
+    "objectFit": "fill",
     "objectPosition": "top center"
   },
   "items": {
     "preview": {
-      "x": 4.1,
-      "y": 58.1,
-      "w": 93.5,
-      "h": 24.2
+      "x": 11,
+      "y": 33,
+      "w": 78,
+      "h": 24,
+      "hidden": true
     },
     "guest": {
-      "x": 9.5,
-      "y": 39.6,
-      "w": 36.6,
-      "h": 11.3
+      "x": 8,
+      "y": 67.5,
+      "w": 36,
+      "h": 8.5
     },
     "login": {
-      "x": 53,
-      "y": 39.7,
-      "w": 38.3,
-      "h": 10.7
+      "x": 56,
+      "y": 67.5,
+      "w": 36,
+      "h": 8.5
     }
   }
 }

@@ -13,7 +13,17 @@ docker compose up -d mysql
 
 First boot runs `docker/mysql/init/*.sql` (empty tables). Hint economy: [Docs/hint-economy.md](../Docs/hint-economy.md).
 
-Persistent data: Docker volume `tilegame_mysql_data`.
+Persistent data: Docker volume **`tilezilla_shared_mysql_data`** (shared by `docker-compose.yml` and `docker-compose.remote-test.yml`).
+
+Before first boot after upgrading from older compose files, run:
+
+```powershell
+.\scripts\ensure-shared-mysql-volume.ps1
+```
+
+That copies registered accounts from legacy volumes (e.g. remote-test `tilezilla_*_remote_mysql_data`) into the shared volume so logins are not lost when switching stacks.
+
+**Accounts are only deleted if you explicitly remove the volume** — not by stopping containers or switching stacks.
 
 **Solver / enumeration:** The solve scripts do **not** use MySQL. A single `solve-level.js` run works fine with MySQL up (~430 MiB). Failures with **exit 137** are Docker **out-of-memory kills**, usually from **multiple solve containers at once** (orphans + a batch script, or a stray 6×6 job). Before enumerating: `.\scripts\stop-solve-docker-runs.ps1` and run **one** batch only. Optional extra RAM: `docker compose stop mysql` during long runs, `docker compose up -d mysql` after.
 
@@ -114,6 +124,13 @@ docker compose exec -T mysql mysql -uroot -p tilegame < docker/mysql/init/02-hin
 
 (Use root password from `.env`.)
 
+Adventure level_id renames (0C/0A misfiles → 1C/1A):
+
+```powershell
+Get-Content docker\mysql\init\14-adventure-level-id-renames.sql -Raw | docker compose exec -T mysql mysql -utilegame -ptilegame_dev tilegame
+.\scripts\import-adventure-map.ps1
+```
+
 ## Dev users (Gar + Arn)
 
 After catalog and adventure imports:
@@ -131,10 +148,14 @@ Seeds `tilegame.users`, `tile_profiles`, and `player_progress`. If `words_db` is
 
 Use `-TilegameOnly` to skip WordsOnline. Use `-DryRun` to print steps without writing.
 
-## Reset database (destructive)
+## Reset database (destructive — deletes all accounts)
+
+Only run this when you intentionally want a blank database:
 
 ```powershell
 docker compose down
-docker volume rm garz-puzzle_tilegame_mysql_data
+docker volume rm tilezilla_shared_mysql_data
 docker compose up -d mysql
 ```
+
+Legacy volume names from older setups (`garz-puzzle_tilegame_mysql_data`, `tilezilla-test_tilezilla_remote_mysql_data`, etc.) are **not** used automatically — migrate with `.\scripts\ensure-shared-mysql-volume.ps1` first if you need that data.

@@ -18,17 +18,23 @@
         "w": 29.8,
         "h": 3.2
       },
+      "passReveal": {
+        "x": 62.1,
+        "y": 23.8,
+        "w": 8.3,
+        "h": 3.8
+      },
       "submit": {
         "x": 29.1,
-        "y": 29.2,
+        "y": 28.6,
         "w": 43.3,
         "h": 5.7
       },
       "secondary": {
         "x": 28.9,
-        "y": 36.9,
-        "w": 43.5,
-        "h": 7.4
+        "y": 36.6,
+        "w": 42.3,
+        "h": 7.1
       },
       "navDaily": {
         "x": 12.5,
@@ -41,6 +47,76 @@
         "y": 93.8,
         "w": 22,
         "h": 6.1
+      },
+      "explorersRegistered": {
+        "x": 32,
+        "y": 61.5,
+        "w": 14.8,
+        "h": 2.9,
+        "fontScale": 1
+      },
+      "totalAdventurePuzzles": {
+        "x": 32.4,
+        "y": 65.3,
+        "w": 14.8,
+        "h": 2.9,
+        "fontScale": 1
+      },
+      "totalKnownRoutes": {
+        "x": 32.4,
+        "y": 69.2,
+        "w": 14.8,
+        "h": 2.9,
+        "fontScale": 1
+      },
+      "largestSolution": {
+        "x": 34.4,
+        "y": 72.6,
+        "w": 15.5,
+        "h": 3.3,
+        "fontScale": 0.85
+      },
+      "todaysChallenge": {
+        "x": 16.6,
+        "y": 77.5,
+        "w": 21.9,
+        "h": 5,
+        "fontScale": 0.92
+      },
+      "recentPuzzleSolved": {
+        "x": 58.8,
+        "y": 62.8,
+        "w": 21,
+        "h": 3.3,
+        "fontScale": 0.92
+      },
+      "recentDailyCompleted": {
+        "x": 58.9,
+        "y": 67.7,
+        "w": 20.8,
+        "h": 3.1,
+        "fontScale": 0.92
+      },
+      "mostSolvedPuzzle": {
+        "x": 58.9,
+        "y": 72.4,
+        "w": 20.7,
+        "h": 2.7,
+        "fontScale": 0.92
+      },
+      "latestDiscovery": {
+        "x": 59.2,
+        "y": 76.2,
+        "w": 20.2,
+        "h": 3.3,
+        "fontScale": 0.92
+      },
+      "totalPlayTime": {
+        "x": 62.5,
+        "y": 79.7,
+        "w": 16.7,
+        "h": 3.5,
+        "fontScale": 1
       }
     }
   },
@@ -98,6 +174,46 @@
         "y": 94.4,
         "w": 19.1,
         "h": 4.9
+      },
+      "passReveal": {
+        "x": 62.5,
+        "y": 29.1,
+        "w": 5.5,
+        "h": 3.4
+      },
+      "pass2Reveal": {
+        "x": 62.8,
+        "y": 34.7,
+        "w": 5.5,
+        "h": 3.4
+      },
+      "totalAdventurePuzzles": {
+        "x": 58,
+        "y": 58.5,
+        "w": 12,
+        "h": 2.8,
+        "fontScale": 1
+      },
+      "ranksToEarn": {
+        "x": 58,
+        "y": 62.5,
+        "w": 12,
+        "h": 2.8,
+        "fontScale": 1
+      },
+      "challengeGates": {
+        "x": 58,
+        "y": 66.5,
+        "w": 12,
+        "h": 2.8,
+        "fontScale": 1
+      },
+      "totalKnownRoutes": {
+        "x": 58,
+        "y": 70.5,
+        "w": 12,
+        "h": 2.8,
+        "fontScale": 1
       }
     }
   },
@@ -116,9 +232,9 @@
         "fontScale": 1
       },
       "guestNote": {
-        "x": 45.7,
-        "y": 27.4,
-        "w": 29.9,
+        "x": 41.9,
+        "y": 48.9,
+        "w": 35.6,
         "h": 1.8,
         "fontScale": 0.85
       },
@@ -156,53 +272,50 @@
         "fontScale": 1
       },
       "memberSince": {
-        "x": 46.4,
-        "y": 46,
-        "w": 28.9,
+        "x": 52.4,
+        "y": 44.6,
+        "w": 23.3,
         "h": 3.8,
         "fontScale": 1
       },
       "passportId": {
-        "x": 20.8,
-        "y": 37.4,
+        "x": 18.5,
+        "y": 37.6,
         "w": 17.4,
         "h": 6.2,
         "fontScale": 0.92
       },
       "explorersRegistered": {
-        "x": 30.8,
-        "y": 62.7,
-        "w": 14.8,
+        "x": 35,
+        "y": 61.5,
+        "w": 12,
         "h": 2.9,
         "fontScale": 1
       },
       "totalAdventurePuzzles": {
-        "x": 10,
-        "y": 50,
-        "w": 35,
+        "x": 35.1,
+        "y": 65.2,
+        "w": 11.8,
         "h": 3.5,
-        "fontScale": 1,
-        "hidden": true
+        "fontScale": 1
       },
       "totalKnownRoutes": {
-        "x": 10,
-        "y": 53.5,
-        "w": 35,
+        "x": 34.8,
+        "y": 69,
+        "w": 12,
         "h": 3.5,
-        "fontScale": 1,
-        "hidden": true
+        "fontScale": 1
       },
       "largestSolution": {
-        "x": 54,
-        "y": 50,
-        "w": 38,
+        "x": 27.8,
+        "y": 74.9,
+        "w": 20.8,
         "h": 3.5,
-        "fontScale": 1,
-        "hidden": true
+        "fontScale": 0.8
       },
       "todaysChallenge": {
-        "x": 25,
-        "y": 78.7,
+        "x": 23.5,
+        "y": 78.4,
         "w": 18.4,
         "h": 3.5,
         "fontScale": 0.92
@@ -267,16 +380,16 @@
         "h": 4.1
       },
       "back": {
-        "x": 16.9,
-        "y": 1.9,
-        "w": 10,
-        "h": 5
+        "x": 17.2,
+        "y": 47.5,
+        "w": 9.5,
+        "h": 5.3
       },
       "closeX": {
-        "x": 71.9,
-        "y": 1.6,
-        "w": 10,
-        "h": 5.9
+        "x": 73.2,
+        "y": 47.3,
+        "w": 8.9,
+        "h": 5.5
       }
     }
   }

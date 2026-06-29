@@ -66,6 +66,7 @@
   --tz-settings-chrome-min: 48px;
   --tz-settings-chrome-gap: 12px;
   --tz-settings-hit-size: 48px;
+  --tz-settings-frame-nudge-x: 0px;
   /* Layout spec: 390×844 mobile artboard */
   --tz-safe: 8px;
   --tz-y-header: 0px;
@@ -477,6 +478,8 @@
 
   --tz-stuck-art-w: 1379;
   --tz-stuck-art-h: 1098;
+  --tz-stuck-reveal-art-w: 1402;
+  --tz-stuck-reveal-art-h: 1122;
   --tz-stuck-display-w: 720px;
   --tz-stuck-width-scale: 0.75;
   --tz-stuck-preview-layout-width-ratio: 0.95;
@@ -856,10 +859,15 @@ button {
   left: var(--tz-load-art-x, 0%);
   top: var(--tz-load-art-y, 0%);
   width: var(--tz-load-art-w, 100%);
-  height: var(--tz-load-art-h, 100%);
+  max-height: var(--tz-load-art-h, 100%);
+  aspect-ratio: var(--tz-load-art-aspect, 375 / 467);
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
+}
+
+.tz-load-screen__art-wrap .tz-load-screen__hit {
+  pointer-events: auto;
 }
 
 .tz-load-screen__art {
@@ -868,7 +876,7 @@ button {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: var(--tz-load-art-fit, contain);
+  object-fit: var(--tz-load-art-fit, fill);
   object-position: var(--tz-load-art-position, top center);
   user-select: none;
   pointer-events: none;
@@ -1063,6 +1071,13 @@ button {
   height: var(--tz-msv2-info-bar-h, 1.78%);
 }
 
+.tz-main-v2__zone--info-tip {
+  left: var(--tz-msv2-info-tip-x, 0%);
+  top: var(--tz-msv2-info-tip-y, 7.15%);
+  width: var(--tz-msv2-info-tip-w, 100%);
+  height: var(--tz-msv2-info-tip-h, 0.85%);
+}
+
 .tz-main-v2__zone--preview {
   left: var(--tz-msv2-preview-x, 0%);
   top: var(--tz-msv2-preview-y, 56.17%);
@@ -1173,6 +1188,11 @@ button {
   pointer-events: none;
 }
 
+.main-screen-v2-tuner-page .tz-info-tip--tuner-mock {
+  z-index: 1;
+  pointer-events: none;
+}
+
 .main-screen-v2-tuner-page .tz-main-v2__zone-hit {
   position: absolute;
   border: none;
@@ -1195,12 +1215,53 @@ button {
 .tz-main-v2-app {
   --tz-shell-h: var(--tz-design-height);
   --tz-preview-slot-nudge-y: 0px;
+  --tz-info-layout-text: #fff;
+}
+
+/* Prevent blue drag-select on board, preview, tile bag, and in-game chrome */
+.tz-main-v2-app .tz-stage,
+.tz-main-v2-app .tz-stage * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .tz-main-v2-app .tz-status,
 .tz-main-v2-app .tz-hints,
 .tz-main-v2-app .tz-guest-banner,
 .tz-main-v2-app .tz-game-message {
+  display: none !important;
+}
+
+/* Info tip — below title bar (position from main-screen v2 layout tuner) */
+.tz-main-v2-app .tz-info-tip {
+  position: absolute;
+  left: var(--tz-msv2-info-tip-x, 0%);
+  top: var(--tz-msv2-info-tip-y, 7.15%);
+  width: var(--tz-msv2-info-tip-w, 100%);
+  height: var(--tz-msv2-info-tip-h, 0.85%);
+  z-index: 3;
+  margin: 0;
+  padding: 0 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  container-type: size;
+  text-align: center;
+  font-size: clamp(7px, 58cqh, 13px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--tz-info-layout-text, #fff);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 1px rgba(0, 0, 0, 0.85);
+}
+
+.tz-main-v2-app .tz-info-tip[hidden] {
   display: none !important;
 }
 
@@ -1229,11 +1290,11 @@ button {
   font-size: clamp(8px, 65cqh, 14px);
   font-weight: 600;
   line-height: 1;
-  color: var(--tz-gold-bright);
+  color: var(--tz-info-layout-text, #fff);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 1px rgba(0, 0, 0, 0.85);
 }
 
 .tz-main-v2-app .tz-header {
@@ -2767,9 +2828,29 @@ button {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid var(--tz-gold-bright);
+  border: 2px solid rgba(255, 255, 255, 0.75);
   transform: translate(-50%, -50%);
   pointer-events: none;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.tz-active-pad .activeAnchor.activeAnchor--placement.activeAnchor--style-light {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(160, 160, 160, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.65),
+    0 0 10px rgba(220, 220, 220, 0.45);
+}
+
+.tz-active-pad .activeAnchor.activeAnchor--placement.activeAnchor--style-dark {
+  border: 2px solid rgba(35, 35, 35, 0.92);
+  background: rgba(55, 55, 55, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 0 6px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(0, 0, 0, 0.28);
 }
 
 .tz-preview-tile__dir {
@@ -4195,6 +4276,15 @@ button {
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
 }
 
+.tz-stuck-dialog.is-reveal {
+  width: min(
+    calc(var(--tz-w-preview, var(--tz-design-width)) * var(--tz-stuck-preview-layout-width-ratio)),
+    calc(100vw - var(--tz-stuck-display-pad)),
+    calc((100svh - var(--tz-stuck-display-pad)) * var(--tz-stuck-reveal-art-w) / var(--tz-stuck-reveal-art-h))
+  );
+  aspect-ratio: calc(var(--tz-stuck-reveal-art-w) / var(--tz-stuck-reveal-art-h));
+}
+
 .tz-stuck-dialog__frame {
   position: absolute;
   inset: 0;
@@ -4779,6 +4869,8 @@ html.tz-phone-preview .tz-buy-hints-dialog {
     max(8px, env(safe-area-inset-right, 0px))
     max(8px, env(safe-area-inset-bottom, 0px))
     max(8px, env(safe-area-inset-left, 0px));
+  /* Match logged-in tuner preview frame cap */
+  --tz-profile-max-design-width: min(100%, var(--auth-profile-max-width, 390px));
 }
 
 .tz-profile-root[hidden] {
@@ -4800,8 +4892,6 @@ html.tz-phone-preview .tz-buy-hints-dialog {
   margin: 0 auto;
   max-width: 100%;
   box-sizing: border-box;
-  /* Same passport frame cap as auth-screen--profile (profile-screen.html). */
-  --tz-profile-max-design-width: min(100%, 420px);
   width: min(
     100%,
     var(--tz-profile-max-design-width),
@@ -4851,7 +4941,15 @@ html.tz-phone-preview .tz-profile-dialog {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: calc(clamp(0.85rem, 3.5vw, 1rem) * var(--auth-profile-profileName-font-scale, 1));
+  font-size: clamp(
+    0.42rem,
+    calc(7.6cqw * var(--auth-profile-profileName-font-scale, 1)),
+    calc(0.74rem * var(--auth-profile-profileName-font-scale, 1))
+  );
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.05;
+  container-type: inline-size;
   font-weight: 600;
   color: #3d2e1a;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -5318,12 +5416,17 @@ html.tz-phone-preview .tz-pinfo-dialog {
   background: transparent;
 }
 
+.tz-journal-root[data-journal-mode="library"] .tz-journal-pane--bl .tz-journal-list-title-bar {
+  overflow: visible;
+}
+
 .tz-journal-pane--bl .tz-journal-list-title-bar .tz-journal-pane-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   margin: 0;
   line-height: 1.1;
-  overflow: hidden;
+  overflow: visible;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-transform: none;
@@ -6456,7 +6559,10 @@ html.tz-phone-preview .tz-profile-root__backdrop,
 html.tz-phone-preview .tz-hint-rules-root,
 html.tz-phone-preview .tz-buy-hints-root,
 html.tz-phone-preview .tz-buy-hints-root__backdrop,
-html.tz-phone-preview .tz-settings-root {
+html.tz-phone-preview .tz-settings-root,
+html.tz-phone-preview .tz-settings-root__backdrop,
+html.tz-phone-preview .tz-tileset-picker-root,
+html.tz-phone-preview .tz-tileset-picker-root__backdrop {
   position: absolute;
 }
 
@@ -6474,8 +6580,14 @@ html.tz-phone-preview .tz-settings-frame {
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: max(12px, env(safe-area-inset-top, 0px))
     max(16px, env(safe-area-inset-right, 0px))
     max(12px, env(safe-area-inset-bottom, 0px))
@@ -6487,7 +6599,7 @@ html.tz-phone-preview .tz-settings-frame {
 }
 
 .tz-settings-root__backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   border: none;
   background: rgba(8, 20, 18, 0.62);
@@ -6497,14 +6609,19 @@ html.tz-phone-preview .tz-settings-frame {
 .tz-settings-frame {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  max-width: 100%;
+  box-sizing: border-box;
   width: min(
-    calc(100vw - 32px),
+    calc(100% - 32px),
     var(--tz-settings-max-width, 390px),
     calc((100svh - 24px) * var(--tz-settings-art-w) / var(--tz-settings-art-h))
   );
   aspect-ratio: calc(var(--tz-settings-art-w) / var(--tz-settings-art-h));
   max-height: calc(100svh - 24px);
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+  transform: translateX(var(--tz-settings-frame-nudge-x, 0px));
 }
 
 .tz-settings-frame__art {
@@ -7007,9 +7124,17 @@ body.tz-is-dev-user .tz-menu-plaque__hit--settings {
   inset: 0;
   z-index: 112;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: max(12px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
 }
 
 .tz-tileset-picker-root[hidden] {
@@ -7017,7 +7142,7 @@ body.tz-is-dev-user .tz-menu-plaque__hit--settings {
 }
 
 .tz-tileset-picker-root__backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   border: none;
   background: rgba(8, 18, 16, 0.72);
@@ -7027,13 +7152,19 @@ body.tz-is-dev-user .tz-menu-plaque__hit--settings {
 .tz-tileset-picker-frame {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  max-width: 100%;
+  box-sizing: border-box;
   width: min(
+    calc(100% - 32px),
     var(--tz-settings-max-width, 390px),
     calc((100svh - 24px) * var(--tz-settings-art-w) / var(--tz-settings-art-h))
   );
   aspect-ratio: calc(var(--tz-settings-art-w) / var(--tz-settings-art-h));
   max-height: calc(100svh - 24px);
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+  transform: translateX(var(--tz-settings-frame-nudge-x, 0px));
 }
 
 .tz-tileset-picker-frame__art {
@@ -7542,7 +7673,8 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 .tz-guest-mode .tz-menu-plaque__hit--found-solutions,
 .tz-guest-mode .tz-menu-plaque__hit--stuck,
 .tz-guest-mode .tz-menu-plaque__hit--settings {
-  display: none;
+  display: none !important;
+  pointer-events: none;
 }
 
 .tz-guest-mode .tz-menu-plaque__hit--guest-login {
@@ -7566,6 +7698,153 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 .tz-menu-plaque__hit--guest-login,
 .tz-menu-plaque__hit--guest-create {
   display: none;
+}
+
+.tz-random-dialog__btn:active:not(:disabled) img {
+  filter: brightness(0.92);
+}
+
+/* ── Guest login required (register to unlock) ── */
+
+.tz-guest-login-root {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tz-guest-login-display-pad, 32px);
+}
+
+.tz-guest-login-root[hidden] {
+  display: none !important;
+}
+
+.tz-guest-login-root__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.72);
+  cursor: pointer;
+}
+
+.tz-guest-login-dialog {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  width: min(
+    100vw,
+    calc(var(--tz-guest-login-max-design-width, var(--tz-design-width)) * var(--tz-guest-login-width-scale, 1)),
+    calc(var(--tz-guest-login-art-w) * 1px),
+    calc((100svh - var(--tz-guest-login-display-pad)) * var(--tz-guest-login-art-w) / var(--tz-guest-login-art-h))
+  );
+  aspect-ratio: calc(var(--tz-guest-login-art-w) / var(--tz-guest-login-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+}
+
+.tz-guest-login-dialog__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.tz-guest-login-dialog__bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-guest-login-dialog__message {
+  position: absolute;
+  left: var(--tz-guest-login-message-x);
+  top: var(--tz-guest-login-message-y);
+  width: var(--tz-guest-login-message-w);
+  height: var(--tz-guest-login-message-h);
+  margin: 0;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(0.82rem * var(--tz-guest-login-message-font-scale, 1));
+  line-height: 1.35;
+  color: #3d2e1a;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tz-guest-login-dialog__message[hidden] {
+  display: none !important;
+}
+
+.tz-guest-login-dialog__actions {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tz-guest-login-dialog__btn {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.tz-guest-login-dialog__btn[hidden] {
+  display: none !important;
+}
+
+.tz-guest-login-dialog__btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-guest-login-dialog__btn--create {
+  left: var(--tz-guest-login-create-x);
+  top: var(--tz-guest-login-create-y);
+  width: var(--tz-guest-login-create-w);
+  height: var(--tz-guest-login-create-h);
+}
+
+.tz-guest-login-dialog__btn--login {
+  left: var(--tz-guest-login-login-x);
+  top: var(--tz-guest-login-login-y);
+  width: var(--tz-guest-login-login-w);
+  height: var(--tz-guest-login-login-h);
+}
+
+.tz-guest-login-dialog__btn--cancel {
+  left: var(--tz-guest-login-cancel-x);
+  top: var(--tz-guest-login-cancel-y);
+  width: var(--tz-guest-login-cancel-w);
+  height: var(--tz-guest-login-cancel-h);
+}
+
+.tz-guest-login-dialog__btn--close {
+  left: var(--tz-guest-login-close-x);
+  top: var(--tz-guest-login-close-y);
+  width: var(--tz-guest-login-close-w);
+  height: var(--tz-guest-login-close-h);
+}
+
+@media (hover: hover) {
+  .tz-guest-login-dialog__btn:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
 }
 
 .tz-guest-modal {

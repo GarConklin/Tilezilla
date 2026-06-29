@@ -32,6 +32,24 @@ try {
     $stmt->close();
 
     if ($user['email_verified']) {
+        if (($user['status'] ?? '') === 'registered') {
+            $trialPeriodDays = 7;
+            $settingsStmt = $conn->prepare("SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'");
+            if ($settingsStmt) {
+                $settingsStmt->execute();
+                $settingsResult = $settingsStmt->get_result();
+                if ($settingsResult->num_rows > 0) {
+                    $trialPeriodDays = (int)$settingsResult->fetch_assoc()['setting_value'];
+                }
+                $settingsStmt->close();
+            }
+            $activateStmt = $conn->prepare("
+                UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY) WHERE id = ?
+            ");
+            $activateStmt->bind_param("ii", $trialPeriodDays, $user['id']);
+            $activateStmt->execute();
+            $activateStmt->close();
+        }
         $conn->close();
         echo json_encode([
             'success' => true,

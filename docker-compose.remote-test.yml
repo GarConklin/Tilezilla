@@ -4,6 +4,9 @@
 # Stop:   .\scripts\stop-remote-test.ps1
 #
 # One URL serves the game and /auth/* (nginx gateway on TILEZILLA_PORT, default 8080).
+# MySQL uses the same shared volume as docker-compose.yml (tilezilla_shared_mysql_data).
+
+name: tilezilla
 
 services:
   gateway:
@@ -51,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile.remote
-    container_name: tilezilla_remote_auth
+    container_name: tilezilla_auth
     restart: unless-stopped
     expose:
       - "80"
@@ -79,17 +82,19 @@ services:
 
   mysql:
     image: mysql:8.4
-    container_name: tilezilla_remote_mysql
+    container_name: garz-puzzle-mysql
     restart: unless-stopped
     expose:
       - "3306"
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_change_me}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
       MYSQL_USER: ${MYSQL_USER:-tilegame}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
     volumes:
-      - tilezilla_remote_mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
@@ -99,4 +104,6 @@ services:
       start_period: 45s
 
 volumes:
-  tilezilla_remote_mysql_data:
+  mysql_data:
+    name: tilezilla_shared_mysql_data
+    external: true

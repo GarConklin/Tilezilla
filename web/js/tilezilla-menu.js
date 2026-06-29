@@ -209,7 +209,6 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
   $('menuStuckBtn')?.addEventListener('click', () => {
     if (window.__tilezillaGuest?.isGuestUser?.()) {
       closeAll();
-      window.__tilezillaGuest.showLoginRequired();
       return;
     }
     closeAll();

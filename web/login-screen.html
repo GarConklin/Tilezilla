@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#1a3d3a" />
   <title>Tilezilla — Login</title>
   <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body class="auth-screen auth-screen--login auth-screen-chrome">
   <div class="auth-screen__bg tz-bg" aria-hidden="true">
@@ -33,11 +34,22 @@
         height="2200"
         draggable="false"
       />
+      <p class="auth-screen__profile-stat" data-profile-slot="explorersRegistered">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="totalAdventurePuzzles">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="totalKnownRoutes">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="largestSolution">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="todaysChallenge">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="recentPuzzleSolved">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="recentDailyCompleted">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="mostSolvedPuzzle">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="latestDiscovery">—</p>
+      <p class="auth-screen__profile-stat" data-profile-slot="totalPlayTime">—</p>
       <form class="auth-screen__form auth-screen__form--login" id="loginForm">
         <label class="auth-screen__sr" for="loginUser">Explorer name or email</label>
         <input class="auth-screen__input auth-screen__input--user" id="loginUser" name="user" autocomplete="username" />
         <label class="auth-screen__sr" for="loginPass">Secret passphrase</label>
         <input class="auth-screen__input auth-screen__input--pass" id="loginPass" name="pass" type="password" autocomplete="current-password" />
+        <button type="button" class="auth-screen__hit auth-screen__hit--pass-reveal" data-pass-reveal-for="loginPass" aria-label="Show passphrase" aria-pressed="false"></button>
         <button type="submit" class="auth-screen__hit auth-screen__hit--submit" aria-label="Open passport"></button>
       </form>
       <a class="auth-screen__hit auth-screen__hit--secondary" href="/create-passport.html" aria-label="Issue new passport"></a>
@@ -68,13 +80,8 @@
 
   <script type="module" src="./js/auth-screen-init.js"></script>
   <script type="module">
-    import {
-      ACTIVE_USER_KEY,
-      AUTH_MODE_KEY,
-      setRegisteredUser,
-      trackGuestEvent,
-      getGuestCode,
-    } from './js/tilezilla-guest.js';
+    import { getGuestCode } from './js/tilezilla-guest.js';
+    import { completeLoginFromServer, loginReturnUrl } from './js/tilezilla-auth.js';
     import { initAuthErrorPopup, showAuthErrorPopup } from './js/auth-error-popup.js';
     import { initAuthScreenNav } from './js/auth-screen-nav.js';
 
@@ -104,17 +111,10 @@
           showAuthErrorPopup(data?.error || 'Login failed. Check your credentials.');
           return;
         }
-        const userId = data.user?.username || user;
-        setRegisteredUser(userId);
-        localStorage.setItem(ACTIVE_USER_KEY, userId);
-        localStorage.setItem(AUTH_MODE_KEY, 'registered');
-        trackGuestEvent('Account Created', { user_id: userId, converted_from: getGuestCode() });
-        window.location.href = '/profile-screen.html';
+        await completeLoginFromServer(data, { source: 'login_screen' });
+        window.location.href = loginReturnUrl('/profile-screen.html');
       } catch {
-        setRegisteredUser(user);
-        localStorage.setItem(ACTIVE_USER_KEY, user);
-        localStorage.setItem(AUTH_MODE_KEY, 'registered');
-        window.location.href = '/profile-screen.html';
+        showAuthErrorPopup('Could not reach the passport office. Check your connection and try again.');
       }
     });
   </script>

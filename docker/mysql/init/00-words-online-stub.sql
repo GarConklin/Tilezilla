@@ -10,6 +10,7 @@ USE WordsOnline;
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    player_name VARCHAR(50) NULL,
     email VARCHAR(255) UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     verification_token VARCHAR(64) NULL,
@@ -19,7 +20,9 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin TINYINT(1) NOT NULL DEFAULT 0,
     active_until DATE NULL,
     last_login DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    guest_code VARCHAR(32) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_users_guest_code (guest_code)
 );
 
 GRANT ALL PRIVILEGES ON WordsOnline.* TO 'tilegame'@'%';

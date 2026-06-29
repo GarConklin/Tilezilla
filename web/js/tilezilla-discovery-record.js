@@ -137,8 +137,8 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
 
   if (note) note.hidden = mode !== 'duplicate';
   if (viewFoundBtn) viewFoundBtn.hidden = !showViewFound;
-  if (bookBtn) bookBtn.hidden = false;
-  if (bookBtn) {
+  if (bookBtn) bookBtn.hidden = options.showFoundBook === false;
+  if (bookBtn && !bookBtn.hidden) {
     bookBtn.setAttribute(
       'aria-label',
       mode === 'duplicate' ? 'View found solutions' : 'Chess piece — journal',
@@ -155,10 +155,13 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
 
   const mode = payload?.mode === 'duplicate' ? 'duplicate' : 'new';
   const showAdvance = resolveShowAdvance(payload);
-  const showViewFound = mode === 'duplicate'
-    || (mode === 'new' && Number.isFinite(payload?.solutionIndex));
+  const showViewFound = payload.showViewFound ?? (
+    mode === 'duplicate'
+    || (mode === 'new' && Number.isFinite(payload?.solutionIndex))
+  );
   const showContinueSearch = payload?.showContinueSearch !== false;
-  applyRecordMode(root, mode, ids, showAdvance, { showViewFound, showContinueSearch });
+  const showFoundBook = payload?.showFoundBook !== false;
+  applyRecordMode(root, mode, ids, showAdvance, { showViewFound, showContinueSearch, showFoundBook });
   if (discoveryLayout) {
     applyDiscoveryPopupLayout(
       discoveryLayout,

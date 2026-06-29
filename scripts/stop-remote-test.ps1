@@ -32,7 +32,8 @@ try {
   }
 
   if ($RemoveVolumes) {
-    Write-Host "Removed containers and MySQL volume tilezilla_remote_mysql_data." -ForegroundColor Yellow
+    Write-Host "Removed containers and shared MySQL volume tilezilla_shared_mysql_data." -ForegroundColor Red
+    Write-Host "WARNING: All registered accounts and game DB rows in that volume are gone." -ForegroundColor Red
   }
   else {
     Write-Host "Stopped. MySQL data volume preserved." -ForegroundColor Green

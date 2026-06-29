@@ -2,11 +2,17 @@
  * Tilezilla guest identity, permissions, and session helpers.
  */
 
+import {
+  applyGuestLoginRequiredLayout,
+  loadGuestLoginRequiredLayout,
+} from './guest-login-required-layout.js';
 import { DEFAULT_LOGOUT_REDIRECT_URL, resolveLogoutRedirectUrl } from './system-info.js';
 
 export const GUEST_CODE_KEY = 'guest_code';
 export const AUTH_MODE_KEY = 'tilezilla_auth_mode';
 export const ACTIVE_USER_KEY = 'snake_active_user_v1';
+export const REGISTERED_USER_ID_KEY = 'tilezilla_user_id';
+export const CONVERTED_GUEST_CODE_KEY = 'tilezilla_converted_guest_code';
 export const GUEST_ANALYTICS_KEY = 'tilezilla_guest_analytics_v1';
 export const FORCE_STARTUP_KEY = 'tilezilla:force-startup';
 
@@ -23,6 +29,29 @@ export function clearAllAuthState() {
   localStorage.removeItem(GUEST_CODE_KEY);
   localStorage.removeItem(AUTH_MODE_KEY);
   localStorage.removeItem(ACTIVE_USER_KEY);
+  localStorage.removeItem(REGISTERED_USER_ID_KEY);
+  localStorage.removeItem(CONVERTED_GUEST_CODE_KEY);
+}
+
+export function clearRegisteredLocalState() {
+  localStorage.removeItem(AUTH_MODE_KEY);
+  localStorage.removeItem(ACTIVE_USER_KEY);
+  localStorage.removeItem(REGISTERED_USER_ID_KEY);
+  localStorage.removeItem(CONVERTED_GUEST_CODE_KEY);
+}
+
+export function getConvertedGuestCode() {
+  return localStorage.getItem(CONVERTED_GUEST_CODE_KEY) || '';
+}
+
+export function setConvertedGuestCode(code) {
+  const normalized = isGuestCode(code) ? code : '';
+  if (normalized) {
+    localStorage.setItem(CONVERTED_GUEST_CODE_KEY, normalized);
+  } else {
+    localStorage.removeItem(CONVERTED_GUEST_CODE_KEY);
+  }
+  return normalized;
 }
 
 /** Dev picker → always show index load screen, even if guest keys remain. */
@@ -55,6 +84,7 @@ export function getAuthMode() {
 
 export function isRegisteredUser() {
   return getAuthMode() === 'registered'
+    && !!localStorage.getItem(REGISTERED_USER_ID_KEY)
     && !!localStorage.getItem(ACTIVE_USER_KEY)
     && !isGuestCode(localStorage.getItem(ACTIVE_USER_KEY));
 }
@@ -87,12 +117,15 @@ export function playAsGuest() {
   return guestCode;
 }
 
-export function setRegisteredUser(userId) {
-  const guestCode = getGuestCode();
+export function setRegisteredUser(userOrName) {
   localStorage.setItem(AUTH_MODE_KEY, 'registered');
-  localStorage.setItem(ACTIVE_USER_KEY, userId);
-  if (guestCode) {
-    trackGuestEvent('Account Created', { guest_code: guestCode, user_id: userId });
+  if (userOrName && typeof userOrName === 'object') {
+    localStorage.setItem(ACTIVE_USER_KEY, userOrName.username || String(userOrName.id));
+    if (userOrName.id != null) {
+      localStorage.setItem(REGISTERED_USER_ID_KEY, String(userOrName.id));
+    }
+  } else {
+    localStorage.setItem(ACTIVE_USER_KEY, userOrName);
   }
 }
 
@@ -121,8 +154,7 @@ export function ensureGuestOnFirstVisit() {
 
 export function shouldUseLoadScreen() {
   if (isRegisteredUser()) return false;
-  if (isGuestUser()) return false;
-  if (localStorage.getItem(GUEST_CODE_KEY) && getAuthMode() === 'guest') return false;
+  if (getAuthMode() === 'guest') return false;
   return true;
 }
 
@@ -177,6 +209,15 @@ export function trackGuestEvent(action, meta = {}) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(entry),
   }).catch(() => {});
+
+  if (guestCode && (action === 'Guest Created' || action === 'Guest Session Started')) {
+    void fetch('/auth/api/guest-touch.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ guest_code: guestCode }),
+    }).catch(() => {});
+  }
 }
 
 export function trackGuestGameplay(action, puzzleId) {
@@ -187,6 +228,49 @@ export function trackGuestGameplay(action, puzzleId) {
   });
 }
 
+/** Shown on the in-game register popup — tune message placement in guest-login-required-tuner. */
+export const GUEST_LOGIN_REQUIRED_COPY = {
+  default: {
+    title: 'Explorer Passport Required',
+    body: 'Create a free Tilezilla account to access this feature.',
+  },
+  adventure: {
+    title: 'Adventure Path',
+    body: 'Register for a free Explorer Passport to follow the Adventure Path and save your discoveries.',
+  },
+  random: {
+    title: 'Random Puzzles',
+    body: 'Create an account to play random puzzles and track your progress.',
+  },
+  library: {
+    title: 'Puzzle Library',
+    body: 'Create an account to browse your puzzle library and saved solutions.',
+  },
+  profile: {
+    title: 'Explorer Profile',
+    body: 'Create an account to view your passport, stats, and achievements.',
+  },
+  'found-solutions': {
+    title: 'Found Solutions',
+    body: 'Create an account to save and review solutions you discover.',
+  },
+};
+
+let pendingLoginReturnUrl = '';
+let pendingLoginSource = '';
+
+export function getGuestLoginRequiredCopy(source = '') {
+  return GUEST_LOGIN_REQUIRED_COPY[source] || GUEST_LOGIN_REQUIRED_COPY.default;
+}
+
+function closeLoginRequiredModal() {
+  const root = document.getElementById('guestLoginRequired');
+  if (root) root.hidden = true;
+  document.body.classList.remove('tz-modal-open');
+  pendingLoginReturnUrl = '';
+  pendingLoginSource = '';
+}
+
 export function initGuestShell() {
   document.body.classList.toggle('tz-guest-mode', isGuestUser());
   document.body.classList.toggle('tz-registered-mode', isRegisteredUser());
@@ -195,23 +279,76 @@ export function initGuestShell() {
 export function wireLoginRequiredModal() {
   const root = document.getElementById('guestLoginRequired');
   if (!root) return;
-  const close = () => { root.hidden = true; };
-  root.querySelector('.tz-guest-login-required__backdrop')?.addEventListener('click', close);
-  root.querySelector('[data-action="close"]')?.addEventListener('click', close);
+
+  root.querySelector('.tz-guest-login-root__backdrop')?.addEventListener('click', closeLoginRequiredModal);
+  root.querySelector('[data-action="close"]')?.addEventListener('click', closeLoginRequiredModal);
+  root.querySelector('[data-action="cancel"]')?.addEventListener('click', closeLoginRequiredModal);
+
   root.querySelector('[data-action="create-account"]')?.addEventListener('click', () => {
-    trackGuestEvent('Create Account Clicked');
-    window.location.href = '/create-passport.html';
+    trackGuestEvent('Create Account Clicked', { source: pendingLoginSource || 'login_required' });
+    const returnTo = pendingLoginReturnUrl || '/tilezilla-v2.html';
+    window.location.href = `/create-passport.html?return=${encodeURIComponent(returnTo)}`;
   });
+
   root.querySelector('[data-action="login"]')?.addEventListener('click', () => {
-    trackGuestEvent('Login Clicked');
-    window.location.href = '/login-screen.html';
+    trackGuestEvent('Login Clicked', { source: pendingLoginSource || 'login_required' });
+    const returnTo = pendingLoginReturnUrl || '/tilezilla-v2.html';
+    window.location.href = `/login-screen.html?return=${encodeURIComponent(returnTo)}`;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (root.hidden) return;
+    closeLoginRequiredModal();
+  });
+
+  void loadGuestLoginRequiredLayout()
+    .then((layout) => applyGuestLoginRequiredLayout(layout))
+    .catch((err) => console.warn('Guest login required layout:', err));
+
+  window.addEventListener('tilezilla:guest-login-required-layout-saved', () => {
+    void loadGuestLoginRequiredLayout({ force: true })
+      .then((layout) => applyGuestLoginRequiredLayout(layout))
+      .catch((err) => console.warn('Guest login required layout reload:', err));
   });
 }
 
-export function showLoginRequired() {
-  trackGuestEvent('Login Required Shown');
+export function loginRequiredReturnUrl(source = '') {
+  switch (source) {
+    case 'adventure':
+      return '/tilezilla-v2.html?screen=adventure';
+    case 'random':
+      return '/tilezilla-v2.html?screen=random';
+    case 'profile':
+      return '/profile-screen.html';
+    case 'library':
+      return '/tilezilla-v2.html';
+    default:
+      return `${window.location.pathname}${window.location.search}`;
+  }
+}
+
+export function showLoginRequired(options = {}) {
+  const source = options.source || options.screen || '';
+  trackGuestEvent('Login Required Shown', { source: source || null });
+  const returnTo = options.returnTo || loginRequiredReturnUrl(source);
+  pendingLoginReturnUrl = returnTo;
+  pendingLoginSource = source;
+
   const root = document.getElementById('guestLoginRequired');
-  if (root) root.hidden = false;
+  if (!root) {
+    window.location.href = `/login-screen.html?return=${encodeURIComponent(returnTo)}`;
+    return;
+  }
+
+  const copy = getGuestLoginRequiredCopy(source);
+  const titleEl = document.getElementById('guestLoginRequiredTitle');
+  const bodyEl = document.getElementById('guestLoginRequiredMessage');
+  if (titleEl) titleEl.textContent = copy.title;
+  if (bodyEl) bodyEl.textContent = bodyEl.hidden ? '' : copy.body;
+
+  root.hidden = false;
+  document.body.classList.add('tz-modal-open');
 }
 
 export function wireGuestCompletionModal() {

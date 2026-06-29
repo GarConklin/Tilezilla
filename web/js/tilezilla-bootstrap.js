@@ -30,7 +30,15 @@ import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
 import * as guestUser from './tilezilla-guest.js';
+import {
+  applyRegisteredUserToApp,
+  isDevAuthBypass,
+  syncAuthFromServer,
+} from './tilezilla-auth.js';
 import { initInvalidSolve, isInvalidSolveShowing } from './tilezilla-invalid-solve.js';
+import {
+  maybeShowInfoBarIntro,
+} from './tilezilla-info-bar-tips.js';
 import {
   applyDiscoveryPopupLayout,
   applyDiscoveryRecordLayout,
@@ -220,14 +228,69 @@ async function resolveDailyChallenge(app) {
 
   if (row?.levelId) {
     const level = app.state.allLevels?.find((l) => l.id === row.levelId);
-    if (level) return { level, meta: row };
+    if (level) {
+      const dateIso = parseDailyCsvDate(row.date) || row.date;
+      return {
+        level,
+        meta: {
+          ...row,
+          date: dateIso,
+          leaderboardEligible: dateIso === today,
+        },
+      };
+    }
   }
 
   const fallback = app.state.allLevels?.find((l) => l.id === '5x6-0B-AAC')
     || app.state.allLevels?.[0];
   return {
     level: fallback || null,
-    meta: { date: today, levelId: fallback?.id, totalSolutions: fallback?.totalUniqueSolutions || 0 },
+    meta: {
+      date: today,
+      levelId: fallback?.id,
+      totalSolutions: fallback?.totalUniqueSolutions || 0,
+      leaderboardEligible: true,
+    },
+  };
+}
+
+let dailyCsvRowsCache = null;
+
+async function loadDailyCsvRows() {
+  if (dailyCsvRowsCache) return dailyCsvRowsCache;
+  try {
+    const csv = await fetch(`/data/daily_challenges_import.csv?t=${todayIso()}`).then((r) => r.text());
+    dailyCsvRowsCache = parseDailyCsv(csv);
+  } catch {
+    dailyCsvRowsCache = [];
+  }
+  return dailyCsvRowsCache;
+}
+
+/** Resolve daily challenge meta when opening a puzzle from the journal (incl. past dailies). */
+async function resolveDailyMetaForJournalLevel(app, levelId, explicitChallengeDate = null) {
+  const progress = app?.progress;
+  const level = app.state.allLevels?.find((l) => l.id === levelId);
+  if (!level) return null;
+
+  const progressMeta = progress?.getLevelMeta?.(levelId);
+  let dateRaw = explicitChallengeDate || progressMeta?.challengeDate || null;
+
+  if (!dateRaw) {
+    const rows = await loadDailyCsvRows();
+    const match = rows.find((r) => r.levelId === levelId);
+    dateRaw = match?.date || null;
+  }
+
+  if (!dateRaw) return null;
+
+  const dateIso = parseDailyCsvDate(dateRaw) || dateRaw;
+  const today = todayIso();
+  return {
+    date: dateIso,
+    levelId,
+    totalSolutions: level.totalUniqueSolutions || 0,
+    leaderboardEligible: dateIso === today,
   };
 }
 
@@ -357,6 +420,7 @@ async function advanceAdventurePath(app) {
 }
 
 async function applyAdventureLevelToBoard(app, level, meta, { message } = {}) {
+  window.__dailyChallengeMeta = null;
   await loadLevelOnBoard(app, level);
   resetPuzzleTimer();
   displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
@@ -500,6 +564,8 @@ function updateChallengePanel(level, meta) {
       eyebrow.textContent = 'Adventure Path';
     } else if (screen === 'random') {
       eyebrow.textContent = 'Random Puzzle';
+    } else if (meta?.leaderboardEligible === false) {
+      eyebrow.textContent = 'Daily Challenge (practice)';
     } else {
       eyebrow.textContent = 'Daily Challenge';
     }
@@ -558,12 +624,7 @@ function updateChallengePanel(level, meta) {
       const n = meta?.totalSolutions || level?.totalUniqueSolutions;
       solutionV2.textContent = Number.isFinite(n) && n > 0 ? String(n) : '?';
     }
-    const infoBar = $('infoBarText');
-    if (infoBar) {
-      const n = meta?.totalSolutions || level?.totalUniqueSolutions;
-      const label = Number.isFinite(n) && n > 0 ? String(n) : '?';
-      infoBar.textContent = label === '?' ? '— solutions' : `${label} Possible Solutions`;
-    }
+    maybeShowInfoBarIntro(window.__app, level, meta);
   }
 }
 
@@ -1323,6 +1384,7 @@ async function loadRandomVenturePuzzle(app) {
 
     setActiveBottomNav('random');
     appRoot?.setAttribute('data-screen', 'random');
+    window.__dailyChallengeMeta = null;
 
     await loadLevelOnBoard(app, level);
     resetPuzzleTimer();
@@ -1388,6 +1450,11 @@ function applyGuestChrome(app) {
   const menuCreate = document.getElementById('menuGuestCreateBtn');
   if (menuLogin) menuLogin.hidden = !guest;
   if (menuCreate) menuCreate.hidden = !guest;
+
+  for (const id of ['menuFoundSolutionsBtn', 'menuStuckBtn', 'menuOpenSettingsBtn']) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = guest;
+  }
 
   guestUser.syncGuestBanner();
 }
@@ -1479,20 +1546,21 @@ function wireBottomNav(getApp) {
           window.location.href = '/profile-screen.html';
           return;
         }
-        guestUser.showLoginRequired();
+        guestUser.showLoginRequired({ source: 'profile' });
         return;
       }
 
       if (guestUser.isRestrictedNav(screen)) {
-        guestUser.showLoginRequired();
+        guestUser.showLoginRequired({ source: screen });
         return;
       }
 
       if (screen === 'random') {
         if (guestUser.isGuestUser()) {
-          guestUser.showLoginRequired();
+          guestUser.showLoginRequired({ source: 'random' });
           return;
         }
+        dismissDiscoveryForBoardEdit();
         openRandomPuzzlePopup();
         if (MAIN_V2_SHELL) closeBottomMenuV2();
         return;
@@ -1773,7 +1841,7 @@ function setActiveBottomNav(screen) {
 }
 
 /** Load a specific catalog puzzle onto the board (journal → play/review). */
-async function loadJournalPuzzleOnBoard(app, levelId) {
+async function loadJournalPuzzleOnBoard(app, levelId, { challengeDate = null } = {}) {
   if (!app || !levelId) return false;
 
   while (!app.state.allLevels?.length) {
@@ -1797,27 +1865,35 @@ async function loadJournalPuzzleOnBoard(app, levelId) {
     }
   }
 
-  if (journalSource === 'adventure') {
-    appRoot?.setAttribute('data-screen', 'adventure');
-    setActiveBottomNav('adventure');
-  } else if (journalSource === 'daily-challenge') {
+  const dailyMeta = (journalSource === 'daily-challenge' || challengeDate)
+    ? await resolveDailyMetaForJournalLevel(app, levelId, challengeDate)
+    : null;
+
+  if (dailyMeta) {
     appRoot?.setAttribute('data-screen', 'daily-challenge');
     setActiveBottomNav('daily-challenge');
-  }
-
-  await loadLevelOnBoard(app, level);
-
-  if (journalSource === 'adventure') {
+    window.__dailyChallengeMeta = dailyMeta;
+    await loadLevelOnBoard(app, level);
+    updateChallengePanel(level, { ...dailyMeta, screen: 'daily-challenge' });
+  } else if (journalSource === 'adventure') {
+    appRoot?.setAttribute('data-screen', 'adventure');
+    setActiveBottomNav('adventure');
+    window.__dailyChallengeMeta = null;
+    await loadLevelOnBoard(app, level);
     const path = await loadAdventurePath();
     const levelContext = adventureLevelContext(app);
     const meta = buildAdventureMetaForLevel(path, levelId, progress, levelContext);
     if (meta) window.__adventureMeta = meta;
     updateChallengePanel(level, { ...meta, screen: 'adventure' });
     await updateRankPanel(app);
-  } else if (journalSource === 'daily-challenge') {
-    updateChallengePanel(level, { screen: 'daily-challenge' });
   } else {
+    window.__dailyChallengeMeta = null;
+    await loadLevelOnBoard(app, level);
     const screen = journalSource || appRoot?.dataset?.screen || 'daily-challenge';
+    if (journalSource === 'daily-challenge') {
+      appRoot?.setAttribute('data-screen', 'daily-challenge');
+      setActiveBottomNav('daily-challenge');
+    }
     const panelMeta = {
       screen,
       totalSolutions: level.totalUniqueSolutions,
@@ -1839,6 +1915,7 @@ async function loadJournalPuzzleOnBoard(app, levelId) {
 }
 
 async function loadAdventurePuzzle(app) {
+  dismissDiscoveryForBoardEdit();
   const loading = $('loadingHud');
   const appRoot = document.querySelector('.tz-app');
   if (loading) loading.hidden = false;
@@ -1881,6 +1958,7 @@ async function loadAdventurePuzzle(app) {
 }
 
 async function loadDailyPuzzle(app) {
+  dismissDiscoveryForBoardEdit();
   const loading = $('loadingHud');
   const appRoot = document.querySelector('.tz-app');
   if (loading) loading.hidden = false;
@@ -1980,6 +2058,10 @@ async function init() {
   window.__tilezillaGuest = guestUser;
   guestUser.wireLoginRequiredModal();
   guestUser.wireGuestCompletionModal();
+
+  const authState = isDevAuthBypass()
+    ? { mode: 'dev', user: null }
+    : await syncAuthFromServer();
   applyGuestChrome();
 
   const settings = loadGameplaySettings();
@@ -1994,6 +2076,13 @@ async function init() {
 
   const app = await waitForApp();
   appRef = app;
+  if (authState.mode === 'registered' && authState.user) {
+    applyRegisteredUserToApp(app, authState.user);
+    applyGuestChrome();
+  } else if (app.progress && app.state?.userId) {
+    const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
+    await hydrateEncounteredTiles(app.progress, app.state.userId);
+  }
   const origRenderActivePreview = app.renderActivePreview?.bind(app);
   if (origRenderActivePreview) {
     app.renderActivePreview = async (...args) => {
@@ -2019,7 +2108,7 @@ async function init() {
     getApp: () => appRef,
     openStuckFlow,
   });
-  initStuckPopup({ getApp: () => appRef, menuApi });
+  await initStuckPopup({ getApp: () => appRef, menuApi });
   initRandomPuzzlePopup({
     getApp: () => appRef,
     menuApi,
@@ -2039,7 +2128,7 @@ async function init() {
   const journalApi = initJournalUi({
     getApp: () => appRef,
     menuApi,
-    loadPuzzleLevel: (levelId) => loadJournalPuzzleOnBoard(appRef, levelId),
+    loadPuzzleLevel: (levelId, opts) => loadJournalPuzzleOnBoard(appRef, levelId, opts),
     onResumeGame: ({ levelId: _levelId, resumeScreen } = {}) => {
       const app = appRef;
       if (!app) return;
@@ -2064,6 +2153,7 @@ async function init() {
     onDaily: async () => {
       const app = appRef;
       const appRoot = document.querySelector('.tz-app');
+      dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'daily-challenge');
       guestUser.syncGuestBanner();
       if (app) await loadDailyPuzzle(app);
@@ -2071,11 +2161,15 @@ async function init() {
     onAdventure: async () => {
       const app = appRef;
       const appRoot = document.querySelector('.tz-app');
+      dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'adventure');
       guestUser.syncGuestBanner();
       if (app) await loadAdventurePuzzle(app);
     },
-    onRandom: () => openRandomPuzzlePopup(),
+    onRandom: () => {
+      dismissDiscoveryForBoardEdit();
+      openRandomPuzzlePopup();
+    },
   });
 
   try {
@@ -2093,14 +2187,32 @@ async function init() {
     onAdvancePath: async () => {
       const appRoot = document.querySelector('.tz-app');
       if (appRoot?.dataset?.screen === 'daily-challenge') {
+        if (guestUser.isGuestUser()) {
+          guestUser.showLoginRequired({ source: 'adventure' });
+          return;
+        }
         await switchToAdventureScreen(appRef);
+        return;
+      }
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'adventure' });
         return;
       }
       await advanceAdventurePath(appRef);
     },
     onAdventureProgress: () => refreshAdventureChrome(appRef),
-    onViewFoundSolve: (solutionIndex) => menuApi?.openFoundSolutionAt?.(solutionIndex),
+    onViewFoundSolve: (solutionIndex) => {
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'found-solutions' });
+        return;
+      }
+      menuApi?.openFoundSolutionAt?.(solutionIndex);
+    },
     onOpenFoundSolutions: () => {
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'found-solutions' });
+        return;
+      }
       void journalApi?.openJournal?.({
         mode: 'record',
         levelId: appRef?.state?.currentLevel?.id,
@@ -2616,6 +2728,7 @@ window.addEventListener('tilezilla:sublevel-layout-saved', () => {
     const app = window.__app;
     if (app) void updateRankPanel(app);
   }
+  void refreshProfileRankIcons(window.__app?.progress);
 });
 
 window.__tilezillaDev = {

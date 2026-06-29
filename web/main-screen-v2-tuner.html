@@ -281,6 +281,7 @@
       menu: 'tz-main-v2__zone--menu',
       title: 'tz-main-v2__zone--title',
       board: 'tz-main-v2__zone--board',
+      infoTip: 'tz-main-v2__zone--info-tip',
       infoBar: 'tz-main-v2__zone--info-bar',
       preview: 'tz-main-v2__zone--preview',
       tilebag: 'tz-main-v2__zone--tilebag',
@@ -393,12 +394,21 @@
 
     function ensureInfoBarMock() {
       const frame = document.getElementById('mockFrame');
-      if (!frame || frame.querySelector('.tz-info-bar--tuner-mock')) return;
-      const mock = document.createElement('section');
-      mock.className = 'tz-info-bar tz-info-bar--tuner-mock';
-      mock.setAttribute('aria-hidden', 'true');
-      mock.innerHTML = '<p class="tz-info-bar__text">42 Possible Solutions</p>';
-      frame.appendChild(mock);
+      if (!frame) return;
+      if (!frame.querySelector('.tz-info-tip--tuner-mock')) {
+        const tip = document.createElement('p');
+        tip.className = 'tz-info-tip tz-info-tip--tuner-mock';
+        tip.setAttribute('aria-hidden', 'true');
+        tip.textContent = 'New tile type added to tilebag';
+        frame.appendChild(tip);
+      }
+      if (!frame.querySelector('.tz-info-bar--tuner-mock')) {
+        const mock = document.createElement('section');
+        mock.className = 'tz-info-bar tz-info-bar--tuner-mock';
+        mock.setAttribute('aria-hidden', 'true');
+        mock.innerHTML = '<p class="tz-info-bar__text">42 Possible Solutions</p>';
+        frame.appendChild(mock);
+      }
     }
 
     function ensureZoneHits() {

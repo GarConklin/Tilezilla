@@ -311,9 +311,9 @@
   color: #c4a35a;
 }
 
-/* Logged-in tuner preview matches in-game overlay width cap (390px design frame) */
+/* Logged-in tuner preview matches in-game overlay width cap */
 .auth-screen-tuner-page:has(.tz-profile-root--tuner) {
-  --tz-profile-max-design-width: 390px;
+  --tz-profile-max-design-width: min(100%, var(--auth-profile-max-width, 390px));
 }
 .auth-screen-tuner-page:has(.tz-profile-root--tuner) .layout {
   grid-template-columns: minmax(280px, 340px) minmax(560px, 1fr);

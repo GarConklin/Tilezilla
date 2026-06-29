@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "4x4",
   "tier": "0A",
-  "count": 83,
+  "count": 82,
   "levels": [
     {
       "id": "4x4-0A-AAA",
@@ -1741,26 +1741,6 @@
       "solvesFile": "4x4-0A-ADE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
-    },
-    {
-      "id": "4x4-0A-ADF",
-      "name": "ADF",
-      "board": {
-        "rows": 4,
-        "cols": 4
-      },
-      "tiles": {
-        "SH": 2,
-        "ET": 2,
-        "DB": 1,
-        "LR": 1,
-        "UT": 1,
-        "LL": 1
-      },
-      "solvesFile": "4x4-0A-ADF.json",
-      "pathMode": "multi",
-      "pathCount": 2,
       "totalUniqueSolutions": 1
     }
   ]

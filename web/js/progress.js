@@ -403,6 +403,104 @@ export class Progress {
     this.save();
   }
 
+  // -- Tile types encountered in puzzle bags (info bar intro tip) --
+
+  encounteredStorageKey() {
+    const userId = this.app?.state?.userId;
+    return userId ? `tilezilla_encountered_v1_${userId}` : null;
+  }
+
+  _introState() {
+    if (!this.data._intro) this.data._intro = { encounteredTiles: [], seenTwoSnake: false };
+    if (!this.data._intro.encounteredTiles && this.data._intro.seenTiles) {
+      this.data._intro.encounteredTiles = [...this.data._intro.seenTiles];
+    }
+    return this.data._intro;
+  }
+
+  getEncounteredTileTypes() {
+    const intro = this._introState();
+    const fromData = intro.encounteredTiles || intro.seenTiles || [];
+    if (fromData.length) return new Set(fromData);
+    const key = this.encounteredStorageKey();
+    if (!key) return new Set();
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return new Set();
+      const parsed = JSON.parse(raw);
+      return new Set(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  setEncounteredTileTypes(tileIds, { persist = true } = {}) {
+    const merged = [...new Set((tileIds || []).filter(Boolean))].sort();
+    const intro = this._introState();
+    intro.encounteredTiles = merged;
+    intro.seenTiles = merged;
+    if (persist) this.persistEncounteredTiles(merged);
+    return merged;
+  }
+
+  persistEncounteredTiles(tiles) {
+    const merged = [...new Set((tiles || []).filter(Boolean))].sort();
+    const key = this.encounteredStorageKey();
+    if (key) {
+      try {
+        localStorage.setItem(key, JSON.stringify(merged));
+      } catch {
+        /* quota */
+      }
+    }
+    if (!this.guestSolveProgressDisabled) {
+      this.save();
+    }
+  }
+
+  /**
+   * Record tile types from a loaded puzzle bag.
+   * @returns {string[]} tile ids that were not previously encountered
+   */
+  recordTilesEncountered(tileIds) {
+    if (!Array.isArray(tileIds) || !tileIds.length) return [];
+    const set = this.getEncounteredTileTypes();
+    const newly = [];
+    for (const id of tileIds) {
+      if (!id || typeof id !== 'string') continue;
+      if (!set.has(id)) {
+        newly.push(id);
+        set.add(id);
+      }
+    }
+    if (newly.length) {
+      this.setEncounteredTileTypes([...set], { persist: true });
+      import('./tilezilla-encountered-tiles.js')
+        .then(({ queueEncounteredTilesServerSync }) => queueEncounteredTilesServerSync(newly))
+        .catch(() => {});
+    }
+    return newly;
+  }
+
+  /** @deprecated use getEncounteredTileTypes */
+  getSeenTileTypes() {
+    return this.getEncounteredTileTypes();
+  }
+
+  /** @deprecated use recordTilesEncountered */
+  markTilesIntroduced(tileIds) {
+    this.recordTilesEncountered(tileIds);
+  }
+
+  hasSeenTwoSnakeIntro() {
+    return !!this._introState().seenTwoSnake;
+  }
+
+  markTwoSnakeIntroSeen() {
+    this._introState().seenTwoSnake = true;
+    this.save();
+  }
+
   /**
    * Snapshot for download / backup (plain JSON file per user).
    * Browser storage uses the same shape under localStorage key snake_progress_v1_<user>.

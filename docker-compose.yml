@@ -1,20 +1,56 @@
+# Tilezilla — default dev stack (game + auth + shared MySQL).
+# Prefer .\scripts\start-remote-test.ps1 for LAN testing with nginx gateway on 8080.
+#
+# MySQL data persists in Docker volume tilezilla_shared_mysql_data (survives restarts).
+# Run .\scripts\ensure-shared-mysql-volume.ps1 before first boot if upgrading from older volumes.
+
+name: tilezilla
+
 services:
   web:
     build: .
     ports:
       - "8080:8080"
+    environment:
+      PORT: "8080"
+      AUTH_UPSTREAM: "http://php-auth"
     volumes:
       - .:/app
-    # Web does not require MySQL for static JSON gameplay; env ready when account API lands.
-    # depends_on:
-    #   mysql:
-    #     condition: service_healthy
-    # environment:
-    #   MYSQL_HOST: mysql
-    #   MYSQL_PORT: 3306
-    #   MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
-    #   MYSQL_USER: ${MYSQL_USER:-tilegame}
-    #   MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      php-auth:
+        condition: service_started
+
+  php-auth:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.remote
+    container_name: tilezilla_auth
+    restart: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - ./auth/config:/var/www/html/config
+      - ./auth/api:/var/www/html/api
+      - ./auth/src:/var/www/html/src
+      - ./auth/public:/var/www/html/public
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${MYSQL_USER:-tilegame}
+      DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      DB_NAME: WordsOnline
+      GAME_DB_HOST: mysql
+      GAME_DB_USER: ${MYSQL_USER:-tilegame}
+      GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      APP_NAME: Tilezilla
+      APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.4
@@ -28,7 +64,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-tilegame}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
     volumes:
-      - tilegame_mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
@@ -38,4 +74,6 @@ services:
       start_period: 40s
 
 volumes:
-  tilegame_mysql_data:
+  mysql_data:
+    name: tilezilla_shared_mysql_data
+    external: true

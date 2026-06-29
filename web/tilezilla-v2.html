@@ -154,6 +154,8 @@
           </div>
         </div>
 
+        <p class="tz-info-tip" id="infoBarTip" hidden aria-live="polite"></p>
+
         <section class="tz-info-bar" aria-label="Puzzle info">
           <p class="tz-info-bar__text" id="infoBarText">— solutions</p>
         </section>
@@ -527,116 +529,6 @@
       </div>
     </div>
 
-    <div class="tz-settings-root" id="settingsRoot" hidden>
-      <button type="button" class="tz-settings-root__backdrop" aria-label="Close settings"></button>
-      <div class="tz-settings-frame" role="dialog" aria-modal="true" aria-label="Settings">
-        <img
-          class="tz-settings-frame__art"
-          src="/img/Blank-Vert-Scroll-TandB.png"
-          alt=""
-          width="390"
-          height="844"
-          draggable="false"
-        />
-        <div class="tz-settings-panel">
-          <div class="tz-settings-chrome tz-settings-chrome--top">
-            <button type="button" class="tz-settings-hit tz-settings-hit--back" id="settingsBackBtn" aria-label="Back">
-              <img src="/img/BAck-gold-rnd-btn.png" alt="" />
-            </button>
-            <button type="button" class="tz-settings-hit tz-settings-hit--exit" id="settingsCloseBtn" aria-label="Close">
-              <img src="/img/X-gold-rnd-btn.png" alt="" />
-            </button>
-          </div>
-          <div class="tz-settings-scroll" id="settingsGameplay">
-            <h3 class="tz-settings-section">Display</h3>
-            <p class="tz-settings-note">Preview how the game looks on a phone while developing on desktop.</p>
-
-            <div class="tz-setting" data-setting="phonePreview">
-              <div class="tz-setting__label">Phone preview (390px)</div>
-              <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules).</div>
-              <div class="tz-segmented" role="group" aria-label="Phone preview">
-                <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
-                <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
-              </div>
-            </div>
-
-            <h3 class="tz-settings-section">Gameplay</h3>
-            <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
-
-            <div class="tz-setting" data-setting="liveEdgeValidation">
-              <div class="tz-setting__label">Live Edge Validation</div>
-              <div class="tz-setting__help">Highlight open paths, mismatches, dead ends, and disconnected tiles while building.</div>
-              <div class="tz-segmented" role="group" aria-label="Live Edge Validation">
-                <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
-                <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
-              </div>
-            </div>
-
-            <div class="tz-setting" data-setting="showTileBorders">
-              <div class="tz-setting__label">Show Tile Borders</div>
-              <div class="tz-setting__help">Tile outlines and separation lines on the board.</div>
-              <div class="tz-segmented" role="group" aria-label="Show Tile Borders">
-                <button type="button" class="tz-segment" data-value="ON" aria-pressed="true">On</button>
-                <button type="button" class="tz-segment" data-value="OFF" aria-pressed="false">Off</button>
-              </div>
-            </div>
-
-            <div class="tz-setting" data-setting="usedTileBehavior">
-              <div class="tz-setting__label">Used Tile Behavior</div>
-              <div class="tz-setting__help">How placed tiles appear in the tile bag.</div>
-              <div class="tz-segmented" role="group" aria-label="Used Tile Behavior">
-                <button type="button" class="tz-segment" data-value="REMOVE" aria-pressed="true">Remove</button>
-                <button type="button" class="tz-segment" data-value="GREY_OUT" aria-pressed="false">Grey out</button>
-              </div>
-            </div>
-
-            <h3 class="tz-settings-section">Tileset</h3>
-            <p class="tz-settings-note">Compare themes side by side, then equip one for play.</p>
-            <div class="tz-setting tz-setting--tileset">
-              <div class="tz-setting__label">Current tileset</div>
-              <div class="tz-setting__value" id="settingsTilesetName">—</div>
-              <button type="button" class="tz-settings-action" id="settingsOpenTilesetBtn">Choose tileset…</button>
-            </div>
-
-            <div class="tz-settings-dev" id="settingsDeveloper" data-dev-only hidden>
-              <h3 class="tz-settings-section">Developer</h3>
-              <p class="tz-settings-note">UI testing only — does not modify player progress.</p>
-              <button type="button" class="tz-dev-action" id="devForceDiscoveryPopupBtn">Force Solution Popup</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tz-tileset-picker-root" id="tilesetPickerRoot" hidden>
-      <button type="button" class="tz-tileset-picker-root__backdrop" aria-label="Close tileset gallery"></button>
-      <div class="tz-tileset-picker-frame" role="dialog" aria-modal="true" aria-label="Choose tileset">
-        <img
-          class="tz-tileset-picker-frame__art"
-          src="/img/Blank-Vert-Scroll-T.png"
-          alt=""
-          width="390"
-          height="844"
-          draggable="false"
-        />
-        <div class="tz-tileset-picker-panel">
-          <div class="tz-settings-chrome tz-settings-chrome--top">
-            <button type="button" class="tz-settings-hit tz-settings-hit--back" id="tilesetPickerBackBtn" aria-label="Back to settings">
-              <img src="/img/BAck-gold-rnd-btn.png" alt="" />
-            </button>
-            <button type="button" class="tz-settings-hit tz-settings-hit--exit" id="tilesetPickerCloseBtn" aria-label="Close">
-              <img src="/img/X-gold-rnd-btn.png" alt="" />
-            </button>
-          </div>
-          <div class="tz-tileset-picker-scroll" id="tilesetPickerScroll">
-            <h3 class="tz-settings-section">Tilesets</h3>
-            <p class="tz-settings-note">Each card shows the board background and sample tiles for that theme.</p>
-            <div class="tz-tileset-picker-list" id="tilesetPickerList"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="tz-dev-stubs" hidden aria-hidden="true">
       <span id="rotHud">0</span>
       <span id="sizeHud"></span>
@@ -656,6 +548,134 @@
 
   </div>
 
+  <div class="tz-settings-root" id="settingsRoot" hidden>
+    <button type="button" class="tz-settings-root__backdrop" aria-label="Close settings"></button>
+    <div class="tz-settings-frame" role="dialog" aria-modal="true" aria-label="Settings">
+      <img
+        class="tz-settings-frame__art"
+        src="/img/Blank-Vert-Scroll-TandB.png"
+        alt=""
+        width="390"
+        height="844"
+        draggable="false"
+      />
+      <div class="tz-settings-panel">
+        <div class="tz-settings-chrome tz-settings-chrome--top">
+          <button type="button" class="tz-settings-hit tz-settings-hit--back" id="settingsBackBtn" aria-label="Back">
+            <img src="/img/BAck-gold-rnd-btn.png" alt="" />
+          </button>
+          <button type="button" class="tz-settings-hit tz-settings-hit--exit" id="settingsCloseBtn" aria-label="Close">
+            <img src="/img/X-gold-rnd-btn.png" alt="" />
+          </button>
+        </div>
+        <div class="tz-settings-scroll" id="settingsGameplay">
+          <h3 class="tz-settings-section">Display</h3>
+          <p class="tz-settings-note">Preview how the game looks on a phone while developing on desktop.</p>
+
+          <div class="tz-setting" data-setting="phonePreview">
+            <div class="tz-setting__label">Phone preview (390px)</div>
+            <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules).</div>
+            <div class="tz-segmented" role="group" aria-label="Phone preview">
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
+            </div>
+          </div>
+
+          <h3 class="tz-settings-section">Gameplay</h3>
+          <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
+
+          <div class="tz-setting" data-setting="liveEdgeValidation">
+            <div class="tz-setting__label">Live Edge Validation</div>
+            <div class="tz-setting__help">Highlight open paths, mismatches, dead ends, and disconnected tiles while building.</div>
+            <div class="tz-segmented" role="group" aria-label="Live Edge Validation">
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="showTileBorders">
+            <div class="tz-setting__label">Show Tile Borders</div>
+            <div class="tz-setting__help">Tile outlines and separation lines on the board.</div>
+            <div class="tz-segmented" role="group" aria-label="Show Tile Borders">
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="true">On</button>
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="false">Off</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="previewPlacementAnchor">
+            <div class="tz-setting__label">Preview placement anchor</div>
+            <div class="tz-setting__help">Select a tile from the tile bag — a grey glowing circle marks the anchor cell on the preview (and on the board ghost while hovering).</div>
+            <div class="tz-segmented" role="group" aria-label="Preview placement anchor">
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="true">On</button>
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="false">Off</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="previewPlacementAnchorStyle">
+            <div class="tz-setting__label">Anchor marker style</div>
+            <div class="tz-setting__help">Light marker for dark tiles · Dark marker for light tiles. Applies to preview and board ghost.</div>
+            <div class="tz-segmented" role="group" aria-label="Anchor marker style">
+              <button type="button" class="tz-segment" data-value="LIGHT" aria-pressed="true">Light</button>
+              <button type="button" class="tz-segment" data-value="DARK" aria-pressed="false">Dark</button>
+            </div>
+          </div>
+
+          <div class="tz-setting" data-setting="usedTileBehavior">
+            <div class="tz-setting__label">Used Tile Behavior</div>
+            <div class="tz-setting__help">How placed tiles appear in the tile bag.</div>
+            <div class="tz-segmented" role="group" aria-label="Used Tile Behavior">
+              <button type="button" class="tz-segment" data-value="REMOVE" aria-pressed="true">Remove</button>
+              <button type="button" class="tz-segment" data-value="GREY_OUT" aria-pressed="false">Grey out</button>
+            </div>
+          </div>
+
+          <h3 class="tz-settings-section">Tileset</h3>
+          <p class="tz-settings-note">Compare themes side by side, then equip one for play.</p>
+          <div class="tz-setting tz-setting--tileset">
+            <div class="tz-setting__label">Current tileset</div>
+            <div class="tz-setting__value" id="settingsTilesetName">—</div>
+            <button type="button" class="tz-settings-action" id="settingsOpenTilesetBtn">Choose tileset…</button>
+          </div>
+
+          <div class="tz-settings-dev" id="settingsDeveloper" data-dev-only hidden>
+            <h3 class="tz-settings-section">Developer</h3>
+            <p class="tz-settings-note">UI testing only — does not modify player progress.</p>
+            <button type="button" class="tz-dev-action" id="devForceDiscoveryPopupBtn">Force Solution Popup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-tileset-picker-root" id="tilesetPickerRoot" hidden>
+    <button type="button" class="tz-tileset-picker-root__backdrop" aria-label="Close tileset gallery"></button>
+    <div class="tz-tileset-picker-frame" role="dialog" aria-modal="true" aria-label="Choose tileset">
+      <img
+        class="tz-tileset-picker-frame__art"
+        src="/img/Blank-Vert-Scroll-T.png"
+        alt=""
+        width="390"
+        height="844"
+        draggable="false"
+      />
+      <div class="tz-tileset-picker-panel">
+        <div class="tz-settings-chrome tz-settings-chrome--top">
+          <button type="button" class="tz-settings-hit tz-settings-hit--back" id="tilesetPickerBackBtn" aria-label="Back to settings">
+            <img src="/img/BAck-gold-rnd-btn.png" alt="" />
+          </button>
+          <button type="button" class="tz-settings-hit tz-settings-hit--exit" id="tilesetPickerCloseBtn" aria-label="Close">
+            <img src="/img/X-gold-rnd-btn.png" alt="" />
+          </button>
+        </div>
+        <div class="tz-tileset-picker-scroll" id="tilesetPickerScroll">
+          <h3 class="tz-settings-section">Tilesets</h3>
+          <p class="tz-settings-note">Each card shows the board background and sample tiles for that theme.</p>
+          <div class="tz-tileset-picker-list" id="tilesetPickerList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="tz-profile-root" id="profileOverlayRoot" hidden>
     <button type="button" class="tz-profile-root__backdrop" id="profileOverlayBackdrop" aria-label="Close"></button>
     <div class="tz-profile-dialog" role="dialog" aria-modal="true" aria-labelledby="profileOverlayTitle">
@@ -672,9 +692,11 @@
         <p class="tz-profile-dialog__name" id="profileOverlayName" data-profile-slot="profileName">Explorer</p>
         <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
           <div class="tz-preview-v2-user-data__badge-stack">
-            <img class="tz-preview-v2-user-data__badge" id="profileOverlayRankBadge" alt="" />
+            <div class="tz-rank-badge-stack">
+              <img class="tz-rank-badge__img" id="profileOverlayRankBadge" alt="" />
+              <img class="tz-rank-sublevel__img" id="profileOverlaySublevelIcon" alt="" />
+            </div>
           </div>
-          <img class="tz-preview-v2-user-data__sublevel" id="profileOverlaySublevelIcon" alt="" />
         </div>
         <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileOverlayAdventureProgress">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileOverlayRoutes">—</p>
@@ -1053,15 +1075,60 @@
     </div>
   </div>
 
-  <div class="tz-guest-modal" id="guestLoginRequired" hidden>
-    <button type="button" class="tz-guest-modal__backdrop tz-guest-login-required__backdrop" aria-label="Close"></button>
-    <div class="tz-guest-modal__panel" role="dialog" aria-modal="true" aria-labelledby="guestLoginRequiredTitle">
-      <h2 class="tz-guest-modal__title" id="guestLoginRequiredTitle">Login Required</h2>
-      <p class="tz-guest-modal__body">Create a free Tilezilla account to access this feature.</p>
-      <div class="tz-guest-modal__actions">
-        <button type="button" class="tz-guest-modal__btn tz-guest-modal__btn--primary" data-action="create-account">Create Account</button>
-        <button type="button" class="tz-guest-modal__btn" data-action="login">Login</button>
-        <button type="button" class="tz-guest-modal__btn tz-guest-modal__btn--ghost" data-action="close">Cancel</button>
+  <div class="tz-guest-login-root" id="guestLoginRequired" hidden>
+    <button type="button" class="tz-guest-login-root__backdrop" aria-label="Close"></button>
+    <div class="tz-guest-login-dialog" role="dialog" aria-modal="true" aria-labelledby="guestLoginRequiredTitle">
+      <h2 class="tz-sr-only" id="guestLoginRequiredTitle">Explorer Passport Required</h2>
+
+      <div class="tz-guest-login-dialog__frame">
+        <img
+          id="guestLoginRequiredBg"
+          src="/img/GuestLoginRequired.png"
+          alt=""
+          class="tz-guest-login-dialog__bg"
+          width="1024"
+          height="1024"
+        />
+
+        <p class="tz-guest-login-dialog__message" id="guestLoginRequiredMessage" hidden></p>
+
+        <div class="tz-guest-login-dialog__actions">
+          <button
+            type="button"
+            class="tz-guest-login-dialog__btn tz-guest-login-dialog__btn--create"
+            id="guestLoginCreateBtn"
+            data-action="create-account"
+            aria-label="Create a passport"
+          >
+            <img src="/img/Create-Passport.png" alt="" />
+          </button>
+          <button
+            type="button"
+            class="tz-guest-login-dialog__btn tz-guest-login-dialog__btn--login"
+            id="guestLoginLoginBtn"
+            data-action="login"
+            aria-label="I already have a passport"
+          >
+            <img src="/img/IHaveAPassport.png" alt="" />
+          </button>
+          <button
+            type="button"
+            class="tz-guest-login-dialog__btn tz-guest-login-dialog__btn--cancel"
+            id="guestLoginCancelBtn"
+            data-action="cancel"
+            aria-label="Not now"
+          >
+            <img src="/img/ContinueAsGuest.png" alt="" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="tz-guest-login-dialog__btn tz-guest-login-dialog__btn--close"
+          id="guestLoginCloseBtn"
+          data-action="close"
+          aria-label="Close"
+        ></button>
       </div>
     </div>
   </div>
@@ -1090,13 +1157,34 @@
   </div>
 
   <script type="module">
-    import { shouldUseLoadScreen, isRegisteredUser, isGuestUser } from './js/tilezilla-guest.js';
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('dev') && shouldUseLoadScreen() && !isRegisteredUser() && !isGuestUser()) {
-      window.location.replace('/');
+    import {
+      applyServerSession,
+      fetchServerSession,
+      isDevAuthBypass,
+    } from './js/tilezilla-auth.js';
+    import { shouldUseLoadScreen, clearRegisteredLocalState } from './js/tilezilla-guest.js';
+
+    async function guardGameEntry() {
+      if (isDevAuthBypass()) return;
+
+      const session = await fetchServerSession();
+      if (session.ok) {
+        applyServerSession(session.user);
+        return;
+      }
+
+      if (localStorage.getItem('tilezilla_auth_mode') === 'registered') {
+        clearRegisteredLocalState();
+      }
+
+      if (shouldUseLoadScreen()) {
+        window.location.replace('/');
+      }
     }
+
+    void guardGameEntry();
   </script>
-  <script type="module" src="js/app_v16.js?v=20250627b"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js?v=20250627e"></script>
+  <script type="module" src="js/app_v16.js?v=20250628h"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20250628h"></script>
 </body>
 </html>

@@ -35,6 +35,34 @@ function profileHitSelectors(itemKey, meta) {
   return selectors.join(', ');
 }
 
+/** Create passport — “The journey ahead” (left page). */
+export const CREATE_JOURNEY_STAT_SLOTS = [
+  'totalAdventurePuzzles',
+  'ranksToEarn',
+  'challengeGates',
+  'totalKnownRoutes',
+];
+
+/** Login / logged-in — bottom journal (expedition report + community discoveries). */
+export const LOGIN_JOURNAL_LEFT_SLOTS = [
+  'explorersRegistered',
+  'totalAdventurePuzzles',
+  'totalKnownRoutes',
+  'largestSolution',
+  'todaysChallenge',
+];
+
+export const LOGIN_JOURNAL_RIGHT_SLOTS = [
+  'recentPuzzleSolved',
+  'recentDailyCompleted',
+  'mostSolvedPuzzle',
+  'latestDiscovery',
+  'totalPlayTime',
+];
+
+/** @deprecated use LOGIN_JOURNAL_LEFT_SLOTS + LOGIN_JOURNAL_RIGHT_SLOTS */
+export const LOGIN_REPORT_STAT_SLOTS = [...LOGIN_JOURNAL_LEFT_SLOTS, ...LOGIN_JOURNAL_RIGHT_SLOTS];
+
 const profileStat = (label, slot) => ({
   label,
   kind: 'text',
@@ -42,6 +70,43 @@ const profileStat = (label, slot) => ({
   cssClass: 'auth-screen__profile-stat',
   baseClass: '',
 });
+
+const authPassportStat = (label, slot) => profileStat(label, slot);
+
+const passRevealHit = (cssClass, label = 'Show passphrase') => ({
+  label,
+  kind: 'hit',
+  cssClass,
+  baseClass: 'auth-screen__hit',
+});
+
+const CREATE_JOURNEY_STAT_DEFS = {
+  totalAdventurePuzzles: authPassportStat('Adventure puzzles', 'totalAdventurePuzzles'),
+  ranksToEarn: authPassportStat('Ranks to earn', 'ranksToEarn'),
+  challengeGates: authPassportStat('Challenge gates', 'challengeGates'),
+  totalKnownRoutes: authPassportStat('Known routes', 'totalKnownRoutes'),
+};
+
+const LOGIN_JOURNEY_LEFT_DEFS = {
+  explorersRegistered: authPassportStat('Explorers registered', 'explorersRegistered'),
+  totalAdventurePuzzles: authPassportStat('Adventure puzzles', 'totalAdventurePuzzles'),
+  totalKnownRoutes: authPassportStat('Known routes', 'totalKnownRoutes'),
+  largestSolution: authPassportStat('Largest solution challenge', 'largestSolution'),
+  todaysChallenge: authPassportStat("Today's challenge", 'todaysChallenge'),
+};
+
+const LOGIN_JOURNEY_RIGHT_DEFS = {
+  recentPuzzleSolved: authPassportStat('Most recent puzzle solved', 'recentPuzzleSolved'),
+  recentDailyCompleted: authPassportStat('Most recent daily completed', 'recentDailyCompleted'),
+  mostSolvedPuzzle: authPassportStat('Most solved puzzle', 'mostSolvedPuzzle'),
+  latestDiscovery: authPassportStat('Latest discovery', 'latestDiscovery'),
+  totalPlayTime: authPassportStat('Total play time', 'totalPlayTime'),
+};
+
+const LOGIN_JOURNAL_STAT_DEFS = {
+  ...LOGIN_JOURNEY_LEFT_DEFS,
+  ...LOGIN_JOURNEY_RIGHT_DEFS,
+};
 
 const profileIcon = (label, slot, mockSrc) => ({
   label,
@@ -59,10 +124,12 @@ export const AUTH_SCREEN_DEFS = {
     items: {
       user: { label: 'Username / email', kind: 'input', cssClass: 'auth-screen__input--user', baseClass: 'auth-screen__input' },
       pass: { label: 'Password', kind: 'input', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
+      passReveal: passRevealHit('auth-screen__hit--pass-reveal'),
       submit: { label: 'Open passport', kind: 'hit', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
       secondary: { label: 'Issue new passport', kind: 'hit', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
       navDaily: { label: 'Daily Challenge (guest)', kind: 'hit', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
       navLogout: { label: 'Log out', kind: 'hit', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
+      ...LOGIN_JOURNAL_STAT_DEFS,
     },
   },
   create: {
@@ -72,11 +139,14 @@ export const AUTH_SCREEN_DEFS = {
       name: { label: 'Explorer name', kind: 'input', cssClass: 'auth-screen__input--name', baseClass: 'auth-screen__input' },
       email: { label: 'Email', kind: 'input', cssClass: 'auth-screen__input--email', baseClass: 'auth-screen__input' },
       pass: { label: 'Passphrase', kind: 'input', cssClass: 'auth-screen__input--pass', baseClass: 'auth-screen__input' },
+      passReveal: passRevealHit('auth-screen__hit--pass-reveal'),
       pass2: { label: 'Confirm passphrase', kind: 'input', cssClass: 'auth-screen__input--pass2', baseClass: 'auth-screen__input' },
+      pass2Reveal: passRevealHit('auth-screen__hit--pass2-reveal', 'Show confirm passphrase'),
       submit: { label: 'Issue passport', kind: 'hit', cssClass: 'auth-screen__hit--submit', baseClass: 'auth-screen__hit' },
       secondary: { label: 'Already have passport', kind: 'hit', cssClass: 'auth-screen__hit--secondary', baseClass: 'auth-screen__hit' },
       navDaily: { label: 'Daily Challenge (guest)', kind: 'hit', cssClass: 'auth-screen__hit--nav-daily', baseClass: 'auth-screen__hit' },
       navLogout: { label: 'Log out', kind: 'hit', cssClass: 'auth-screen__hit--nav-logout', baseClass: 'auth-screen__hit' },
+      ...CREATE_JOURNEY_STAT_DEFS,
     },
   },
   profile: {
@@ -101,7 +171,7 @@ export const AUTH_SCREEN_DEFS = {
       explorersRegistered: profileStat('Explorers registered', 'explorersRegistered'),
       totalAdventurePuzzles: profileStat('Total adventure puzzles', 'totalAdventurePuzzles'),
       totalKnownRoutes: profileStat('Total known routes', 'totalKnownRoutes'),
-      largestSolution: profileStat('Largest solution', 'largestSolution'),
+      largestSolution: profileStat('Longest route (catalog)', 'largestSolution'),
       todaysChallenge: profileStat("Today's challenge ID", 'todaysChallenge'),
       recentPuzzleSolved: profileStat('Most recent puzzle solved', 'recentPuzzleSolved'),
       recentDailyCompleted: profileStat('Most recent daily completed', 'recentDailyCompleted'),
@@ -135,22 +205,12 @@ export const PROFILE_FIELD_SECTIONS = [
     ],
   },
   {
-    title: 'Catalog stats',
-    keys: ['totalAdventurePuzzles', 'totalKnownRoutes', 'largestSolution'],
+    title: 'Left journal (expedition report)',
+    keys: LOGIN_JOURNAL_LEFT_SLOTS,
   },
   {
-    title: 'Left journal',
-    keys: ['explorersRegistered', 'todaysChallenge'],
-  },
-  {
-    title: 'Right journal',
-    keys: [
-      'recentPuzzleSolved',
-      'recentDailyCompleted',
-      'mostSolvedPuzzle',
-      'latestDiscovery',
-      'totalPlayTime',
-    ],
+    title: 'Right journal (community discoveries)',
+    keys: LOGIN_JOURNAL_RIGHT_SLOTS,
   },
   {
     title: 'Navigation',
@@ -174,7 +234,7 @@ export const PROFILE_LAYOUT_MOCK = {
   explorersRegistered: '1,204',
   totalAdventurePuzzles: '7,077',
   totalKnownRoutes: '18,432',
-  largestSolution: '48',
+  largestSolution: '524\nROUTES',
   todaysChallenge: '5x6-0B-BFA',
   recentPuzzleSolved: '5x6-0B-BNZ',
   recentDailyCompleted: '5x6-0B-AZZ',
@@ -187,12 +247,23 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
   login: {
     dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
     items: {
-      user: { x: 18, y: 28.8, w: 64, h: 3.2 },
-      pass: { x: 18, y: 34.8, w: 64, h: 3.2 },
-      submit: { x: 22, y: 40.5, w: 56, h: 4.5 },
-      secondary: { x: 22, y: 47.5, w: 56, h: 4 },
-      navDaily: { x: 3, y: 92, w: 45, h: 5.5 },
-      navLogout: { x: 52, y: 92, w: 45, h: 5.5 },
+      user: { x: 33.7, y: 19.1, w: 33.5, h: 3.2 },
+      pass: { x: 34, y: 23.8, w: 29.8, h: 3.2 },
+      passReveal: { x: 60.5, y: 23.8, w: 5.5, h: 3.2 },
+      submit: { x: 29.1, y: 29.2, w: 43.3, h: 5.7 },
+      secondary: { x: 28.9, y: 36.9, w: 43.5, h: 7.4 },
+      navDaily: { x: 12.5, y: 94.4, w: 23.1, h: 5.8 },
+      navLogout: { x: 66.2, y: 93.8, w: 22, h: 6.1 },
+      explorersRegistered: { x: 30.8, y: 60.9, w: 14.8, h: 2.9, fontScale: 1 },
+      totalAdventurePuzzles: { x: 30.8, y: 64.7, w: 14.8, h: 2.9, fontScale: 1 },
+      totalKnownRoutes: { x: 30.8, y: 68.6, w: 14.8, h: 2.9, fontScale: 1 },
+      largestSolution: { x: 30.8, y: 73.2, w: 18, h: 4.8, fontScale: 0.85 },
+      todaysChallenge: { x: 30.8, y: 77.2, w: 18, h: 2.9, fontScale: 0.92 },
+      recentPuzzleSolved: { x: 58.8, y: 62.8, w: 21, h: 3.3, fontScale: 0.92 },
+      recentDailyCompleted: { x: 58.9, y: 67.7, w: 20.8, h: 3.1, fontScale: 0.92 },
+      mostSolvedPuzzle: { x: 58.9, y: 72.4, w: 20.7, h: 2.7, fontScale: 0.92 },
+      latestDiscovery: { x: 59.2, y: 76.2, w: 20.2, h: 3.3, fontScale: 0.92 },
+      totalPlayTime: { x: 62.5, y: 79.7, w: 16.7, h: 3.5, fontScale: 1 },
     },
   },
   create: {
@@ -206,6 +277,12 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
       secondary: { x: 22, y: 51, w: 56, h: 4 },
       navDaily: { x: 3, y: 92, w: 45, h: 5.5 },
       navLogout: { x: 52, y: 92, w: 45, h: 5.5 },
+      passReveal: { x: 62.5, y: 29.1, w: 5.5, h: 3.4 },
+      pass2Reveal: { x: 62.8, y: 34.7, w: 5.5, h: 3.4 },
+      totalAdventurePuzzles: { x: 58, y: 58.5, w: 12, h: 2.8, fontScale: 1 },
+      ranksToEarn: { x: 58, y: 62.5, w: 12, h: 2.8, fontScale: 1 },
+      challengeGates: { x: 58, y: 66.5, w: 12, h: 2.8, fontScale: 1 },
+      totalKnownRoutes: { x: 58, y: 70.5, w: 12, h: 2.8, fontScale: 1 },
     },
   },
   profile: {
@@ -220,16 +297,16 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
       hintTokens: { x: 52, y: 39, w: 18, h: 4, fontScale: 1 },
       memberSince: { x: 22, y: 44, w: 18, h: 4, fontScale: 1 },
       passportId: { x: 52, y: 44, w: 35, h: 4, fontScale: 0.92 },
-      explorersRegistered: { x: 10, y: 56, w: 35, h: 3.5, fontScale: 1 },
-      totalAdventurePuzzles: { x: 10, y: 50, w: 35, h: 3.5, fontScale: 1, hidden: true },
-      totalKnownRoutes: { x: 10, y: 53.5, w: 35, h: 3.5, fontScale: 1, hidden: true },
-      largestSolution: { x: 54, y: 50, w: 38, h: 3.5, fontScale: 1, hidden: true },
-      todaysChallenge: { x: 10, y: 74, w: 35, h: 3.5, fontScale: 0.92 },
-      recentPuzzleSolved: { x: 54, y: 56, w: 38, h: 3.5, fontScale: 0.92 },
-      recentDailyCompleted: { x: 54, y: 62, w: 38, h: 3.5, fontScale: 0.92 },
-      mostSolvedPuzzle: { x: 54, y: 68, w: 38, h: 3.5, fontScale: 0.92 },
-      latestDiscovery: { x: 54, y: 74, w: 38, h: 3.5, fontScale: 0.92 },
-      totalPlayTime: { x: 54, y: 80, w: 38, h: 3.5, fontScale: 1 },
+      explorersRegistered: { x: 30.8, y: 60.9, w: 14.8, h: 2.9, fontScale: 1 },
+      totalAdventurePuzzles: { x: 30.8, y: 64.7, w: 14.8, h: 2.9, fontScale: 1 },
+      totalKnownRoutes: { x: 30.8, y: 68.6, w: 14.8, h: 2.9, fontScale: 1 },
+      largestSolution: { x: 30.8, y: 73.2, w: 18, h: 4.8, fontScale: 0.85 },
+      todaysChallenge: { x: 30.8, y: 77.2, w: 18, h: 2.9, fontScale: 0.92 },
+      recentPuzzleSolved: { x: 58.8, y: 62.8, w: 21, h: 3.3, fontScale: 0.92 },
+      recentDailyCompleted: { x: 58.9, y: 67.7, w: 20.8, h: 3.1, fontScale: 0.92 },
+      mostSolvedPuzzle: { x: 58.9, y: 72.4, w: 20.7, h: 2.7, fontScale: 0.92 },
+      latestDiscovery: { x: 59.2, y: 76.2, w: 20.2, h: 3.3, fontScale: 0.92 },
+      totalPlayTime: { x: 62.5, y: 79.7, w: 16.7, h: 3.5, fontScale: 1 },
       navDaily: { x: 3, y: 92, w: 22, h: 5.5 },
       navAdventure: { x: 27, y: 92, w: 22, h: 5.5 },
       navRandom: { x: 51, y: 92, w: 22, h: 5.5 },
@@ -330,7 +407,7 @@ export async function buildAuthScreenLayoutSavePayload(screenKey, workingLayout)
   if (section) {
     merged[screenKey] = JSON.parse(JSON.stringify(section));
   }
-  return merged;
+  return pruneAuthScreenLayoutItems(merged);
 }
 
 export function readAuthScreenLayoutDraftSection(screenKey) {
@@ -366,7 +443,7 @@ function migrateProfileIconLayout(items) {
 
 export function mergeAuthScreenLayout(raw) {
   const base = JSON.parse(JSON.stringify(DEFAULT_AUTH_SCREEN_LAYOUT));
-  if (!raw || typeof raw !== 'object') return base;
+  if (!raw || typeof raw !== 'object') return pruneAuthScreenLayoutItems(base);
   for (const screenKey of Object.keys(AUTH_SCREEN_DEFS)) {
     const src = raw[screenKey];
     if (!src || typeof src !== 'object') continue;
@@ -381,7 +458,20 @@ export function mergeAuthScreenLayout(raw) {
       }
     }
   }
-  return base;
+  return pruneAuthScreenLayoutItems(base);
+}
+
+/** Drop layout item keys that are not defined for that screen (stale file / draft cleanup). */
+export function pruneAuthScreenLayoutItems(layout) {
+  for (const screenKey of Object.keys(AUTH_SCREEN_DEFS)) {
+    const allowed = AUTH_SCREEN_DEFS[screenKey]?.items || {};
+    const items = layout?.[screenKey]?.items;
+    if (!items) continue;
+    for (const key of Object.keys(items)) {
+      if (!allowed[key]) delete items[key];
+    }
+  }
+  return layout;
 }
 
 export async function loadAuthScreenLayout({
@@ -506,12 +596,14 @@ export function syncAuthScreenItemVisibility(layout, screenKey, root = document)
       if (key === 'sublevelIcon') continue;
       /* Guest note visibility is toggled by guest mode, not layout hidden. */
       if (key === 'guestNote') continue;
-      if (meta.slot) {
-        root.querySelectorAll(`[data-profile-slot="${meta.slot}"]`).forEach((el) => {
-          el.hidden = hidden;
-        });
-        continue;
-      }
+    }
+    if (meta.slot) {
+      root.querySelectorAll(`[data-profile-slot="${meta.slot}"]`).forEach((el) => {
+        el.hidden = hidden;
+      });
+      continue;
+    }
+    if (screenKey === 'profile') {
       if (meta.kind === 'hit') {
         const selector = profileHitSelectors(key, meta);
         if (selector) {
@@ -543,35 +635,61 @@ function authScreenLayoutTarget(screenKey) {
   return document.documentElement;
 }
 
-/** In-game profile overlay — vars on dialog so width + stat slots share the same frame. */
-export function getProfileOverlayLayoutTarget(root = document) {
+/** In-game profile overlay dialog frame (width cap + drop shadow). */
+export function getProfileOverlayDialog(root = document) {
   const doc = root?.ownerDocument || root;
   if (root?.id === 'profileOverlayRoot' || root?.classList?.contains('tz-profile-root')) {
-    return (
-      root.querySelector('.tz-profile-dialog')
-      || root.querySelector('.tz-profile-dialog__stage')
-      || root
-    );
+    return root.querySelector('.tz-profile-dialog') || null;
   }
   return (
     root.querySelector?.('#profileOverlayRoot .tz-profile-dialog')
     || root.querySelector?.('.tz-profile-dialog')
     || doc.getElementById?.('mockDialog')
-    || root.querySelector?.('#profileOverlayRoot .tz-profile-dialog__stage')
-    || doc.getElementById?.('profileOverlayRoot')
+    || null
   );
 }
 
+/** Positioning root for overlay slots + chrome hits (% of this box). */
+export function getProfileOverlayStage(root = document) {
+  const dialog = getProfileOverlayDialog(root);
+  return dialog?.querySelector('.tz-profile-dialog__stage') || null;
+}
+
+/** @deprecated use getProfileOverlayStage — kept for callers expecting dialog. */
+export function getProfileOverlayLayoutTarget(root = document) {
+  return getProfileOverlayStage(root) || getProfileOverlayDialog(root);
+}
+
 function getProfileOverlayVisibilityRoot(root = document) {
-  return root.querySelector('#profileOverlayRoot') || root.getElementById?.('profileOverlayRoot') || root;
+  const doc = root?.ownerDocument || root;
+  return (
+    doc.getElementById?.('profileOverlayRoot')
+    || doc.getElementById?.('mockWrap')
+    || root.querySelector?.('#profileOverlayRoot')
+    || root.querySelector?.('#mockWrap')
+    || root
+  );
+}
+
+function applyProfileDialogFrameVars(layout, dialog, visibilityRoot = null) {
+  const merged = mergeAuthScreenLayout(layout);
+  const d = merged.profile?.dialog || DEFAULT_AUTH_SCREEN_LAYOUT.profile.dialog;
+  const maxWidth = `${d.maxWidth ?? 420}px`;
+  if (dialog) dialog.style.setProperty('--auth-profile-max-width', maxWidth);
+  if (visibilityRoot?.style) visibilityRoot.style.setProperty('--auth-profile-max-width', maxWidth);
 }
 
 function profileHitStyle(box) {
   return {
+    position: 'absolute',
     left: `${box.x}%`,
     top: `${box.y}%`,
     width: `${box.w}%`,
     height: `${box.h}%`,
+    margin: '0',
+    padding: '0',
+    border: 'none',
+    boxSizing: 'border-box',
   };
 }
 
@@ -580,6 +698,9 @@ export function applyProfileHitPositions(layout, root = document) {
   const merged = mergeAuthScreenLayout(layout);
   const items = AUTH_SCREEN_DEFS.profile?.items || {};
   const doc = root?.ownerDocument || root;
+  const scope = doc.getElementById?.('profileOverlayRoot')
+    || doc.getElementById?.('mockFrame')
+    || getProfileOverlayVisibilityRoot(root);
   for (const [key, meta] of Object.entries(items)) {
     if (meta.kind !== 'hit') continue;
     const box = getAuthScreenItemLayout('profile', key, merged);
@@ -589,7 +710,7 @@ export function applyProfileHitPositions(layout, root = document) {
     if (overlayBtn) Object.assign(overlayBtn.style, style);
     const selector = profileHitSelectors(key, meta);
     if (!selector) continue;
-    for (const el of root.querySelectorAll(selector)) {
+    for (const el of scope.querySelectorAll(selector)) {
       if (overlayBtn && el === overlayBtn) continue;
       Object.assign(el.style, style);
     }
@@ -598,16 +719,15 @@ export function applyProfileHitPositions(layout, root = document) {
 
 /** Apply tuned passport layout to the in-game profile overlay (guest + registered). */
 export function applyProfileOverlayLayout(layout, root = document) {
-  const target = getProfileOverlayLayoutTarget(root);
-  if (!target) return;
+  const dialog = getProfileOverlayDialog(root);
+  const stage = getProfileOverlayStage(root);
+  const visibilityRoot = getProfileOverlayVisibilityRoot(root);
+  if (!dialog || !stage) return;
 
-  applyAuthScreenLayout(layout, 'profile', target, { syncVisibility: false });
-  const stage = target.querySelector?.('.tz-profile-dialog__stage');
-  if (stage && stage !== target) {
-    applyAuthScreenLayout(layout, 'profile', stage, { syncVisibility: false });
-  }
+  applyProfileDialogFrameVars(layout, dialog, visibilityRoot);
+  applyAuthScreenLayout(layout, 'profile', stage, { syncVisibility: false });
   applyProfileHitPositions(layout, root);
-  syncAuthScreenItemVisibility(layout, 'profile', getProfileOverlayVisibilityRoot(root));
+  syncAuthScreenItemVisibility(layout, 'profile', visibilityRoot);
 }
 
 /** Reload profile overlay layout from disk and apply to live DOM. */

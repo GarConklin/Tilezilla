@@ -1,4 +1,4 @@
-/** Rank badge + sublevel on logged-in passport — same model as preview user_data. */
+/** Rank badge + sublevel on logged-in passport — same model as rank-sublevel-tuner. */
 
 import {
   adventureLevelContext,
@@ -10,7 +10,8 @@ import {
   loadPreviewV2DataSublayout,
 } from './preview-v2-data-sublayout.js';
 import {
-  applySublevelIconOnUserDataStack,
+  applySublevelIconOnBadgeStack,
+  clearSublevelLayoutCache,
   loadSublevelIconLayout,
   romanForSubLevel,
 } from './sublevel-icon.js';
@@ -31,8 +32,12 @@ function rankElements(root = document) {
   const badges = [];
   const subs = [];
   for (const stack of stacks) {
-    const badge = stack.querySelector('.tz-preview-v2-user-data__badge');
-    const sub = stack.querySelector('.tz-preview-v2-user-data__sublevel');
+    const badge =
+      stack.querySelector('.tz-rank-badge__img')
+      || stack.querySelector('.tz-preview-v2-user-data__badge');
+    const sub =
+      stack.querySelector('.tz-rank-sublevel__img')
+      || stack.querySelector('.tz-preview-v2-user-data__sublevel');
     if (badge) badges.push(badge);
     if (sub) subs.push(sub);
   }
@@ -43,6 +48,34 @@ function setRankStacksReady(stacks, ready) {
   for (const stack of stacks) {
     stack.classList.toggle('is-rank-ready', ready);
   }
+}
+
+/** Match --tz-rank-badge-h to rendered badge height (anchor point = rank-sublevel-tuner). */
+function syncPassportRankBadgeHeights(stacks) {
+  for (const stack of stacks) {
+    const rankBubble = stack.querySelector('.tz-rank-badge-stack');
+    const badgeImg = stack.querySelector('.tz-rank-badge__img');
+    if (!rankBubble || !badgeImg) continue;
+    const h = badgeImg.getBoundingClientRect().height;
+    if (h > 0) {
+      rankBubble.style.setProperty('--tz-rank-badge-h', `${h}px`);
+    }
+  }
+}
+
+function waitForRankImages(badges, subs) {
+  const imgs = [...badges, ...subs].filter(Boolean);
+  return Promise.all(
+    imgs.map(
+      (el) =>
+        el.complete
+          ? Promise.resolve()
+          : new Promise((resolve) => {
+              el.addEventListener('load', resolve, { once: true });
+              el.addEventListener('error', resolve, { once: true });
+            }),
+    ),
+  );
 }
 
 async function applyUserDataLayoutToStacks(stacks) {
@@ -89,24 +122,25 @@ async function applyPassportSublevels(subs, progress, layout) {
   const resolved = await resolveRankSublevel(progress);
   const roman = romanForSubLevel(resolved.subLevel);
   for (const el of subs) {
-    applySublevelIconOnUserDataStack(el, resolved.subLevel, resolved.badge, layout);
+    applySublevelIconOnBadgeStack(el, resolved.subLevel, resolved.badge, layout);
     el.alt = `Sublevel ${roman}`;
   }
   return resolved;
 }
 
-async function rescalePassportSublevels(subs) {
+async function rescalePassportSublevels(stacks, subs) {
+  syncPassportRankBadgeHeights(stacks);
   let layout = null;
   try {
     layout = await loadSublevelIconLayout();
   } catch {
-    /* defaults in applySublevelIconOnUserDataStack */
+    /* defaults in applySublevelIconOnBadgeStack */
   }
   for (const el of subs) {
     if (!el.closest('.auth-screen__profile-rank-stack')) continue;
     const subLevel = Number(el.dataset.sublevel) || 1;
     const badge = el.dataset.sublevelBadge || 'gld';
-    applySublevelIconOnUserDataStack(el, subLevel, badge, layout);
+    applySublevelIconOnBadgeStack(el, subLevel, badge, layout);
   }
 }
 
@@ -129,6 +163,10 @@ async function applyPassportRankState(badges, subs, stacks, progress) {
       el.alt = `${resolved.rank.rank_name} rank`;
     }
   }
+
+  await waitForRankImages(badges, subs);
+  syncPassportRankBadgeHeights(stacks);
+  await applyPassportSublevels(subs, progress, layout);
 }
 
 /**
@@ -156,13 +194,25 @@ export async function refreshProfileRankIcons(progress, root = document) {
       if (!el.getAttribute('src')) el.src = '/img/ranks/Wanderer.png';
     }
     for (const el of subs) {
-      applySublevelIconOnUserDataStack(el, 1, 'gld', layout);
+      applySublevelIconOnBadgeStack(el, 1, 'gld', layout);
       if (!el.alt) el.alt = 'Sublevel I';
     }
   } finally {
     setRankStacksReady(stacks, true);
     requestAnimationFrame(() => {
-      void rescalePassportSublevels(subs);
+      syncPassportRankBadgeHeights(stacks);
+      void rescalePassportSublevels(stacks, subs);
+      requestAnimationFrame(() => {
+        syncPassportRankBadgeHeights(stacks);
+        void rescalePassportSublevels(stacks, subs);
+      });
     });
   }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('tilezilla:sublevel-layout-saved', () => {
+    clearSublevelLayoutCache();
+    void refreshProfileRankIcons();
+  });
 }

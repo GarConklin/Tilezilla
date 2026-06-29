@@ -1,6 +1,7 @@
 import { Solver } from './solver.js';
 import { Solutions } from './solutions.js';
 import { Progress } from './progress.js';
+import { readEncounteredTilesLocal } from './tilezilla-encountered-tiles.js';
 import { isDevUser, syncDevUserUi } from './tilezilla-dev-user.js';
 import {
   applyTileBoardBackground,
@@ -205,6 +206,8 @@ const state = {
   liveEdgeValidation: false,
   showTileBorders: true,
   usedTileBehavior: 'REMOVE',
+  previewPlacementAnchor: true,
+  previewPlacementAnchorStyle: 'LIGHT',
   tileList: [],
   liveEdges: {},
   tileSets: null,
@@ -1041,10 +1044,13 @@ function applyGameplaySettings(settings = {}){
   state.showEdges = state.liveEdgeValidation;
   state.showTileBorders = settings.showTileBorders !== 'OFF';
   state.usedTileBehavior = settings.usedTileBehavior === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE';
+  state.previewPlacementAnchor = settings.previewPlacementAnchor !== 'OFF';
+  state.previewPlacementAnchorStyle = settings.previewPlacementAnchorStyle === 'DARK' ? 'DARK' : 'LIGHT';
   if (boardEl) boardEl.classList.toggle('show-outlines', state.showTileBorders);
   if (paletteEl) {
     for (const inst of (state.paletteInstances || [])) syncPaletteItemPresentation(inst.instanceId);
   }
+  void renderActivePreview();
 }
 
 function syncPaletteItemPresentation(instanceId){
@@ -1163,14 +1169,17 @@ function anchorCellInFootprint(tileRef, deg){
   };
 }
 
-function drawAnchorHalo(ctx, cx, cy, radius){
+function drawAnchorHalo(ctx, cx, cy, radius, style = 'LIGHT'){
+  const dark = style === 'DARK';
   ctx.save();
   ctx.beginPath();
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(100,190,255,0.35)';
+  ctx.fillStyle = dark ? 'rgba(55, 55, 55, 0.4)' : 'rgba(160, 160, 160, 0.42)';
   ctx.fill();
   ctx.lineWidth = 2;
-  ctx.strokeStyle = 'rgba(70,165,255,0.95)';
+  ctx.strokeStyle = dark ? 'rgba(35, 35, 35, 0.92)' : 'rgba(255, 255, 255, 0.9)';
+  ctx.shadowColor = dark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.55)';
+  ctx.shadowBlur = 6;
   ctx.stroke();
   ctx.restore();
 }
@@ -1232,7 +1241,13 @@ function renderHover(r,c){
   }
   // Anchor marker: always show the exact anchor cell (r,c).
   if(inBounds(r,c)){
-    drawAnchorHalo(g, c*CONFIG.cellPx + CONFIG.cellPx/2, r*CONFIG.cellPx + CONFIG.cellPx/2, Math.max(8, CONFIG.cellPx*0.16));
+    drawAnchorHalo(
+      g,
+      c * CONFIG.cellPx + CONFIG.cellPx / 2,
+      r * CONFIG.cellPx + CONFIG.cellPx / 2,
+      Math.max(9, CONFIG.cellPx * 0.18),
+      state.previewPlacementAnchorStyle,
+    );
   }
   g.restore();
 }
@@ -1515,9 +1530,27 @@ async function renderActivePreview(){
   const cellY = CONFIG.cellPx * scaleY * shrink;
   const cx = offX + (a.c + 0.5) * cellX + tileOffsetX;
   const cy = offY + (a.r + 0.5) * cellY + tileOffsetY;
-  anchor.style.display = 'block';
-  anchor.style.left = `${cx}px`;
-  anchor.style.top = `${cy}px`;
+  const showPlacementAnchor = !!(state.selectedPal && state.previewPlacementAnchor);
+  if (showPlacementAnchor) {
+    const radius = Math.max(9, Math.min(cellX, cellY) * 0.18);
+    const diameter = radius * 2;
+    anchor.style.display = 'block';
+    anchor.style.width = `${diameter}px`;
+    anchor.style.height = `${diameter}px`;
+    anchor.style.left = `${cx}px`;
+    anchor.style.top = `${cy}px`;
+    anchor.classList.add('activeAnchor--placement');
+    anchor.classList.remove('activeAnchor--style-light', 'activeAnchor--style-dark');
+    anchor.classList.add(
+      state.previewPlacementAnchorStyle === 'DARK'
+        ? 'activeAnchor--style-dark'
+        : 'activeAnchor--style-light',
+    );
+    activePad.appendChild(anchor);
+  } else {
+    anchor.style.display = 'none';
+    anchor.classList.remove('activeAnchor--placement', 'activeAnchor--style-light', 'activeAnchor--style-dark');
+  }
 
   if (state.selectedPal && state.deg !== 0) {
     await ensureBagThumbAtZero(state.selectedPal);
@@ -1548,18 +1581,28 @@ function buildPaletteInstances(){
   return sortPaletteInstances(instances);
 }
 
-/** SH (start) first, ET (end) second, then all other tiles. */
+/** Tile bag order: all starts, then all ends, then everything else. */
 function paletteInstanceSortRank(tileRef) {
   const id = tileId(tileRef);
-  if (id === 'SH') return 0;
-  if (id === 'ET') return 1;
+  if (id === 'SH' || id === 'ST') return 0;
+  if (id === 'ET' || id === 'ES') return 1;
   return 2;
+}
+
+/** ET before ES when both are in the bag (two-snake / multi-end puzzles). */
+function paletteInstanceSubSortRank(tileRef) {
+  const id = tileId(tileRef);
+  if (id === 'ET') return 0;
+  if (id === 'ES') return 1;
+  return 0;
 }
 
 function sortPaletteInstances(instances) {
   return [...instances].sort((a, b) => {
     const rankDiff = paletteInstanceSortRank(a.tile) - paletteInstanceSortRank(b.tile);
     if (rankDiff !== 0) return rankDiff;
+    const subDiff = paletteInstanceSubSortRank(a.tile) - paletteInstanceSubSortRank(b.tile);
+    if (subDiff !== 0) return subDiff;
     return a.instanceId.localeCompare(b.instanceId, undefined, { numeric: true });
   });
 }
@@ -2198,16 +2241,41 @@ function todayChallengeDate() {
     || new Date().toISOString().slice(0, 10);
 }
 
-function isGuestDailySession() {
-  return window.__tilezillaGuest?.isGuestUser?.()
-    && document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+function isDailyLeaderboardEligible() {
+  const meta = window.__dailyChallengeMeta;
+  if (!meta || meta.leaderboardEligible === false) return false;
+  const screen = document.querySelector('.tz-app')?.dataset?.screen;
+  if (screen !== 'daily-challenge') return false;
+  const dateIso = meta.date ? String(meta.date).slice(0, 10) : '';
+  if (!dateIso) return false;
+  return dateIso === new Date().toISOString().slice(0, 10);
 }
 
-function showGuestDailySolveUi(lv, catalogRes, placements) {
+function isGuestSession() {
+  return window.__tilezillaGuest?.isGuestUser?.();
+}
+
+function guestSolutionsFoundCount(catalogRes) {
+  if (catalogRes?.duplicate) return 1;
+  if (Number.isFinite(catalogRes?.index) || catalogRes?.bonus) return 1;
+  return 0;
+}
+
+function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
   window.__invalidSolve?.hide?.();
-  const outcome = processSolutionFound(lv, catalogRes, placements);
   setCheckMessage(outcome.msg, 'checkSuccess');
-  window.__tilezillaGuest?.showGuestDailyComplete?.(window.__tilezillaGuest?.getGuestCode?.());
+  const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+  const solutionsFoundTotal = guestSolutionsFoundCount(catalogRes);
+  const payload = catalogRes.duplicate
+    ? window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown)
+    : window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
+  payload.showAdvancePath = false;
+  payload.showFoundBook = false;
+  payload.showViewFound = false;
+  window.__discoveryRecord?.show?.(payload);
+  if (document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge') {
+    window.__tilezillaGuest?.trackGuestGameplay?.('Daily Challenge Solved', lv.id);
+  }
 }
 
 function processSolutionFound(lv, res, placements) {
@@ -2231,7 +2299,8 @@ function processSolutionFound(lv, res, placements) {
   }
 
   const exampleRouteViewed = hasViewedExampleRoute(lv.id);
-  const leaderboardEligible = !hasLeaderboardForfeit(lv.id);
+  const dailyLeaderboardEligible = isDailyLeaderboardEligible();
+  const leaderboardEligible = !hasLeaderboardForfeit(lv.id) && dailyLeaderboardEligible;
   const hintRewardEligible = !hasHintCompletionRewardForfeit(lv.id);
 
   let leaderboardSubmitted = false;
@@ -2281,6 +2350,11 @@ function processSolutionFound(lv, res, placements) {
     msg += ' Recorded for leaderboard.';
   } else if (!leaderboardEligible && exampleRouteViewed) {
     msg += ' Leaderboard ineligible (example route viewed).';
+  } else if (
+    document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge'
+    && !dailyLeaderboardEligible
+  ) {
+    msg += ' Past daily — not recorded on leaderboard.';
   }
   if (hintsUsed) {
     const n = Number(state.hintsUsedThisPuzzle) || 0;
@@ -3027,10 +3101,7 @@ function loadImageElement(src) {
 }
 
 function previewPlacementSortRank(tileRef) {
-  const id = tileId(tileRef);
-  if (id === 'SH') return 0;
-  if (id === 'ET') return 1;
-  return 2;
+  return paletteInstanceSortRank(tileRef) * 10 + paletteInstanceSubSortRank(tileRef);
 }
 
 function blockersForPreviewLevel(level) {
@@ -3967,8 +4038,9 @@ async function init(){
       const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
       if(catalogRes.duplicate){
         window.__invalidSolve?.hide?.();
-        if (isGuestDailySession()) {
-          showGuestDailySolveUi(lv, catalogRes, placements);
+        if (isGuestSession()) {
+          const outcome = processSolutionFound(lv, catalogRes, placements);
+          showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
           return;
         }
         renderFoundList(lv.id, knownSolutions);
@@ -3982,11 +4054,11 @@ async function init(){
       }
       if(Number.isFinite(catalogRes.index)){
         window.__invalidSolve?.hide?.();
-        if (isGuestDailySession()) {
-          showGuestDailySolveUi(lv, catalogRes, placements);
+        const outcome = processSolutionFound(lv, catalogRes, placements);
+        if (isGuestSession()) {
+          showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
           return;
         }
-        const outcome = processSolutionFound(lv, catalogRes, placements);
         setCheckMessage(outcome.msg, 'checkSuccess');
         renderFoundList(lv.id, knownSolutions);
         refreshLevelSelectOptionTexts();
@@ -4019,6 +4091,10 @@ async function init(){
       }
 
       const outcome = processSolutionFound(lv, catalogRes, placements);
+      if (isGuestSession()) {
+        showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
+        return;
+      }
       if(catalogRes.bonus) setCheckMessage(outcome.msg, 'checkBonus');
       else setCheckMessage(outcome.msg, 'checkSuccess');
       renderFoundList(lv.id, knownSolutions);
@@ -4247,6 +4323,7 @@ async function init(){
     applyGameplaySettings, buildPalette, getInventoryMismatch, boardAllowsHints,
     hintsRemainingThisPuzzle, consumeHintToken, consumeHintTokens,
     getGlobalHintTokens, grantHintTokens, getHintCost, canAffordHint, applyHint, isHintTile,
+    loadGlobalHintTokens,
     puzzleAttemptUsedHints, processSolutionFound, PUZZLE_TIME_BONUS_SECONDS,
     boardHasHintTiles,
     getMenuPuzzleInfo, getMenuFoundSolutions, getDevKnownSolutions: getMenuDevKnownSolutions,
@@ -4326,9 +4403,13 @@ async function init(){
   const savedUser = localStorage.getItem('snake_active_user_v1');
   const authMode = localStorage.getItem('tilezilla_auth_mode');
   const guestCode = localStorage.getItem('guest_code');
+  const registeredUserId = localStorage.getItem('tilezilla_user_id');
   if (authMode === 'guest' || (guestCode && /^Guest-TZ-A\d{4}-[A-Z]{2}$/.test(savedUser || guestCode))) {
     state.userId = savedUser || guestCode;
     state.hintTokens = 0;
+  } else if (authMode === 'registered' && registeredUserId) {
+    state.userId = registeredUserId;
+    state.hintTokens = loadGlobalHintTokens();
   } else {
     state.userId = (savedUser && typeof savedUser === 'string') ? savedUser : 'gar';
     state.hintTokens = loadGlobalHintTokens();
@@ -4336,7 +4417,11 @@ async function init(){
   progress.storageKey = `snake_progress_v1_${state.userId}`;
   progress.data = progress.load();
   if (authMode === 'guest' || /^Guest-TZ-A\d{4}-[A-Z]{2}$/.test(state.userId || '')) {
-    progress.data = {};
+    const encountered = readEncounteredTilesLocal(state.userId);
+    progress.data = encountered.length
+      ? { _intro: { encounteredTiles: encountered, seenTiles: encountered, seenTwoSnake: false } }
+      : {};
+    progress.guestSolveProgressDisabled = true;
     progress.save = () => {};
   }
   if(userSelect){

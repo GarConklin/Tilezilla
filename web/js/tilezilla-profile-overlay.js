@@ -4,6 +4,7 @@
 
 import {
   ACTIVE_USER_KEY,
+  getConvertedGuestCode,
   getGuestCode,
   isGuestUser,
   isRegisteredUser,
@@ -31,7 +32,15 @@ function refreshProfileFields() {
 
   if (isRegisteredUser()) {
     nameEl.textContent = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
-    if (guestNote) guestNote.hidden = true;
+    const converted = getConvertedGuestCode();
+    if (guestNote) {
+      if (converted) {
+        guestNote.hidden = false;
+        guestNote.textContent = `Former guest: ${converted}`;
+      } else {
+        guestNote.hidden = true;
+      }
+    }
     if (logoutBtn) logoutBtn.hidden = false;
     return;
   }
@@ -78,6 +87,9 @@ export async function openProfileOverlay() {
   await refreshProfilePassportStats({ root: overlayRoot || document });
   await ensureProfileOverlayLayout(document);
   openProfileOverlayPopup();
+  requestAnimationFrame(() => {
+    void ensureProfileOverlayLayout(document);
+  });
 }
 
 export function initProfileOverlay({
@@ -106,7 +118,7 @@ export function initProfileOverlay({
   $('profileOverlayNavAdventure')?.addEventListener('click', () => {
     if (isGuestUser()) {
       closeProfileOverlayPopup();
-      showLoginRequired();
+      showLoginRequired({ source: 'adventure' });
       return;
     }
     closeProfileOverlayPopup();
@@ -116,7 +128,7 @@ export function initProfileOverlay({
   $('profileOverlayNavRandom')?.addEventListener('click', () => {
     if (isGuestUser()) {
       closeProfileOverlayPopup();
-      showLoginRequired();
+      showLoginRequired({ source: 'random' });
       return;
     }
     closeProfileOverlayPopup();

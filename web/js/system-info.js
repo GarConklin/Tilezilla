@@ -48,6 +48,55 @@ export async function resolveLogoutRedirectUrl() {
   return getLogoutRedirectUrl(info);
 }
 
+export function formatPlayTime(totalSeconds) {
+  const seconds = Math.max(0, Number(totalSeconds) || 0);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m`;
+  if (seconds > 0) return `${seconds}s`;
+  return '0m';
+}
+
+export function formatStatNumber(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  return n.toLocaleString('en-US');
+}
+
+/** @returns {Promise<import('./system-info.js').SystemStats|null>} */
+export async function fetchSystemStats() {
+  const info = await fetchSystemInfo();
+  return info?.stats || null;
+}
+
+/**
+ * Fill passport stat slots from cached system_info stats (login / create / profile).
+ * @param {Document|HTMLElement} [root]
+ */
+export async function applySystemStatsToAuthScreen({ root = document } = {}) {
+  const stats = await fetchSystemStats();
+  if (!stats) return;
+
+  const body = root.body || document.body;
+  const isCreate = body.classList.contains('auth-screen--create');
+
+  const setSlot = (slot, text) => {
+    if (text == null) return;
+    root.querySelectorAll(`[data-profile-slot="${slot}"]`).forEach((el) => {
+      if (el.tagName === 'IMG') return;
+      el.textContent = text;
+    });
+  };
+
+  if (isCreate) {
+    setSlot('totalAdventurePuzzles', formatStatNumber(stats.totalAdventurePuzzles));
+    setSlot('ranksToEarn', formatStatNumber(stats.ranksToEarn));
+    setSlot('challengeGates', formatStatNumber(stats.challengeGates));
+    setSlot('totalKnownRoutes', formatStatNumber(stats.totalKnownRoutes));
+  }
+}
+
 export function renderMenuSystemInfo(info, root = document) {
   const el = root.getElementById('menuSystemInfo');
   if (!el) return;

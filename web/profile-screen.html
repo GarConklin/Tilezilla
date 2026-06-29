@@ -35,11 +35,14 @@
       draggable="false"
     />
     <p class="auth-screen__profile-name" id="profileName" data-profile-slot="profileName">Explorer</p>
+    <p class="auth-screen__profile-stat tz-profile-dialog__guest-note" data-profile-slot="guestNote" id="profileGuestNote" hidden>—</p>
     <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
       <div class="tz-preview-v2-user-data__badge-stack">
-        <img class="tz-preview-v2-user-data__badge" id="profileRankBadge" alt="" />
+        <div class="tz-rank-badge-stack">
+          <img class="tz-rank-badge__img" id="profileRankBadge" alt="" />
+          <img class="tz-rank-sublevel__img" id="profileSublevelIcon" alt="" />
+        </div>
       </div>
-      <img class="tz-preview-v2-user-data__sublevel" id="profileSublevelIcon" alt="" />
     </div>
     <p class="auth-screen__profile-stat" data-profile-slot="adventureProgress" id="profileAdventureProgress">—</p>
     <p class="auth-screen__profile-stat" data-profile-slot="routesDiscovered" id="profileRoutes">—</p>
@@ -72,26 +75,24 @@
   </div>
   <script type="module" src="./js/auth-screen-init.js?v=20250627"></script>
   <script type="module">
-    import {
-      ACTIVE_USER_KEY,
-      isRegisteredUser,
-      logoutRegisteredUser,
-    } from './js/tilezilla-guest.js';
+    import { ACTIVE_USER_KEY, logoutRegisteredUser } from './js/tilezilla-guest.js';
+    import { syncAuthFromServer } from './js/tilezilla-auth.js';
     import { refreshProfilePassportStats } from './js/profile-passport-data.js';
 
-    if (!isRegisteredUser()) {
-      window.location.replace('/login-screen.html');
+    const auth = await syncAuthFromServer({ requireRegistered: true });
+    if (auth.mode === 'redirect') {
+      /* navigation handled by syncAuthFromServer */
+    } else {
+      const name = auth.user?.username || localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
+      const nameEl = document.getElementById('profileName');
+      if (nameEl) nameEl.textContent = name;
+
+      void refreshProfilePassportStats();
+
+      document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        void logoutRegisteredUser();
+      });
     }
-
-    const name = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
-    const nameEl = document.getElementById('profileName');
-    if (nameEl) nameEl.textContent = name;
-
-    void refreshProfilePassportStats();
-
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      void logoutRegisteredUser();
-    });
   </script>
 </body>
 </html>

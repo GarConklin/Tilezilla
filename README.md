@@ -35,7 +35,9 @@ The script prints a **LAN URL** (e.g. `http://192.168.1.42:8080`). Open that on 
 | `.\scripts\start-remote-test.ps1` | Start stack |
 | `.\scripts\start-remote-test.ps1 -Port 9080 -OpenFirewall` | Custom port + firewall rule |
 | `.\scripts\stop-remote-test.ps1` | Stop containers (keeps DB volume) |
-| `.\scripts\stop-remote-test.ps1 -RemoveVolumes` | Stop and wipe MySQL data |
+| `.\scripts\stop-remote-test.ps1 -RemoveVolumes` | Stop and **wipe all accounts** (shared volume) |
+
+**MySQL persistence:** Both `docker compose up` and the remote-test stack use the same Docker volume **`tilezilla_shared_mysql_data`**. Switching stacks does not delete accounts. Data is only lost if you run `docker volume rm tilezilla_shared_mysql_data` or `stop-remote-test.ps1 -RemoveVolumes`. After upgrading from older setups, run `.\scripts\ensure-shared-mysql-volume.ps1` once to copy legacy account data into the shared volume.
 
 **Guest play** works without login. With `-SeedUsers`, dev accounts `gar` / `gar` and `Arn` / `arn` are seeded (requires game catalog import for full registered play).
 

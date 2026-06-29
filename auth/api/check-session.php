@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 session_start();
 
 require_once __DIR__ . '/../src/AuthManager.php';
+require_once __DIR__ . '/../src/GuestManager.php';
 $config = require __DIR__ . '/../config/config.php';
 
 try {
@@ -22,8 +23,7 @@ try {
     $conn->close();
 
     if (!$user) {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'authenticated' => false]);
+        echo json_encode(['success' => true, 'authenticated' => false]);
         exit;
     }
 
@@ -36,6 +36,7 @@ try {
             'email' => $user['email'],
             'paid' => (bool)$user['paid'],
             'player_name' => $user['player_name'] ?? $user['username'],
+            'guest_code' => GuestManager::normalizeGuestCode($user['guest_code'] ?? '') ?: null,
         ],
     ]);
 } catch (Exception $e) {

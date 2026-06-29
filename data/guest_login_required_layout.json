@@ -1,0 +1,53 @@
+{
+  "dialog": {
+    "artW": 1024,
+    "artH": 1024,
+    "baseSrc": "/img/GuestLoginRequired.png",
+    "displayPad": 32,
+    "maxDesignWidth": 390,
+    "widthScale": 0.92
+  },
+  "buttons": {
+    "create": "/img/Create-Passport.png",
+    "login": "/img/IHaveAPassport.png",
+    "cancel": "/img/ContinueAsGuest.png"
+  },
+  "items": {
+    "message": {
+      "x": 11,
+      "y": 24,
+      "w": 78,
+      "h": 22,
+      "fontScale": 1,
+      "hidden": false
+    },
+    "create": {
+      "x": 9.6,
+      "y": 57.8,
+      "w": 80.4,
+      "h": 11,
+      "hidden": false
+    },
+    "login": {
+      "x": 9.5,
+      "y": 69,
+      "w": 81.1,
+      "h": 11.6,
+      "hidden": false
+    },
+    "cancel": {
+      "x": 9.4,
+      "y": 80.8,
+      "w": 80.7,
+      "h": 9.8,
+      "hidden": false
+    },
+    "close": {
+      "x": 88.6,
+      "y": 6.6,
+      "w": 10.8,
+      "h": 8.8,
+      "hidden": true
+    }
+  }
+}

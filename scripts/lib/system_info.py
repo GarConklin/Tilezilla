@@ -78,7 +78,15 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
                     creation_date,
                     product_name,
                     environment,
-                    extra_json
+                    extra_json,
+                    stats_updated_at,
+                    registered_users,
+                    total_play_seconds,
+                    total_adventure_puzzles,
+                    total_known_routes,
+                    largest_solution,
+                    ranks_to_earn,
+                    challenge_gates
                 FROM system_info
                 WHERE id = 1
                 LIMIT 1
@@ -103,6 +111,15 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
                 info["extra"] = extra
                 if extra.get("logoutRedirectUrl") and not info.get("logoutRedirectUrl"):
                     info["logoutRedirectUrl"] = str(extra["logoutRedirectUrl"]).strip()
+        if info:
+            try:
+                from lib.system_stats import normalize_stats
+
+                stats = normalize_stats(row)
+                if stats:
+                    info["stats"] = stats
+            except Exception:
+                pass
         return info
     except Exception:
         return None

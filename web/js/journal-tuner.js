@@ -1214,6 +1214,14 @@ function onWheel(e) {
   /* MOVE */
   const posStep = stepForEvent(e, POS_FINE, POS_MED, POS_LARGE);
   const nudgeStep = stepForEvent(e, NUDGE_FINE, NUDGE_MED, NUDGE_LARGE);
+  if (meta.kind === 'titleBarChild' && e.shiftKey) {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      patchItem(currentItem, { nudgeX: (item.nudgeX ?? 0) + (e.deltaX > 0 ? nudgeStep : -nudgeStep) }, live);
+    } else {
+      patchItem(currentItem, { nudgeY: (item.nudgeY ?? 0) - dir * nudgeStep }, live);
+    }
+    return;
+  }
   if (e.shiftKey) {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       patchItem(currentItem, { nudgeX: (item.nudgeX ?? 0) + (e.deltaX > 0 ? nudgeStep : -nudgeStep) }, live);

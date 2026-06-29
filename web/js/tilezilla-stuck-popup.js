@@ -20,6 +20,8 @@ import {
 
 } from './stuck-reveal-layout.js';
 
+import { isRestrictedFeature } from './tilezilla-guest.js';
+
 
 
 const STUCK_CONFIRM_ART = { w: 1379, h: 1098 };
@@ -176,6 +178,30 @@ let revealLayoutCache = null;
 
 
 
+async function ensureRevealLayoutApplied() {
+
+  if (!revealLayoutCache) {
+
+    try {
+
+      revealLayoutCache = await loadStuckRevealLayout();
+
+    } catch {
+
+      revealLayoutCache = null;
+
+    }
+
+  }
+
+  applyStuckRevealLayout(revealLayoutCache);
+
+  return revealLayoutCache;
+
+}
+
+
+
 function $(id) {
 
   return document.getElementById(id);
@@ -262,6 +288,8 @@ function setStep(step) {
 
   const frame = document.querySelector('.tz-stuck-dialog__frame');
 
+  const dialog = document.querySelector('.tz-stuck-dialog');
+
 
 
   if (previewWrap) previewWrap.hidden = !isPreview;
@@ -271,6 +299,8 @@ function setStep(step) {
   if (closeBtn) closeBtn.hidden = !isPreview;
 
   frame?.classList.toggle('is-preview', isPreview);
+
+  dialog?.classList.toggle('is-reveal', isPreview);
 
 
 
@@ -464,19 +494,7 @@ async function renderStuckPreview(app) {
 
 
 
-  if (!revealLayoutCache) {
-
-    try {
-
-      revealLayoutCache = await loadStuckRevealLayout();
-
-    } catch {
-
-      revealLayoutCache = null;
-
-    }
-
-  }
+  await ensureRevealLayoutApplied();
 
   const previewLayout = getStuckRevealItemLayout('preview', revealLayoutCache);
 
@@ -596,6 +614,8 @@ async function showStuckPreview() {
 
 
 
+  await ensureRevealLayoutApplied();
+
   setStep('preview');
 
   const ok = await renderStuckPreview(app);
@@ -619,6 +639,7 @@ async function showStuckPreview() {
 
 
 export async function openStuckFlow() {
+  if (isRestrictedFeature('stuck')) return;
 
   const app = getApp();
 
@@ -658,9 +679,7 @@ export async function initStuckPopup({ getApp: getAppFn, menuApi: menu }) {
 
   try {
 
-    revealLayoutCache = await loadStuckRevealLayout();
-
-    applyStuckRevealLayout(revealLayoutCache);
+    await ensureRevealLayoutApplied();
 
   } catch (err) {
 
