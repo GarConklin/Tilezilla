@@ -10,7 +10,15 @@ import {
 
   applyStuckRevealLayout,
 
+  applyStuckRevealItemPositions,
+
+  fitStuckRevealDialog,
+
+  getStuckRevealDialogLayout,
+
   getStuckRevealItemLayout,
+
+  isStuckRevealTunerPage,
 
   loadStuckRevealLayout,
 
@@ -184,7 +192,7 @@ async function ensureRevealLayoutApplied() {
 
     try {
 
-      revealLayoutCache = await loadStuckRevealLayout();
+      revealLayoutCache = await loadStuckRevealLayout({ fromDisk: !isStuckRevealTunerPage() });
 
     } catch {
 
@@ -242,36 +250,71 @@ function clearPreviewCanvas() {
 
 
 
+function clearRevealInlinePositions() {
+
+  for (const el of document.querySelectorAll(
+
+    '.tz-stuck-dialog__preview, .tz-stuck-dialog__btn--keep, .tz-stuck-dialog__btn--close',
+
+  )) {
+
+    el.style.removeProperty('left');
+
+    el.style.removeProperty('top');
+
+    el.style.removeProperty('width');
+
+    el.style.removeProperty('height');
+
+    el.style.removeProperty('transform');
+
+  }
+
+}
+
+
+
 function fitStuckDialog() {
-
   const dialog = document.querySelector('.tz-stuck-dialog');
-
   const root = $('stuckPopupRoot');
-
   if (!dialog || !root || root.hidden) return;
 
+  const { h: rootH, v: rootV } = stuckRootPadding();
 
+  let previewPaneWidth = 0;
+  const previewSection = document.querySelector('.tz-preview-section');
+  if (previewSection) {
+    const w = previewSection.getBoundingClientRect().width;
+    if (w > 0) previewPaneWidth = w;
+  }
+
+  if (isStuckPreviewStep()) {
+    const revealDialog = getStuckRevealDialogLayout(revealLayoutCache);
+    fitStuckRevealDialog(dialog, {
+      previewPaneWidth,
+      layoutRatio: revealDialog.previewWidthRatio,
+      artW: revealDialog.artW,
+      artH: revealDialog.artH,
+      maxViewportWidth: window.innerWidth,
+      maxViewportHeight: window.innerHeight,
+      displayPad: stuckDisplayPad(),
+      rootPaddingH: rootH,
+      rootPaddingV: rootV,
+    });
+    if (revealLayoutCache) applyStuckRevealItemPositions(revealLayoutCache);
+    return;
+  }
 
   const { w: artW, h: artH } = stuckArtSize();
-
   const vw = stuckMaxDialogWidth();
-
   const vh = stuckMaxDialogHeight();
-
   const wFromHeight = (vh * artW) / artH;
-
   const w = Math.floor(Math.min(stuckMaxWidth(), vw, wFromHeight));
-
   const h = Math.floor((w * artH) / artW);
 
-
-
   dialog.style.width = `${w}px`;
-
   dialog.style.height = `${h}px`;
-
   dialog.style.aspectRatio = 'auto';
-
 }
 
 
@@ -305,6 +348,8 @@ function setStep(step) {
 
 
   if (!isPreview) clearPreviewCanvas();
+
+  if (!isPreview) clearRevealInlinePositions();
 
   fitStuckDialog();
 
@@ -693,7 +738,7 @@ export async function initStuckPopup({ getApp: getAppFn, menuApi: menu }) {
 
     try {
 
-      revealLayoutCache = await reloadStuckRevealLayout();
+      revealLayoutCache = await reloadStuckRevealLayout({ fromDisk: !isStuckRevealTunerPage() });
 
       applyStuckRevealLayout(revealLayoutCache);
 

@@ -290,7 +290,11 @@ export function initAuthScreenTuner(screenKey, root = document) {
   function formatReadout(key) {
     if (key === DIALOG_ITEM) {
       const d = workingLayout[screenKey].dialog;
-      return ['<strong>Passport frame</strong>', `maxWidth: ${d.maxWidth ?? 420}px`].join('<br />');
+      return [
+        '<strong>Passport frame</strong>',
+        `maxWidth: ${d.maxWidth ?? 390}px`,
+        '<span style="font-size:0.65rem;color:#a8b8b4">390px = full mobile width · wheel to adjust</span>',
+      ].join('<br />');
     }
     const box = getAuthScreenItemLayout(screenKey, key, workingLayout);
     const meta = def.items[key];
@@ -382,7 +386,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
     wrap.className = `auth-screen auth-screen--${screenKey}`;
     art.src = def.art;
     const previewTitle = root.getElementById('previewTitle');
-    if (previewTitle) previewTitle.textContent = `Preview — ${def.label}`;
+    if (previewTitle) previewTitle.textContent = `Preview — 390×844 mobile · ${def.label}`;
     overlay.innerHTML = '';
     if (hitsOutside) hitsOutside.innerHTML = '';
     frame.querySelectorAll('.tuner-box[data-item]').forEach((el) => el.remove());
@@ -410,7 +414,8 @@ export function initAuthScreenTuner(screenKey, root = document) {
       } else if (screenKey === 'profile') {
         // Match live profile-screen.html — stats sit directly on the stage.
         frame.appendChild(box);
-      } else if (key === 'secondary') {
+      } else if (key === 'secondary' || ((screenKey === 'login' || screenKey === 'create') && meta.slot)) {
+        // Match live login/create — journal stats on stage, not inside the form overlay.
         frame.appendChild(box);
       } else if (outside.has(key) && hitsOutside) {
         if (viewport && hitsOutside.parentElement !== viewport) {
@@ -500,6 +505,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
     if (screenKey === 'profile') {
       applyProfileOverlayLayout(workingLayout, root);
     } else {
+      applyAuthScreenLayout(workingLayout, screenKey, root.documentElement);
       applyAuthScreenLayout(workingLayout, screenKey, layoutTarget());
     }
     applyTunerBoxPositions();
@@ -554,7 +560,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
     const dir = e.deltaY < 0 ? 1 : -1;
     if (currentItem === DIALOG_ITEM) {
       const d = workingLayout[screenKey].dialog;
-      patchDialog({ maxWidth: Math.max(280, Math.min(520, (d.maxWidth ?? 420) + dir * 4)) });
+      patchDialog({ maxWidth: Math.max(280, Math.min(430, (d.maxWidth ?? 390) + dir * 4)) });
       return;
     }
     const box = getAuthScreenItemLayout(screenKey, currentItem, workingLayout);

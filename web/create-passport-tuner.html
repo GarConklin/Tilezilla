@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/auth-screen.css" />
   <link rel="stylesheet" href="css/auth-screen-tuner-page.css" />
   <link rel="stylesheet" href="css/auth-screen-tuner.css" />
+  <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body>
   <h1>Create passport tuner</h1>
@@ -46,7 +47,7 @@
         <button type="button" class="btn" id="restoreHitBtn">Restore in game</button>
       </div>
       <ul class="keys">
-        <li><strong>Frame</strong> — wheel: max width px</li>
+        <li><strong>Frame</strong> — wheel: max width px (390 = full mobile width)</li>
         <li><strong>Fields</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H</li>
         <li><strong>Delete / Backspace</strong> — hide field in game · <strong>R</strong> — restore</li>
         <li><strong>Tab</strong> — cycle selection</li>
@@ -82,7 +83,7 @@
     </div>
   </div>
   <script type="module">
-    import { initAuthScreenTuner } from './js/auth-screen-tuner.js?v=20250629';
+    import { initAuthScreenTuner } from './js/auth-screen-tuner.js?v=20250630';
     initAuthScreenTuner('create');
   </script>
 </body>

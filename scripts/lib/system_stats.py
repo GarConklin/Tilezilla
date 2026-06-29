@@ -109,7 +109,6 @@ def sum_play_seconds(conn_tile) -> int:
 
 
 def compute_system_stats() -> dict[str, Any]:
-    words_db = os.environ.get("WORDS_DB_NAME", "WordsOnline")
     stats = {
         "registered_users": 0,
         "total_play_seconds": 0,
@@ -125,18 +124,9 @@ def compute_system_stats() -> dict[str, Any]:
         catalog = count_adventure_catalog(conn_tile)
         stats.update(catalog)
         stats["total_play_seconds"] = sum_play_seconds(conn_tile)
+        stats["registered_users"] = count_registered_users(conn_tile)
     finally:
         conn_tile.close()
-
-    try:
-        conn_words = _mysql_connect(words_db)
-    except Exception:
-        return stats
-
-    try:
-        stats["registered_users"] = count_registered_users(conn_words)
-    finally:
-        conn_words.close()
 
     return stats
 

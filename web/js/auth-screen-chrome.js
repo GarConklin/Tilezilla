@@ -16,7 +16,13 @@ export function applyAuthScreenChrome(layout, target = document.documentElement)
   target.style.setProperty('--auth-chrome-title-y', `${title.y}%`);
   target.style.setProperty('--auth-chrome-title-w', `${title.w}%`);
   target.style.setProperty('--auth-chrome-title-h', `${title.h}%`);
+  const topFrac = board.y / 100;
   target.style.setProperty('--auth-chrome-stage-top', `${board.y}%`);
+  target.style.setProperty('--auth-chrome-stage-top-frac', String(topFrac));
+  target.style.setProperty(
+    '--auth-passport-avail-h',
+    `calc(100dvh - 100dvh * ${topFrac} - max(8px, env(safe-area-inset-bottom, 0px)))`,
+  );
 }
 
 export async function initAuthScreenChrome({ force = false } = {}) {

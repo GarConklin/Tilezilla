@@ -2,22 +2,13 @@
 header('Content-Type: application/json');
 session_start();
 
+require_once __DIR__ . '/../src/Db.php';
 require_once __DIR__ . '/../src/AuthManager.php';
 require_once __DIR__ . '/../src/GuestManager.php';
 $config = require __DIR__ . '/../config/config.php';
 
 try {
-    $conn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
-    );
-
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed");
-    }
-
+    $conn = Db::connect($config);
     $authManager = new AuthManager($conn);
     $user = $authManager->verifySession();
     $conn->close();

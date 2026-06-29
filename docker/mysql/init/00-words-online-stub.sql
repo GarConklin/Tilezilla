@@ -1,5 +1,5 @@
--- Minimal WordsOnline schema for self-contained remote / LAN test auth.
--- Production uses the shared Words Online database.
+-- Legacy WordsOnline stub for upgrading old volumes (migrate-auth-to-tilegame.sql copies into tilegame).
+-- New installs: accounts are created directly in tilegame.users (see 16-tilegame-auth-users.sql).
 
 CREATE DATABASE IF NOT EXISTS WordsOnline
   CHARACTER SET utf8mb4

@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 $config = require __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../src/Db.php';
 
 try {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -20,19 +21,10 @@ try {
         exit;
     }
 
-    $conn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
-    );
-
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed");
-    }
+    $conn = Db::connect($config);
 
     $stmt = $conn->prepare(
-        "SELECT id FROM users WHERE password_reset_token = ? AND password_reset_expires > NOW()"
+        "SELECT user_id FROM users WHERE password_reset_token = ? AND password_reset_expires > NOW()"
     );
     $stmt->bind_param("s", $token);
     $stmt->execute();
@@ -45,13 +37,14 @@ try {
     }
 
     $user = $result->fetch_assoc();
+    $userId = (int)$user['user_id'];
     $stmt->close();
 
     $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
     $stmt = $conn->prepare(
-        "UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?"
+        "UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE user_id = ?"
     );
-    $stmt->bind_param("si", $passwordHash, $user['id']);
+    $stmt->bind_param("si", $passwordHash, $userId);
     $stmt->execute();
     $stmt->close();
     $conn->close();

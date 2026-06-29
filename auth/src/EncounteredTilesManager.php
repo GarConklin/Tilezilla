@@ -3,6 +3,7 @@
  * Persist tile types a player has seen in puzzle bags (registered + guest).
  */
 
+require_once __DIR__ . '/Db.php';
 require_once __DIR__ . '/GuestManager.php';
 
 class EncounteredTilesManager {
@@ -11,7 +12,7 @@ class EncounteredTilesManager {
     private $hasGuestTable = null;
 
     public function __construct(array $config) {
-        $this->gameConn = $this->connect($config['game_db'] ?? []);
+        $this->gameConn = Db::connect($config);
     }
 
     public function __destruct() {
@@ -142,21 +143,6 @@ class EncounteredTilesManager {
             $out[$id] = true;
         }
         return array_keys($out);
-    }
-
-    private function connect(array $dbConfig) {
-        $conn = @new mysqli(
-            $dbConfig['host'] ?? 'localhost',
-            $dbConfig['username'] ?? '',
-            $dbConfig['password'] ?? '',
-            $dbConfig['database'] ?? ''
-        );
-        if ($conn->connect_error) {
-            error_log('EncounteredTilesManager DB connect failed: ' . $conn->connect_error);
-            return null;
-        }
-        $conn->set_charset('utf8mb4');
-        return $conn;
     }
 
     private function ensureRegisteredTable() {

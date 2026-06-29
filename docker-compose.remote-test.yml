@@ -67,7 +67,7 @@ services:
       DB_HOST: mysql
       DB_USER: ${MYSQL_USER:-tilegame}
       DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
-      DB_NAME: WordsOnline
+      DB_NAME: ${MYSQL_DATABASE:-tilegame}
       GAME_DB_HOST: mysql
       GAME_DB_USER: ${MYSQL_USER:-tilegame}
       GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}

@@ -6,7 +6,7 @@
   Plain docker-compose.yml and docker-compose.remote-test.yml both mount
   tilezilla_shared_mysql_data on container garz-puzzle-mysql.
 
-  On first run, if the shared volume is missing or has no WordsOnline users,
+  On first run, if the shared volume is missing or has no tilegame login accounts,
   copies data from the best legacy volume (prefers remote-test volumes that
   contain registered accounts).
 
@@ -39,7 +39,7 @@ function Test-DockerVolumeExists([string]$Name) {
   }
 }
 
-function Get-WordsOnlineUserCount([string]$VolumeName) {
+function Get-TilegameUserCount([string]$VolumeName) {
   if (-not (Test-DockerVolumeExists $VolumeName)) {
     return -1
   }
@@ -65,7 +65,7 @@ function Get-WordsOnlineUserCount([string]$VolumeName) {
       if ($LASTEXITCODE -eq 0) { break }
     } while ((Get-Date) -lt $deadline)
 
-    $sql = "SELECT COUNT(*) FROM WordsOnline.users;"
+    $sql = "SELECT COUNT(*) FROM tilegame.users;"
     $raw = docker exec $cid mysql -uroot -proot_dev_change_me -N -e $sql 2>$null
     if ($LASTEXITCODE -ne 0) {
       return 0
@@ -93,13 +93,13 @@ function Copy-DockerVolume([string]$From, [string]$To) {
 Write-Host "Checking shared MySQL volume: $SharedVolume" -ForegroundColor Cyan
 
 $sharedExists = Test-DockerVolumeExists $SharedVolume
-$sharedUsers = if ($sharedExists) { Get-WordsOnlineUserCount $SharedVolume } else { -1 }
+$sharedUsers = if ($sharedExists) { Get-TilegameUserCount $SharedVolume } else { -1 }
 
 $bestLegacy = $null
 $bestLegacyUsers = -1
 foreach ($legacy in $LegacyVolumes) {
   if (-not (Test-DockerVolumeExists $legacy)) { continue }
-  $count = Get-WordsOnlineUserCount $legacy
+  $count = Get-TilegameUserCount $legacy
   Write-Host "  legacy $legacy -> login accounts = $count"
   if ($count -gt $bestLegacyUsers) {
     $bestLegacy = $legacy
@@ -127,7 +127,7 @@ if ($needCopy) {
   }
   else {
     Copy-DockerVolume -From $bestLegacy -To $SharedVolume
-    $sharedUsers = Get-WordsOnlineUserCount $SharedVolume
+    $sharedUsers = Get-TilegameUserCount $SharedVolume
     Write-Host "Shared volume ready: $sharedUsers login accounts." -ForegroundColor Green
   }
 }

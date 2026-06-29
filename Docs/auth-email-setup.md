@@ -1,25 +1,26 @@
 # Tilezilla — Auth & Email Setup
 
-Tilezilla uses the **same Skifflake mail server and user accounts** as Words Online. No second email server is required.
+Tilezilla stores **accounts in `tilegame.users`**. Outbound email uses the **Words Online mail relay** only (no WordsOnline account database).
 
 ## Architecture
 
 ```
 Browser  →  Tilezilla PHP (auth/api/*.php)
               ↓
-         WordsOnline MySQL (users table — shared accounts)
+         tilegame MySQL (users table — register, login, verify)
               ↓
          PHP mail()  →  sendmail  →  mailserver:587  →  words_mailserver
 ```
 
 | Layer | Location | Purpose |
 |-------|----------|---------|
-| Mail relay | `words_mailserver` on Docker network `words_network` | Postfix, hostname `mailserver` |
-| Auth DB | `WordsOnline.users` | Register, login, email verification |
-| Game DB | `tilegame` | Progress, hints, daily challenges (`tile_profiles`, etc.) |
+| Mail relay | `words_mailserver` on Docker network `words_network` | Postfix SMTP only |
+| Accounts | `tilegame.users` | Register, login, email verification, guest_code |
+| Game data | `tilegame` | Levels, hints, daily, `tile_profiles`, progress |
 | Auth code | `auth/` in this repo | PHP API + login/register pages |
-| Static game | `web/` + Python `scripts/server.py` | Gameplay (port 8081 by default) |
-| Auth web | `docker-compose.auth.yml` → port 8081 | PHP/Apache auth service |
+| Static game | `web/` + Python `scripts/server.py` | Gameplay (port 8080 dev stack) |
+
+**Upgrading from WordsOnline accounts:** run `.\scripts\migrate-auth-to-tilegame.ps1` once (preserves user ids).
 
 ## Quick start (production server)
 

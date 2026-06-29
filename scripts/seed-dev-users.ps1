@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Seed dev users Gar (newbie) and Arn (Adventure L4-1) into tilegame + WordsOnline.
+  Seed dev users Gar (newbie) and Arn (Adventure L4-1) into tilegame.
 
 .DESCRIPTION
   Gar  — username gar, password gar, all stats 0, Adventure L1-1
@@ -10,20 +10,13 @@
     docker compose up -d mysql
     .\scripts\import-catalog-to-mysql.ps1
     .\scripts\import-adventure-map.ps1
-
-  Optional (login via auth service):
-    Words Online stack on words_network + docker compose -f docker-compose.auth.yml up -d
+    For existing volumes with WordsOnline accounts: .\scripts\migrate-auth-to-tilegame.ps1
 
 .EXAMPLE
   .\scripts\seed-dev-users.ps1
-
-.EXAMPLE
-  .\scripts\seed-dev-users.ps1 -TilegameOnly
 #>
 param(
   [string]$RepoRoot = "",
-
-  [switch]$TilegameOnly,
 
   [switch]$DryRun
 )
@@ -82,29 +75,6 @@ Invoke-MysqlFile `
   -ComposeFile $composeTile `
   -Service "mysql" `
   -SqlPath (Join-Path $RepoRoot "scripts\seed-dev-users.sql")
-
-if (-not $TilegameOnly) {
-  Write-Step "Seed WordsOnline auth accounts (optional login)"
-  $wordsContainer = (& docker ps --filter "name=words_db" --format "{{.Names}}" 2>$null | Select-Object -First 1)
-
-  if (-not $wordsContainer) {
-    Write-Host "words_db container not running — skipped WordsOnline seed." -ForegroundColor Yellow
-    Write-Host "Game DB users are ready. For login, start Words Online then re-run this script." -ForegroundColor Yellow
-  }
-  else {
-    $wordsSql = Join-Path $RepoRoot "scripts\seed-dev-words-users.sql"
-    if ($DryRun) {
-      Write-Host "mysql <seed-dev-words-users.sql (dry run — skipped)" -ForegroundColor Yellow
-    }
-    else {
-      Get-Content -Raw -Encoding UTF8 $wordsSql | docker exec -i $wordsContainer `
-        mysql -uwordsgame -pwordspass123 WordsOnline
-      if ($LASTEXITCODE -ne 0) {
-        throw "WordsOnline seed failed (exit $LASTEXITCODE)"
-      }
-    }
-  }
-}
 
 Write-Step "Done"
 Write-Host @"

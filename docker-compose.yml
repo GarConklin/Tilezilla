@@ -28,6 +28,8 @@ services:
       dockerfile: docker/php/Dockerfile.remote
     container_name: tilezilla_auth
     restart: unless-stopped
+    ports:
+      - "${AUTH_PORT:-8090}:80"
     expose:
       - "80"
     volumes:
@@ -39,7 +41,7 @@ services:
       DB_HOST: mysql
       DB_USER: ${MYSQL_USER:-tilegame}
       DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
-      DB_NAME: WordsOnline
+      DB_NAME: ${MYSQL_DATABASE:-tilegame}
       GAME_DB_HOST: mysql
       GAME_DB_USER: ${MYSQL_USER:-tilegame}
       GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}

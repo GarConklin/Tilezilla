@@ -1,5 +1,11 @@
 /* Shared auth screen tuner chrome */
 
+.auth-screen-tuner-page {
+  --tz-profile-max-design-width: min(100%, 390px);
+  --auth-tuner-mobile-w: 390px;
+  --auth-tuner-mobile-h: 844px;
+}
+
 .auth-screen-tuner-page .auth-screen {
   min-height: auto;
   padding: 0;
@@ -9,13 +15,11 @@
   position: relative;
 }
 
-/* Logged-in tuner — match live passport art fill (object-fit: contain in stage) */
 .auth-screen-tuner-page .auth-screen--login .auth-screen__art,
 .auth-screen-tuner-page .auth-screen--create .auth-screen__art {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
   user-select: none;
   pointer-events: none;
 }
@@ -55,11 +59,11 @@
 
 .auth-screen-tuner-page .auth-screen__viewport {
   position: relative;
-  width: min(100%, 390px);
+  width: var(--auth-tuner-mobile-w);
+  max-width: 100%;
+  height: var(--auth-tuner-mobile-h);
+  max-height: min(var(--auth-tuner-mobile-h), calc(100dvh - 120px));
   margin: 0 auto;
-  aspect-ratio: 390 / 844;
-  min-height: 520px;
-  max-height: min(844px, 88dvh);
 }
 
 .auth-screen-tuner-page .auth-screen__title {
@@ -83,11 +87,15 @@
   bottom: auto;
   margin: 0;
   z-index: 2;
-  --auth-passport-avail-h: calc(100% - var(--auth-chrome-stage-top, 7.7%) - 8px);
+  --auth-passport-avail-h: calc(
+    var(--auth-tuner-mobile-h) - var(--auth-tuner-mobile-h) * var(--auth-chrome-stage-top-frac, 0.077)
+      - max(8px, env(safe-area-inset-bottom, 0px))
+  );
   max-height: var(--auth-passport-avail-h);
   width: min(
     100%,
-    var(--auth-login-max-width, 420px),
+    var(--tz-profile-max-design-width),
+    var(--auth-login-max-width, 390px),
     calc(var(--tz-profile-art-w) * 1px),
     calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
@@ -97,7 +105,8 @@
 .auth-screen-tuner-page .auth-screen--create .auth-screen__stage {
   width: min(
     100%,
-    var(--auth-create-max-width, 420px),
+    var(--tz-profile-max-design-width),
+    var(--auth-create-max-width, 390px),
     calc(var(--tz-profile-art-w) * 1px),
     calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );

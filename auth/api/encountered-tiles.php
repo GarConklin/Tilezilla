@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 session_start();
 
+require_once __DIR__ . '/../src/Db.php';
 require_once __DIR__ . '/../src/AuthManager.php';
 require_once __DIR__ . '/../src/GuestManager.php';
 require_once __DIR__ . '/../src/EncounteredTilesManager.php';
@@ -12,18 +13,10 @@ try {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     if ($method === 'GET') {
-        $authConn = new mysqli(
-            $config['db']['host'],
-            $config['db']['username'],
-            $config['db']['password'],
-            $config['db']['database']
-        );
-        if ($authConn->connect_error) {
-            throw new Exception('Database connection failed');
-        }
-        $authManager = new AuthManager($authConn);
+        $conn = Db::connect($config);
+        $authManager = new AuthManager($conn);
         $user = $authManager->verifySession();
-        $authConn->close();
+        $conn->close();
 
         if ($user) {
             $tiles = $manager->listForUser($user['id']);
@@ -72,18 +65,10 @@ try {
         throw new Exception('tiles must be an array');
     }
 
-    $authConn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
-    );
-    if ($authConn->connect_error) {
-        throw new Exception('Database connection failed');
-    }
-    $authManager = new AuthManager($authConn);
+    $conn = Db::connect($config);
+    $authManager = new AuthManager($conn);
     $user = $authManager->verifySession();
-    $authConn->close();
+    $conn->close();
 
     if ($user) {
         $newly = $manager->recordForUser($user['id'], $tileIds);

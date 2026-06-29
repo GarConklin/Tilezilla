@@ -20,7 +20,7 @@
 
     <div class="tz-scale-host">
       <div class="tz-stage tz-ui-layer">
-        <section class="tz-load-screen" id="loadScreen" aria-label="Welcome to Tilezilla">
+        <section class="tz-load-screen tz-load-screen--with-carousel" id="loadScreen" aria-label="Welcome to Tilezilla">
           <div class="tz-load-screen__art-wrap">
             <img
               class="tz-load-screen__art"
@@ -30,17 +30,55 @@
               height="467"
               draggable="false"
             />
-            <div class="tz-load-screen__preview" aria-hidden="true" hidden>
-              <div class="tz-load-screen__preview-frame"></div>
-            </div>
             <button type="button" class="tz-load-screen__hit tz-load-screen__hit--guest" id="playGuestBtn" aria-label="Play as guest"></button>
             <button type="button" class="tz-load-screen__hit tz-load-screen__hit--login" id="loginBtn" aria-label="Login"></button>
+          </div>
+
+          <div class="tz-load-screen__carousel" data-load-carousel aria-label="Tilezilla intro">
+            <div class="tz-load-screen__carousel-viewport" data-load-carousel-viewport>
+              <div class="tz-load-screen__carousel-slide-wrap">
+                <img
+                  class="tz-load-screen__carousel-slide"
+                  data-load-carousel-slide
+                  alt=""
+                  draggable="false"
+                />
+              </div>
+              <button
+                type="button"
+                class="tz-load-screen__carousel-arrow tz-load-screen__carousel-arrow--prev"
+                data-load-carousel-prev
+                aria-label="Previous slide"
+              ></button>
+              <button
+                type="button"
+                class="tz-load-screen__carousel-arrow tz-load-screen__carousel-arrow--next"
+                data-load-carousel-next
+                aria-label="Next slide"
+              ></button>
+              <button
+                type="button"
+                class="tz-load-screen__carousel-play"
+                data-load-carousel-play
+                hidden
+                aria-label="Play demo video"
+              >
+                <span class="tz-load-screen__carousel-play-icon" aria-hidden="true"></span>
+              </button>
+            </div>
           </div>
         </section>
       </div>
     </div>
+
+    <div class="tz-load-screen__video-layer" id="loadVideoLayer" hidden>
+      <div class="tz-load-screen__video-dialog" role="dialog" aria-modal="true" aria-label="Demo video">
+        <button type="button" class="tz-load-screen__video-close" id="loadVideoClose" aria-label="Close video">×</button>
+        <video id="loadDemoVideo" class="tz-load-screen__video" controls playsinline preload="metadata"></video>
+      </div>
+    </div>
   </div>
 
-  <script type="module" src="js/tilezilla-load.js"></script>
+  <script type="module" src="js/tilezilla-load.js?v=20250630"></script>
 </body>
 </html>

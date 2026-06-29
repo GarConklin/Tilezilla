@@ -2,24 +2,24 @@
 // Copy to config.php (same folder). config.php should not be committed with real passwords.
 
 return [
-    // Shared Skifflake accounts (Words Online)
+    // Tilezilla accounts + game data (single MySQL database).
     'db' => [
-        'host' => getenv('DB_HOST') ?: 'words_db',
-        'username' => getenv('DB_USER') ?: 'wordsgame',
-        'password' => getenv('DB_PASS') ?: 'wordspass123',
-        'database' => getenv('DB_NAME') ?: 'WordsOnline',
+        'host' => getenv('DB_HOST') ?: 'mysql',
+        'username' => getenv('DB_USER') ?: 'tilegame',
+        'password' => getenv('DB_PASS') ?: 'tilegame_dev',
+        'database' => getenv('DB_NAME') ?: 'tilegame',
     ],
-    // Tilezilla game data (progress, hints) — optional at first
+    // Legacy alias — same as db.
     'game_db' => [
-        'host' => getenv('GAME_DB_HOST') ?: 'garz-puzzle-mysql',
-        'username' => getenv('GAME_DB_USER') ?: 'tilegame',
-        'password' => getenv('GAME_DB_PASS') ?: 'tilegame_dev',
-        'database' => getenv('GAME_DB_NAME') ?: 'tilegame',
+        'host' => getenv('GAME_DB_HOST') ?: getenv('DB_HOST') ?: 'mysql',
+        'username' => getenv('GAME_DB_USER') ?: getenv('DB_USER') ?: 'tilegame',
+        'password' => getenv('GAME_DB_PASS') ?: getenv('DB_PASS') ?: 'tilegame_dev',
+        'database' => getenv('GAME_DB_NAME') ?: getenv('DB_NAME') ?: 'tilegame',
     ],
     'app' => [
         'name' => getenv('APP_NAME') ?: 'Tilezilla',
         'from_email' => getenv('APP_FROM_EMAIL') ?: 'words@skifflakegames.com',
-        'base_url' => rtrim(getenv('APP_BASE_URL') ?: 'http://localhost:8081', '/'),
+        'base_url' => rtrim(getenv('APP_BASE_URL') ?: 'http://localhost:8080', '/'),
         'admin_notify_email' => getenv('APP_ADMIN_EMAIL') ?: 'gar@hotmail.ca',
     ],
 ];

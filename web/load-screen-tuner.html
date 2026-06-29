@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="tz-phone-preview load-screen-tuner-page">
+<html lang="en" class="load-screen-tuner-page">
 <head>
   <meta charset="utf-8" />
   <script src="js/dev-localhost-ipv4.js"></script>
@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; }
+    html.load-screen-tuner-page,
+    html.load-screen-tuner-page body {
+      overflow: auto;
+      height: auto;
+      min-height: 100%;
+    }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -29,6 +35,8 @@
       grid-template-columns: minmax(280px, 340px) 1fr;
       gap: 16px;
       align-items: start;
+      position: relative;
+      z-index: 1;
     }
     @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
     .panel {
@@ -62,6 +70,7 @@
       text-align: left;
     }
     .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    #carouselControls .btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
     .readout {
       margin: 0 0 10px;
       font-family: ui-monospace, monospace;
@@ -105,6 +114,7 @@
       resize: vertical;
     }
     .mock-stage {
+      position: relative;
       padding: 16px;
       border-radius: 10px;
       background: rgba(8, 20, 18, 0.72);
@@ -112,6 +122,14 @@
       touch-action: none;
       user-select: none;
       outline: none;
+      max-height: calc(100dvh - 48px);
+      overflow: auto;
+    }
+    .load-screen-tuner-page .mock-stage .tz-bg,
+    .load-screen-tuner-page .mock-stage .tz-bg__sky,
+    .load-screen-tuner-page .mock-stage .tz-bg__water {
+      position: absolute;
+      inset: 0;
     }
     .mock-stage:focus { border-color: #e8b923; }
     .load-screen-tuner-page .tz-app {
@@ -119,6 +137,8 @@
     }
     .load-screen-tuner-page .mock-stage .tz-app {
       margin: 0 auto;
+      min-height: calc(var(--tz-design-height) * var(--tz-ui-scale, 1));
+      justify-content: center;
     }
     .load-screen-tuner-page .tuner-box {
       background: rgba(100, 200, 255, 0.28) !important;
@@ -201,11 +221,13 @@
 <body>
   <h1>Load screen tuner</h1>
   <p class="lead">
-    Tune the <strong>Load-Screen.png</strong> fit/position, <strong>Play As Guest</strong>, and <strong>Login</strong>
-    hit areas (% of the art frame, not the full stage).
-    Background matches <code>tilezilla-v2.html</code> via <code>main_screen_v2_layout.json</code>.
-    Saves to <code>data/load_screen_layout.json</code>.
-    <a href="/dev-player-select.html">Dev tools</a> · <a href="/">Open index</a>
+    Tune the startup page (<code>index.html</code>): <strong>Load-Screen.png</strong> height,
+    <strong>Play As Guest</strong> / <strong>Login</strong> hit areas (% of the art frame),
+    and carousel <strong>← / →</strong> + <strong>play</strong> buttons (% of the carousel area below the art).
+    Background matches production via <code>main_screen_v2_layout.json</code>.
+    Saves to <code>data/load_screen_layout.json</code> — click <strong>Save now</strong> then hard-refresh
+    <a href="/">index.html</a> (Ctrl+Shift+R) so live matches the tuner.
+    <a href="/dev-player-select.html">Dev tools</a>
   </p>
 
   <div class="layout">
@@ -218,6 +240,14 @@
         <button type="button" class="btn" data-fit="cover">Art: cover</button>
         <button type="button" class="btn" data-position="top center">Top</button>
         <button type="button" class="btn" data-position="center center">Center</button>
+        <button type="button" class="btn" data-art-max-delta="-2">Top art −2%</button>
+        <button type="button" class="btn" data-art-max-delta="2">Top art +2%</button>
+      </div>
+      <div class="btn-row" id="carouselControls">
+        <span style="font-size:0.68rem;color:#a8b8b4;align-self:center;margin-right:4px;">Preview slide</span>
+        <button type="button" class="btn" data-carousel-slide="0">1</button>
+        <button type="button" class="btn" data-carousel-slide="1">2</button>
+        <button type="button" class="btn" data-carousel-slide="2">3</button>
       </div>
       <p class="readout" id="readout">—</p>
       <div class="nudge-grid" id="nudgeGrid">
@@ -233,7 +263,10 @@
         <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
       </div>
       <ul style="margin:8px 0 0;padding-left:1.1rem;font-size:0.65rem;color:#7a8a86;line-height:1.5;">
-        <li><strong>Art</strong> — drag box; wheel: fit · Shift+wheel: position</li>
+        <li><strong>Guest / Login</strong> — % of Load-Screen art frame · drag or nudge</li>
+        <li><strong>Carousel slide image</strong> — Wider/Narrower/Taller/Shorter = scale % (100 = natural fit)</li>
+        <li><strong>Carousel ← → play</strong> — % of carousel viewport below the art</li>
+        <li><strong>Art</strong> — wheel: fit · Shift+wheel: position · Top art ±2% adjusts max height</li>
         <li><strong>Buttons</strong> — wheel: X · Shift: Y · Ctrl: W · Alt+Ctrl: H · Tab: cycle</li>
       </ul>
       <div class="btn-row">
@@ -257,7 +290,7 @@
           </div>
           <div class="tz-scale-host">
             <div class="tz-stage tz-ui-layer">
-              <section class="tz-load-screen" id="mockLoadScreen">
+              <section class="tz-load-screen tz-load-screen--with-carousel" id="mockLoadScreen">
               <div class="tz-load-screen__art-wrap tuner-box" data-item="art">
                 <span class="hit-label">Art</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
@@ -284,6 +317,62 @@
                   <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
                 </button>
               </div>
+
+              <div class="tz-load-screen__carousel" data-load-carousel aria-label="Tilezilla intro">
+                <div class="tz-load-screen__carousel-viewport" data-load-carousel-viewport>
+                  <div
+                    class="tz-load-screen__carousel-slide-wrap tuner-box"
+                    data-item="carouselSlide"
+                  >
+                    <span class="hit-label">Slide</span>
+                    <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                    <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                    <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                    <img
+                      class="tz-load-screen__carousel-slide"
+                      data-load-carousel-slide
+                      src="/img/below%20start%20screen%201-3.png"
+                      alt=""
+                      draggable="false"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    class="tz-load-screen__carousel-arrow tz-load-screen__carousel-arrow--prev tuner-box"
+                    data-item="carouselPrev"
+                    aria-label="Previous slide"
+                  >
+                    <span class="hit-label">←</span>
+                    <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                    <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                    <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="tz-load-screen__carousel-arrow tz-load-screen__carousel-arrow--next tuner-box"
+                    data-item="carouselNext"
+                    aria-label="Next slide"
+                  >
+                    <span class="hit-label">→</span>
+                    <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                    <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                    <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="tz-load-screen__carousel-play tuner-box"
+                    data-item="carouselPlay"
+                    data-load-carousel-play
+                    aria-label="Play demo video"
+                  >
+                    <span class="hit-label">Play</span>
+                    <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                    <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                    <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                    <span class="tz-load-screen__carousel-play-icon" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
             </section>
             </div>
           </div>
@@ -300,7 +389,9 @@
       clearLoadScreenLayoutCache,
       clearLoadScreenLayoutDraft,
       getLoadScreenArtLayout,
+      getLoadScreenItemFrame,
       getLoadScreenItemLayout,
+      isLoadScreenCarouselSlideItem,
       loadLoadScreenLayout,
       mergeLoadScreenLayout,
       stashLoadScreenLayoutDraft,
@@ -310,12 +401,21 @@
     const POS_STEP = 0.5;
     const SIZE_STEP = 0.5;
     const ARROW_STEP = 0.25;
+    const SLIDE_SCALE_STEP = 2.5;
+    const SLIDE_SCALE_MIN = 50;
+    const SLIDE_SCALE_MAX = 200;
     const ITEM_ORDER = Object.keys(LOAD_SCREEN_ITEM_DEFS);
     const POSITION_PRESETS = ['top center', 'center center', 'bottom center', 'top left', 'top right'];
+    const CAROUSEL_SLIDES = [
+      '/img/below start screen 1-3.png',
+      '/img/below start screen 2-3.png',
+      '/img/below start screen 3-3.png',
+    ];
 
     let workingLayout = mergeLoadScreenLayout(null);
     let msv2Layout = null;
-    let currentItem = 'art';
+    let currentItem = 'guest';
+    let previewSlide = 0;
     let dragState = null;
     const els = {};
 
@@ -334,6 +434,20 @@
       refresh();
     }
 
+    function clampSlideScale(value) {
+      return Math.max(SLIDE_SCALE_MIN, Math.min(SLIDE_SCALE_MAX, Math.round(value * 10) / 10));
+    }
+
+    function patchCarouselSlide(patch) {
+      if (!workingLayout.items.carouselSlide) workingLayout.items.carouselSlide = {};
+      const box = getLoadScreenItemLayout('carouselSlide', workingLayout);
+      const next = { ...box, ...patch };
+      if (next.w != null) next.w = clampSlideScale(next.w);
+      if (next.h != null) next.h = clampSlideScale(next.h);
+      workingLayout.items.carouselSlide = next;
+      refresh();
+    }
+
     function exportJson() {
       return JSON.stringify(workingLayout, null, 2);
     }
@@ -341,8 +455,13 @@
     function getFrameRect() {
       const root = document.getElementById('mockLoadScreen');
       if (currentItem === 'art') return root?.getBoundingClientRect();
-      const artWrap = root?.querySelector('.tz-load-screen__art-wrap');
-      return artWrap?.getBoundingClientRect() || root?.getBoundingClientRect();
+      const frame = getLoadScreenItemFrame(currentItem);
+      if (frame === 'carousel') {
+        return root?.querySelector('.tz-load-screen__carousel-viewport')?.getBoundingClientRect()
+          || root?.getBoundingClientRect();
+      }
+      return root?.querySelector('.tz-load-screen__art-wrap')?.getBoundingClientRect()
+        || root?.getBoundingClientRect();
     }
 
     function getTunerBox(key) {
@@ -356,6 +475,7 @@
     }
 
     function applyMoveDelta(dxPx, dyPx) {
+      if (isLoadScreenCarouselSlideItem(currentItem)) return;
       const rect = getFrameRect();
       if (!rect?.width || !rect?.height) return;
       const box = getTunerBox(currentItem);
@@ -366,6 +486,18 @@
     }
 
     function applyResizeDelta(dxPx, dyPx, edges) {
+      if (isLoadScreenCarouselSlideItem(currentItem)) {
+        const box = getTunerBox(currentItem);
+        const patch = {};
+        if (edges.e || edges.se) {
+          patch.w = box.w + dxPx * 0.12;
+        }
+        if (edges.s || edges.se) {
+          patch.h = box.h + dyPx * 0.12;
+        }
+        if (Object.keys(patch).length) patchCarouselSlide(patch);
+        return;
+      }
       const rect = getFrameRect();
       if (!rect?.width || !rect?.height) return;
       const box = getTunerBox(currentItem);
@@ -393,13 +525,19 @@
           body: exportJson(),
         });
         if (!res.ok) {
+          const errText = await res.text();
           if (res.status === 404 || res.status === 501) {
-            throw new Error('Stale dev server — restart: python scripts/server.py');
+            throw new Error('Stale dev server — restart: PORT=8080 python scripts/server.py');
           }
-          throw new Error(await res.text() || `HTTP ${res.status}`);
+          if (res.status === 400 && /Unknown item key/i.test(errText)) {
+            throw new Error('Stale dev server (old save API) — restart: PORT=8080 python scripts/server.py');
+          }
+          throw new Error(errText || `HTTP ${res.status}`);
         }
         clearLoadScreenLayoutCache();
         clearLoadScreenLayoutDraft();
+        localStorage.setItem('tilezilla:load-screen-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:load-screen-layout-saved'));
         els.status.textContent = quiet
           ? 'Auto-saved to data/load_screen_layout.json'
           : 'Saved to data/load_screen_layout.json';
@@ -421,16 +559,42 @@
     function formatReadout(key) {
       if (key === 'art') {
         const art = getLoadScreenArtLayout(workingLayout);
-        return `<strong>Load screen image</strong><br />x: ${art.x}% · y: ${art.y}%<br />w: ${art.w}% · h: ${art.h}%<br />fit: ${art.objectFit} · position: ${art.objectPosition}<br /><span style="font-size:0.65rem;word-break:break-all">${art.src}</span>`;
+        return `<strong>Load screen image</strong><br />max height: ${art.maxHeightPercent}% of stage<br />x: ${art.x}% · y: ${art.y}%<br />w: ${art.w}% · h: ${art.h}%<br />fit: ${art.objectFit} · position: ${art.objectPosition}<br /><span style="font-size:0.65rem;word-break:break-all">${art.src}</span>`;
+      }
+      if (isLoadScreenCarouselSlideItem(key)) {
+        const slide = getLoadScreenItemLayout('carouselSlide', workingLayout);
+        return `<strong>Carousel slide image</strong><br />width scale: ${slide.w}%<br />height scale: ${slide.h}%<br /><span style="font-size:0.65rem;color:#a8b8b4">100% = fit to carousel area · use Wider/Narrower/Taller/Shorter</span>`;
       }
       const box = getLoadScreenItemLayout(key, workingLayout);
       const def = LOAD_SCREEN_ITEM_DEFS[key];
-      return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+      const frameLabel = def?.frame === 'carousel' ? 'carousel viewport' : 'art frame';
+      return `<strong>${def?.label || key}</strong><br />frame: ${frameLabel}<br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+    }
+
+    function encodeAssetPath(path) {
+      return String(path || '')
+        .split('/')
+        .map((part, i) => (part === '' && i === 0 ? '' : encodeURIComponent(part)))
+        .join('/');
+    }
+
+    function updatePreviewSlide() {
+      const img = document.querySelector('[data-load-carousel-slide]');
+      const play = document.querySelector('[data-load-carousel-play]');
+      if (img) img.src = encodeAssetPath(CAROUSEL_SLIDES[previewSlide]);
+      if (play) {
+        play.hidden = !(previewSlide === 2 || currentItem === 'carouselPlay');
+      }
+      document.querySelectorAll('[data-carousel-slide]').forEach((btn) => {
+        btn.classList.toggle('is-active', Number(btn.dataset.carouselSlide) === previewSlide);
+      });
     }
 
     function refresh() {
       if (msv2Layout) applyMainScreenV2Layout(msv2Layout);
+      applyUiScale();
       applyLoadScreenLayout(workingLayout, document.documentElement);
+      updatePreviewSlide();
       els.readout.innerHTML = formatReadout(currentItem);
       els.jsonOut.value = exportJson();
       stashLoadScreenLayoutDraft(workingLayout);
@@ -438,13 +602,21 @@
       document.getElementById('artControls')?.toggleAttribute('hidden', !isArt);
       document.getElementById('modeHint').textContent = isArt
         ? 'Drag art box to move/resize · Wheel: contain/cover · Shift+wheel: position preset'
-        : 'Drag box to move · Handles resize · Arrow keys nudge';
+        : isLoadScreenCarouselSlideItem(currentItem)
+          ? 'Wider/Narrower = width scale · Taller/Shorter = height scale · Drag handles on slide box'
+          : getLoadScreenItemFrame(currentItem) === 'carousel'
+            ? 'Drag over carousel slide · Positions are % of carousel viewport below the art'
+            : 'Drag box to move · Handles resize · Arrow keys nudge';
       for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
         btn.classList.toggle('is-active', btn.dataset.item === currentItem);
       }
       for (const box of document.querySelectorAll('.tuner-box[data-item]')) {
         box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
       }
+      document.querySelector('[data-load-carousel-viewport]')?.classList.toggle(
+        'is-tuner-slide-active',
+        currentItem === 'carouselSlide',
+      );
       scheduleSave();
     }
 
@@ -462,6 +634,19 @@
           return;
         }
         patchArt({ objectFit: art.objectFit === 'contain' ? 'cover' : 'contain' });
+        return;
+      }
+      if (isLoadScreenCarouselSlideItem(currentItem)) {
+        const dir = e.deltaY < 0 ? 1 : -1;
+        const slide = getTunerBox(currentItem);
+        if (e.altKey && e.ctrlKey) {
+          patchCarouselSlide({ h: slide.h + dir * SLIDE_SCALE_STEP });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchCarouselSlide({ w: slide.w + dir * SLIDE_SCALE_STEP });
+          return;
+        }
         return;
       }
       const dir = e.deltaY < 0 ? 1 : -1;
@@ -482,6 +667,17 @@
     }
 
     function onNudge(action) {
+      if (isLoadScreenCarouselSlideItem(currentItem)) {
+        const slide = getTunerBox(currentItem);
+        switch (action) {
+          case 'wider': patchCarouselSlide({ w: slide.w + SLIDE_SCALE_STEP }); break;
+          case 'narrower': patchCarouselSlide({ w: slide.w - SLIDE_SCALE_STEP }); break;
+          case 'taller': patchCarouselSlide({ h: slide.h + SLIDE_SCALE_STEP }); break;
+          case 'shorter': patchCarouselSlide({ h: slide.h - SLIDE_SCALE_STEP }); break;
+          default: break;
+        }
+        return;
+      }
       const box = getTunerBox(currentItem);
       switch (action) {
         case 'left': patchTunerBox(currentItem, { x: Math.max(0, Math.round((box.x - ARROW_STEP) * 10) / 10) }); break;
@@ -545,6 +741,7 @@
         ? (idx - 1 + ITEM_ORDER.length) % ITEM_ORDER.length
         : (idx + 1) % ITEM_ORDER.length;
       currentItem = ITEM_ORDER[next];
+      if (currentItem === 'carouselPlay') previewSlide = 2;
       refresh();
     }
 
@@ -555,6 +752,7 @@
         cycleItem(e.shiftKey);
         return;
       }
+      if (isLoadScreenCarouselSlideItem(currentItem)) return;
       const box = getTunerBox(currentItem);
       const step = e.shiftKey ? POS_STEP : ARROW_STEP;
       if (e.key === 'ArrowLeft') { e.preventDefault(); patchTunerBox(currentItem, { x: Math.max(0, Math.round((box.x - step) * 10) / 10) }); }
@@ -577,7 +775,11 @@
         btn.className = 'field-btn';
         btn.dataset.item = key;
         btn.textContent = meta.label;
-        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        btn.addEventListener('click', () => {
+          currentItem = key;
+          if (key === 'carouselPlay') previewSlide = 2;
+          refresh();
+        });
         els.fieldGrid.appendChild(btn);
       }
 
@@ -586,7 +788,7 @@
       });
       document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
       document.getElementById('reloadBtn')?.addEventListener('click', async () => {
-        workingLayout = mergeLoadScreenLayout(await loadLoadScreenLayout({ force: true }));
+        workingLayout = mergeLoadScreenLayout(await loadLoadScreenLayout({ force: true, fromDisk: true }));
         refresh();
         els.status.textContent = 'Reloaded from file';
       });
@@ -596,6 +798,23 @@
       });
       document.getElementById('artControls')?.querySelectorAll('[data-position]').forEach((btn) => {
         btn.addEventListener('click', () => patchArt({ objectPosition: btn.dataset.position }));
+      });
+
+      document.getElementById('artControls')?.querySelectorAll('[data-art-max-delta]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const art = getLoadScreenArtLayout(workingLayout);
+          const delta = Number(btn.dataset.artMaxDelta);
+          patchArt({
+            maxHeightPercent: Math.max(35, Math.min(75, Math.round((art.maxHeightPercent + delta) * 10) / 10)),
+          });
+        });
+      });
+
+      document.querySelectorAll('[data-carousel-slide]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          previewSlide = Number(btn.dataset.carouselSlide);
+          refresh();
+        });
       });
 
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });

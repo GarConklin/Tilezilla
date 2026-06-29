@@ -31,7 +31,10 @@ function boardSizeKey(level) {
 function formatDate(iso) {
   if (!iso) return '—';
   try {
-    const d = new Date(iso);
+    const raw = String(iso).trim();
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+      ? new Date(`${raw}T12:00:00`)
+      : new Date(raw);
     if (Number.isNaN(d.getTime())) return '—';
     return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
   } catch {
@@ -59,6 +62,7 @@ function formatChallengeDate(raw) {
 
 let dailyReleaseByLevelId = null;
 let dailyDatesByLevelId = null;
+let dailyCsvRowsCache = null;
 let adventurePathCache = null;
 let advIdByLevelIdCache = null;
 
@@ -66,10 +70,11 @@ function parseDailyCsv(text) {
   const lines = text.trim().split(/\r?\n/);
   const byLevel = new Map();
   const datesByLevel = new Map();
+  const rows = [];
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    const [challenge_date, level_id] = line.split(',');
+    const [challenge_date, level_id, total_solutions] = line.split(',');
     const levelId = normalizeCatalogLevelId(level_id);
     const date = challenge_date?.trim();
     if (!levelId || !date) continue;
@@ -77,8 +82,14 @@ function parseDailyCsv(text) {
     if (!byLevel.has(levelId)) byLevel.set(levelId, date);
     if (!datesByLevel.has(levelId)) datesByLevel.set(levelId, []);
     datesByLevel.get(levelId).push(iso);
+    rows.push({
+      date,
+      dateIso: iso,
+      levelId,
+      totalSolutions: Number(total_solutions) || 0,
+    });
   }
-  return { byLevel, datesByLevel };
+  return { byLevel, datesByLevel, rows };
 }
 
 function buildAdvIdByLevelId(path) {
@@ -97,14 +108,17 @@ async function loadLibraryLookups() {
   if (!dailyReleaseByLevelId) {
     dailyReleaseByLevelId = new Map();
     dailyDatesByLevelId = new Map();
+    dailyCsvRowsCache = [];
     try {
       const csv = await fetch('/data/daily_challenges_import.csv').then((r) => r.text());
       const parsed = parseDailyCsv(csv);
       dailyReleaseByLevelId = parsed.byLevel;
       dailyDatesByLevelId = parsed.datesByLevel;
+      dailyCsvRowsCache = parsed.rows;
     } catch {
       dailyReleaseByLevelId = new Map();
       dailyDatesByLevelId = new Map();
+      dailyCsvRowsCache = [];
     }
   }
   if (!adventurePathCache) {
@@ -114,6 +128,7 @@ async function loadLibraryLookups() {
   return {
     dailyReleaseByLevelId,
     dailyDatesByLevelId,
+    dailyCsvRows: dailyCsvRowsCache || [],
     adventurePath: adventurePathCache,
     advIdByLevelId: advIdByLevelIdCache || new Map(),
   };
@@ -331,6 +346,79 @@ function levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDate
   return true;
 }
 
+async function buildDailyChallengeLibraryEntry(app, row, levelById, progress) {
+  const levelId = normalizeCatalogLevelId(row.levelId);
+  const level = levelById.get(levelId);
+  if (!level) return null;
+
+  const challengeDateIso = parseChallengeDateIso(row.dateIso || row.date);
+  if (!challengeDateIso) return null;
+
+  const found = countUniqueFoundSolutions(progress?.getFoundForLevel(levelId) || []);
+  const known = await app.loadKnownSolutionsForLevel?.(level) || [];
+  const total = row.totalSolutions || known.length || app.totalKnownForLevel?.(level) || 0;
+  const progressState = getPuzzleProgressState(found, total);
+  const pct = total > 0 ? Math.round((found / total) * 100) : 0;
+  const formatted = formatChallengeDate(challengeDateIso);
+
+  return {
+    levelId: level.id,
+    label: level.id || level.name,
+    journalSource: 'daily-challenge',
+    challengeDateIso,
+    detailLabel: formatted ? `· ${formatted}` : null,
+    boardSize: boardSizeLabel(level),
+    boardSizeKey: boardSizeKey(level),
+    found,
+    total,
+    progressState,
+    progressPct: pct,
+    progressLabel: total > 0 ? `${found} / ${total}` : String(found),
+    level,
+    dailyRowKey: `${challengeDateIso}|${levelId}`,
+  };
+}
+
+async function getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, progress) {
+  const puzzles = [];
+  const seenDailyKeys = new Set();
+
+  for (const row of dailyCsvRows) {
+    const dateRaw = row.dateIso || row.date;
+    if (!isWithinDailyLookback(dateRaw)) continue;
+
+    const entry = await buildDailyChallengeLibraryEntry(app, row, levelById, progress);
+    if (!entry) continue;
+    if (filters?.boardSize && entry.boardSizeKey !== filters.boardSize) continue;
+    if (seenDailyKeys.has(entry.dailyRowKey)) continue;
+    seenDailyKeys.add(entry.dailyRowKey);
+    puzzles.push(entry);
+  }
+
+  puzzles.sort((a, b) => {
+    const da = a.challengeDateIso || '';
+    const db = b.challengeDateIso || '';
+    if (da !== db) return db.localeCompare(da);
+    return a.label.localeCompare(b.label);
+  });
+
+  const sizeCountsMap = new Map();
+  for (const puzzle of puzzles) {
+    const key = puzzle.boardSizeKey;
+    if (!key) continue;
+    sizeCountsMap.set(key, (sizeCountsMap.get(key) || 0) + 1);
+  }
+
+  const sizeCounts = [...sizeCountsMap.entries()]
+    .map(([key, count]) => {
+      const [small, large] = key.split('x').map(Number);
+      return { key, label: `${small}x${large}`, count };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  return { sizeCounts, puzzles, filters };
+}
+
 export async function getJournalLibraryIndex(app, filters = {}) {
   const progress = app?.progress;
   const levels = app?.state?.allLevels || [];
@@ -339,7 +427,16 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     return { sizeCounts: [], puzzles: [], filters };
   }
 
-  const { dailyReleaseByLevelId: dailyByLevelId, dailyDatesByLevelId, advIdByLevelId } = await loadLibraryLookups();
+  const {
+    dailyReleaseByLevelId: dailyByLevelId,
+    dailyDatesByLevelId,
+    dailyCsvRows,
+    advIdByLevelId,
+  } = await loadLibraryLookups();
+
+  if (filters?.puzzleType === 'daily-challenge') {
+    return getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, progress);
+  }
 
   const sizeCountsMap = new Map();
   const puzzles = [];
@@ -392,16 +489,7 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     });
   }
 
-  if (filters?.puzzleType === 'daily-challenge') {
-    puzzles.sort((a, b) => {
-      const da = a.challengeDateIso || '';
-      const db = b.challengeDateIso || '';
-      if (da !== db) return db.localeCompare(da);
-      return a.label.localeCompare(b.label);
-    });
-  } else {
-    puzzles.sort((a, b) => a.label.localeCompare(b.label));
-  }
+  puzzles.sort((a, b) => a.label.localeCompare(b.label));
 
   const sizeCounts = [...sizeCountsMap.entries()]
     .map(([key, count]) => {

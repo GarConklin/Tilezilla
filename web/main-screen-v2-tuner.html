@@ -266,6 +266,7 @@
     import { applyUiScale } from './js/tilezilla-ui-scale.js';
     import {
       MAIN_SCREEN_V2_ITEM_DEFS,
+      adjustInfoTipFontSize,
       applyMainScreenV2Art,
       applyMainScreenV2Layout,
       clearMainScreenV2LayoutCache,
@@ -389,7 +390,10 @@
     function formatReadout(key) {
       const box = getMainScreenV2ItemLayout(key, workingLayout);
       const def = MAIN_SCREEN_V2_ITEM_DEFS[key];
-      return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+      const fontPart = key === 'infoTip'
+        ? `<br />font: ${box.fontSize}<br /><span style="font-size:0.65rem;color:#a8b8b4">Ctrl+Alt+wheel: font scale · Ctrl+Alt+Shift+wheel: max size</span>`
+        : '';
+      return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${fontPart}`;
     }
 
     function ensureInfoBarMock() {
@@ -451,6 +455,14 @@
     function onWheel(e) {
       if (e.target.matches('textarea, input')) return;
       e.preventDefault();
+      if (currentItem === 'infoTip' && e.ctrlKey && e.altKey) {
+        const box = getMainScreenV2ItemLayout('infoTip', workingLayout);
+        const mode = e.shiftKey ? 'max' : 'cqh';
+        patchItem('infoTip', {
+          fontSize: adjustInfoTipFontSize(box.fontSize, e.deltaY < 0 ? 1 : -1, mode),
+        });
+        return;
+      }
       const step = e.shiftKey ? POS_STEP : (e.ctrlKey && e.altKey ? SIZE_STEP : (e.ctrlKey ? SIZE_STEP : POS_STEP));
       if (e.ctrlKey && !e.altKey) {
         patchItem(currentItem, {

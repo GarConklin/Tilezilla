@@ -5,10 +5,14 @@ import { DEFAULT_PREVIEW_V2_ART, isBlockedGameImagePath } from './preview-v2-lay
 export const LOAD_SCREEN_ART_PIXELS = { w: 375, h: 467 };
 
 export const LOAD_SCREEN_ITEM_DEFS = {
-  art: { label: 'Load screen image', cssPrefix: 'art', kind: 'art' },
-  preview: { label: 'Preview frame overlay', cssPrefix: 'preview' },
-  guest: { label: 'Play As Guest', cssPrefix: 'guest' },
-  login: { label: 'Login', cssPrefix: 'login' },
+  art: { label: 'Load screen image', cssPrefix: 'art', kind: 'art', frame: 'stage' },
+  preview: { label: 'Preview frame overlay', cssPrefix: 'preview', frame: 'art' },
+  guest: { label: 'Play As Guest', cssPrefix: 'guest', frame: 'art' },
+  login: { label: 'Login', cssPrefix: 'login', frame: 'art' },
+  carouselPrev: { label: 'Carousel ← prev', cssPrefix: 'carousel-prev', frame: 'carousel' },
+  carouselNext: { label: 'Carousel → next', cssPrefix: 'carousel-next', frame: 'carousel' },
+  carouselPlay: { label: 'Carousel play', cssPrefix: 'carousel-play', frame: 'carousel' },
+  carouselSlide: { label: 'Carousel slide image', cssPrefix: 'carousel-slide', kind: 'carouselSlide', frame: 'carousel' },
 };
 
 export const DEFAULT_LOAD_SCREEN_LAYOUT = {
@@ -23,11 +27,16 @@ export const DEFAULT_LOAD_SCREEN_LAYOUT = {
     src: '/img/Load-Screen.png',
     objectFit: 'fill',
     objectPosition: 'top center',
+    maxHeightPercent: 58,
   },
   items: {
     preview: { x: 11, y: 33, w: 78, h: 24, hidden: true },
     guest: { x: 8, y: 67.5, w: 36, h: 8.5 },
     login: { x: 56, y: 67.5, w: 36, h: 8.5 },
+    carouselPrev: { x: 6, y: 87.5, w: 11, h: 8 },
+    carouselNext: { x: 83, y: 87.5, w: 11, h: 8 },
+    carouselPlay: { x: 41, y: 30, w: 18, h: 16 },
+    carouselSlide: { x: 0, y: 0, w: 100, h: 100 },
   },
 };
 
@@ -35,6 +44,10 @@ const LS_LAYOUT_KEY = 'tilezilla:layouts:load-screen';
 const LS_PENDING_KEY = 'tilezilla:layouts:load-screen:pending';
 
 let layoutCache = null;
+
+export function isLoadScreenTunerPage() {
+  return /load-screen-tuner(?:\.html)?$/i.test(window.location.pathname);
+}
 
 function cssBgUrl(path) {
   const p = String(path || '').trim();
@@ -84,6 +97,9 @@ export function mergeLoadScreenLayout(raw) {
     if (!base.art.objectPosition) base.art.objectPosition = DEFAULT_LOAD_SCREEN_LAYOUT.art.objectPosition;
     if (!base.art.artPixelW) base.art.artPixelW = DEFAULT_LOAD_SCREEN_LAYOUT.art.artPixelW;
     if (!base.art.artPixelH) base.art.artPixelH = DEFAULT_LOAD_SCREEN_LAYOUT.art.artPixelH;
+    if (base.art.maxHeightPercent == null) {
+      base.art.maxHeightPercent = DEFAULT_LOAD_SCREEN_LAYOUT.art.maxHeightPercent;
+    }
     for (const dim of ['x', 'y', 'w', 'h']) {
       if (base.art[dim] == null) base.art[dim] = DEFAULT_LOAD_SCREEN_LAYOUT.art[dim];
     }
@@ -97,22 +113,25 @@ export function mergeLoadScreenLayout(raw) {
   return base;
 }
 
-export async function loadLoadScreenLayout({ force = false } = {}) {
+export async function loadLoadScreenLayout({ force = false, fromDisk = false } = {}) {
   if (layoutCache && !force) return layoutCache;
 
   let raw = null;
-  let pendingDraft = false;
-  try {
-    pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
-    if (pendingDraft) {
-      const draft = localStorage.getItem(LS_LAYOUT_KEY);
-      if (draft) raw = JSON.parse(draft);
+  const onTuner = isLoadScreenTunerPage();
+
+  // Only the tuner prefers an in-progress browser draft. The live page always reads JSON from disk.
+  if (!fromDisk && onTuner) {
+    try {
+      if (localStorage.getItem(LS_PENDING_KEY) === '1') {
+        const draft = localStorage.getItem(LS_LAYOUT_KEY);
+        if (draft) raw = JSON.parse(draft);
+      }
+    } catch {
+      /* fall through */
     }
-  } catch {
-    pendingDraft = false;
   }
 
-  if (!pendingDraft) {
+  if (!raw || fromDisk) {
     try {
       const res = await fetch(`/data/load_screen_layout.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) raw = await res.json();
@@ -121,7 +140,7 @@ export async function loadLoadScreenLayout({ force = false } = {}) {
     }
   }
 
-  if (!raw && !pendingDraft) {
+  if (!raw && onTuner) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -134,9 +153,9 @@ export async function loadLoadScreenLayout({ force = false } = {}) {
   return layoutCache;
 }
 
-export async function reloadLoadScreenLayout() {
+export async function reloadLoadScreenLayout({ fromDisk = false } = {}) {
   clearLoadScreenLayoutCache();
-  return loadLoadScreenLayout({ force: true });
+  return loadLoadScreenLayout({ force: true, fromDisk });
 }
 
 export function getLoadScreenItemLayout(itemKey, layout) {
@@ -174,6 +193,7 @@ export function getLoadScreenArtLayout(layout) {
     objectPosition: art.objectPosition || def.objectPosition,
     artPixelW: art.artPixelW ?? def.artPixelW ?? LOAD_SCREEN_ART_PIXELS.w,
     artPixelH: art.artPixelH ?? def.artPixelH ?? LOAD_SCREEN_ART_PIXELS.h,
+    maxHeightPercent: art.maxHeightPercent ?? def.maxHeightPercent ?? 58,
   };
 }
 
@@ -187,6 +207,7 @@ export function applyLoadScreenArt(layout) {
   root.style.setProperty('--tz-load-art-aspect', `${art.artPixelW} / ${art.artPixelH}`);
   root.style.setProperty('--tz-load-art-fit', art.objectFit);
   root.style.setProperty('--tz-load-art-position', art.objectPosition);
+  root.style.setProperty('--tz-load-art-max-h', `${art.maxHeightPercent}%`);
   root.style.setProperty(
     '--tz-load-preview-frame-bg',
     cssBgUrl(art.frame),
@@ -202,6 +223,82 @@ function isLoadScreenItemKey(key) {
   return key !== 'art' && Boolean(LOAD_SCREEN_ITEM_DEFS[key]);
 }
 
+export function getLoadScreenItemFrame(itemKey) {
+  return LOAD_SCREEN_ITEM_DEFS[itemKey]?.frame || 'art';
+}
+
+export function isLoadScreenCarouselSlideItem(itemKey) {
+  return LOAD_SCREEN_ITEM_DEFS[itemKey]?.kind === 'carouselSlide';
+}
+
+const LOAD_SCREEN_ITEM_SELECTORS = {
+  preview: '.tz-load-screen__preview',
+  guest: '.tz-load-screen__hit--guest',
+  login: '.tz-load-screen__hit--login',
+  carouselPrev: '.tz-load-screen__carousel-arrow--prev',
+  carouselNext: '.tz-load-screen__carousel-arrow--next',
+  carouselPlay: '.tz-load-screen__carousel-play',
+};
+
+function loadScreenBoxStyle(box) {
+  return {
+    position: 'absolute',
+    left: `${box.x}%`,
+    top: `${box.y}%`,
+    width: `${box.w}%`,
+    height: `${box.h}%`,
+    margin: '0',
+    boxSizing: 'border-box',
+  };
+}
+
+/** Inline tuned boxes on real DOM nodes (tuner + index.html) so layout cannot drift via CSS vars. */
+export function applyLoadScreenItemPositions(layout, root = document) {
+  const merged = mergeLoadScreenLayout(layout);
+  const doc = root.ownerDocument || root;
+  const screens = [...(doc.querySelectorAll?.('.tz-load-screen') || [])];
+  if (!screens.length) return;
+
+  const art = getLoadScreenArtLayout(merged);
+  const slide = getLoadScreenItemLayout('carouselSlide', merged);
+  const scaleW = (slide.w ?? 100) / 100;
+  const scaleH = (slide.h ?? 100) / 100;
+
+  for (const screen of screens) {
+    const artWrap = screen.querySelector('.tz-load-screen__art-wrap');
+    if (artWrap) {
+      if (screen.classList.contains('tz-load-screen--with-carousel')) {
+        artWrap.style.maxHeight = `${art.maxHeightPercent}%`;
+        artWrap.style.left = '';
+        artWrap.style.top = '';
+        artWrap.style.width = '';
+        artWrap.style.height = '';
+      } else {
+        Object.assign(artWrap.style, loadScreenBoxStyle({
+          x: art.x,
+          y: art.y,
+          w: art.w,
+          h: art.h,
+        }));
+        artWrap.style.maxHeight = `${art.h}%`;
+      }
+    }
+
+    for (const [key, selector] of Object.entries(LOAD_SCREEN_ITEM_SELECTORS)) {
+      const box = getLoadScreenItemLayout(key, merged);
+      for (const el of screen.querySelectorAll(selector)) {
+        Object.assign(el.style, loadScreenBoxStyle(box));
+        if (key === 'preview') el.hidden = Boolean(box.hidden);
+      }
+    }
+
+    for (const img of screen.querySelectorAll('.tz-load-screen__carousel-slide')) {
+      img.style.transform = `scale(${scaleW}, ${scaleH})`;
+      img.style.transformOrigin = 'center center';
+    }
+  }
+}
+
 export function applyLoadScreenLayout(layout, target = document.documentElement) {
   const merged = mergeLoadScreenLayout(layout);
   for (const [key, meta] of Object.entries(LOAD_SCREEN_ITEM_DEFS)) {
@@ -212,7 +309,11 @@ export function applyLoadScreenLayout(layout, target = document.documentElement)
   document.querySelectorAll('.tz-load-screen__preview').forEach((el) => {
     el.hidden = Boolean(preview.hidden);
   });
+  const slide = getLoadScreenItemLayout('carouselSlide', merged);
+  target.style.setProperty('--tz-load-carousel-slide-w', String(slide.w ?? 100));
+  target.style.setProperty('--tz-load-carousel-slide-h', String(slide.h ?? 100));
   applyLoadScreenArt(merged);
+  applyLoadScreenItemPositions(merged, target.ownerDocument || document);
 }
 
 export function buildLoadScreenLayoutReport(layout) {
@@ -223,11 +324,16 @@ export function buildLoadScreenLayoutReport(layout) {
     `Art: ${art.src}`,
     `Art box: x=${art.x}% y=${art.y}% w=${art.w}% h=${art.h}%`,
     `Art pixels: ${art.artPixelW}×${art.artPixelH} · fit: ${art.objectFit} · position: ${art.objectPosition}`,
+    `Art max height (carousel): ${art.maxHeightPercent}%`,
     `Preview frame: ${art.frame}`,
     '',
   ];
+  const slide = getLoadScreenItemLayout('carouselSlide', merged);
+  lines.push(`Carousel slide scale: w=${slide.w}% · h=${slide.h}%`);
+  lines.push('');
   for (const [key, meta] of Object.entries(LOAD_SCREEN_ITEM_DEFS)) {
     if (!isLoadScreenItemKey(key)) continue;
+    if (isLoadScreenCarouselSlideItem(key)) continue;
     const box = getLoadScreenItemLayout(key, merged);
     const hiddenPart = box.hidden ? ' · hidden' : '';
     lines.push(`${meta.label}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%${hiddenPart}`);

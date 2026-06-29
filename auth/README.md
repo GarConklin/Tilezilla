@@ -1,30 +1,28 @@
-# Tilezilla Auth Package
+# Tilezilla auth (PHP)
 
-PHP registration/login wired to **Words Online mail server** and **WordsOnline.users** shared accounts.
+Registration and login use **tilegame.users** in MySQL. Outbound email uses the Words Online **mail relay** on `words_network` (SMTP only — no WordsOnline account DB).
 
-**Full setup guide:** [`../Docs/auth-email-setup.md`](../Docs/auth-email-setup.md)
-
-## Start
+## Local stack (8080)
 
 ```powershell
-# 1. Words stack + mail (once)
-cd D:\Words-Online\WordsOnline
 docker compose up -d
+.\scripts\migrate-auth-to-tilegame.ps1   # once, if upgrading from WordsOnline accounts
+```
+
+## Standalone auth + mail relay (8081)
+
+```powershell
+# Words mail on words_network (in WordsOnline repo)
 docker compose -f docker-compose.mail.yml up -d
 
-# 2. Tilezilla auth
-cd C:\Users\~Gar\Tile-Puzzle\Tilezilla
 docker compose -f docker-compose.auth.yml up -d --build
 ```
 
-Open: http://localhost:8081/register.html
-
-## Files
-
-| Path | Role |
+| File | Role |
 |------|------|
-| `src/EmailNotifier.php` | Sends via `mail()` → `words_mailserver` |
-| `src/AuthManager.php` | Register/login against WordsOnline DB |
-| `api/*.php` | REST endpoints |
-| `public/*.html` | Login, register, verify pages |
-| `config/config.php` | DB + app URL (from env or edit directly) |
+| `src/Db.php` | Single tilegame connection |
+| `src/AuthManager.php` | Register/login against `tilegame.users` |
+| `src/GuestManager.php` | Guest codes in tilegame |
+| `api/*.php` | JSON auth API |
+
+User ids (`user_id`) are returned as `id` in JSON for browser localStorage compatibility.

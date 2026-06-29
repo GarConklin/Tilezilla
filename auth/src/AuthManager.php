@@ -1,5 +1,5 @@
 <?php
-// Shared with Words Online — uses WordsOnline.users table.
+// Tilezilla accounts — tilegame.users (user_id primary key).
 
 class AuthManager {
     private $conn;
@@ -25,29 +25,33 @@ class AuthManager {
         $verificationToken = bin2hex(random_bytes(32));
 
         $stmt = $this->conn->prepare(
-            "INSERT INTO users (username, email, password_hash, verification_token, email_verified, paid, status)
-             VALUES (?, ?, ?, ?, FALSE, 0, 'registered')"
+            "INSERT INTO users (
+                username, player_name, email, password_hash, verification_token,
+                email_verified, paid, status
+             ) VALUES (?, ?, ?, ?, ?, FALSE, 0, 'registered')"
         );
 
         if (!$stmt) {
             throw new Exception("Failed to prepare statement: " . $this->conn->error);
         }
 
-        $stmt->bind_param("ssss", $username, $email, $passwordHash, $verificationToken);
+        $stmt->bind_param("sssss", $username, $username, $email, $passwordHash, $verificationToken);
 
         if (!$stmt->execute()) {
             throw new Exception("Failed to create account: " . $stmt->error);
         }
 
-        $userId = $this->conn->insert_id;
+        $userId = (int)$this->conn->insert_id;
         $stmt->close();
+
+        $this->ensureTileProfile($userId);
 
         return ['user_id' => $userId, 'verification_token' => $verificationToken];
     }
 
     public function login($username, $password) {
         $stmt = $this->conn->prepare(
-            "SELECT id, username, email, password_hash, paid, status, is_admin, active_until, email_verified
+            "SELECT user_id, username, email, password_hash, paid, status, is_admin, active_until, email_verified
              FROM users WHERE username = ?"
         );
 
@@ -63,7 +67,7 @@ class AuthManager {
             throw new Exception("Invalid username or password");
         }
 
-        $user = $result->fetch_assoc();
+        $user = $this->normalizeUserRow($result->fetch_assoc());
         $stmt->close();
 
         if (!password_verify($password, $user['password_hash'])) {
@@ -100,7 +104,7 @@ class AuthManager {
     }
 
     private function usernameExists($username) {
-        $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt = $this->conn->prepare("SELECT user_id FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $exists = $stmt->get_result()->num_rows > 0;
@@ -109,7 +113,7 @@ class AuthManager {
     }
 
     private function emailExists($email) {
-        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare("SELECT user_id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $exists = $stmt->get_result()->num_rows > 0;
@@ -141,7 +145,7 @@ class AuthManager {
     }
 
     private function updateLastLogin($userId) {
-        $stmt = $this->conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+        $stmt = $this->conn->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $stmt->close();
@@ -149,9 +153,9 @@ class AuthManager {
 
     public function getUserById($userId) {
         $stmt = $this->conn->prepare(
-            "SELECT id, username, email, paid, status, is_admin, created_at, last_login, active_until, email_verified,
-                    guest_code
-             FROM users WHERE id = ?"
+            "SELECT user_id, username, player_name, email, paid, status, is_admin, created_at, last_login,
+                    active_until, email_verified, guest_code
+             FROM users WHERE user_id = ?"
         );
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -160,9 +164,8 @@ class AuthManager {
             $stmt->close();
             return null;
         }
-        $user = $result->fetch_assoc();
+        $user = $this->normalizeUserRow($result->fetch_assoc());
         $stmt->close();
-        $user['player_name'] = $user['username'];
         return $user;
     }
 
@@ -194,5 +197,29 @@ class AuthManager {
         $_SESSION['email'] = $user['email'];
         $_SESSION['paid'] = (bool)$user['paid'];
         $_SESSION['is_admin'] = (bool)($user['is_admin'] ?? false);
+    }
+
+    private function ensureTileProfile($userId) {
+        $stmt = $this->conn->prepare(
+            "INSERT IGNORE INTO tile_profiles (words_user_id, `rank`, hint_tokens, current_streak, best_streak)
+             VALUES (?, 'Connector', 5, 0, 0)"
+        );
+        if (!$stmt) {
+            return;
+        }
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    /** Expose user_id as id for API / localStorage compatibility. */
+    private function normalizeUserRow(array $user): array {
+        if (isset($user['user_id'])) {
+            $user['id'] = (int)$user['user_id'];
+        }
+        if (empty($user['player_name'])) {
+            $user['player_name'] = $user['username'] ?? '';
+        }
+        return $user;
     }
 }

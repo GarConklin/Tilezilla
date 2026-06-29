@@ -1,6 +1,5 @@
 -- Dev seed: Gar (newbie) + Arn (Adventure L4-1) + test (mobile QA)
--- Requires adventure_progression (run import-adventure-map.ps1 first).
--- words_user_id / user_id are fixed dev ids (900001, 900002, 900003) — must match seed-dev-words-users.sql.
+-- Login-ready accounts in tilegame.users (email_verified + status active).
 
 USE tilegame;
 
@@ -48,24 +47,32 @@ SET @arn_total = (
 -- ---------------------------------------------------------------------------
 INSERT INTO users (
     user_id, username, email, password_hash,
+    email_verified, paid, status, is_admin, active_until,
     `rank`, hint_tokens, current_streak, best_streak
 ) VALUES
 (
     @gar_id, 'gar', 'gar-dev@tilezilla.local', @gar_hash,
+    TRUE, TRUE, 'active', FALSE, DATE_ADD(CURDATE(), INTERVAL 10 YEAR),
     'Connector', 5, 0, 0
 ),
 (
     @arn_id, 'Arn', 'arn-dev@tilezilla.local', @arn_hash,
+    TRUE, TRUE, 'active', FALSE, DATE_ADD(CURDATE(), INTERVAL 10 YEAR),
     'Connector', 5, 0, 0
 ),
 (
     @test_id, 'test', 'test-dev@tilezilla.local', @test_hash,
+    TRUE, TRUE, 'active', FALSE, DATE_ADD(CURDATE(), INTERVAL 10 YEAR),
     'Connector', 18, 0, 0
 )
 ON DUPLICATE KEY UPDATE
     username = VALUES(username),
     email = VALUES(email),
     password_hash = VALUES(password_hash),
+    email_verified = TRUE,
+    paid = TRUE,
+    status = 'active',
+    active_until = DATE_ADD(CURDATE(), INTERVAL 10 YEAR),
     `rank` = VALUES(`rank`),
     hint_tokens = VALUES(hint_tokens),
     current_streak = VALUES(current_streak),

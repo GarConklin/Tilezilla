@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 session_start();
 
+require_once __DIR__ . '/../src/Db.php';
 require_once __DIR__ . '/../src/AuthManager.php';
 require_once __DIR__ . '/../src/GuestManager.php';
 $config = require __DIR__ . '/../config/config.php';
@@ -16,21 +17,10 @@ try {
         throw new Exception("All fields are required");
     }
 
-    $conn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
-    );
-
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed");
-    }
-
+    $conn = Db::connect($config);
     $authManager = new AuthManager($conn);
     $registerResult = $authManager->register($username, $email, $password);
     $userId = $registerResult['user_id'];
-    $verificationToken = $registerResult['verification_token'];
     $conn->close();
 
     $linkedGuestCode = null;
@@ -59,7 +49,7 @@ try {
 
     require_once __DIR__ . '/../src/EmailNotifier.php';
     $baseUrl = $config['app']['base_url'] ?? null;
-    EmailNotifier::sendVerificationEmail($email, $username, $verificationToken, $baseUrl);
+    EmailNotifier::sendVerificationEmail($email, $username, $registerResult['verification_token'], $baseUrl);
 
     $adminEmail = $config['app']['admin_notify_email'] ?? null;
     if ($adminEmail) {

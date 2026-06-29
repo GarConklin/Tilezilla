@@ -1,14 +1,14 @@
 {
   "dialog": {
-    "previewWidthRatio": 1,
-    "artW": 1402,
-    "artH": 1122
+    "previewWidthRatio": 0.9,
+    "artW": 390,
+    "artH": 312
   },
   "items": {
     "preview": {
-      "x": 76.5,
-      "y": 31,
-      "w": 35,
+      "x": 76,
+      "y": 32,
+      "w": 38,
       "h": 58,
       "widthScale": 0.95,
       "heightScale": 0.8,

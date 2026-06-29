@@ -8,7 +8,7 @@ export const BOTTOM_NAV_ITEM_DEFS = {
   profile: { label: 'Profile', cssKey: 'profile', hoverSrc: '/img/BMB-5H.png' },
 };
 
-export const BOTTOM_NAV_ART = { w: 1698, h: 456 };
+export const BOTTOM_NAV_ART = { w: 1678, h: 310 };
 
 export const DEFAULT_BOTTOM_NAV_LAYOUT = {
   plaque: { offsetY: 0, wScale: 1, hScale: 1 },

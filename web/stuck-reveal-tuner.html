@@ -119,9 +119,8 @@
     }
     .stuck-reveal-tuner-page .stuck-tuner-mock .tz-stuck-dialog {
       position: relative;
-      width: 100%;
       max-width: none;
-      margin: 0;
+      margin: 0 auto;
       filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
     }
     .stuck-reveal-tuner-page .tuner-box {
@@ -175,7 +174,8 @@
   <p class="lead">
     Tune <strong>Imstuckreveal.png</strong> (show solution step): dialog width vs preview pane,
   route preview zone, board render scale, Keep Trying, and Close X.
-    Saves to <code>data/stuck_reveal_layout.json</code>.
+    Saves to <code>data/stuck_reveal_layout.json</code> — click <strong>Save now</strong>, then hard-refresh
+    (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) on the in-game page.
     <a href="/tilezilla-v2.html">In-game test</a> ·
     <a href="/dev-player-select.html">Dev tools</a>
   </p>
@@ -206,14 +206,14 @@
       <h2>Preview — reveal art + hit areas</h2>
       <div class="mock-stage" id="mockStage" tabindex="0">
         <div class="stuck-tuner-mock">
-          <div class="tz-stuck-dialog">
+          <div class="tz-stuck-dialog is-reveal">
             <div class="tz-stuck-dialog__frame is-preview">
               <img
                 class="tz-stuck-dialog__bg tz-stuck-dialog__bg--reveal"
                 src="/img/Imstuckreveal.png"
                 alt=""
-                width="1402"
-                height="1122"
+                width="390"
+                height="312"
               />
               <div class="tz-stuck-dialog__preview tuner-box" data-item="preview">
                 <canvas class="tz-stuck-dialog__preview-canvas" id="mockBoardCanvas" width="120" height="120" aria-hidden="true"></canvas>
@@ -238,6 +238,7 @@
       applyStuckRevealLayout,
       buildStuckRevealLayoutReport,
       clearStuckRevealLayoutCache,
+      fitStuckRevealDialog,
       getStuckRevealDialogLayout,
       getStuckRevealItemLayout,
       loadStuckRevealLayout,
@@ -362,8 +363,23 @@
       return `<strong>${def?.label || currentItem}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${extra}`;
     }
 
+    function fitMockDialog() {
+      const dialog = document.querySelector('.stuck-tuner-mock .tz-stuck-dialog');
+      if (!dialog) return;
+      const d = getStuckRevealDialogLayout(workingLayout);
+      fitStuckRevealDialog(dialog, {
+        layoutRatio: d.previewWidthRatio,
+        artW: d.artW,
+        artH: d.artH,
+        maxViewportWidth: 520,
+        maxViewportHeight: 900,
+        displayPad: 40,
+      });
+    }
+
     function refresh() {
       applyStuckRevealLayout(workingLayout, document.documentElement);
+      fitMockDialog();
       els.readout.innerHTML = formatReadout();
       els.jsonOut.value = exportJson();
       els.reportOut.value = buildStuckRevealLayoutReport(workingLayout);
@@ -482,6 +498,7 @@
       refresh();
       els.mockStage.focus();
       window.addEventListener('resize', () => {
+        fitMockDialog();
         if (currentItem === 'preview') drawMockBoard();
       });
     }

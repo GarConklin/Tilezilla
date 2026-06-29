@@ -15,7 +15,7 @@
     max(8px, env(safe-area-inset-top, 0px))
     + max(8px, env(safe-area-inset-bottom, 0px))
   );
-  --tz-profile-max-design-width: min(100%, 420px);
+  --tz-profile-max-design-width: min(100%, 390px);
 }
 
 html, body {
@@ -149,7 +149,7 @@ body.auth-screen-chrome .tz-menu-root {
   margin: 0;
   z-index: 2;
   --auth-passport-avail-h: calc(
-    100dvh - var(--auth-chrome-stage-top, 7.7%) - max(8px, env(safe-area-inset-bottom))
+    100dvh - 100dvh * var(--auth-chrome-stage-top-frac, 0.077) - max(8px, env(safe-area-inset-bottom, 0px))
   );
   max-height: var(--auth-passport-avail-h);
 }
@@ -232,7 +232,7 @@ body.auth-screen-chrome .tz-menu-root {
 
 .auth-screen__status {
   margin: 12px auto 0;
-  max-width: 420px;
+  max-width: 390px;
   text-align: center;
   font-size: 0.85rem;
   color: #f0dca8;
@@ -240,7 +240,7 @@ body.auth-screen-chrome .tz-menu-root {
 
 .auth-screen__stage {
   position: relative;
-  width: min(100%, 420px);
+  width: min(100%, 390px);
   margin: 0 auto;
 }
 
@@ -261,7 +261,7 @@ body.auth-screen-chrome .tz-menu-root {
   width: min(
     100%,
     var(--tz-profile-max-design-width),
-    var(--auth-login-max-width, 420px),
+    var(--auth-login-max-width, 390px),
     calc(var(--tz-profile-art-w) * 1px),
     calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );
@@ -271,7 +271,7 @@ body.auth-screen-chrome .tz-menu-root {
   width: min(
     100%,
     var(--tz-profile-max-design-width),
-    var(--auth-create-max-width, 420px),
+    var(--auth-create-max-width, 390px),
     calc(var(--tz-profile-art-w) * 1px),
     calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
   );

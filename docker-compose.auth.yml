@@ -1,5 +1,5 @@
-# Tilezilla auth service — joins Words Online mail relay on words_network.
-# Start Words stack first: docker compose -f docker-compose.mail.yml up -d (in WordsOnline)
+# Tilezilla auth service — joins Words Online mail relay on words_network (SMTP only).
+# Accounts live in tilegame MySQL (same as the game stack).
 #
 # Usage:
 #   docker compose -f docker-compose.auth.yml up -d --build
@@ -20,10 +20,10 @@ services:
       - ./auth/public:/var/www/html/public
       - ./web:/var/www/html/public/web:ro
     environment:
-      DB_HOST: ${WORDS_DB_HOST:-words_db}
-      DB_USER: ${WORDS_DB_USER:-wordsgame}
-      DB_PASS: ${WORDS_DB_PASS:-wordspass123}
-      DB_NAME: ${WORDS_DB_NAME:-WordsOnline}
+      DB_HOST: ${MYSQL_HOST:-garz-puzzle-mysql}
+      DB_USER: ${MYSQL_USER:-tilegame}
+      DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      DB_NAME: ${MYSQL_DATABASE:-tilegame}
       GAME_DB_HOST: ${MYSQL_HOST:-garz-puzzle-mysql}
       GAME_DB_USER: ${MYSQL_USER:-tilegame}
       GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}

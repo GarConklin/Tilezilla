@@ -38,7 +38,6 @@ try {
       -e MYSQL_USER=tilegame `
       -e MYSQL_PASSWORD=tilegame_dev `
       -e MYSQL_DATABASE=tilegame `
-      -e WORDS_DB_NAME=WordsOnline `
       web sh -c $pyCmd
   }
   else {
@@ -48,7 +47,6 @@ try {
       -e MYSQL_USER=tilegame `
       -e MYSQL_PASSWORD=tilegame_dev `
       -e MYSQL_DATABASE=tilegame `
-      -e WORDS_DB_NAME=WordsOnline `
       web sh -c $pyCmd
   }
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

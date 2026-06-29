@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 $config = require __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../src/Db.php';
 
 try {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -12,22 +13,13 @@ try {
         exit;
     }
 
-    $conn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
-    );
-
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed");
-    }
+    $conn = Db::connect($config);
 
     $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
     if ($isEmail) {
-        $stmt = $conn->prepare("SELECT id, username, email FROM users WHERE email = ?");
+        $stmt = $conn->prepare("SELECT user_id, username, email FROM users WHERE email = ?");
     } else {
-        $stmt = $conn->prepare("SELECT id, username, email FROM users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT user_id, username, email FROM users WHERE username = ?");
     }
     $stmt->bind_param("s", $identifier);
     $stmt->execute();
@@ -35,11 +27,12 @@ try {
     $stmt->close();
 
     if ($user) {
+        $userId = (int)$user['user_id'];
         $stmt = $conn->prepare(
-            "SELECT password_reset_expires FROM users WHERE id = ? AND password_reset_token IS NOT NULL
+            "SELECT password_reset_expires FROM users WHERE user_id = ? AND password_reset_token IS NOT NULL
              AND password_reset_expires > DATE_ADD(NOW(), INTERVAL 13 MINUTE)"
         );
-        $stmt->bind_param("i", $user['id']);
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $rateLimited = $stmt->get_result()->num_rows > 0;
         $stmt->close();
@@ -47,8 +40,10 @@ try {
         if (!$rateLimited) {
             $resetToken = bin2hex(random_bytes(32));
             $expiresAt = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-            $stmt = $conn->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $resetToken, $expiresAt, $user['id']);
+            $stmt = $conn->prepare(
+                "UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE user_id = ?"
+            );
+            $stmt->bind_param("ssi", $resetToken, $expiresAt, $userId);
             $stmt->execute();
             $stmt->close();
 

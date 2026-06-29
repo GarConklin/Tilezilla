@@ -1,6 +1,5 @@
--- Tilezilla auth link: accounts live in WordsOnline.users (shared Skifflake login).
--- words_user_id = WordsOnline.users.id
--- Game-specific fields (rank, hints) stay in tilegame DB.
+-- Tilezilla profile extension (words_user_id = tilegame.users.user_id).
+-- Game-specific fields; auth columns live on tilegame.users.
 
 USE tilegame;
 

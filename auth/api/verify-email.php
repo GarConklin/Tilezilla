@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 $config = require __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../src/Db.php';
 
 try {
     $token = trim($_GET['token'] ?? '');
@@ -8,18 +9,11 @@ try {
         throw new Exception("Verification token is required");
     }
 
-    $conn = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['database']
+    $conn = Db::connect($config);
+
+    $stmt = $conn->prepare(
+        "SELECT user_id, username, email, email_verified, status FROM users WHERE verification_token = ?"
     );
-
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed");
-    }
-
-    $stmt = $conn->prepare("SELECT id, username, email, email_verified, status FROM users WHERE verification_token = ?");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -29,12 +23,15 @@ try {
     }
 
     $user = $result->fetch_assoc();
+    $userId = (int)$user['user_id'];
     $stmt->close();
 
     if ($user['email_verified']) {
         if (($user['status'] ?? '') === 'registered') {
             $trialPeriodDays = 7;
-            $settingsStmt = $conn->prepare("SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'");
+            $settingsStmt = $conn->prepare(
+                "SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'"
+            );
             if ($settingsStmt) {
                 $settingsStmt->execute();
                 $settingsResult = $settingsStmt->get_result();
@@ -44,9 +41,10 @@ try {
                 $settingsStmt->close();
             }
             $activateStmt = $conn->prepare("
-                UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY) WHERE id = ?
+                UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY)
+                WHERE user_id = ?
             ");
-            $activateStmt->bind_param("ii", $trialPeriodDays, $user['id']);
+            $activateStmt->bind_param("ii", $trialPeriodDays, $userId);
             $activateStmt->execute();
             $activateStmt->close();
         }
@@ -60,15 +58,19 @@ try {
         exit;
     }
 
-    $updateStmt = $conn->prepare("UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE id = ?");
-    $updateStmt->bind_param("i", $user['id']);
+    $updateStmt = $conn->prepare(
+        "UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE user_id = ?"
+    );
+    $updateStmt->bind_param("i", $userId);
     if (!$updateStmt->execute()) {
         throw new Exception("Failed to verify email");
     }
     $updateStmt->close();
 
     $trialPeriodDays = 7;
-    $settingsStmt = $conn->prepare("SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'");
+    $settingsStmt = $conn->prepare(
+        "SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'"
+    );
     if ($settingsStmt) {
         $settingsStmt->execute();
         $settingsResult = $settingsStmt->get_result();
@@ -79,9 +81,10 @@ try {
     }
 
     $bonusStmt = $conn->prepare("
-        UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY) WHERE id = ?
+        UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY)
+        WHERE user_id = ?
     ");
-    $bonusStmt->bind_param("ii", $trialPeriodDays, $user['id']);
+    $bonusStmt->bind_param("ii", $trialPeriodDays, $userId);
     $bonusStmt->execute();
     $bonusStmt->close();
 
@@ -93,7 +96,7 @@ try {
     echo json_encode([
         'success' => true,
         'message' => $message,
-        'user_id' => $user['id'],
+        'user_id' => $userId,
         'username' => $user['username'],
         'trial_period_days' => $trialPeriodDays,
     ]);

@@ -245,7 +245,7 @@ export const PROFILE_LAYOUT_MOCK = {
 
 export const DEFAULT_AUTH_SCREEN_LAYOUT = {
   login: {
-    dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
+    dialog: { artW: 1418, artH: 2200, maxWidth: 390 },
     items: {
       user: { x: 33.7, y: 19.1, w: 33.5, h: 3.2 },
       pass: { x: 34, y: 23.8, w: 29.8, h: 3.2 },
@@ -267,7 +267,7 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
     },
   },
   create: {
-    dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
+    dialog: { artW: 1418, artH: 2200, maxWidth: 390 },
     items: {
       name: { x: 18, y: 24.5, w: 64, h: 2.8 },
       email: { x: 18, y: 29.5, w: 64, h: 2.8 },
@@ -286,7 +286,7 @@ export const DEFAULT_AUTH_SCREEN_LAYOUT = {
     },
   },
   profile: {
-    dialog: { artW: 1418, artH: 2200, maxWidth: 420 },
+    dialog: { artW: 1418, artH: 2200, maxWidth: 390 },
     items: {
       profileName: { x: 15, y: 22.5, w: 70, h: 4, fontScale: 1 },
       guestNote: { x: 15, y: 27, w: 70, h: 2, fontScale: 0.85 },
@@ -559,7 +559,7 @@ export function applyAuthScreenLayout(
   if (!screen) return;
 
   const d = screen.dialog || DEFAULT_AUTH_SCREEN_LAYOUT[screenKey].dialog;
-  target.style.setProperty(`--auth-${screenKey}-max-width`, `${d.maxWidth ?? 420}px`);
+  target.style.setProperty(`--auth-${screenKey}-max-width`, `${d.maxWidth ?? 390}px`);
 
   const items = AUTH_SCREEN_DEFS[screenKey]?.items || {};
   for (const itemKey of Object.keys(items)) {
@@ -674,7 +674,7 @@ function getProfileOverlayVisibilityRoot(root = document) {
 function applyProfileDialogFrameVars(layout, dialog, visibilityRoot = null) {
   const merged = mergeAuthScreenLayout(layout);
   const d = merged.profile?.dialog || DEFAULT_AUTH_SCREEN_LAYOUT.profile.dialog;
-  const maxWidth = `${d.maxWidth ?? 420}px`;
+  const maxWidth = `${d.maxWidth ?? 390}px`;
   if (dialog) dialog.style.setProperty('--auth-profile-max-width', maxWidth);
   if (visibilityRoot?.style) visibilityRoot.style.setProperty('--auth-profile-max-width', maxWidth);
 }
@@ -691,6 +691,50 @@ function profileHitStyle(box) {
     border: 'none',
     boxSizing: 'border-box',
   };
+}
+
+function authScreenPositionStyle(box) {
+  return {
+    position: 'absolute',
+    left: `${box.x}%`,
+    top: `${box.y}%`,
+    width: `${box.w}%`,
+    height: `${box.h}%`,
+    margin: '0',
+    boxSizing: 'border-box',
+  };
+}
+
+/** Push tuned login/create field boxes onto live DOM so layout cannot drift via CSS vars. */
+export function applyAuthScreenItemPositions(layout, screenKey, root = document) {
+  if (screenKey === 'profile') return;
+  const merged = mergeAuthScreenLayout(layout);
+  const items = AUTH_SCREEN_DEFS[screenKey]?.items || {};
+  const stage =
+    root.querySelector?.('.auth-screen__stage')
+    || (root.classList?.contains('auth-screen__stage') ? root : null)
+    || root;
+
+  for (const [key, meta] of Object.entries(items)) {
+    const box = getAuthScreenItemLayout(screenKey, key, merged);
+    const style = authScreenPositionStyle(box);
+
+    if (meta.slot) {
+      for (const el of stage.querySelectorAll(`[data-profile-slot="${meta.slot}"]`)) {
+        Object.assign(el.style, style);
+        if (isAuthTextItem(screenKey, key)) {
+          el.style.setProperty(cssVarName(screenKey, key, 'font-scale'), String(box.fontScale));
+        }
+      }
+      continue;
+    }
+
+    if (meta.cssClass) {
+      for (const el of stage.querySelectorAll(`.${meta.cssClass}`)) {
+        Object.assign(el.style, style);
+      }
+    }
+  }
 }
 
 /** Push tuned profile hit boxes onto real buttons (tuner + live) so spacing cannot drift via CSS vars. */
@@ -740,9 +784,16 @@ export async function refreshProfileOverlayLayoutFromDisk(root = document) {
 
 export async function initAuthScreenLayout(screenKey, { preferFile = false } = {}) {
   const layout = await loadAuthScreenLayout({ force: preferFile, preferFile, screenKey });
-  applyAuthScreenLayout(layout, screenKey, authScreenLayoutTarget(screenKey), { syncVisibility: true });
+  const stage = authScreenLayoutTarget(screenKey);
+  applyAuthScreenLayout(layout, screenKey, document.documentElement);
+  if (stage && stage !== document.documentElement) {
+    applyAuthScreenLayout(layout, screenKey, stage, { syncVisibility: false });
+  }
+  syncAuthScreenItemVisibility(layout, screenKey, stage || document);
   if (screenKey === 'profile') {
     applyProfileHitPositions(layout, document);
+  } else {
+    applyAuthScreenItemPositions(layout, screenKey, stage || document);
   }
   return layout;
 }
@@ -751,7 +802,7 @@ export function buildAuthScreenLayoutReport(layout, screenKey) {
   const merged = mergeAuthScreenLayout(layout);
   const lines = [`Auth screen — ${AUTH_SCREEN_DEFS[screenKey]?.label || screenKey}`, ''];
   const d = merged[screenKey]?.dialog || {};
-  lines.push(`maxWidth: ${d.maxWidth ?? 420}px`);
+  lines.push(`maxWidth: ${d.maxWidth ?? 390}px`);
   lines.push('');
   for (const [key, meta] of Object.entries(AUTH_SCREEN_DEFS[screenKey]?.items || {})) {
     const box = getAuthScreenItemLayout(screenKey, key, merged);

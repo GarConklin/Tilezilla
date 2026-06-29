@@ -56,3 +56,70 @@
 {"guest_code": "Guest-TZ-A1839-IB", "action": "Guest Session Started", "timestamp": "2026-06-27T02:10:24.339Z", "puzzle_id": null}
 {"guest_code": "Guest-TZ-A1839-IB", "action": "Daily Challenge Started", "timestamp": "2026-06-27T02:10:29.271Z", "puzzle_id": "5x6-0B-BIF", "challenge_date": "6/22/2026"}
 {"guest_code": "Guest-TZ-A1839-IB", "action": "Daily Challenge Started", "timestamp": "2026-06-27T02:25:04.669Z", "puzzle_id": "5x6-0B-BYJ", "challenge_date": "2026-06-26"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Guest Created", "timestamp": "2026-06-27T03:45:47.891Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:45:47.891Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Guest Session Started", "timestamp": "2026-06-27T03:45:47.891Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:45:49.591Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Required Shown", "timestamp": "2026-06-27T03:46:07.082Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Create Account Clicked", "timestamp": "2026-06-27T03:46:16.747Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Guest Session Started", "timestamp": "2026-06-27T03:46:24.683Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:46:24.683Z", "puzzle_id": null, "source": "create_passport"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:46:26.385Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Clicked", "timestamp": "2026-06-27T03:46:39.522Z", "puzzle_id": null, "source": "bottom_nav"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Guest Session Started", "timestamp": "2026-06-27T03:46:45.603Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:46:45.604Z", "puzzle_id": null, "source": "login_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:46:47.392Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T03:54:00.880Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T04:10:29.211Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Required Shown", "timestamp": "2026-06-27T04:11:38.486Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Daily Challenge Started", "timestamp": "2026-06-27T04:13:51.273Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Required Shown", "timestamp": "2026-06-27T04:13:54.844Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Account Created", "timestamp": "2026-06-27T04:18:57.316Z", "puzzle_id": null, "user_id": "GarOdal", "converted_from": "Guest-TZ-A1060-HW"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Success", "timestamp": "2026-06-27T05:11:16.775Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A1060-HW", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Success", "timestamp": "2026-06-27T05:11:21.038Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A1060-HW", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Success", "timestamp": "2026-06-27T05:11:43.099Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A1060-HW", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Success", "timestamp": "2026-06-27T05:11:54.783Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A1060-HW", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A1060-HW", "action": "Login Success", "timestamp": "2026-06-27T05:16:42.874Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A1060-HW", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Guest Created", "timestamp": "2026-06-27T13:25:45.088Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Guest Session Started", "timestamp": "2026-06-27T13:25:45.089Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-27T13:25:45.090Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-27T13:25:49.071Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Solved", "timestamp": "2026-06-27T13:36:07.298Z", "puzzle_id": "5x6-0B-CID"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Solved", "timestamp": "2026-06-27T13:36:22.417Z", "puzzle_id": "5x6-0B-CID"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Solved", "timestamp": "2026-06-27T13:36:32.201Z", "puzzle_id": "5x6-0B-CID"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Solved", "timestamp": "2026-06-27T13:36:45.136Z", "puzzle_id": "5x6-0B-CID"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Create Account Clicked", "timestamp": "2026-06-27T13:36:47.381Z", "puzzle_id": null, "source": "daily_complete"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-27T13:36:51.023Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Login Required Shown", "timestamp": "2026-06-27T13:37:32.350Z", "puzzle_id": null, "source": null}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-27T13:37:35.834Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Guest Created", "timestamp": "2026-06-28T00:32:21.508Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Guest Session Started", "timestamp": "2026-06-28T00:32:21.511Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T00:32:21.511Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T00:32:23.063Z", "puzzle_id": "5x6-0B-CID", "challenge_date": "2026-06-27"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Required Shown", "timestamp": "2026-06-28T00:47:31.573Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Required Shown", "timestamp": "2026-06-28T00:47:39.919Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Clicked", "timestamp": "2026-06-28T00:47:42.558Z", "puzzle_id": null, "source": "bottom_nav"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Success", "timestamp": "2026-06-28T01:12:58.649Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A5366-VR", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:13:49.105Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:14:56.818Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:16:43.579Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Required Shown", "timestamp": "2026-06-28T23:17:35.835Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Required Shown", "timestamp": "2026-06-28T23:17:39.811Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Clicked", "timestamp": "2026-06-28T23:17:43.083Z", "puzzle_id": null, "source": "bottom_nav"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:22:50.120Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Required Shown", "timestamp": "2026-06-28T23:22:54.491Z", "puzzle_id": null, "source": "adventure"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:35:04.856Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Clicked", "timestamp": "2026-06-28T23:37:52.740Z", "puzzle_id": null, "source": "bottom_nav"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Daily Challenge Started", "timestamp": "2026-06-28T23:57:16.607Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Clicked", "timestamp": "2026-06-29T00:52:21.699Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A5366-VR", "action": "Login Success", "timestamp": "2026-06-29T00:53:25.158Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A5366-VR", "source": "login_screen"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Guest Session Started", "timestamp": "2026-06-29T01:38:16.732Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-29T01:38:16.733Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Daily Challenge Started", "timestamp": "2026-06-29T01:38:21.286Z", "puzzle_id": "5x6-0B-BKE", "challenge_date": "2026-06-28"}
+{"guest_code": "Guest-TZ-A8385-TY", "action": "Login Clicked", "timestamp": "2026-06-29T01:52:27.988Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": null, "action": "Account Created", "timestamp": "2026-06-29T03:12:02.898Z", "puzzle_id": null, "user_id": "Fred", "converted_from": null}
+{"guest_code": "Guest-TZ-A4000-EU", "action": "Guest Created", "timestamp": "2026-06-29T03:22:59.220Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A4000-EU", "action": "Guest Session Started", "timestamp": "2026-06-29T03:22:59.221Z", "puzzle_id": null}
+{"guest_code": "Guest-TZ-A4000-EU", "action": "Daily Challenge Started", "timestamp": "2026-06-29T03:22:59.221Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A4000-EU", "action": "Login Clicked", "timestamp": "2026-06-29T03:23:03.003Z", "puzzle_id": null, "source": "load_screen"}
+{"guest_code": "Guest-TZ-A4000-EU", "action": "Login Success", "timestamp": "2026-06-29T03:23:07.102Z", "puzzle_id": null, "user_id": "GarOdal", "words_user_id": 900004, "converted_from": "Guest-TZ-A4000-EU", "source": "login_screen"}

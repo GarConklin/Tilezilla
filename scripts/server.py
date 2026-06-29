@@ -23,8 +23,13 @@ WEB = ROOT / "web"
 SCRIPTS = ROOT / "scripts"
 # Default 8081 avoids Docker Desktop binding host port 8080 (docker-compose web service).
 PORT = int(os.environ.get("PORT", "8081"))
-# Proxy /auth/* to PHP auth (nginx remote-test gateway does the same rewrite).
-AUTH_UPSTREAM = os.environ.get("AUTH_UPSTREAM", "http://php-auth").rstrip("/")
+# Proxy /auth/* to PHP auth. In Docker Compose, set AUTH_UPSTREAM=http://php-auth.
+# On the host (python scripts/server.py), auth is published on AUTH_PORT (default 8090).
+_AUTH_HOST_PORT = os.environ.get("AUTH_PORT", "8090")
+AUTH_UPSTREAM = os.environ.get(
+    "AUTH_UPSTREAM",
+    f"http://127.0.0.1:{_AUTH_HOST_PORT}",
+).rstrip("/")
 _AUTH_HOP_BY_HOP = frozenset(
     {
         "connection",
@@ -216,7 +221,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_error(
                 502,
                 f"Auth service unavailable ({exc.reason}). "
-                "Start php-auth (remote-test stack or docker-compose.remote-test.yml).",
+                f"Start auth: docker compose up -d mysql php-auth "
+                f"(then ensure {AUTH_UPSTREAM} responds).",
             )
         return True
 
@@ -914,12 +920,21 @@ def validate_revisit_layout(payload: object) -> str | None:
     return None
 
 
-LOAD_SCREEN_ITEM_KEYS = ("preview", "guest", "login")
+LOAD_SCREEN_ITEM_KEYS = (
+    "preview",
+    "guest",
+    "login",
+    "carouselPrev",
+    "carouselNext",
+    "carouselPlay",
+    "carouselSlide",
+)
 
 MAIN_SCREEN_V2_ITEM_KEYS = (
     "topBar",
     "menu",
     "title",
+    "infoTip",
     "board",
     "infoBar",
     "preview",
@@ -965,6 +980,8 @@ def validate_main_screen_v2_layout(payload: object) -> str | None:
                 return "items.bottomMenuCloseTab.opacity must be a number"
             if "bg" in box and not isinstance(box["bg"], str):
                 return "items.bottomMenuCloseTab.bg must be a string"
+        if key in ("infoTip", "infoBar") and "fontSize" in box and not isinstance(box["fontSize"], str):
+            return f"items.{key}.fontSize must be a string"
         px = box.get("px")
         if px is not None:
             if not isinstance(px, dict):
@@ -993,6 +1010,8 @@ def validate_load_screen_layout(payload: object) -> str | None:
             return "art.objectPosition must be a string"
         if "frame" in art and not isinstance(art["frame"], str):
             return "art.frame must be a string"
+        if "maxHeightPercent" in art and not isinstance(art["maxHeightPercent"], (int, float)):
+            return "art.maxHeightPercent must be a number"
         for dim in ("x", "y", "w", "h"):
             if dim in art and not isinstance(art[dim], (int, float)):
                 return f"art.{dim} must be a number"
@@ -1310,6 +1329,18 @@ class DevHTTPServer(ThreadingHTTPServer):
     allow_reuse_address = False
 
 
+def _probe_auth_upstream() -> None:
+    if not AUTH_UPSTREAM:
+        return
+    try:
+        urlopen(Request(f"{AUTH_UPSTREAM}/api/check-session.php", method="GET"), timeout=2)
+    except Exception as exc:
+        print(f"WARNING: Auth not reachable at {AUTH_UPSTREAM} ({exc})")
+        print("  Registration/login will return 502 until auth is running.")
+        print("  Start: docker compose up -d mysql php-auth")
+        print(f"  Or:   .\\scripts\\start-local-auth.ps1")
+
+
 def main() -> None:
     try:
         server = DevHTTPServer(("0.0.0.0", PORT), Handler)
@@ -1320,6 +1351,8 @@ def main() -> None:
 
     print(f"Serving on http://127.0.0.1:{PORT}")
     print(f"Game: http://127.0.0.1:{PORT}/tilezilla-v2.html")
+    print(f"Auth proxy: /auth/* -> {AUTH_UPSTREAM}")
+    _probe_auth_upstream()
     if PORT == 8080:
         print("(Port 8080 may conflict with Docker — use PORT=8081 python scripts/server.py if you see ERR_EMPTY_RESPONSE)")
     print("Adventure path API: GET /api/adventure/path")

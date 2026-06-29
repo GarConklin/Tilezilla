@@ -2,6 +2,37 @@
 
 export const MAIN_SCREEN_V2_ARTBOARD = { w: 390, h: 844 };
 
+export const DEFAULT_INFO_TIP_FONT = 'clamp(7px, 58cqh, 13px)';
+
+/** @returns {{ minPx: number, cqh: number, maxPx: number }} */
+export function parseInfoTipFontSize(fontSize) {
+  const s = String(fontSize || '');
+  const m = s.match(/clamp\(\s*([\d.]+)\s*px\s*,\s*([\d.]+)\s*cqh\s*,\s*([\d.]+)\s*px\s*\)/i);
+  if (m) {
+    return { minPx: parseFloat(m[1]), cqh: parseFloat(m[2]), maxPx: parseFloat(m[3]) };
+  }
+  return { minPx: 7, cqh: 58, maxPx: 13 };
+}
+
+/** @param {{ minPx: number, cqh: number, maxPx: number }} parts */
+export function buildInfoTipFontSize(parts) {
+  const minPx = Math.max(5, Math.round(parts.minPx * 10) / 10);
+  const cqh = Math.max(20, Math.min(90, Math.round(parts.cqh * 10) / 10));
+  const maxPx = Math.max(minPx + 1, Math.min(18, Math.round(parts.maxPx * 10) / 10));
+  return `clamp(${minPx}px, ${cqh}cqh, ${maxPx}px)`;
+}
+
+/** @param {'cqh' | 'max'} mode */
+export function adjustInfoTipFontSize(fontSize, dir, mode = 'cqh') {
+  const parts = parseInfoTipFontSize(fontSize);
+  if (mode === 'max') {
+    parts.maxPx += dir * 0.5;
+  } else {
+    parts.cqh += dir * 2;
+  }
+  return buildInfoTipFontSize(parts);
+}
+
 export const MAIN_SCREEN_V2_ITEM_DEFS = {
   topBar: { label: 'TopBar layout', cssPrefix: 'top-bar' },
   menu: { label: 'Hamburger', cssPrefix: 'menu' },
@@ -29,7 +60,7 @@ export const DEFAULT_MAIN_SCREEN_V2_LAYOUT = {
     topBar: { x: 0, y: 0, w: 100, h: 7.58 },
     menu: { x: 2.05, y: 0.95, w: 11.69, h: 5.41 },
     title: { x: 20.51, y: 0.47, w: 58.99, h: 6.65 },
-    infoTip: { x: 0, y: 7.15, w: 100, h: 0.85 },
+    infoTip: { x: 0, y: 7.15, w: 100, h: 0.85, fontSize: DEFAULT_INFO_TIP_FONT },
     board: { x: 0, y: 7.7, w: 100, h: 46.21 },
     infoBar: { x: 0, y: 7.7, w: 100, h: 1.78 },
     preview: { x: 0, y: 56.17, w: 100, h: 30.69 },
@@ -147,6 +178,9 @@ export function getMainScreenV2ItemLayout(itemKey, layout) {
     box.opacity = item.opacity ?? def.opacity ?? 1;
     box.bg = item.bg ?? def.bg ?? '';
   }
+  if (itemKey === 'infoTip') {
+    box.fontSize = item.fontSize ?? def.fontSize ?? DEFAULT_INFO_TIP_FONT;
+  }
   return box;
 }
 
@@ -168,6 +202,8 @@ export function applyMainScreenV2Layout(layout, target = document.documentElemen
   for (const [key, meta] of Object.entries(MAIN_SCREEN_V2_ITEM_DEFS)) {
     setItemVars(target, meta.cssPrefix, getMainScreenV2ItemLayout(key, merged));
   }
+  const infoTip = getMainScreenV2ItemLayout('infoTip', merged);
+  target.style.setProperty('--tz-msv2-info-tip-font', infoTip.fontSize);
   const closeTab = getMainScreenV2ItemLayout('bottomMenuCloseTab', merged);
   target.style.setProperty('--tz-msv2-bottom-menu-close-tab-opacity', String(closeTab.opacity ?? 1));
   const closeBg = String(closeTab.bg ?? '').trim();
@@ -211,6 +247,9 @@ export function buildMainScreenV2LayoutReport(layout) {
   for (const [key, meta] of Object.entries(MAIN_SCREEN_V2_ITEM_DEFS)) {
     const box = getMainScreenV2ItemLayout(key, merged);
     let line = `${meta.label}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
+    if (key === 'infoTip') {
+      line += ` font=${box.fontSize}`;
+    }
     if (key === 'bottomMenuCloseTab') {
       line += ` opacity=${box.opacity ?? 1} bg=${box.bg || '(transparent)'}`;
     }

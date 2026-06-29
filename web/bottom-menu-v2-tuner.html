@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="css/tilezilla-shell.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; }
+    html.bottom-menu-v2-tuner-page,
+    html.bottom-menu-v2-tuner-page body {
+      overflow: auto;
+      height: auto;
+      min-height: 100%;
+    }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -43,6 +49,14 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #c4a35a;
+    }
+    .field-section-title {
+      margin: 10px 0 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8fd49a;
     }
     .field-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 12px; }
     .field-btn {
@@ -213,7 +227,40 @@
       background: rgba(0, 0, 0, 0.7);
       pointer-events: none;
     }
+    .bottom-menu-v2-tuner-page .tz-bottom-nav__hit {
+      background: rgba(100, 200, 255, 0.28);
+      border: 2px solid rgba(100, 200, 255, 0.85);
+      border-radius: 4px;
+      z-index: 3;
+    }
+    .bottom-menu-v2-tuner-page .tz-bottom-nav__hit.is-tuner-active {
+      border-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.65);
+      z-index: 4;
+    }
+    .bottom-menu-v2-tuner-page .tz-bottom-nav__hit .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      font-size: clamp(6px, 2cqi, 9px);
+      font-weight: 600;
+      line-height: 1.1;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
     .bottom-menu-v2-tuner-page .tz-bottom-nav__hover { opacity: 0 !important; }
+    .bottom-menu-v2-tuner-page .tz-bottom-nav-plaque:has(.tz-bottom-nav__hit--adventure.is-tuner-active) .tz-bottom-nav__hover--adventure,
+    .bottom-menu-v2-tuner-page .tz-bottom-nav-plaque:has(.tz-bottom-nav__hit--daily-challenge.is-tuner-active) .tz-bottom-nav__hover--daily-challenge,
+    .bottom-menu-v2-tuner-page .tz-bottom-nav-plaque:has(.tz-bottom-nav__hit--random.is-tuner-active) .tz-bottom-nav__hover--random,
+    .bottom-menu-v2-tuner-page .tz-bottom-nav-plaque:has(.tz-bottom-nav__hit--library.is-tuner-active) .tz-bottom-nav__hover--library,
+    .bottom-menu-v2-tuner-page .tz-bottom-nav-plaque:has(.tz-bottom-nav__hit--profile.is-tuner-active) .tz-bottom-nav__hover--profile {
+      opacity: 1 !important;
+    }
     .bottom-menu-v2-tuner-page.is-preview-tilebag-expanded .tz-bottom-menu-v2 {
       visibility: hidden;
       pointer-events: none;
@@ -233,11 +280,11 @@
   <h1>Bottom menu v2 tuner</h1>
   <p class="lead">
     Tune the <strong>close tab</strong> (menu open), <strong>expand tab</strong> (menu closed), and <strong>drawer panel</strong>
-    on the main v2 screen. Saves to <code>data/main_screen_v2_layout.json</code>.
-    Close tab uses a PNG with transparent corners — set <strong>backdrop color</strong> to block the scene behind it, or clear it for see-through.
-    <a href="/tilezilla-v2.html">Open v2 game</a>
+    on the main v2 screen. Also tune <strong>nav button placement</strong> and preview each <strong>BMB-*H rollover</strong> strip.
+    Nav saves to <code>data/bottom_nav_layout.json</code>; menu chrome saves to <code>data/main_screen_v2_layout.json</code>.
+    <a href="/bottom-nav-tuner.html">Bottom nav tuner</a>
+    · <a href="/tilezilla-v2.html">Open v2 game</a>
     · <a href="/main-screen-v2-tuner.html">Main screen v2 tuner</a>
-    · <a href="/bottom-nav-tuner.html">Bottom nav hits</a>
     · <a href="/dev-player-select.html">Dev tools</a>
   </p>
 
@@ -249,7 +296,8 @@
         <button type="button" class="btn" data-preview="menu-closed">Menu closed</button>
         <button type="button" class="btn" data-preview="tilebag-expanded">Tile bag expanded</button>
       </div>
-      <div class="field-grid" id="fieldGrid"></div>
+      <div class="field-grid" id="menuFieldGrid"></div>
+      <div class="field-grid" id="navFieldGrid"></div>
       <div class="close-tab-appearance" id="closeTabAppearance">
         <h2 style="margin:0 0 8px;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:#c4a35a">Close tab appearance</h2>
         <label for="closeTabOpacity">Opacity</label>
@@ -267,10 +315,10 @@
       </div>
       <p class="readout" id="readout">—</p>
       <ul class="keys" id="keysList">
-        <li>Scroll — move X · Shift+scroll — move Y · Ctrl+scroll — width</li>
-        <li><strong>Alt+scroll — height</strong> (use on <em>Bottom menu panel</em> to grow menu)</li>
-        <li>Or use Taller / Shorter buttons below · drag the highlighted box</li>
-        <li>Close tab selected: <strong>Ctrl+Shift+scroll</strong> — opacity</li>
+        <li><strong>Menu chrome</strong> — scroll: X · Shift: Y · Ctrl: W · Alt: height · Close tab: Ctrl+Shift+scroll opacity</li>
+        <li><strong>Nav plaque</strong> — Alt+scroll: width · Alt+Shift+scroll: height · scroll / Shift+scroll: move bar</li>
+        <li><strong>Nav button</strong> — scroll: X · Shift+scroll: Y · Ctrl+scroll: hit width · Alt+Ctrl+scroll: hit height</li>
+        <li>Select a nav button to preview its BMB rollover strip in the preview</li>
       </ul>
       <div class="nudge-grid" id="nudgeGrid">
         <span></span>
@@ -306,13 +354,18 @@
             </button>
             <div class="tz-bottom-menu-v2__drawer" id="mockDrawer">
               <nav class="tz-bottom-nav tz-bottom-nav--v2-drawer" aria-label="Main navigation">
-                <div class="tz-bottom-nav-plaque">
-                  <img class="tz-bottom-nav-plaque__bg" src="/img/NewBotmMenu.png" alt="" width="1698" height="456" />
-                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" aria-label="Adventure"></button>
-                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" aria-label="Daily Challenge"></button>
-                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" aria-label="Random Puzzle"></button>
-                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" aria-label="Library"></button>
-                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" aria-label="Profile"></button>
+                <div class="tz-bottom-nav-plaque" id="mockPlaque">
+                  <img class="tz-bottom-nav-plaque__bg" src="/img/NewBotmMenu.png" alt="" width="1678" height="310" />
+                  <img class="tz-bottom-nav__hover tz-bottom-nav__hover--adventure" src="/img/BMB-1H.png" alt="" width="1678" height="310" aria-hidden="true" />
+                  <img class="tz-bottom-nav__hover tz-bottom-nav__hover--daily-challenge" src="/img/BMB-2H.png" alt="" width="1678" height="310" aria-hidden="true" />
+                  <img class="tz-bottom-nav__hover tz-bottom-nav__hover--random" src="/img/BMB-3H.png" alt="" width="1678" height="310" aria-hidden="true" />
+                  <img class="tz-bottom-nav__hover tz-bottom-nav__hover--library" src="/img/BMB-4H.png" alt="" width="1678" height="310" aria-hidden="true" />
+                  <img class="tz-bottom-nav__hover tz-bottom-nav__hover--profile" src="/img/BMB-5H.png" alt="" width="1678" height="310" aria-hidden="true" />
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" data-nav-item="adventure"><span class="hit-label">Adventure</span></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" data-nav-item="dailyChallenge"><span class="hit-label">Daily</span></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" data-nav-item="random"><span class="hit-label">Random</span></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" data-nav-item="library"><span class="hit-label">Library</span></button>
+                  <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" data-nav-item="profile"><span class="hit-label">Profile</span></button>
                 </div>
               </nav>
             </div>
@@ -337,27 +390,57 @@
       mergeMainScreenV2Layout,
       stashMainScreenV2LayoutDraft,
     } from './js/main-screen-v2-layout.js';
-    import { applyBottomNavLayout, loadBottomNavLayout } from './js/bottom-nav-layout.js';
+    import { applyBottomNavLayout, BOTTOM_NAV_ITEM_DEFS, clearBottomNavLayoutCache, clearBottomNavLayoutDraft, getBottomNavItemLayout, getPlaqueScales, loadBottomNavLayout, mergeBottomNavLayout, stashBottomNavLayoutDraft } from './js/bottom-nav-layout.js';
 
-    const ITEM_KEYS = ['bottomMenuCloseTab', 'bottomMenuPanel', 'bottomMenuTab'];
+    const MENU_ITEM_KEYS = ['bottomMenuCloseTab', 'bottomMenuPanel', 'bottomMenuTab'];
+    const NAV_PLAQUE_ITEM = '__navPlaque__';
     const POS_STEP = 0.25;
     const SIZE_STEP = 0.25;
+    const NAV_X_STEP = 0.5;
+    const NAV_Y_STEP = 0.5;
+    const NAV_HIT_STEP = 1;
+    const NAV_OFFSET_STEP = 2;
+    const NAV_SCALE_STEP = 0.02;
 
     let workingLayout = mergeMainScreenV2Layout(null);
+    let navLayout = mergeBottomNavLayout(null);
     let currentItem = 'bottomMenuCloseTab';
     let previewMode = 'menu-open';
     let dragState = null;
     const els = {};
 
-    function patchItem(key, patch) {
+    function isNavItem(key) {
+      return key === NAV_PLAQUE_ITEM || Boolean(BOTTOM_NAV_ITEM_DEFS[key]);
+    }
+
+    function patchMenuItem(key, patch) {
       if (!workingLayout.items[key]) workingLayout.items[key] = {};
       Object.assign(workingLayout.items[key], patch);
       refresh();
     }
 
+    function patchNavItem(key, patch) {
+      if (!navLayout.items[key]) navLayout.items[key] = {};
+      Object.assign(navLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchNavHits(patch) {
+      Object.assign(navLayout.hits, patch);
+      refresh();
+    }
+
+    function patchNavPlaque(patch) {
+      Object.assign(navLayout.plaque, patch);
+      refresh();
+    }
+
     function exportJson() {
+      if (isNavItem(currentItem)) {
+        return JSON.stringify(navLayout, null, 2);
+      }
       const items = {};
-      for (const key of ITEM_KEYS) {
+      for (const key of MENU_ITEM_KEYS) {
         items[key] = { ...workingLayout.items[key] };
       }
       return JSON.stringify({ items }, null, 2);
@@ -386,7 +469,7 @@
     }
 
     function patchCloseTabAppearance(patch) {
-      patchItem('bottomMenuCloseTab', patch);
+      patchMenuItem('bottomMenuCloseTab', patch);
     }
 
     function phoneRect() {
@@ -406,7 +489,7 @@
     function ensureTunerBoxes() {
       const layer = document.getElementById('tunerBoxLayer');
       if (!layer) return;
-      for (const key of ITEM_KEYS) {
+      for (const key of MENU_ITEM_KEYS) {
         let box = layer.querySelector(`[data-item="${key}"]`);
         if (!box) {
           box = document.createElement('button');
@@ -433,7 +516,7 @@
             if (!rect?.width || !rect?.height) return;
             const dx = e.clientX - dragState.startX;
             const dy = e.clientY - dragState.startY;
-            patchItem(key, {
+            patchMenuItem(key, {
               x: Math.max(0, Math.round((dragState.snapshot.x + (dx / rect.width) * 100) * 20) / 20),
               y: Math.max(0, Math.round((dragState.snapshot.y + (dy / rect.height) * 100) * 20) / 20),
             });
@@ -474,46 +557,112 @@
       refresh();
     }
 
-    let saveTimer = null;
+    let menuSaveTimer = null;
+    let navSaveTimer = null;
     let saveInFlight = false;
-    let saveQueued = false;
+    let saveQueued = null;
 
-    async function saveToFile({ quiet = false } = {}) {
-      if (saveInFlight) { saveQueued = true; return; }
+    async function saveMenuLayout({ quiet = false } = {}) {
+      const full = mergeMainScreenV2Layout(workingLayout);
+      const res = await fetch('/api/dev/save-main-screen-v2-layout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(full, null, 2),
+      });
+      if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+      clearMainScreenV2LayoutCache();
+      clearMainScreenV2LayoutDraft();
+      localStorage.setItem('tilezilla:main-screen-v2-layout-version', String(Date.now()));
+      window.dispatchEvent(new CustomEvent('tilezilla:main-screen-v2-layout-saved'));
+      if (!quiet) els.status.textContent = 'Saved menu chrome to data/main_screen_v2_layout.json';
+    }
+
+    async function saveNavLayout({ quiet = false } = {}) {
+      const res = await fetch('/api/dev/save-bottom-nav-layout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(navLayout, null, 2),
+      });
+      if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+      clearBottomNavLayoutCache();
+      clearBottomNavLayoutDraft();
+      localStorage.setItem('tilezilla:bottom-nav-layout-version', String(Date.now()));
+      window.dispatchEvent(new CustomEvent('tilezilla:bottom-nav-layout-saved'));
+      if (!quiet) els.status.textContent = 'Saved nav placement to data/bottom_nav_layout.json';
+    }
+
+    async function saveToFile({ quiet = false, target = null } = {}) {
+      const saveTarget = target || (isNavItem(currentItem) ? 'nav' : 'menu');
+      if (saveInFlight) { saveQueued = saveTarget; return; }
       saveInFlight = true;
       try {
-        const full = mergeMainScreenV2Layout(workingLayout);
-        const res = await fetch('/api/dev/save-main-screen-v2-layout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(full, null, 2),
-        });
-        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
-        clearMainScreenV2LayoutCache();
-        clearMainScreenV2LayoutDraft();
-        localStorage.setItem('tilezilla:main-screen-v2-layout-version', String(Date.now()));
-        window.dispatchEvent(new CustomEvent('tilezilla:main-screen-v2-layout-saved'));
-        els.status.textContent = quiet
-          ? 'Auto-saved to data/main_screen_v2_layout.json'
-          : 'Saved to data/main_screen_v2_layout.json';
+        if (saveTarget === 'nav') await saveNavLayout({ quiet });
+        else await saveMenuLayout({ quiet });
+        if (quiet) {
+          els.status.textContent = saveTarget === 'nav'
+            ? 'Auto-saved nav to data/bottom_nav_layout.json'
+            : 'Auto-saved menu to data/main_screen_v2_layout.json';
+        }
       } catch (err) {
         els.status.textContent = `Save failed — ${err.message || err}`;
       } finally {
         saveInFlight = false;
-        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+        if (saveQueued) {
+          const queued = saveQueued;
+          saveQueued = null;
+          void saveToFile({ quiet: true, target: queued });
+        }
       }
     }
 
     function scheduleSave() {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+      if (isNavItem(currentItem)) {
+        clearTimeout(navSaveTimer);
+        navSaveTimer = setTimeout(() => void saveToFile({ quiet: true, target: 'nav' }), 600);
+        return;
+      }
+      clearTimeout(menuSaveTimer);
+      menuSaveTimer = setTimeout(() => void saveToFile({ quiet: true, target: 'menu' }), 600);
     }
 
-    function refresh() {
-      applyMainScreenV2Layout(workingLayout, document.documentElement);
-      ensureTunerBoxes();
-      refreshPreviewMode();
-      syncCloseTabControls();
+    function refreshNavUi() {
+      for (const hit of document.querySelectorAll('.tz-bottom-nav__hit[data-nav-item]')) {
+        const key = hit.dataset.navItem;
+        hit.classList.toggle('is-tuner-active', key === currentItem);
+        hit.classList.toggle('tz-bottom-nav__hit--active', key === currentItem);
+      }
+      for (const btn of els.navFieldGrid?.querySelectorAll('.field-btn') || []) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const btn of els.menuFieldGrid?.querySelectorAll('.field-btn') || []) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const box of document.querySelectorAll('#tunerBoxLayer .tuner-box')) {
+        box.classList.toggle('is-tuner-active', box.dataset.item === currentItem);
+      }
+    }
+
+    function refreshReadout() {
+      if (currentItem === NAV_PLAQUE_ITEM) {
+        const scales = getPlaqueScales(navLayout.plaque);
+        els.readout.innerHTML = `
+          <strong>Nav graphic (plaque)</strong><br />
+          width: ${scales.w}× · height: ${scales.h}× · offset Y: ${navLayout.plaque.offsetY ?? 0}px
+        `;
+        return;
+      }
+      if (isNavItem(currentItem)) {
+        const def = BOTTOM_NAV_ITEM_DEFS[currentItem];
+        const L = getBottomNavItemLayout(currentItem, navLayout);
+        const hits = navLayout.hits;
+        const scales = getPlaqueScales(navLayout.plaque);
+        els.readout.innerHTML = `
+          <strong>${def?.label || currentItem}</strong><br />
+          x: ${L.x}% · y: ${L.y}%<br />
+          plaque ${scales.w}× wide · ${scales.h}× tall · hit ${hits.w}%×${hits.h}%
+        `;
+        return;
+      }
       const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
       const def = MAIN_SCREEN_V2_ITEM_DEFS[currentItem];
       let readout = `
@@ -525,11 +674,19 @@
         readout += `<br />opacity: ${box.opacity ?? 1} · bg: ${box.bg || '(transparent)'}`;
       }
       els.readout.innerHTML = readout;
+    }
+
+    function refresh() {
+      applyMainScreenV2Layout(workingLayout, document.documentElement);
+      applyBottomNavLayout(navLayout, document.documentElement);
+      ensureTunerBoxes();
+      refreshPreviewMode();
+      syncCloseTabControls();
+      refreshReadout();
       els.jsonOut.value = exportJson();
-      stashMainScreenV2LayoutDraft(workingLayout);
-      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
-        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
-      }
+      if (isNavItem(currentItem)) stashBottomNavLayoutDraft(navLayout);
+      else stashMainScreenV2LayoutDraft(workingLayout);
+      refreshNavUi();
       scheduleSave();
     }
 
@@ -537,6 +694,39 @@
       if (e.target.matches('textarea, input')) return;
       e.preventDefault();
       const dir = e.deltaY < 0 ? 1 : -1;
+
+      if (currentItem === NAV_PLAQUE_ITEM) {
+        const scales = getPlaqueScales(navLayout.plaque);
+        if (e.altKey && e.shiftKey) {
+          patchNavPlaque({ hScale: Math.round((scales.h + dir * NAV_SCALE_STEP) * 100) / 100 });
+          return;
+        }
+        if (e.altKey) {
+          patchNavPlaque({ wScale: Math.round((scales.w + dir * NAV_SCALE_STEP) * 100) / 100 });
+          return;
+        }
+        patchNavPlaque({ offsetY: (navLayout.plaque.offsetY ?? 0) + dir * NAV_OFFSET_STEP });
+        return;
+      }
+
+      if (isNavItem(currentItem)) {
+        const L = getBottomNavItemLayout(currentItem, navLayout);
+        if (e.altKey && e.ctrlKey) {
+          patchNavHits({ h: Math.round((navLayout.hits.h + dir * NAV_HIT_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchNavHits({ w: Math.round((navLayout.hits.w + dir * NAV_HIT_STEP) * 10) / 10 });
+          return;
+        }
+        if (e.shiftKey) {
+          patchNavItem(currentItem, { y: Math.round((L.y + dir * NAV_Y_STEP) * 10) / 10 });
+          return;
+        }
+        patchNavItem(currentItem, { x: Math.round((L.x + dir * NAV_X_STEP) * 10) / 10 });
+        return;
+      }
+
       const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
       if (currentItem === 'bottomMenuCloseTab' && e.ctrlKey && e.shiftKey) {
         const next = Math.max(0.05, Math.min(1, Math.round(((box.opacity ?? 1) + dir * 0.05) * 100) / 100));
@@ -544,30 +734,54 @@
         return;
       }
       if (e.altKey) {
-        patchItem(currentItem, { h: Math.max(0.5, Math.round((box.h + dir * SIZE_STEP) * 20) / 20) });
+        patchMenuItem(currentItem, { h: Math.max(0.5, Math.round((box.h + dir * SIZE_STEP) * 20) / 20) });
       } else if (e.ctrlKey) {
-        patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 20) / 20) });
+        patchMenuItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 20) / 20) });
       } else if (e.shiftKey) {
-        patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 20) / 20) });
+        patchMenuItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 20) / 20) });
       } else {
-        patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 20) / 20) });
+        patchMenuItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 20) / 20) });
       }
     }
 
     function applyNudge(action) {
+      if (currentItem === NAV_PLAQUE_ITEM) {
+        const offsetY = navLayout.plaque.offsetY ?? 0;
+        const scales = getPlaqueScales(navLayout.plaque);
+        if (action === 'up') patchNavPlaque({ offsetY: offsetY - NAV_OFFSET_STEP });
+        if (action === 'down') patchNavPlaque({ offsetY: offsetY + NAV_OFFSET_STEP });
+        if (action === 'wider') patchNavPlaque({ wScale: Math.round((scales.w + NAV_SCALE_STEP) * 100) / 100 });
+        if (action === 'narrower') patchNavPlaque({ wScale: Math.round((scales.w - NAV_SCALE_STEP) * 100) / 100 });
+        if (action === 'taller') patchNavPlaque({ hScale: Math.round((scales.h + NAV_SCALE_STEP) * 100) / 100 });
+        if (action === 'shorter') patchNavPlaque({ hScale: Math.round((scales.h - NAV_SCALE_STEP) * 100) / 100 });
+        return;
+      }
+      if (isNavItem(currentItem)) {
+        const L = getBottomNavItemLayout(currentItem, navLayout);
+        if (action === 'up') patchNavItem(currentItem, { y: Math.max(0, Math.round((L.y - NAV_Y_STEP) * 10) / 10) });
+        if (action === 'down') patchNavItem(currentItem, { y: Math.round((L.y + NAV_Y_STEP) * 10) / 10 });
+        if (action === 'left') patchNavItem(currentItem, { x: Math.max(0, Math.round((L.x - NAV_X_STEP) * 10) / 10) });
+        if (action === 'right') patchNavItem(currentItem, { x: Math.round((L.x + NAV_X_STEP) * 10) / 10 });
+        if (action === 'wider') patchNavHits({ w: Math.round((navLayout.hits.w + NAV_HIT_STEP) * 10) / 10 });
+        if (action === 'narrower') patchNavHits({ w: Math.max(1, Math.round((navLayout.hits.w - NAV_HIT_STEP) * 10) / 10) });
+        if (action === 'taller') patchNavHits({ h: Math.round((navLayout.hits.h + NAV_HIT_STEP) * 10) / 10 });
+        if (action === 'shorter') patchNavHits({ h: Math.max(1, Math.round((navLayout.hits.h - NAV_HIT_STEP) * 10) / 10) });
+        return;
+      }
       const box = getMainScreenV2ItemLayout(currentItem, workingLayout);
-      if (action === 'up') patchItem(currentItem, { y: Math.max(0, Math.round((box.y - POS_STEP) * 20) / 20) });
-      if (action === 'down') patchItem(currentItem, { y: Math.round((box.y + POS_STEP) * 20) / 20 });
-      if (action === 'left') patchItem(currentItem, { x: Math.max(0, Math.round((box.x - POS_STEP) * 20) / 20) });
-      if (action === 'right') patchItem(currentItem, { x: Math.round((box.x + POS_STEP) * 20) / 20 });
-      if (action === 'taller') patchItem(currentItem, { h: Math.round((box.h + SIZE_STEP) * 20) / 20 });
-      if (action === 'shorter') patchItem(currentItem, { h: Math.max(0.5, Math.round((box.h - SIZE_STEP) * 20) / 20) });
-      if (action === 'wider') patchItem(currentItem, { w: Math.round((box.w + SIZE_STEP) * 20) / 20 });
-      if (action === 'narrower') patchItem(currentItem, { w: Math.max(1, Math.round((box.w - SIZE_STEP) * 20) / 20) });
+      if (action === 'up') patchMenuItem(currentItem, { y: Math.max(0, Math.round((box.y - POS_STEP) * 20) / 20) });
+      if (action === 'down') patchMenuItem(currentItem, { y: Math.round((box.y + POS_STEP) * 20) / 20 });
+      if (action === 'left') patchMenuItem(currentItem, { x: Math.max(0, Math.round((box.x - POS_STEP) * 20) / 20) });
+      if (action === 'right') patchMenuItem(currentItem, { x: Math.round((box.x + POS_STEP) * 20) / 20 });
+      if (action === 'taller') patchMenuItem(currentItem, { h: Math.round((box.h + SIZE_STEP) * 20) / 20 });
+      if (action === 'shorter') patchMenuItem(currentItem, { h: Math.max(0.5, Math.round((box.h - SIZE_STEP) * 20) / 20) });
+      if (action === 'wider') patchMenuItem(currentItem, { w: Math.round((box.w + SIZE_STEP) * 20) / 20 });
+      if (action === 'narrower') patchMenuItem(currentItem, { w: Math.max(1, Math.round((box.w - SIZE_STEP) * 20) / 20) });
     }
 
     async function init() {
-      els.fieldGrid = document.getElementById('fieldGrid');
+      els.menuFieldGrid = document.getElementById('menuFieldGrid');
+      els.navFieldGrid = document.getElementById('navFieldGrid');
       els.readout = document.getElementById('readout');
       els.status = document.getElementById('status');
       els.jsonOut = document.getElementById('jsonOut');
@@ -579,16 +793,49 @@
       els.closeTabBgPicker = document.getElementById('closeTabBgPicker');
 
       workingLayout = await loadMainScreenV2Layout();
-      applyBottomNavLayout(await loadBottomNavLayout());
+      navLayout = await loadBottomNavLayout();
 
-      for (const key of ITEM_KEYS) {
+      const menuTitle = document.createElement('div');
+      menuTitle.className = 'field-section-title';
+      menuTitle.textContent = 'Menu chrome';
+      els.menuFieldGrid.appendChild(menuTitle);
+
+      for (const key of MENU_ITEM_KEYS) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'field-btn';
         btn.dataset.item = key;
         btn.textContent = MAIN_SCREEN_V2_ITEM_DEFS[key]?.label || key;
         btn.addEventListener('click', () => selectItem(key));
-        els.fieldGrid.appendChild(btn);
+        els.menuFieldGrid.appendChild(btn);
+      }
+
+      const navTitle = document.createElement('div');
+      navTitle.className = 'field-section-title';
+      navTitle.textContent = 'Nav buttons & rollover (BMB-*H)';
+      els.navFieldGrid.appendChild(navTitle);
+
+      const plaqueBtn = document.createElement('button');
+      plaqueBtn.type = 'button';
+      plaqueBtn.className = 'field-btn';
+      plaqueBtn.dataset.item = NAV_PLAQUE_ITEM;
+      plaqueBtn.textContent = 'Nav graphic — width / height / position';
+      plaqueBtn.addEventListener('click', () => selectItem(NAV_PLAQUE_ITEM));
+      els.navFieldGrid.appendChild(plaqueBtn);
+
+      for (const [key, def] of Object.entries(BOTTOM_NAV_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => selectItem(key));
+        els.navFieldGrid.appendChild(btn);
+
+        document.querySelector(`.tz-bottom-nav__hit[data-nav-item="${key}"]`)?.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectItem(key);
+        });
       }
 
       els.previewToggle.addEventListener('click', (e) => {
@@ -608,10 +855,14 @@
       });
       document.getElementById('reloadBtn')?.addEventListener('click', async () => {
         workingLayout = await loadMainScreenV2Layout({ force: true });
+        navLayout = await loadBottomNavLayout({ force: true });
         refresh();
-        els.status.textContent = 'Reloaded from file';
+        els.status.textContent = 'Reloaded menu + nav from file';
       });
-      document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
+      document.getElementById('saveBtn')?.addEventListener('click', async () => {
+        await saveMenuLayout();
+        await saveNavLayout();
+      });
 
       els.closeTabAppearance?.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-close-opacity]');
@@ -635,7 +886,11 @@
       els.mockStage.focus();
     }
 
-    init();
+    void init().catch((err) => {
+      const status = document.getElementById('status');
+      if (status) status.textContent = `Init failed — ${err.message || err}`;
+      console.error(err);
+    });
   </script>
 </body>
 </html>
