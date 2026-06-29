@@ -4,6 +4,10 @@ export const DEFAULT_LOGOUT_REDIRECT_URL = 'https://www.skifflakegames.com/';
 
 let infoCache = null;
 
+export function clearSystemInfoCache() {
+  infoCache = null;
+}
+
 function formatIsoDate(iso) {
   if (!iso) return '';
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso).trim());

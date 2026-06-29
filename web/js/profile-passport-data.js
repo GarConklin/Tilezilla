@@ -171,7 +171,7 @@ export async function refreshProfilePassportStats({ root = document } = {}) {
 
   setProfileSlot(root, 'adventureProgress', adventureProgress);
   setProfileSlot(root, 'profileName', localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer');
-  setProfileSlot(root, 'routesDiscovered', routes != null ? String(routes) : mock.routesDiscovered);
+  setProfileSlot(root, 'routesDiscovered', routes != null ? String(routes) : '—');
   setProfileSlot(root, 'hintTokens', hints != null ? String(hints) : mock.hintTokens);
   setProfileSlot(root, 'memberSince', formatMemberSince());
   setProfileSlot(root, 'passportId', passportIdForUser(registeredUserId() || progressUserKey()));

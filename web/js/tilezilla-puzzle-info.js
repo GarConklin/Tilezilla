@@ -267,6 +267,7 @@ export function closePuzzleInfoPopup() {
     && $('hintMenuRoot')?.hidden !== false
 
     && $('hintRulesRoot')?.hidden !== false
+    && $('cartographersJournalRoot')?.hidden !== false
 
     && $('journalRoot')?.hidden !== false
 

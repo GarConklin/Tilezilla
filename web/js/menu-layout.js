@@ -11,6 +11,7 @@ export const MENU_ITEM_DEFS = {
   stuck: { label: "I'm Stuck", kind: 'row', modes: ['standard', 'dev'] },
   hint: { label: 'Hint Rules', kind: 'row', modes: ['standard', 'dev'] },
   settings: { label: 'Settings', kind: 'row', modes: ['standard', 'dev'] },
+  journal: { label: "The Cartographer's Journal", kind: 'row', modes: ['standard', 'dev'] },
   devTools: { label: 'Dev Tools', kind: 'row', modes: ['dev'] },
   forceDiscovery: { label: 'Force Solution Popup', kind: 'row', modes: ['dev'] },
   switchPlayer: { label: 'Switch test player', kind: 'row', modes: ['dev'] },
@@ -22,6 +23,7 @@ const ROW_CSS_SUFFIX = {
   stuck: 'stuck',
   hint: 'hint',
   settings: 'settings',
+  journal: 'journal',
   devTools: 'tools',
   forceDiscovery: 'force',
   switchPlayer: 'switch',
@@ -30,7 +32,7 @@ const ROW_CSS_SUFFIX = {
 const DEFAULT_ROW = { x: 50, y: 50 };
 
 /** First five links appear on both Menu.png and Menu-devtools.png. */
-const SHARED_MENU_ITEMS = new Set(['puzzle', 'found', 'stuck', 'hint', 'settings']);
+const SHARED_MENU_ITEMS = new Set(['puzzle', 'found', 'stuck', 'hint', 'settings', 'journal']);
 
 export const DEFAULT_MENU_LAYOUT = {
   plaque: { offsetY: -50, displayW: 340, wScale: 1.3 },
@@ -42,6 +44,7 @@ export const DEFAULT_MENU_LAYOUT = {
     stuck: { x: 50, y: 43 },
     hint: { x: 50, y: 53 },
     settings: { x: 50, y: 63 },
+    journal: { x: 50, y: 75 },
   },
   dev: {
     puzzle: { x: 50, y: 19 },
@@ -49,6 +52,7 @@ export const DEFAULT_MENU_LAYOUT = {
     stuck: { x: 50, y: 35 },
     hint: { x: 50, y: 43 },
     settings: { x: 50, y: 51 },
+    journal: { x: 50, y: 63 },
     devTools: { x: 50, y: 59 },
     forceDiscovery: { x: 50, y: 67 },
     switchPlayer: { x: 50, y: 75 },

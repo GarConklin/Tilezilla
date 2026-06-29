@@ -141,6 +141,7 @@ function syncModalOpenState() {
     'profileOverlayRoot',
     'hintMenuRoot',
     'hintRulesRoot',
+    'cartographersJournalRoot',
     'stuckPopupRoot',
     'randomPopupRoot',
     'tilesetPickerRoot',

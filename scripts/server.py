@@ -57,6 +57,7 @@ TIMER_DATA_V2_LAYOUT_PATH = ROOT / "data" / "timer_data_v2_layout.json"
 STUCK_REVEAL_LAYOUT_PATH = ROOT / "data" / "stuck_reveal_layout.json"
 PUZZLE_INFO_LAYOUT_PATH = ROOT / "data" / "puzzle_info_layout.json"
 HINT_RULES_LAYOUT_PATH = ROOT / "data" / "hint_rules_layout.json"
+CARTOGRAPHERS_JOURNAL_LAYOUT_PATH = ROOT / "data" / "cartographers_journal_layout.json"
 JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
 TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 TILEBAG_V2_LAYOUT_PATH = ROOT / "data" / "tilebag_v2_layout.json"
@@ -119,12 +120,16 @@ def system_info_api_response() -> tuple[int, dict]:
     info = load_system_info_from_mysql(ROOT)
     if info:
         stats = (info.get("stats") or {}) if isinstance(info, dict) else {}
-        if int(stats.get("totalKnownRoutes") or 0) <= 0:
+        needs_refresh = (
+            int(stats.get("totalKnownRoutes") or 0) <= 0
+            or not str(stats.get("statsUpdatedAt") or "").strip()
+        )
+        if needs_refresh:
             try:
                 from lib.system_stats import refresh_system_stats
 
                 refreshed = refresh_system_stats(force=True)
-                if refreshed and int(refreshed.get("totalKnownRoutes") or 0) > 0:
+                if refreshed:
                     info = load_system_info_from_mysql(ROOT) or info
             except Exception:
                 pass
@@ -425,6 +430,16 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-cartographers-journal-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/cartographers_journal_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/dev/save-journal-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/journal_layout.json"}
@@ -586,6 +601,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-hint-rules-layout":
             self._save_json_layout(parsed, HINT_RULES_LAYOUT_PATH, validate_hint_rules_layout)
+            return
+        if parsed.path == "/api/dev/save-cartographers-journal-layout":
+            self._save_json_layout(parsed, CARTOGRAPHERS_JOURNAL_LAYOUT_PATH, validate_cartographers_journal_layout)
             return
         if parsed.path == "/api/dev/save-journal-layout":
             self._save_json_layout(parsed, JOURNAL_LAYOUT_PATH, validate_journal_layout)
@@ -1211,6 +1229,16 @@ def validate_hint_rules_layout(payload: object) -> str | None:
     return None
 
 
+def validate_cartographers_journal_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("window", "exit", "scroller", "version"):
+        val = payload.get(key)
+        if val is not None and not isinstance(val, dict):
+            return f"{key} must be an object"
+    return None
+
+
 JOURNAL_ITEM_KEYS = tuple(
     k for k in (
         "paneTop", "paneBottomLeft", "paneBottomRight",
@@ -1381,6 +1409,7 @@ def main() -> None:
     print("Stuck reveal tuner save API: POST /api/dev/save-stuck-reveal-layout")
     print("Puzzle info tuner save API: POST /api/dev/save-puzzle-info-layout")
     print("Hint Rules tuner save API: POST /api/dev/save-hint-rules-layout")
+    print("Cartographer's Journal tuner save API: POST /api/dev/save-cartographers-journal-layout")
     print("Journal tuner save API: POST /api/dev/save-journal-layout")
     print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
     print("Tile bag v2 tuner save API: POST /api/dev/save-tilebag-v2-layout")

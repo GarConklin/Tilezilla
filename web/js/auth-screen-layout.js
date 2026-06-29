@@ -231,7 +231,7 @@ export const PROFILE_LAYOUT_MOCK = {
   hintTokens: '7',
   memberSince: 'Jun 2026',
   passportId: 'TZ-4F2A9C',
-  explorersRegistered: '1,204',
+  explorersRegistered: '—',
   totalAdventurePuzzles: '7,077',
   totalKnownRoutes: '32,430',
   largestSolution: '524\nROUTES',

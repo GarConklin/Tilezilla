@@ -256,6 +256,7 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     if ($('stuckPopupRoot') && !$('stuckPopupRoot').hidden) return;
     if ($('puzzleInfoRoot') && !$('puzzleInfoRoot').hidden) return;
     if ($('hintRulesRoot') && !$('hintRulesRoot').hidden) return;
+    if ($('cartographersJournalRoot') && !$('cartographersJournalRoot').hidden) return;
     if ($('tilesetPickerRoot') && !$('tilesetPickerRoot').hidden) return;
     if (settingsRoot && !settingsRoot.hidden) return;
     if (!menuPanelRoot.hidden) {

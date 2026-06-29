@@ -34,10 +34,19 @@ async function waitForAppLevels(maxMs = 12000) {
   }
 }
 
+async function reloadAppProgress() {
+  const app = window.__app;
+  if (app?.progress?.load) {
+    app.progress.data = app.progress.load();
+  }
+  return app?.progress ?? null;
+}
+
 async function refreshProfileOverlayStats(root) {
   clearAdventureCatalogStatsCache();
   await waitForAppLevels();
-  await refreshProfileRankIcons(window.__app?.progress ?? null, root);
+  const progress = await reloadAppProgress();
+  await refreshProfileRankIcons(progress, root);
   await refreshProfilePassportStats({ root });
 }
 

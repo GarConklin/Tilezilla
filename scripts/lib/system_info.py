@@ -141,7 +141,10 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
 
 
 def _merge_stats_with_json_fallback(repo_root: Path, mysql_stats: dict) -> dict:
-    """Fill zero MySQL cache fields from data/system_info.json (dev / pre-refresh)."""
+    """Fill zero MySQL catalog cache fields from data/system_info.json (dev / pre-refresh).
+
+    Live player/community counts (registered users, play time) must come from MySQL only.
+    """
     if not mysql_stats:
         return mysql_stats
     json_info = load_system_info_from_json(repo_root)
@@ -150,8 +153,6 @@ def _merge_stats_with_json_fallback(repo_root: Path, mysql_stats: dict) -> dict:
         return mysql_stats
     merged = dict(mysql_stats)
     for key in (
-        "registeredUsers",
-        "totalPlaySeconds",
         "totalAdventurePuzzles",
         "totalKnownRoutes",
         "largestSolution",

@@ -456,6 +456,7 @@
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--stuck" id="menuStuckBtn" aria-label="I'm Stuck"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--hint-rules" id="menuHintRulesBtn" aria-label="Hint Rules"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--settings" id="menuOpenSettingsBtn" aria-label="Settings"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--cartographers-journal" id="menuCartographersJournalBtn" aria-label="The Cartographer's Journal"></button>
         <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-login" id="menuGuestLoginBtn" href="/login-screen.html" hidden aria-label="Login"></a>
         <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-create" id="menuGuestCreateBtn" href="/create-passport.html" hidden aria-label="Create Account"></a>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--dev-tools" id="menuDevToolsBtn" data-dev-only hidden aria-label="Dev Tools"></button>
@@ -1051,6 +1052,45 @@
       </div>
       <button type="button" class="tz-hint-rules__exit tz-hint-rules__exit--bottom" id="hintRulesExitBottom" aria-label="Close">
         <img src="/img/X-gold-rnd-btn.png" alt="" />
+      </button>
+    </div>
+  </div>
+
+  <div class="tz-cartographers-journal-root" id="cartographersJournalRoot" hidden>
+    <div
+      class="tz-cartographers-journal-window"
+      role="dialog"
+      aria-modal="true"
+      aria-label="The Cartographer's Journal"
+    >
+      <div class="tz-cartographers-journal-scroll" id="cartographersJournalScroll">
+        <div class="tz-cartographers-journal__art-wrap">
+          <img
+            class="tz-cartographers-journal__img"
+            id="cartographersJournalImg"
+            src="/img/CartographersJournal.png"
+            alt="About TileZilla — The Cartographer's Journal"
+            width="844"
+            height="1798"
+          />
+          <p class="tz-cartographers-journal__version" id="cartographersJournalVersion" aria-label="Game version">—</p>
+        </div>
+      </div>
+      <div class="tz-cartographers-journal-scroller is-hidden" id="cartographersJournalScroller" aria-hidden="true">
+        <img
+          class="tz-cartographers-journal-scroller__track"
+          id="cartographersJournalScrollerTrack"
+          src="/img/FancyScrollerBar.png"
+          alt=""
+          width="22"
+          height="352"
+        />
+        <button type="button" class="tz-cartographers-journal-scroller__pin" id="cartographersJournalScrollerPin" aria-label="Scroll journal">
+          <img src="/img/FancyScrollerPin.png" alt="" width="22" height="36" />
+        </button>
+      </div>
+      <button type="button" class="tz-cartographers-journal__exit tz-cartographers-journal__exit--bottom" id="cartographersJournalExit" aria-label="Close">
+        <img src="/img/exit-btn.png" alt="" />
       </button>
     </div>
   </div>

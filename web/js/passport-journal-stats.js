@@ -2,7 +2,7 @@
 
 import { PROFILE_LAYOUT_MOCK } from './auth-screen-layout.js';
 import { formatCatalogStatNumber, loadAdventureCatalogStats } from './passport-catalog-stats.js';
-import { fetchSystemStats, formatPlayTime, formatStatNumber } from './system-info.js';
+import { clearSystemInfoCache, fetchSystemStats, formatPlayTime, formatStatNumber } from './system-info.js';
 
 function setJournalSlot(root, slot, text) {
   const value = text == null || text === '' ? '—' : String(text);
@@ -53,12 +53,14 @@ function pickStatNumber(systemVal, catalogVal, mockVal) {
   if (Number.isFinite(sys) && sys > 0) return formatStatNumber(sys);
   const cat = Number(catalogVal);
   if (Number.isFinite(cat) && cat > 0) return formatCatalogStatNumber(cat);
+  if (mockVal == null || mockVal === '' || mockVal === '—') return '—';
   return mockVal;
 }
 
 /** Best available expedition report numbers (system cache → live catalog → mock). */
 export async function resolveExpeditionReportDisplay(app = window.__app) {
   const mock = PROFILE_LAYOUT_MOCK;
+  clearSystemInfoCache();
   const [systemStats, catalog] = await Promise.all([
     fetchSystemStats(),
     loadAdventureCatalogStats(app),

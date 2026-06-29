@@ -56,6 +56,32 @@
   --tz-hint-rules-scroller-track-w: 22;
   --tz-hint-rules-scroller-pin-w: 22;
   --tz-hint-rules-scroller-pin-h: 36;
+  --tz-journal-art-w: 844;
+  --tz-journal-top-vh: 7.7;
+  --tz-journal-height-vh: 92.3;
+  --tz-journal-max-design-width: 390px;
+  --tz-journal-width-scale: 0.95;
+  --tz-journal-nudge-x: 0px;
+  --tz-journal-nudge-y: 0px;
+  --tz-journal-scale: 1;
+  --tz-journal-exit-right: 6px;
+  --tz-journal-exit-bottom: 6px;
+  --tz-journal-exit-size: 48px;
+  --tz-journal-exit-nudge-x: 0px;
+  --tz-journal-exit-nudge-y: 0px;
+  --tz-journal-scroller-right: 1.5;
+  --tz-journal-scroller-top: 4;
+  --tz-journal-scroller-height: 88;
+  --tz-journal-scroller-track-scale: 1;
+  --tz-journal-scroller-pin-scale: 1;
+  --tz-journal-scroller-nudge-x: 0px;
+  --tz-journal-scroller-nudge-y: 0px;
+  --tz-journal-scroller-track-w: 22;
+  --tz-journal-scroller-pin-w: 22;
+  --tz-journal-scroller-pin-h: 36;
+  --tz-journal-version-top: 16.8%;
+  --tz-journal-version-nudge-x: 0px;
+  --tz-journal-version-nudge-y: 0px;
 
   --tz-settings-art-w: 390;
   --tz-settings-art-h: 844;
@@ -337,6 +363,10 @@
   --tz-menu-settings-y: 63%;
   --tz-menu-settings-w: 74%;
   --tz-menu-settings-h: 6.8%;
+  --tz-menu-journal-x: 50%;
+  --tz-menu-journal-y: 75%;
+  --tz-menu-journal-w: 74%;
+  --tz-menu-journal-h: 6.8%;
   /* Dev menu row centers (Menu-devtools.png — 8 items) */
   --tz-menu-dev-puzzle-x: 50%;
   --tz-menu-dev-puzzle-y: 19%;
@@ -358,6 +388,10 @@
   --tz-menu-dev-settings-y: 51%;
   --tz-menu-dev-settings-w: 74%;
   --tz-menu-dev-settings-h: 6.8%;
+  --tz-menu-dev-journal-x: 50%;
+  --tz-menu-dev-journal-y: 63%;
+  --tz-menu-dev-journal-w: 74%;
+  --tz-menu-dev-journal-h: 6.8%;
   --tz-menu-dev-tools-x: 50%;
   --tz-menu-dev-tools-y: 59%;
   --tz-menu-dev-tools-w: 74%;
@@ -6581,6 +6615,16 @@ html.tz-phone-preview .tz-hint-rules-window {
   );
 }
 
+html.tz-phone-preview .tz-cartographers-journal-window {
+  width: min(
+    calc(
+      var(--tz-journal-max-design-width, var(--tz-design-width))
+      * var(--tz-journal-width-scale, 1)
+    ),
+    calc(var(--tz-journal-art-w) * 1px)
+  );
+}
+
 .tz-hint-rules-scroll {
   width: 100%;
   height: 100%;
@@ -6737,6 +6781,212 @@ html.tz-phone-preview .tz-hint-rules__img--desktop {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)) brightness(0.94);
 }
 
+/* ── The Cartographer's Journal overlay ── */
+
+.tz-cartographers-journal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: none;
+}
+
+.tz-cartographers-journal-root:not([hidden]) {
+  pointer-events: auto;
+}
+
+.tz-cartographers-journal-root[hidden] {
+  display: none !important;
+}
+
+.tz-cartographers-journal-window {
+  position: fixed;
+  top: calc(var(--tz-journal-top-vh) * 1vh + var(--tz-journal-nudge-y));
+  left: calc(50% + var(--tz-journal-nudge-x));
+  transform: translateX(-50%) scale(var(--tz-journal-scale));
+  transform-origin: top center;
+  width: min(
+    100vw,
+    calc(
+      var(--tz-journal-max-design-width, var(--tz-design-width))
+      * var(--tz-journal-width-scale, 1)
+    ),
+    calc(var(--tz-journal-art-w) * 1px)
+  );
+  height: calc(var(--tz-journal-height-vh) * 1vh);
+  box-sizing: border-box;
+  pointer-events: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+  overflow: hidden;
+}
+
+.tz-cartographers-journal-window.is-msv2-synced {
+  top: var(--tz-journal-sync-top);
+  left: calc(50% + var(--tz-journal-nudge-x, 0px));
+  width: var(--tz-journal-sync-width);
+  height: var(--tz-journal-sync-height);
+  transform: translateX(-50%) scale(var(--tz-journal-scale, 1));
+  transform-origin: top center;
+}
+
+html.tz-phone-preview .tz-cartographers-journal-window {
+  width: min(
+    calc(
+      var(--tz-journal-max-design-width, var(--tz-design-width))
+      * var(--tz-journal-width-scale, 1)
+    ),
+    calc(var(--tz-journal-art-w) * 1px)
+  );
+}
+
+.tz-cartographers-journal-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tz-cartographers-journal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tz-cartographers-journal__art-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.tz-cartographers-journal__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.tz-cartographers-journal__version {
+  position: absolute;
+  left: calc(50% + var(--tz-journal-version-nudge-x));
+  top: calc(var(--tz-journal-version-top) + var(--tz-journal-version-nudge-y));
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.12rem 0.55rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: calc(clamp(0.62rem, 2.6vw, 0.78rem) * var(--tz-journal-version-font-scale, 1));
+}
+
+.tz-cartographers-journal-scroller {
+  position: absolute;
+  right: calc(
+    var(--tz-journal-scroller-right) * 1%
+    + var(--tz-journal-scroller-nudge-x)
+  );
+  top: calc(
+    var(--tz-journal-scroller-top) * 1%
+    + var(--tz-journal-scroller-nudge-y)
+  );
+  width: calc(
+    var(--tz-journal-scroller-track-w) * 1px
+    * var(--tz-journal-scroller-track-scale)
+  );
+  height: calc(var(--tz-journal-scroller-height) * 1%);
+  z-index: 3;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.tz-cartographers-journal-scroller.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.tz-cartographers-journal-scroller__track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-cartographers-journal-scroller__pin {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: calc(
+    var(--tz-journal-scroller-pin-w) * 1px
+    * var(--tz-journal-scroller-pin-scale)
+  );
+  height: calc(
+    var(--tz-journal-scroller-pin-h) * 1px
+    * var(--tz-journal-scroller-pin-scale)
+  );
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+
+.tz-cartographers-journal-scroller__pin.is-dragging {
+  cursor: grabbing;
+}
+
+.tz-cartographers-journal-scroller__pin img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-cartographers-journal__exit {
+  position: absolute;
+  right: max(var(--tz-journal-exit-right), env(safe-area-inset-right, 0px));
+  width: var(--tz-journal-exit-size);
+  height: var(--tz-journal-exit-size);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  transform: translate(
+    var(--tz-journal-exit-nudge-x),
+    var(--tz-journal-exit-nudge-y)
+  );
+}
+
+.tz-cartographers-journal__exit--bottom {
+  bottom: var(--tz-journal-exit-bottom);
+}
+
+.tz-cartographers-journal__exit img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.tz-cartographers-journal__exit:hover {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)) brightness(1.08);
+}
+
+.tz-cartographers-journal__exit:active {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)) brightness(0.94);
+}
+
 /* ── Phone preview (Settings → Display) ── */
 
 html.tz-phone-preview body {
@@ -6764,6 +7014,7 @@ html.tz-phone-preview .tz-pinfo-root__backdrop,
 html.tz-phone-preview .tz-profile-root,
 html.tz-phone-preview .tz-profile-root__backdrop,
 html.tz-phone-preview .tz-hint-rules-root,
+html.tz-phone-preview .tz-cartographers-journal-root,
 html.tz-phone-preview .tz-buy-hints-root,
 html.tz-phone-preview .tz-buy-hints-root__backdrop,
 html.tz-phone-preview .tz-settings-root,
@@ -7103,6 +7354,13 @@ body.tz-is-dev-user .tz-menu-plaque__bg--devtools {
   height: var(--tz-menu-settings-h);
 }
 
+.tz-menu-plaque__hit--cartographers-journal {
+  left: var(--tz-menu-journal-x);
+  top: var(--tz-menu-journal-y);
+  width: var(--tz-menu-journal-w);
+  height: var(--tz-menu-journal-h);
+}
+
 .tz-menu-plaque__hit--dev-tools {
   left: var(--tz-menu-dev-tools-x);
   top: var(--tz-menu-dev-tools-y);
@@ -7157,6 +7415,13 @@ body.tz-is-dev-user .tz-menu-plaque__hit--settings {
   top: var(--tz-menu-dev-settings-y);
   width: var(--tz-menu-dev-settings-w);
   height: var(--tz-menu-dev-settings-h);
+}
+
+body.tz-is-dev-user .tz-menu-plaque__hit--cartographers-journal {
+  left: var(--tz-menu-dev-journal-x);
+  top: var(--tz-menu-dev-journal-y);
+  width: var(--tz-menu-dev-journal-w);
+  height: var(--tz-menu-dev-journal-h);
 }
 
 .tz-sheet-root {

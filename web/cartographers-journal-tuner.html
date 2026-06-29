@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en" class="cartographers-journal-tuner-page tz-phone-preview">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Cartographer's Journal tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 56rem;
+    }
+    .lead a { color: #8fd49a; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .field-btn {
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout {
+      margin: 0 0 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: #8fd49a;
+      line-height: 1.45;
+    }
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .status { margin: 8px 0 0; font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    #jsonOut, #reportOut {
+      width: 100%;
+      min-height: 100px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: ui-monospace, monospace;
+      font-size: 0.7rem;
+      resize: vertical;
+    }
+    .mock-stage {
+      padding: 24px 16px 40px;
+      border-radius: 10px;
+      background: rgba(8, 20, 18, 0.72);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+      min-height: 520px;
+      position: relative;
+    }
+    .mock-stage:focus { border-color: #e8b923; }
+    .cartographers-journal-tuner-page .cartographers-journal-tuner-mock {
+      width: var(--tz-design-width);
+      max-width: 100%;
+      margin: 0 auto;
+      position: relative;
+      height: 640px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal-root {
+      position: absolute;
+      inset: 0;
+      pointer-events: auto;
+      display: flex !important;
+      align-items: stretch;
+      justify-content: center;
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal-window {
+      position: absolute;
+      top: 0 !important;
+      left: 50% !important;
+      transform: translateX(-50%) scale(var(--tz-journal-scale, 1)) !important;
+      width: min(
+        100%,
+        calc(var(--tz-journal-max-design-width, 390px) * var(--tz-journal-width-scale, 0.95))
+      ) !important;
+      height: 100% !important;
+      max-height: 100% !important;
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal-window.is-msv2-synced {
+      top: 0 !important;
+      left: 50% !important;
+      width: min(
+        100%,
+        calc(var(--tz-journal-max-design-width, 390px) * var(--tz-journal-width-scale, 0.95))
+      ) !important;
+      height: 100% !important;
+      transform: translateX(-50%) scale(var(--tz-journal-scale, 1)) !important;
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal-scroller.is-hidden {
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+    .cartographers-journal-tuner-page .tuner-highlight-window {
+      outline: 2px dashed rgba(100, 200, 255, 0.85);
+      outline-offset: 2px;
+    }
+    .cartographers-journal-tuner-page .tuner-highlight-exit {
+      outline: 2px dashed #e8b923;
+      outline-offset: 2px;
+    }
+    .cartographers-journal-tuner-page .tuner-highlight-version {
+      outline: 2px dashed #7dd3fc;
+      outline-offset: 2px;
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal__exit .hit-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      background: rgba(232, 185, 35, 0.25);
+    }
+    .cartographers-journal-tuner-page .tz-cartographers-journal-scroller.tuner-highlight-scroller {
+      outline: 2px dashed #e8b923;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cartographer's Journal tuner</h1>
+  <p class="lead">
+    Preview matches in-game width (390px). Tune panel, fancy scroller, version badge (live from DB in game), and close button.
+    Saves to <code>data/cartographers_journal_layout.json</code>.
+    <a href="/dev-player-select.html">Back to player select</a>
+    · <a href="/tilezilla-v2.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <ul class="keys" id="keysList"></ul>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+        <button type="button" class="btn" id="copyReportBtn">Copy report for chat</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="reportOut" readonly spellcheck="false" aria-label="Layout report"></textarea>
+      <textarea id="jsonOut" spellcheck="false" aria-label="Layout JSON"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — CartographersJournal.png</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="cartographers-journal-tuner-mock">
+          <div class="tz-cartographers-journal-root" id="mockJournalRoot">
+            <div class="tz-cartographers-journal-window" id="mockJournalWindow">
+              <div class="tz-cartographers-journal-scroll" id="mockJournalScroll">
+                <div class="tz-cartographers-journal__art-wrap">
+                  <img
+                    class="tz-cartographers-journal__img"
+                    src="/img/CartographersJournal.png"
+                    alt="The Cartographer's Journal"
+                  />
+                  <p class="tz-cartographers-journal__version" id="mockJournalVersion">v1.0.0</p>
+                </div>
+              </div>
+              <div class="tz-cartographers-journal-scroller" id="mockJournalScroller" aria-hidden="false">
+                <img
+                  class="tz-cartographers-journal-scroller__track"
+                  id="mockJournalScrollerTrack"
+                  src="/img/FancyScrollerBar.png"
+                  alt=""
+                  width="22"
+                  height="352"
+                />
+                <button type="button" class="tz-cartographers-journal-scroller__pin" id="mockJournalScrollerPin" aria-label="Scroll">
+                  <img src="/img/FancyScrollerPin.png" alt="" width="22" height="36" />
+                </button>
+              </div>
+              <button
+                type="button"
+                class="tz-cartographers-journal__exit tz-cartographers-journal__exit--bottom"
+                id="mockJournalExit"
+                aria-label="Close"
+              >
+                <span class="hit-label">Close</span>
+                <img src="/img/exit-btn.png" alt="" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      CARTOGRAPHERS_JOURNAL_ITEM_DEFS,
+      applyCartographersJournalLayout,
+      buildCartographersJournalLayoutReport,
+      clearCartographersJournalLayoutCache,
+      clearCartographersJournalLayoutDraft,
+      getCartographersJournalSectionLayout,
+      loadCartographersJournalLayout,
+      mergeCartographersJournalLayout,
+      stashCartographersJournalLayoutDraft,
+    } from './js/cartographers-journal-layout.js';
+    import { initFancyScroller } from './js/fancy-scroller.js';
+    import { fetchSystemInfo } from './js/system-info.js';
+
+    const NUDGE_STEP = 2;
+    const VH_STEP = 1;
+    const PX_STEP = 2;
+    const SCALE_STEP = 0.02;
+    const WIDTH_STEP = 4;
+    const PCT_STEP = 0.5;
+
+    let workingLayout = mergeCartographersJournalLayout(null);
+    let currentItem = 'window';
+
+    const els = {};
+
+    const KEY_HELP = {
+      window: [
+        'Scroll — nudge Y px · Shift+scroll — nudge X px',
+        'Ctrl+scroll — scale · Alt+scroll — top vh',
+        'Alt+Shift+scroll — height vh · Ctrl+Alt+scroll — max width px',
+        'Ctrl+Shift+scroll — width scale (0.95 = 5% narrower than max)',
+      ],
+      scroller: [
+        'Scroll — top % · Shift+scroll — right % · Ctrl+scroll — height %',
+        'Alt+scroll — track scale · Alt+Shift+scroll — pin scale',
+        'Ctrl+Alt+scroll — nudge X px · Ctrl+Alt+Shift+scroll — nudge Y px',
+      ],
+      exit: [
+        'Scroll — bottom px · Shift+scroll — right px',
+        'Ctrl+scroll — button size px',
+        'Alt+scroll — nudge X px · Alt+Shift+scroll — nudge Y px',
+      ],
+      version: [
+        'Scroll — top % on art · Shift+scroll — nudge X px',
+        'Alt+scroll — nudge Y px · Ctrl+scroll — font scale',
+      ],
+    };
+
+    function patchSection(key, patch) {
+      workingLayout[key] = { ...(workingLayout[key] || {}), ...patch };
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    let saveTimer = null;
+    let saveInFlight = false;
+    let saveQueued = false;
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (saveInFlight) { saveQueued = true; return false; }
+      saveInFlight = true;
+      try {
+        const res = await fetch('/api/dev/save-cartographers-journal-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          if (res.status === 404 || res.status === 501) {
+            throw new Error('Stale dev server — restart: python scripts/server.py');
+          }
+          throw new Error(errText || `HTTP ${res.status}`);
+        }
+        clearCartographersJournalLayoutCache();
+        clearCartographersJournalLayoutDraft();
+        localStorage.setItem('tilezilla:cartographers-journal-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:cartographers-journal-layout-saved'));
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/cartographers_journal_layout.json'
+          : 'Saved to data/cartographers_journal_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+        return false;
+      } finally {
+        saveInFlight = false;
+        if (saveQueued) { saveQueued = false; void saveToFile({ quiet: true }); }
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      document.getElementById('mockJournalWindow')?.classList.toggle(
+        'tuner-highlight-window',
+        currentItem === 'window',
+      );
+      document.getElementById('mockJournalExit')?.classList.toggle(
+        'tuner-highlight-exit',
+        currentItem === 'exit',
+      );
+      document.getElementById('mockJournalScroller')?.classList.toggle(
+        'tuner-highlight-scroller',
+        currentItem === 'scroller',
+      );
+      document.getElementById('mockJournalVersion')?.classList.toggle(
+        'tuner-highlight-version',
+        currentItem === 'version',
+      );
+      els.keysList.replaceChildren();
+      for (const line of KEY_HELP[currentItem] || []) {
+        const li = document.createElement('li');
+        li.textContent = line;
+        els.keysList.appendChild(li);
+      }
+    }
+
+    function formatReadout(key) {
+      const item = getCartographersJournalSectionLayout(key, workingLayout);
+      const meta = CARTOGRAPHERS_JOURNAL_ITEM_DEFS[key];
+      if (key === 'window') {
+        const effectiveW = Math.round((item.maxDesignWidth ?? 390) * (item.widthScale ?? 0.95));
+        return `<strong>${meta.label}</strong><br />`
+          + `top ${item.topVh}vh · height ${item.heightVh}vh · max ${item.maxDesignWidth}px × scale ${item.widthScale ?? 0.95} (= ${effectiveW}px)<br />`
+          + `nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px · scale ${item.scale}<br />`
+          + `anchorMainScreenV2 ${item.anchorMainScreenV2 !== false}`;
+      }
+      if (key === 'scroller') {
+        return `<strong>${meta.label}</strong><br />`
+          + `right ${item.right}% · top ${item.top}% · height ${item.height}%<br />`
+          + `trackScale ${item.trackScale} · pinScale ${item.pinScale}<br />`
+          + `nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px`;
+      }
+      if (key === 'version') {
+        return `<strong>${meta.label}</strong><br />`
+          + `top ${item.top}% · nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px<br />`
+          + `fontScale ${item.fontScale ?? 1}`;
+      }
+      return `<strong>${meta.label}</strong><br />`
+        + `right ${item.right}px · bottom ${item.bottom}px · size ${item.size}px<br />`
+        + `nudgeX ${item.nudgeX}px · nudgeY ${item.nudgeY}px`;
+    }
+
+    function refresh() {
+      applyCartographersJournalLayout(workingLayout, document.documentElement);
+      els.readout.innerHTML = formatReadout(currentItem);
+      els.jsonOut.value = exportJson();
+      els.reportOut.value = buildCartographersJournalLayoutReport(workingLayout);
+      stashCartographersJournalLayoutDraft(workingLayout);
+      refreshFieldGrid();
+      scheduleSave();
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const item = getCartographersJournalSectionLayout(currentItem, workingLayout);
+
+    const SCALE_WIDTH_STEP = 0.01;
+
+      if (currentItem === 'window') {
+        if (e.ctrlKey && e.shiftKey) {
+          patchSection('window', {
+            widthScale: Math.round(Math.max(0.5, (item.widthScale ?? 0.95) + dir * SCALE_WIDTH_STEP) * 100) / 100,
+          });
+          return;
+        }
+        if (e.ctrlKey && e.altKey) {
+          patchSection('window', {
+            maxDesignWidth: Math.max(280, (item.maxDesignWidth ?? 390) + dir * WIDTH_STEP),
+          });
+          return;
+        }
+        if (e.altKey && e.shiftKey) {
+          patchSection('window', { heightVh: Math.max(40, (item.heightVh ?? 80) + dir * VH_STEP) });
+          return;
+        }
+        if (e.altKey) {
+          patchSection('window', { topVh: Math.max(0, (item.topVh ?? 10) + dir * VH_STEP) });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchSection('window', {
+            scale: Math.round(Math.max(0.5, (item.scale ?? 1) + dir * SCALE_STEP) * 100) / 100,
+          });
+          return;
+        }
+        if (e.shiftKey) {
+          patchSection('window', { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        patchSection('window', { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP });
+        return;
+      }
+
+      if (currentItem === 'scroller') {
+        if (e.ctrlKey && e.altKey && e.shiftKey) {
+          patchSection('scroller', { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        if (e.ctrlKey && e.altKey) {
+          patchSection('scroller', { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        if (e.altKey && e.shiftKey) {
+          patchSection('scroller', {
+            pinScale: Math.round(Math.max(0.4, (item.pinScale ?? 1) + dir * SCALE_STEP) * 100) / 100,
+          });
+          return;
+        }
+        if (e.altKey) {
+          patchSection('scroller', {
+            trackScale: Math.round(Math.max(0.4, (item.trackScale ?? 1) + dir * SCALE_STEP) * 100) / 100,
+          });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchSection('scroller', {
+            height: Math.round(Math.max(20, (item.height ?? 88) + dir * PCT_STEP) * 10) / 10,
+          });
+          return;
+        }
+        if (e.shiftKey) {
+          patchSection('scroller', {
+            right: Math.round(Math.max(0, (item.right ?? 1.5) + dir * PCT_STEP) * 10) / 10,
+          });
+          return;
+        }
+        patchSection('scroller', {
+          top: Math.round(Math.max(0, (item.top ?? 4) + dir * PCT_STEP) * 10) / 10,
+        });
+        return;
+      }
+
+      if (currentItem === 'version') {
+        if (e.ctrlKey) {
+          patchSection('version', {
+            fontScale: Math.round(Math.max(0.5, (item.fontScale ?? 1) + dir * SCALE_STEP) * 100) / 100,
+          });
+          return;
+        }
+        if (e.altKey) {
+          patchSection('version', { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        if (e.shiftKey) {
+          patchSection('version', { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        patchSection('version', {
+          top: Math.round(Math.max(0, (item.top ?? 16.8) + dir * PCT_STEP) * 10) / 10,
+        });
+        return;
+      }
+
+      if (currentItem === 'exit') {
+        if (e.altKey && e.shiftKey) {
+          patchSection('exit', { nudgeY: (item.nudgeY ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        if (e.altKey) {
+          patchSection('exit', { nudgeX: (item.nudgeX ?? 0) + dir * NUDGE_STEP });
+          return;
+        }
+        if (e.ctrlKey) {
+          patchSection('exit', { size: Math.max(24, (item.size ?? 48) + dir * PX_STEP) });
+          return;
+        }
+        if (e.shiftKey) {
+          patchSection('exit', { right: Math.max(0, (item.right ?? 6) + dir * PX_STEP) });
+          return;
+        }
+        patchSection('exit', { bottom: Math.max(0, (item.bottom ?? 6) + dir * PX_STEP) });
+      }
+    }
+
+    async function init() {
+      els.fieldGrid = document.getElementById('fieldGrid');
+      els.readout = document.getElementById('readout');
+      els.status = document.getElementById('status');
+      els.jsonOut = document.getElementById('jsonOut');
+      els.reportOut = document.getElementById('reportOut');
+      els.mockStage = document.getElementById('mockStage');
+      els.keysList = document.getElementById('keysList');
+
+      for (const [key, def] of Object.entries(CARTOGRAPHERS_JOURNAL_ITEM_DEFS)) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = def.label;
+        btn.addEventListener('click', () => {
+          currentItem = key;
+          refresh();
+        });
+        els.fieldGrid.appendChild(btn);
+      }
+
+      els.mockStage.addEventListener('wheel', onWheel, { passive: false });
+      document.getElementById('mockJournalWindow')?.addEventListener('click', () => {
+        currentItem = 'window';
+        refresh();
+      });
+      document.getElementById('mockJournalScroller')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentItem = 'scroller';
+        refresh();
+      });
+      document.getElementById('mockJournalVersion')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentItem = 'version';
+        refresh();
+      });
+      document.getElementById('mockJournalExit')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentItem = 'exit';
+        refresh();
+      });
+
+      document.getElementById('reloadBtn')?.addEventListener('click', async () => {
+        clearCartographersJournalLayoutCache();
+        workingLayout = mergeCartographersJournalLayout(await loadCartographersJournalLayout({ force: true }));
+        els.status.textContent = 'Reloaded from data/cartographers_journal_layout.json';
+        refresh();
+      });
+
+      document.getElementById('saveBtn')?.addEventListener('click', () => void saveToFile());
+      document.getElementById('copyReportBtn')?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(els.reportOut.value);
+          els.status.textContent = 'Report copied to clipboard';
+        } catch {
+          els.status.textContent = 'Copy failed — select report text manually';
+        }
+      });
+
+      workingLayout = mergeCartographersJournalLayout(await loadCartographersJournalLayout());
+      try {
+        const info = await fetchSystemInfo();
+        const version = String(info?.version || '').trim();
+        const badge = document.getElementById('mockJournalVersion');
+        if (badge && version) badge.textContent = `v${version}`;
+      } catch {
+        /* keep placeholder */
+      }
+      refresh();
+      initFancyScroller({
+        scrollEl: document.getElementById('mockJournalScroll'),
+        scrollerRoot: document.getElementById('mockJournalScroller'),
+        trackEl: document.getElementById('mockJournalScrollerTrack'),
+        pinEl: document.getElementById('mockJournalScrollerPin'),
+        alwaysVisible: true,
+      });
+      els.mockStage.focus();
+    }
+
+    init().catch((err) => {
+      console.error(err);
+      document.getElementById('status').textContent = err.message || String(err);
+    });
+  </script>
+</body>
+</html>

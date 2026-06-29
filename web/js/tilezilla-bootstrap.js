@@ -28,6 +28,7 @@ import { initProfileOverlay, openProfileOverlay } from './tilezilla-profile-over
 import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { initHintRules } from './tilezilla-hint-rules.js';
+import { initCartographersJournal } from './tilezilla-cartographers-journal.js';
 import { initDiscoveryRecord } from './tilezilla-discovery-record.js';
 import * as guestUser from './tilezilla-guest.js';
 import {
@@ -102,6 +103,13 @@ import {
   reloadHintRulesLayout,
   syncHintRulesWindowGeometry,
 } from './hint-rules-layout.js';
+import {
+  applyCartographersJournalLayout,
+  clearCartographersJournalLayoutCache,
+  loadCartographersJournalLayout,
+  reloadCartographersJournalLayout,
+  syncCartographersJournalWindowGeometry,
+} from './cartographers-journal-layout.js';
 import {
   applyJournalLayoutEverywhere,
   applyJournalOverlays,
@@ -2019,6 +2027,7 @@ async function applyShellLayouts() {
     requestAnimationFrame(() => {
       updateMainV2BoardFit();
       syncHintRulesWindowGeometry();
+      syncCartographersJournalWindowGeometry();
     });
   } else {
     try {
@@ -2179,6 +2188,7 @@ async function init() {
   }
 
   initHintRules({ menuApi });
+  initCartographersJournal({ menuApi });
   initBuyHintsPopup({ menuApi });
   wireBuyHintsTriggers();
   initDiscoveryRecord({
@@ -2314,6 +2324,12 @@ async function init() {
     applyHintRulesLayout(await loadHintRulesLayout());
   } catch (err) {
     console.warn('Hint rules layout:', err);
+  }
+
+  try {
+    applyCartographersJournalLayout(await loadCartographersJournalLayout());
+  } catch (err) {
+    console.warn("Cartographer's journal layout:", err);
   }
 
   try {
@@ -2481,6 +2497,7 @@ async function refreshMainScreenV2LayoutFromDisk() {
     requestAnimationFrame(() => {
       updateMainV2BoardFit();
       syncHintRulesWindowGeometry();
+      syncCartographersJournalWindowGeometry();
     });
   } catch (err) {
     console.warn('Main screen v2 layout reload:', err);
@@ -2645,6 +2662,26 @@ window.addEventListener('storage', (e) => {
 
 window.addEventListener('focus', () => {
   void refreshHintRulesLayoutFromDisk();
+});
+
+async function refreshCartographersJournalLayoutFromDisk() {
+  clearCartographersJournalLayoutCache();
+  try {
+    applyCartographersJournalLayout(await reloadCartographersJournalLayout());
+    syncCartographersJournalWindowGeometry();
+  } catch (err) {
+    console.warn('Cartographer journal layout reload:', err);
+  }
+}
+
+window.addEventListener('tilezilla:cartographers-journal-layout-saved', () => {
+  void refreshCartographersJournalLayoutFromDisk();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'tilezilla:cartographers-journal-layout-version') {
+    void refreshCartographersJournalLayoutFromDisk();
+  }
 });
 
 window.addEventListener('tilezilla:auth-screen-layout-saved', () => {

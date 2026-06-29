@@ -140,6 +140,7 @@ export function closeTilesetPicker({ returnToSettings = false } = {}) {
     && $('menuPanelRoot')?.hidden !== false
     && $('settingsRoot')?.hidden !== false
     && $('hintRulesRoot')?.hidden !== false
+    && $('cartographersJournalRoot')?.hidden !== false
     && $('hintMenuRoot')?.hidden !== false
     && $('stuckPopupRoot')?.hidden !== false
     && $('puzzleInfoRoot')?.hidden !== false

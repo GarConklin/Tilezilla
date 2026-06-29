@@ -352,7 +352,7 @@ export function clearAdventurePathCache() {
 
 export function adventureSolveCount(progress, levelId, { isChallenge = false } = {}) {
 
-  const found = progress?.getFoundForLevel?.(levelId) || [];
+  const found = findProgressFoundForLevel(progress, levelId);
 
   if (!found.length) return 0;
 
@@ -421,6 +421,32 @@ function findPuzzleInPath(path, levelId) {
 /** Normalize catalog level ids for path / progress lookups (5x6 vs 5×6, strip .json). */
 export function normalizeCatalogLevelId(levelId) {
   return String(levelId || '').trim().replace(/×/g, 'x').replace(/\.json$/i, '');
+}
+
+/** Match progress keys to catalog level ids (storage may use .json suffix or legacy aliases). */
+export function findProgressFoundForLevel(progress, levelId) {
+  if (!progress?.getFoundForLevel || !levelId) return [];
+  const norm = normalizeCatalogLevelId(levelId);
+  const direct = progress.getFoundForLevel(levelId);
+  if (direct.length) return direct;
+  if (norm !== levelId) {
+    const alt = progress.getFoundForLevel(norm);
+    if (alt.length) return alt;
+  }
+  const withJson = norm.endsWith('.json') ? norm : `${norm}.json`;
+  const jsonHit = progress.getFoundForLevel(withJson);
+  if (jsonHit.length) return jsonHit;
+
+  const data = progress.data;
+  if (!data || typeof data !== 'object') return [];
+  for (const [key, entry] of Object.entries(data)) {
+    if (key.startsWith('_')) continue;
+    if (normalizeCatalogLevelId(key) === norm) {
+      const found = entry?.found;
+      if (Array.isArray(found) && found.length) return found;
+    }
+  }
+  return [];
 }
 
 

@@ -85,14 +85,6 @@ function syncBadgeFromPreview(badges) {
 }
 
 async function resolveRankSublevel(progress) {
-  const refSub = document.getElementById('previewV2SubLevelIcon');
-  if (refSub?.dataset.sublevel) {
-    return {
-      subLevel: Number(refSub.dataset.sublevel) || 1,
-      badge: refSub.dataset.sublevelBadge || 'gld',
-    };
-  }
-
   const path = await loadAdventurePath();
   const prog = progress ?? window.__app?.progress ?? null;
   const ctx = adventureLevelContext(window.__app || {});
@@ -137,7 +129,7 @@ async function applyPassportRankState(badges, subs, stacks, progress) {
     /* defaults */
   }
 
-  const syncedBadge = syncBadgeFromPreview(badges);
+  const syncedBadge = !progress && !window.__app?.progress && syncBadgeFromPreview(badges);
   const resolved = await applyPassportSublevels(subs, progress, layout);
 
   if (!syncedBadge && resolved.rank) {
@@ -161,10 +153,16 @@ export async function refreshProfileRankIcons(progress, root = document) {
   const { badges, subs, stacks } = rankElements(root);
   if (!badges.length && !subs.length) return;
 
+  let prog = progress;
+  if (!prog && window.__app?.progress?.load) {
+    window.__app.progress.data = window.__app.progress.load();
+    prog = window.__app.progress;
+  }
+
   setRankStacksReady(stacks, false);
 
   try {
-    await applyPassportRankState(badges, subs, stacks, progress);
+    await applyPassportRankState(badges, subs, stacks, prog);
   } catch (err) {
     console.warn('Profile rank icons:', err);
     let layout = null;
@@ -184,10 +182,10 @@ export async function refreshProfileRankIcons(progress, root = document) {
     setRankStacksReady(stacks, true);
     requestAnimationFrame(() => {
       syncPassportRankBadgeHeights(stacks);
-      void rescalePassportSublevels(stacks, subs, progress);
+      void rescalePassportSublevels(stacks, subs, prog);
       requestAnimationFrame(() => {
         syncPassportRankBadgeHeights(stacks);
-        void rescalePassportSublevels(stacks, subs, progress);
+        void rescalePassportSublevels(stacks, subs, prog);
       });
     });
   }
