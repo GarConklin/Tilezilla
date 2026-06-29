@@ -513,7 +513,7 @@
   --tz-stuck-reveal-close-w: 7%;
   --tz-stuck-reveal-close-h: 7%;
 
-  /* Random puzzle popup — RandomPuzzle-Base.png 1024×811 */
+  /* Random puzzle popup — RandomPuzzle-Base.png 1024×811 frame (art may letterbox inside) */
   --tz-random-art-w: 1024;
   --tz-random-art-h: 811;
   --tz-random-display-pad: 32px;

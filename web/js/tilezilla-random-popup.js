@@ -4,14 +4,26 @@
 
 import {
   applyRandomPopupLayout,
+  isRandomPopupTunerPage,
   loadRandomPopupLayout,
-  reloadRandomPopupLayout,
 } from './random-popup-layout.js';
 
 let getApp = () => null;
 let menuApi = null;
 let onRemainOnPath = async () => {};
 let onVentureForth = async () => {};
+let layoutCache = null;
+
+async function ensureRandomPopupLayout(force = false) {
+  if (!layoutCache || force) {
+    layoutCache = await loadRandomPopupLayout({
+      force,
+      fromDisk: !isRandomPopupTunerPage(),
+    });
+  }
+  applyRandomPopupLayout(layoutCache);
+  return layoutCache;
+}
 
 function $(id) {
   return document.getElementById(id);
@@ -34,6 +46,7 @@ export function openRandomPuzzlePopup() {
   menuApi?.closeAll?.();
   root.hidden = false;
   document.body.classList.add('tz-modal-open');
+  void ensureRandomPopupLayout().catch((err) => console.warn('Random popup layout:', err));
   requestAnimationFrame(() => {
     root.scrollTop = 0;
     $('randomRemainBtn')?.focus();
@@ -70,14 +83,10 @@ export function initRandomPuzzlePopup(options = {}) {
   $('randomRemainBtn')?.addEventListener('click', () => { void handleRemainOnPath(); });
   $('randomVentureBtn')?.addEventListener('click', () => { void handleVentureForth(); });
 
-  void loadRandomPopupLayout()
-    .then((layout) => applyRandomPopupLayout(layout))
-    .catch((err) => console.warn('Random popup layout:', err));
+  void ensureRandomPopupLayout(true).catch((err) => console.warn('Random popup layout:', err));
 
   window.addEventListener('tilezilla:random-popup-layout-saved', () => {
-    void reloadRandomPopupLayout()
-      .then((layout) => applyRandomPopupLayout(layout))
-      .catch((err) => console.warn('Random popup layout reload:', err));
+    void ensureRandomPopupLayout(true).catch((err) => console.warn('Random popup layout reload:', err));
   });
 
   window.addEventListener('storage', (e) => {
@@ -86,9 +95,7 @@ export function initRandomPuzzlePopup(options = {}) {
       || e.key === 'tilezilla:layouts:random-popup:pending'
       || e.key === 'tilezilla:random-popup-layout-version'
     ) {
-      void reloadRandomPopupLayout()
-        .then((layout) => applyRandomPopupLayout(layout))
-        .catch((err) => console.warn('Random popup layout reload:', err));
+      void ensureRandomPopupLayout(true).catch((err) => console.warn('Random popup layout reload:', err));
     }
   });
 

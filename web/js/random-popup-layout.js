@@ -28,6 +28,10 @@ const LS_PENDING_KEY = 'tilezilla:layouts:random-popup:pending';
 
 let layoutCache = null;
 
+export function isRandomPopupTunerPage() {
+  return /random-popup-tuner(?:\.html)?$/i.test(window.location.pathname);
+}
+
 export function clearRandomPopupLayoutCache() {
   layoutCache = null;
 }
@@ -64,22 +68,25 @@ export function mergeRandomPopupLayout(raw) {
   return base;
 }
 
-export async function loadRandomPopupLayout({ force = false } = {}) {
+export async function loadRandomPopupLayout({ force = false, fromDisk = false } = {}) {
   if (layoutCache && !force) return layoutCache;
 
   let raw = null;
-  let pendingDraft = false;
-  try {
-    pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
-    if (pendingDraft) {
-      const draft = localStorage.getItem(LS_LAYOUT_KEY);
-      if (draft) raw = JSON.parse(draft);
+  const onTuner = isRandomPopupTunerPage();
+
+  // Only the tuner prefers an in-progress browser draft. The live page always reads JSON from disk.
+  if (!fromDisk && onTuner) {
+    try {
+      if (localStorage.getItem(LS_PENDING_KEY) === '1') {
+        const draft = localStorage.getItem(LS_LAYOUT_KEY);
+        if (draft) raw = JSON.parse(draft);
+      }
+    } catch {
+      /* fall through */
     }
-  } catch {
-    pendingDraft = false;
   }
 
-  if (!pendingDraft) {
+  if (!raw || fromDisk) {
     try {
       const res = await fetch(`/data/random_popup_layout.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) raw = await res.json();
@@ -88,7 +95,7 @@ export async function loadRandomPopupLayout({ force = false } = {}) {
     }
   }
 
-  if (!raw && !pendingDraft) {
+  if (!raw && onTuner) {
     try {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);
@@ -101,9 +108,9 @@ export async function loadRandomPopupLayout({ force = false } = {}) {
   return layoutCache;
 }
 
-export async function reloadRandomPopupLayout() {
+export async function reloadRandomPopupLayout({ fromDisk = false } = {}) {
   clearRandomPopupLayoutCache();
-  return loadRandomPopupLayout({ force: true });
+  return loadRandomPopupLayout({ force: true, fromDisk });
 }
 
 export function getRandomPopupItemLayout(itemKey, layout) {
@@ -126,18 +133,67 @@ function setItemVars(target, cssPrefix, box) {
   target.style.setProperty(`--tz-random-${cssPrefix}-h`, `${box.h}%`);
 }
 
-function syncRandomPopupItemVisibility(layout) {
-  const merged = mergeRandomPopupLayout(layout);
-  const idByKey = {
-    remain: 'randomRemainBtn',
-    venture: 'randomVentureBtn',
-    close: 'randomCloseBtn',
+const RANDOM_POPUP_BTN_SELECTORS = {
+  remain: '.tz-random-dialog__btn--remain',
+  venture: '.tz-random-dialog__btn--venture',
+  close: '.tz-random-dialog__btn--close',
+};
+
+function randomPopupBoxStyle(box) {
+  return {
+    position: 'absolute',
+    left: `${box.x}%`,
+    top: `${box.y}%`,
+    width: `${box.w}%`,
+    height: `${box.h}%`,
+    margin: '0',
+    boxSizing: 'border-box',
   };
-  for (const [key, id] of Object.entries(idByKey)) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    el.hidden = Boolean(getRandomPopupItemLayout(key, merged).hidden);
+}
+
+/** Inline tuned hits on real DOM nodes (tuner + in-game) so layout cannot drift via CSS vars. */
+export function applyRandomPopupItemPositions(layout, root = document) {
+  const merged = mergeRandomPopupLayout(layout);
+  const doc = root.ownerDocument || root;
+  const frames = [...(doc.querySelectorAll?.('.tz-random-dialog__frame') || [])];
+  if (!frames.length) return;
+
+  for (const frame of frames) {
+    for (const [key, selector] of Object.entries(RANDOM_POPUP_BTN_SELECTORS)) {
+      const box = getRandomPopupItemLayout(key, merged);
+      for (const el of frame.querySelectorAll(selector)) {
+        Object.assign(el.style, randomPopupBoxStyle(box));
+        el.hidden = Boolean(box.hidden);
+      }
+    }
   }
+}
+
+/** Size random dialog to match in-game fit (design width + viewport caps). */
+export function fitRandomPopupDialog(dialog, layout, {
+  maxViewportWidth = typeof window !== 'undefined' ? window.innerWidth : 720,
+  maxViewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900,
+} = {}) {
+  if (!dialog) return;
+
+  const merged = mergeRandomPopupLayout(layout);
+  const d = merged.dialog || DEFAULT_RANDOM_POPUP_LAYOUT.dialog;
+  const artW = d.artW ?? RANDOM_POPUP_ART.w;
+  const artH = d.artH ?? RANDOM_POPUP_ART.h;
+  const displayPad = d.displayPad ?? 32;
+  const maxDesign = d.maxDesignWidth ?? 390;
+  const widthScale = d.widthScale ?? 1;
+
+  const vw = Math.max(280, maxViewportWidth - displayPad);
+  const vh = Math.max(320, maxViewportHeight - displayPad);
+  const baseW = Math.floor(maxDesign * widthScale);
+  const wFromHeight = (vh * artW) / artH;
+  const w = Math.floor(Math.min(baseW, vw, wFromHeight, artW));
+  const h = Math.floor((w * artH) / artW);
+
+  dialog.style.width = `${w}px`;
+  dialog.style.height = `${h}px`;
+  dialog.style.aspectRatio = 'auto';
 }
 
 export function applyRandomPopupLayout(layout, target = document.documentElement) {
@@ -153,7 +209,12 @@ export function applyRandomPopupLayout(layout, target = document.documentElement
   for (const [key, meta] of Object.entries(RANDOM_POPUP_ITEM_DEFS)) {
     setItemVars(target, meta.cssPrefix, getRandomPopupItemLayout(key, merged));
   }
-  syncRandomPopupItemVisibility(merged);
+
+  const doc = target.ownerDocument || document;
+  for (const dialog of doc.querySelectorAll('.tz-random-dialog')) {
+    fitRandomPopupDialog(dialog, merged);
+  }
+  applyRandomPopupItemPositions(merged, doc);
 }
 
 export function buildRandomPopupLayoutReport(layout) {

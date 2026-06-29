@@ -12,6 +12,7 @@ import {
   showLoginRequired,
 } from './tilezilla-guest.js';
 import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
+import { clearAdventureCatalogStatsCache } from './passport-catalog-stats.js';
 import { refreshProfilePassportStats } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
@@ -23,6 +24,22 @@ let menuApi = null;
 let onDaily = null;
 let onAdventure = null;
 let onRandom = null;
+
+async function waitForAppLevels(maxMs = 12000) {
+  if (window.__app?.state?.allLevels?.length) return;
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    if (window.__app?.state?.allLevels?.length) return;
+  }
+}
+
+async function refreshProfileOverlayStats(root) {
+  clearAdventureCatalogStatsCache();
+  await waitForAppLevels();
+  await refreshProfileRankIcons(window.__app?.progress ?? null, root);
+  await refreshProfilePassportStats({ root });
+}
 
 function refreshProfileFields() {
   const nameEl = $('profileOverlayName');
@@ -83,11 +100,11 @@ export async function openProfileOverlay() {
   const overlayRoot = document.getElementById('profileOverlayRoot');
   await ensureProfileOverlayLayout(document);
   refreshProfileFields();
-  await refreshProfileRankIcons(window.__app?.progress ?? null, overlayRoot || document);
-  await refreshProfilePassportStats({ root: overlayRoot || document });
+  await refreshProfileOverlayStats(overlayRoot || document);
   await ensureProfileOverlayLayout(document);
   openProfileOverlayPopup();
   requestAnimationFrame(() => {
+    void refreshProfileOverlayStats(overlayRoot || document);
     void ensureProfileOverlayLayout(document);
   });
 }
@@ -145,12 +162,7 @@ export function initProfileOverlay({
     closeProfileOverlayPopup();
   });
 
-  void ensureProfileOverlayLayout(document).then(() => {
-    refreshProfileFields();
-    void refreshProfileRankIcons(window.__app?.progress ?? null, root).then(() => {
-      void refreshProfilePassportStats({ root });
-    });
-  });
+  void ensureProfileOverlayLayout(document);
 
   window.addEventListener('tilezilla:auth-screen-layout-saved', () => {
     void ensureProfileOverlayLayout(document);

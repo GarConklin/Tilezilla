@@ -233,7 +233,7 @@ export const PROFILE_LAYOUT_MOCK = {
   passportId: 'TZ-4F2A9C',
   explorersRegistered: '1,204',
   totalAdventurePuzzles: '7,077',
-  totalKnownRoutes: '18,432',
+  totalKnownRoutes: '32,430',
   largestSolution: '524\nROUTES',
   todaysChallenge: '5x6-0B-BFA',
   recentPuzzleSolved: '5x6-0B-BNZ',
@@ -737,6 +737,41 @@ export function applyAuthScreenItemPositions(layout, screenKey, root = document)
   }
 }
 
+/** Push tuned profile stat / rank slots onto live DOM so layout cannot drift via CSS vars. */
+export function applyProfileSlotPositions(layout, root = document) {
+  const merged = mergeAuthScreenLayout(layout);
+  const doc = root?.ownerDocument || root;
+  const scope = doc.getElementById?.('profileOverlayRoot')
+    || doc.getElementById?.('mockFrame')
+    || getProfileOverlayVisibilityRoot(root);
+
+  const rankBox = getAuthScreenItemLayout('profile', 'rankBadge', merged);
+  const rankStyle = authScreenPositionStyle(rankBox);
+  for (const el of scope.querySelectorAll('.auth-screen__profile-rank-stack')) {
+    Object.assign(el.style, rankStyle);
+    el.hidden = Boolean(rankBox.hidden);
+  }
+
+  const items = AUTH_SCREEN_DEFS.profile?.items || {};
+  for (const [key, meta] of Object.entries(items)) {
+    if (key === 'rankBadge' || key === 'sublevelIcon' || meta.kind === 'hit') continue;
+    const box = getAuthScreenItemLayout('profile', key, merged);
+    const style = authScreenPositionStyle(box);
+    if (meta.slot) {
+      for (const el of scope.querySelectorAll(`[data-profile-slot="${meta.slot}"]`)) {
+        Object.assign(el.style, style);
+        if (isAuthTextItem('profile', key)) {
+          el.style.setProperty(cssVarName('profile', key, 'font-scale'), String(box.fontScale));
+        }
+      }
+    } else if (meta.cssClass) {
+      for (const el of scope.querySelectorAll(`.${meta.cssClass}`)) {
+        Object.assign(el.style, style);
+      }
+    }
+  }
+}
+
 /** Push tuned profile hit boxes onto real buttons (tuner + live) so spacing cannot drift via CSS vars. */
 export function applyProfileHitPositions(layout, root = document) {
   const merged = mergeAuthScreenLayout(layout);
@@ -770,6 +805,7 @@ export function applyProfileOverlayLayout(layout, root = document) {
 
   applyProfileDialogFrameVars(layout, dialog, visibilityRoot);
   applyAuthScreenLayout(layout, 'profile', stage, { syncVisibility: false });
+  applyProfileSlotPositions(layout, root);
   applyProfileHitPositions(layout, root);
   syncAuthScreenItemVisibility(layout, 'profile', visibilityRoot);
 }
@@ -791,6 +827,7 @@ export async function initAuthScreenLayout(screenKey, { preferFile = false } = {
   }
   syncAuthScreenItemVisibility(layout, screenKey, stage || document);
   if (screenKey === 'profile') {
+    applyProfileSlotPositions(layout, document);
     applyProfileHitPositions(layout, document);
   } else {
     applyAuthScreenItemPositions(layout, screenKey, stage || document);

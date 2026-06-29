@@ -6,10 +6,6 @@ import {
   loadAdventurePath,
 } from './adventure-path.js';
 import {
-  applyPreviewV2DataSublayout,
-  loadPreviewV2DataSublayout,
-} from './preview-v2-data-sublayout.js';
-import {
   applySublevelIconOnBadgeStack,
   clearSublevelLayoutCache,
   loadSublevelIconLayout,
@@ -78,18 +74,6 @@ function waitForRankImages(badges, subs) {
   );
 }
 
-async function applyUserDataLayoutToStacks(stacks) {
-  let layout;
-  try {
-    layout = await loadPreviewV2DataSublayout('userData');
-  } catch {
-    return;
-  }
-  for (const stack of stacks) {
-    applyPreviewV2DataSublayout('userData', layout, stack);
-  }
-}
-
 function syncBadgeFromPreview(badges) {
   const refBadge = document.getElementById('previewV2RankBadge');
   if (!refBadge?.getAttribute('src')) return false;
@@ -128,7 +112,7 @@ async function applyPassportSublevels(subs, progress, layout) {
   return resolved;
 }
 
-async function rescalePassportSublevels(stacks, subs) {
+async function rescalePassportSublevels(stacks, subs, progress) {
   syncPassportRankBadgeHeights(stacks);
   let layout = null;
   try {
@@ -136,17 +120,16 @@ async function rescalePassportSublevels(stacks, subs) {
   } catch {
     /* defaults in applySublevelIconOnBadgeStack */
   }
+  const resolved = await resolveRankSublevel(progress);
   for (const el of subs) {
     if (!el.closest('.auth-screen__profile-rank-stack')) continue;
-    const subLevel = Number(el.dataset.sublevel) || 1;
-    const badge = el.dataset.sublevelBadge || 'gld';
+    const subLevel = Number(el.dataset.sublevel) || resolved.subLevel || 1;
+    const badge = el.dataset.sublevelBadge || resolved.badge || 'gld';
     applySublevelIconOnBadgeStack(el, subLevel, badge, layout);
   }
 }
 
 async function applyPassportRankState(badges, subs, stacks, progress) {
-  await applyUserDataLayoutToStacks(stacks);
-
   let layout = null;
   try {
     layout = await loadSublevelIconLayout();
@@ -201,10 +184,10 @@ export async function refreshProfileRankIcons(progress, root = document) {
     setRankStacksReady(stacks, true);
     requestAnimationFrame(() => {
       syncPassportRankBadgeHeights(stacks);
-      void rescalePassportSublevels(stacks, subs);
+      void rescalePassportSublevels(stacks, subs, progress);
       requestAnimationFrame(() => {
         syncPassportRankBadgeHeights(stacks);
-        void rescalePassportSublevels(stacks, subs);
+        void rescalePassportSublevels(stacks, subs, progress);
       });
     });
   }

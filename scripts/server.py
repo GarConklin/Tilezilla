@@ -118,6 +118,16 @@ def adventure_path_api_response() -> tuple[int, dict]:
 def system_info_api_response() -> tuple[int, dict]:
     info = load_system_info_from_mysql(ROOT)
     if info:
+        stats = (info.get("stats") or {}) if isinstance(info, dict) else {}
+        if int(stats.get("totalKnownRoutes") or 0) <= 0:
+            try:
+                from lib.system_stats import refresh_system_stats
+
+                refreshed = refresh_system_stats(force=True)
+                if refreshed and int(refreshed.get("totalKnownRoutes") or 0) > 0:
+                    info = load_system_info_from_mysql(ROOT) or info
+            except Exception:
+                pass
         return 200, {"ok": True, "source": "mysql", "info": info}
 
     info = load_system_info_from_json(ROOT)

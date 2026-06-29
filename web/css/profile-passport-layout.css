@@ -74,7 +74,7 @@
   visibility: hidden;
 }
 
-/* Passport rank slot — badge stack fills the tuned rankBadge box (not user_data inset) */
+/* Passport rank slot — badge stack shrink-wraps art; sublevel anchors to stack (rank-sublevel-tuner). */
 .auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack {
   position: absolute;
@@ -85,18 +85,21 @@
   top: 0;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
-/* Same rank bubble + sublevel model as rank-sublevel-tuner / status panel */
 .auth-screen__profile-rank-stack .tz-rank-badge-stack,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
   width: max-content;
   max-width: 100%;
-  height: 100%;
+  max-height: 100%;
+  height: auto;
   --tz-rank-sublevel-anchor-y: 0.78;
 }
 
@@ -105,7 +108,8 @@
   display: block;
   width: auto;
   max-width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 100%;
   transform: scaleX(var(--tz-rank-badge-w-scale, 1));
   transform-origin: center top;
   object-fit: contain;
@@ -117,7 +121,7 @@
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-sublevel__img {
   position: absolute;
   left: 50%;
-  top: calc(var(--tz-rank-badge-h, 100%) * var(--tz-rank-sublevel-anchor-y, 0.78));
+  top: calc(100% * var(--tz-rank-sublevel-anchor-y, 0.78));
   z-index: 2;
   display: block;
   width: auto;

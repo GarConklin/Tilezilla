@@ -2963,9 +2963,10 @@ async function loadKnownSolutionsForLevel(level){
 function totalKnownForLevel(lev){
   if(!lev?.id) return 0;
   const cached = state.solutionCountByLevelId[lev.id];
-  if(Number.isFinite(cached) && cached >= 0) return cached;
+  if(Number.isFinite(cached) && cached > 0) return cached;
   const lib = Number(lev.totalUniqueSolutions);
   if(Number.isFinite(lib) && lib > 0) return lib;
+  if(Number.isFinite(cached) && cached >= 0) return cached;
   return 0;
 }
 

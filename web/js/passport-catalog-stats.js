@@ -16,8 +16,9 @@ export function clearAdventureCatalogStatsCache() {
 /**
  * @returns {Promise<{ totalAdventurePuzzles: number, totalKnownRoutes: number, largestSolution: number } | null>}
  */
-export async function loadAdventureCatalogStats(app = window.__app) {
-  if (catalogCache) return catalogCache;
+export async function loadAdventureCatalogStats(app = window.__app, { force = false } = {}) {
+  const levelsReady = (app?.state?.allLevels?.length ?? 0) > 0;
+  if (catalogCache && !force) return catalogCache;
   try {
     const path = await loadAdventurePath();
     const levelContext = adventureLevelContext(app || {});
@@ -30,12 +31,16 @@ export async function loadAdventureCatalogStats(app = window.__app) {
       totalKnownRoutes += known;
       if (known > largestSolution) largestSolution = known;
     }
-    catalogCache = {
+    const result = {
       totalAdventurePuzzles: puzzles.length,
       totalKnownRoutes,
       largestSolution,
     };
-    return catalogCache;
+    // Avoid caching zeros before level catalog / solution counts are loaded.
+    if (levelsReady && totalKnownRoutes > 0) {
+      catalogCache = result;
+    }
+    return result;
   } catch {
     return null;
   }

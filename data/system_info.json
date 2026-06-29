@@ -6,5 +6,15 @@
   "creationDate": "March 28, 2026",
   "productName": "Tilezilla",
   "environment": "development",
-  "logoutRedirectUrl": "https://www.skifflakegames.com/"
+  "logoutRedirectUrl": "https://www.skifflakegames.com/",
+  "stats": {
+    "statsUpdatedAt": "2026-06-16",
+    "registeredUsers": 1204,
+    "totalPlaySeconds": 67320,
+    "totalAdventurePuzzles": 7077,
+    "totalKnownRoutes": 32430,
+    "largestSolution": 524,
+    "ranksToEarn": 12,
+    "challengeGates": 48
+  }
 }

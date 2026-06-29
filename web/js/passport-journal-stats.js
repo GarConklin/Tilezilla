@@ -1,13 +1,14 @@
 /** Shared expedition report + community discoveries stats (login & logged-in journal pages). */
 
 import { PROFILE_LAYOUT_MOCK } from './auth-screen-layout.js';
+import { formatCatalogStatNumber, loadAdventureCatalogStats } from './passport-catalog-stats.js';
 import { fetchSystemStats, formatPlayTime, formatStatNumber } from './system-info.js';
 
 function setJournalSlot(root, slot, text) {
-  if (text == null || text === '') return;
+  const value = text == null || text === '' ? '—' : String(text);
   root.querySelectorAll(`[data-profile-slot="${slot}"]`).forEach((el) => {
     if (el.tagName === 'IMG') return;
-    el.textContent = text;
+    el.textContent = value;
   });
 }
 
@@ -47,11 +48,66 @@ export async function fetchTodaysChallengeLevelId() {
   }
 }
 
+function pickStatNumber(systemVal, catalogVal, mockVal) {
+  const sys = Number(systemVal);
+  if (Number.isFinite(sys) && sys > 0) return formatStatNumber(sys);
+  const cat = Number(catalogVal);
+  if (Number.isFinite(cat) && cat > 0) return formatCatalogStatNumber(cat);
+  return mockVal;
+}
+
+/** Best available expedition report numbers (system cache → live catalog → mock). */
+export async function resolveExpeditionReportDisplay(app = window.__app) {
+  const mock = PROFILE_LAYOUT_MOCK;
+  const [systemStats, catalog] = await Promise.all([
+    fetchSystemStats(),
+    loadAdventureCatalogStats(app),
+  ]);
+
+  const largestSys = Number(systemStats?.largestSolution);
+  const largestCat = Number(catalog?.largestSolution);
+  let largestSolution = mock.largestSolution;
+  if (Number.isFinite(largestSys) && largestSys > 0) {
+    largestSolution = `${formatStatNumber(largestSys)}\nROUTES`;
+  } else if (Number.isFinite(largestCat) && largestCat > 0) {
+    largestSolution = `${formatCatalogStatNumber(largestCat)}\nROUTES`;
+  }
+
+  return {
+    systemStats,
+    explorersRegistered: pickStatNumber(systemStats?.registeredUsers, null, mock.explorersRegistered),
+    totalAdventurePuzzles: pickStatNumber(
+      systemStats?.totalAdventurePuzzles,
+      catalog?.totalAdventurePuzzles,
+      mock.totalAdventurePuzzles,
+    ),
+    totalKnownRoutes: pickStatNumber(
+      systemStats?.totalKnownRoutes,
+      catalog?.totalKnownRoutes,
+      mock.totalKnownRoutes,
+    ),
+    largestSolution,
+  };
+}
+
+export function applyExpeditionReportDisplay(root, display) {
+  if (!display) return;
+  setJournalSlot(root, 'explorersRegistered', display.explorersRegistered);
+  setJournalSlot(root, 'totalAdventurePuzzles', display.totalAdventurePuzzles);
+  setJournalSlot(root, 'totalKnownRoutes', display.totalKnownRoutes);
+  setJournalSlot(root, 'largestSolution', display.largestSolution);
+}
+
 export function applyExpeditionReportStats(root, stats, { largestTwoLine = true } = {}) {
   if (!stats) return;
-  setJournalSlot(root, 'explorersRegistered', formatStatNumber(stats.registeredUsers));
-  setJournalSlot(root, 'totalAdventurePuzzles', formatStatNumber(stats.totalAdventurePuzzles));
-  setJournalSlot(root, 'totalKnownRoutes', formatStatNumber(stats.totalKnownRoutes));
+  const mock = PROFILE_LAYOUT_MOCK;
+  setJournalSlot(root, 'explorersRegistered', pickStatNumber(stats.registeredUsers, null, mock.explorersRegistered));
+  setJournalSlot(
+    root,
+    'totalAdventurePuzzles',
+    pickStatNumber(stats.totalAdventurePuzzles, null, mock.totalAdventurePuzzles),
+  );
+  setJournalSlot(root, 'totalKnownRoutes', pickStatNumber(stats.totalKnownRoutes, null, mock.totalKnownRoutes));
   const largest = stats.largestSolution;
   setJournalSlot(
     root,
@@ -60,7 +116,35 @@ export function applyExpeditionReportStats(root, stats, { largestTwoLine = true 
       ? largestTwoLine
         ? `${formatStatNumber(largest)}\nROUTES`
         : formatStatNumber(largest)
-      : null,
+      : '—',
+  );
+}
+
+/** Left journal panel when system stats API / MySQL cache is unavailable (login offline dev). */
+export async function applyExpeditionReportStatsFallback(root, { largestTwoLine = true } = {}) {
+  const mock = PROFILE_LAYOUT_MOCK;
+  const catalog = await loadAdventureCatalogStats(window.__app);
+
+  setJournalSlot(root, 'explorersRegistered', mock.explorersRegistered);
+  setJournalSlot(
+    root,
+    'totalAdventurePuzzles',
+    catalog ? formatCatalogStatNumber(catalog.totalAdventurePuzzles) : mock.totalAdventurePuzzles,
+  );
+  setJournalSlot(
+    root,
+    'totalKnownRoutes',
+    pickStatNumber(null, catalog?.totalKnownRoutes, mock.totalKnownRoutes),
+  );
+  const largest = catalog?.largestSolution;
+  setJournalSlot(
+    root,
+    'largestSolution',
+    largest
+      ? largestTwoLine
+        ? `${formatCatalogStatNumber(largest)}\nROUTES`
+        : formatCatalogStatNumber(largest)
+      : mock.largestSolution,
   );
 }
 
@@ -79,11 +163,12 @@ export function applyCommunityDiscoveryStats(root, values = {}) {
 
 /** Fill both journal pages on login / logged-in passport screens. */
 export async function applyPassportJournalStats({ root = document } = {}) {
-  const stats = await fetchSystemStats();
-  applyExpeditionReportStats(root, stats, { largestTwoLine: true });
-  const todaysChallenge = (await fetchTodaysChallengeLevelId()) || PROFILE_LAYOUT_MOCK.todaysChallenge;
+  const mock = PROFILE_LAYOUT_MOCK;
+  const display = await resolveExpeditionReportDisplay(window.__app);
+  applyExpeditionReportDisplay(root, display);
+  const todaysChallenge = (await fetchTodaysChallengeLevelId()) || mock.todaysChallenge;
   setJournalSlot(root, 'todaysChallenge', todaysChallenge);
   applyCommunityDiscoveryStats(root, {
-    totalPlaySeconds: stats?.totalPlaySeconds,
+    totalPlaySeconds: display.systemStats?.totalPlaySeconds,
   });
 }

@@ -11,13 +11,11 @@ import {
   applyProfileOverlayLayout,
   syncAuthScreenItemVisibility,
 } from './auth-screen-layout.js';
-import { formatCatalogStatNumber, loadAdventureCatalogStats } from './passport-catalog-stats.js';
 import {
   applyCommunityDiscoveryStats,
-  applyExpeditionReportStats,
   fetchTodaysChallengeLevelId,
+  resolveExpeditionReportDisplay,
 } from './passport-journal-stats.js';
-import { fetchSystemStats, formatStatNumber } from './system-info.js';
 import { ACTIVE_USER_KEY, getConvertedGuestCode, REGISTERED_USER_ID_KEY } from './tilezilla-guest.js';
 
 function progressUserKey() {
@@ -169,7 +167,7 @@ export async function refreshProfilePassportStats({ root = document } = {}) {
   const hints = hintTokenCount();
   const dailyMeta = window.__dailyChallengeMeta;
   const recent = latestFoundLevelId(progress);
-  const systemStats = await fetchSystemStats();
+  const expedition = await resolveExpeditionReportDisplay(window.__app);
 
   setProfileSlot(root, 'adventureProgress', adventureProgress);
   setProfileSlot(root, 'profileName', localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer');
@@ -177,33 +175,12 @@ export async function refreshProfilePassportStats({ root = document } = {}) {
   setProfileSlot(root, 'hintTokens', hints != null ? String(hints) : mock.hintTokens);
   setProfileSlot(root, 'memberSince', formatMemberSince());
   setProfileSlot(root, 'passportId', passportIdForUser(registeredUserId() || progressUserKey()));
-  setProfileSlot(
-    root,
-    'explorersRegistered',
-    systemStats ? formatStatNumber(systemStats.registeredUsers) : mock.explorersRegistered,
-  );
+  setProfileSlot(root, 'explorersRegistered', expedition.explorersRegistered);
+  setProfileSlot(root, 'totalAdventurePuzzles', expedition.totalAdventurePuzzles);
+  setProfileSlot(root, 'totalKnownRoutes', expedition.totalKnownRoutes);
+  setProfileSlot(root, 'largestSolution', expedition.largestSolution);
 
-  if (systemStats) {
-    applyExpeditionReportStats(root, systemStats, { largestTwoLine: true });
-  } else {
-    const catalog = await loadAdventureCatalogStats(window.__app);
-    setProfileSlot(
-      root,
-      'totalAdventurePuzzles',
-      catalog ? formatCatalogStatNumber(catalog.totalAdventurePuzzles) : mock.totalAdventurePuzzles,
-    );
-    setProfileSlot(
-      root,
-      'totalKnownRoutes',
-      catalog ? formatCatalogStatNumber(catalog.totalKnownRoutes) : mock.totalKnownRoutes,
-    );
-    const largest = catalog?.largestSolution;
-    setProfileSlot(
-      root,
-      'largestSolution',
-      largest ? `${formatCatalogStatNumber(largest)}\nROUTES` : mock.largestSolution,
-    );
-  }
+  const systemStats = expedition.systemStats;
 
   try {
     const docRoot = root.ownerDocument || document;

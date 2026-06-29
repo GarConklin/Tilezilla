@@ -28,12 +28,11 @@ export function subLevelIconPath(subLevel, badge = 'gld') {
   return `/img/ranks/${normalizeSublevelBadge(badge)}-${n}.png`;
 }
 
-export async function loadSublevelIconLayout() {
-  if (!layoutCache) {
-    const res = await fetch('/data/sublevel_icon_layout.json');
-    if (!res.ok) throw new Error('Failed to load sublevel icon layout');
-    layoutCache = await res.json();
-  }
+export async function loadSublevelIconLayout({ force = false } = {}) {
+  if (layoutCache && !force) return layoutCache;
+  const res = await fetch(`/data/sublevel_icon_layout.json?t=${Date.now()}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to load sublevel icon layout');
+  layoutCache = await res.json();
   return layoutCache;
 }
 

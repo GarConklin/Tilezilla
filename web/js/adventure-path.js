@@ -72,11 +72,14 @@ export function resolveLevelTotalKnown(level, solutionCountByLevelId = {}) {
 
   const cached = solutionCountByLevelId[level.id];
 
-  if (Number.isFinite(cached) && cached >= 0) return cached;
+  // Loaded solve file wins when it has routes; 0 often means "not loaded yet" — use catalog total.
+  if (Number.isFinite(cached) && cached > 0) return cached;
 
   const lib = Number(level.totalUniqueSolutions);
 
   if (Number.isFinite(lib) && lib > 0) return lib;
+
+  if (Number.isFinite(cached) && cached >= 0) return cached;
 
   return 0;
 

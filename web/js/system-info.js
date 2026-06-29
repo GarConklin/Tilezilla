@@ -64,6 +64,12 @@ export function formatStatNumber(value) {
   return n.toLocaleString('en-US');
 }
 
+function formatStatOrMock(value, mockFallback) {
+  const n = Number(value);
+  if (Number.isFinite(n) && n > 0) return formatStatNumber(n);
+  return mockFallback ?? '—';
+}
+
 /** @returns {Promise<import('./system-info.js').SystemStats|null>} */
 export async function fetchSystemStats() {
   const info = await fetchSystemInfo();
@@ -78,6 +84,9 @@ export async function applySystemStatsToAuthScreen({ root = document } = {}) {
   const stats = await fetchSystemStats();
   if (!stats) return;
 
+  const { PROFILE_LAYOUT_MOCK } = await import('./auth-screen-layout.js');
+  const mock = PROFILE_LAYOUT_MOCK;
+
   const body = root.body || document.body;
   const isCreate = body.classList.contains('auth-screen--create');
 
@@ -90,10 +99,10 @@ export async function applySystemStatsToAuthScreen({ root = document } = {}) {
   };
 
   if (isCreate) {
-    setSlot('totalAdventurePuzzles', formatStatNumber(stats.totalAdventurePuzzles));
-    setSlot('ranksToEarn', formatStatNumber(stats.ranksToEarn));
-    setSlot('challengeGates', formatStatNumber(stats.challengeGates));
-    setSlot('totalKnownRoutes', formatStatNumber(stats.totalKnownRoutes));
+    setSlot('totalAdventurePuzzles', formatStatOrMock(stats.totalAdventurePuzzles, mock.totalAdventurePuzzles));
+    setSlot('ranksToEarn', formatStatOrMock(stats.ranksToEarn, mock.ranksToEarn));
+    setSlot('challengeGates', formatStatOrMock(stats.challengeGates, mock.challengeGates));
+    setSlot('totalKnownRoutes', formatStatOrMock(stats.totalKnownRoutes, mock.totalKnownRoutes));
   }
 }
 

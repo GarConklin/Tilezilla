@@ -43,7 +43,20 @@ def load_system_info_from_json(repo_root: Path) -> Optional[dict]:
         doc = json.loads(path_file.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
-    return normalize_system_info(doc)
+    info = normalize_system_info(doc)
+    if not info:
+        return None
+    stats_raw = doc.get("stats")
+    if isinstance(stats_raw, dict):
+        try:
+            from lib.system_stats import normalize_stats
+
+            stats = normalize_stats(stats_raw)
+            if stats:
+                info["stats"] = stats
+        except Exception:
+            pass
+    return info
 
 
 def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG001
@@ -117,7 +130,7 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
 
                 stats = normalize_stats(row)
                 if stats:
-                    info["stats"] = stats
+                    info["stats"] = _merge_stats_with_json_fallback(repo_root, stats)
             except Exception:
                 pass
         return info
@@ -125,6 +138,32 @@ def load_system_info_from_mysql(repo_root: Path) -> Optional[dict]:  # noqa: ARG
         return None
     finally:
         conn.close()
+
+
+def _merge_stats_with_json_fallback(repo_root: Path, mysql_stats: dict) -> dict:
+    """Fill zero MySQL cache fields from data/system_info.json (dev / pre-refresh)."""
+    if not mysql_stats:
+        return mysql_stats
+    json_info = load_system_info_from_json(repo_root)
+    file_stats = (json_info or {}).get("stats")
+    if not isinstance(file_stats, dict):
+        return mysql_stats
+    merged = dict(mysql_stats)
+    for key in (
+        "registeredUsers",
+        "totalPlaySeconds",
+        "totalAdventurePuzzles",
+        "totalKnownRoutes",
+        "largestSolution",
+        "ranksToEarn",
+        "challengeGates",
+    ):
+        if int(merged.get(key) or 0) > 0:
+            continue
+        fallback = int(file_stats.get(key) or 0)
+        if fallback > 0:
+            merged[key] = fallback
+    return merged
 
 
 def _format_mysql_date(value: Any) -> str:
