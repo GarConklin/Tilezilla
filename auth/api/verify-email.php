@@ -10,6 +10,7 @@ try {
     }
 
     $conn = Db::connect($config);
+    $appName = $config['app']['name'] ?? 'Tilezilla';
 
     $stmt = $conn->prepare(
         "SELECT user_id, username, email, email_verified, status FROM users WHERE verification_token = ?"
@@ -26,27 +27,20 @@ try {
     $userId = (int)$user['user_id'];
     $stmt->close();
 
+    $activateFreeAccount = function () use ($conn, $userId) {
+        $activateStmt = $conn->prepare("
+            UPDATE users
+            SET paid = TRUE, status = 'active', active_until = NULL
+            WHERE user_id = ?
+        ");
+        $activateStmt->bind_param("i", $userId);
+        $activateStmt->execute();
+        $activateStmt->close();
+    };
+
     if ($user['email_verified']) {
         if (($user['status'] ?? '') === 'registered') {
-            $trialPeriodDays = 7;
-            $settingsStmt = $conn->prepare(
-                "SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'"
-            );
-            if ($settingsStmt) {
-                $settingsStmt->execute();
-                $settingsResult = $settingsStmt->get_result();
-                if ($settingsResult->num_rows > 0) {
-                    $trialPeriodDays = (int)$settingsResult->fetch_assoc()['setting_value'];
-                }
-                $settingsStmt->close();
-            }
-            $activateStmt = $conn->prepare("
-                UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY)
-                WHERE user_id = ?
-            ");
-            $activateStmt->bind_param("ii", $trialPeriodDays, $userId);
-            $activateStmt->execute();
-            $activateStmt->close();
+            $activateFreeAccount();
         }
         $conn->close();
         echo json_encode([
@@ -67,29 +61,9 @@ try {
     }
     $updateStmt->close();
 
-    $trialPeriodDays = 7;
-    $settingsStmt = $conn->prepare(
-        "SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days'"
-    );
-    if ($settingsStmt) {
-        $settingsStmt->execute();
-        $settingsResult = $settingsStmt->get_result();
-        if ($settingsResult->num_rows > 0) {
-            $trialPeriodDays = (int)$settingsResult->fetch_assoc()['setting_value'];
-        }
-        $settingsStmt->close();
-    }
+    $activateFreeAccount();
 
-    $bonusStmt = $conn->prepare("
-        UPDATE users SET paid = TRUE, status = 'active', active_until = DATE_ADD(CURDATE(), INTERVAL ? DAY)
-        WHERE user_id = ?
-    ");
-    $bonusStmt->bind_param("ii", $trialPeriodDays, $userId);
-    $bonusStmt->execute();
-    $bonusStmt->close();
-
-    $appName = $config['app']['name'] ?? 'Tilezilla';
-    $message = "Welcome to $appName, {$user['username']}! Your email is verified and your account is active for $trialPeriodDays days.";
+    $message = "Welcome to $appName, {$user['username']}! Your email is verified and your account is ready to play.";
 
     $conn->close();
 
@@ -98,7 +72,6 @@ try {
         'message' => $message,
         'user_id' => $userId,
         'username' => $user['username'],
-        'trial_period_days' => $trialPeriodDays,
     ]);
 } catch (Exception $e) {
     error_log("Tilezilla verify email error: " . $e->getMessage());

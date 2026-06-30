@@ -37,7 +37,11 @@ Tilezilla and Words Online are **separate deployments**. They communicate only v
 | `APP_NAME` | `Tilezilla` | Shown in email subjects |
 | `APP_BASE_URL` | `https://tile.skifflakegames.com` | Verification/reset links |
 
-Relay policy today: **no TLS, no AUTH** — the mail server trusts the Tilezilla VPS IP (`76.13.26.113`). Enable `SMTP_TLS` or credentials later if relay policy changes.
+Relay policy today: **no TLS, no AUTH** — the mail server trusts the Tilezilla VPS IP. Enable `SMTP_TLS` or credentials later if relay policy changes.
+
+## Accounts (free play)
+
+New signups stay active after email verification — **no trial expiry** (`active_until` is NULL). Login/session checks only block accounts when `active_until` is set and in the past (for a future paid tier).
 
 ## Production test
 

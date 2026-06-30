@@ -102,5 +102,5 @@ CREATE TABLE IF NOT EXISTS registration_settings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO registration_settings (setting_key, setting_value)
-VALUES ('trial_period_days', '7')
+VALUES ('trial_period_days', '0')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);

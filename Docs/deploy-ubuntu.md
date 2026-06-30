@@ -238,6 +238,18 @@ Common causes: `SMTP_ENABLED=false`, firewall blocking outbound 587, relay IP al
 
 Guest play works without mail. New registrations need working SMTP for verification emails.
 
+### Free accounts (no 7-day trial)
+
+After pulling a build with the updated `verify-email.php`, run once on the server to remove trial expiry for **everyone who already signed up**:
+
+```bash
+cd /opt/tilezilla
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
+  mysql -utilegame -p tilegame < scripts/sql/free-accounts-no-expiry.sql
+```
+
+This sets `active_until = NULL` for all verified users (no end date). New verifications do the same automatically.
+
 Verification link format:  
 `https://tile.skifflakegames.com/auth/verify-email.html?token=...`
 
@@ -263,6 +275,57 @@ In the browser:
 2. `https://tile.skifflakegames.com/tilezilla-v2.html` — game  
 3. Register a test account (after mail works)  
 4. Log in as `gar` / dev user if seeded in SQL dump  
+
+---
+
+## MySQL Workbench (remote access)
+
+Production MySQL binds to **localhost only** on the VPS (`127.0.0.1:3306`) — not the public internet. Use **Standard TCP/IP over SSH** in Workbench.
+
+| Workbench field | Value |
+|-----------------|--------|
+| Connection Method | Standard TCP/IP over SSH |
+| SSH Hostname | Your VPS IP (e.g. `76.13.26.113`) |
+| SSH Username | Your Ubuntu login |
+| SSH Key File | Your `.pem` / private key |
+| MySQL Hostname | `127.0.0.1` |
+| MySQL Port | `3306` |
+| Username | `tilegame` |
+| Password | `MYSQL_PASSWORD` from `.env.production` |
+| Default Schema | `tilegame` |
+
+**Important:** passwords in `.env.production` only apply when MySQL is **first created**. If you imported `tilegame.sql` or started MySQL with older passwords, the live DB may still use the old credentials — editing `.env` alone does not change them.
+
+On the server, verify login works:
+
+```bash
+cd /opt/tilezilla
+docker compose -f docker-compose.production.yml --env-file .env.production exec mysql \
+  mysql -utilegame -p tilegame
+# enter MYSQL_PASSWORD from .env.production
+```
+
+If that fails, try root:
+
+```bash
+docker compose -f docker-compose.production.yml --env-file .env.production exec mysql \
+  mysql -uroot -p
+```
+
+If root works with an **old** password, reset the app user to match `.env.production`:
+
+```sql
+ALTER USER 'tilegame'@'%' IDENTIFIED BY 'your_new_password';
+FLUSH PRIVILEGES;
+```
+
+Check MySQL is listening on the host after `git pull` (compose maps `127.0.0.1:3306`):
+
+```bash
+ss -tlnp | grep 3306
+```
+
+No trailing spaces in `.env.production` values — e.g. `MYSQL_PASSWORD=foo ` will break auth.
 
 ---
 
