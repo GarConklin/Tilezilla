@@ -49,6 +49,8 @@ export async function hydrateProgressFromServer(progress) {
   if (serverLevels > 0 || serverSolves > 0) {
     progress.importSnapshot({ data: serverData });
     progress.save();
+    window.__passportServerProgressHydrated = true;
+    window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'server' } }));
     return { ok: true, source: 'server', levels: serverLevels, solves: serverSolves };
   }
 
@@ -62,6 +64,8 @@ export async function hydrateProgressFromServer(progress) {
       });
       const payload = await res.json().catch(() => ({}));
       if (res.ok && payload?.ok) {
+        window.__passportServerProgressHydrated = true;
+        window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'migrated-local' } }));
         return { ok: true, source: 'migrated-local', levels: localLevels, solves: localSolves };
       }
       if (payload?.skipped) {
@@ -69,7 +73,9 @@ export async function hydrateProgressFromServer(progress) {
         if (retry.ok && countProgressLevels(retry.data) > 0) {
           progress.importSnapshot({ data: retry.data });
           progress.save();
+          window.__passportServerProgressHydrated = true;
         }
+        window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'server-after-race' } }));
         return { ok: true, source: 'server-after-race', ...retry };
       }
       console.warn('Progress migrate:', payload?.error || res.status);
@@ -78,6 +84,7 @@ export async function hydrateProgressFromServer(progress) {
     }
   }
 
+  window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'empty' } }));
   return { ok: true, source: 'empty' };
 }
 

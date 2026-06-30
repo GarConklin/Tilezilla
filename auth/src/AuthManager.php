@@ -154,7 +154,7 @@ class AuthManager {
     public function getUserById($userId) {
         $stmt = $this->conn->prepare(
             "SELECT user_id, username, player_name, email, paid, status, is_admin, created_at, last_login,
-                    active_until, email_verified, guest_code
+                    active_until, email_verified, guest_code, hint_tokens
              FROM users WHERE user_id = ?"
         );
         $stmt->bind_param("i", $userId);

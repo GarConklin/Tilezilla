@@ -418,6 +418,48 @@ function findPuzzleInPath(path, levelId) {
 
 
 
+export const RANK_AWARD_PLAQUE_COUNT = 9;
+
+
+
+/** Rank advancement plaque art — RankAwardPlacque1.png … RankAwardPlacque9.png */
+
+export function rankAwardPlaqueSrc(rankId) {
+
+  const n = Math.max(1, Math.min(RANK_AWARD_PLAQUE_COUNT, Math.round(Number(rankId) || 1)));
+
+  return `/img/ranks/RankAwardPlacque${n}.png`;
+
+}
+
+
+
+/** Next rank when advancing after this level crosses a rank boundary; else null. */
+
+export function getRankAdvancementAfterLevel(path, levelId, progress, levelContext = {}) {
+
+  if (!path || !levelId || !progress) return null;
+
+  const currentHit = findPuzzleInPath(path, levelId);
+
+  if (!currentHit?.step) return null;
+
+  const currentRank = currentHit.step.rankId;
+
+  const nextLoc = findNextUnsolved(progress, path, { afterLevelId: levelId, levelContext });
+
+  if (!nextLoc?.step) return null;
+
+  const nextRank = nextLoc.step.rankId;
+
+  if (nextRank > currentRank) return nextRank;
+
+  return null;
+
+}
+
+
+
 /** Normalize catalog level ids for path / progress lookups (5x6 vs 5×6, strip .json). */
 export function normalizeCatalogLevelId(levelId) {
   return String(levelId || '').trim().replace(/×/g, 'x').replace(/\.json$/i, '');

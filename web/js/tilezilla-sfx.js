@@ -14,6 +14,14 @@ export const SFX_CLIPS = {
   swipeStartScreen: '/audio/Swipe.mp3',
   generalSelection: '/audio/ChimeChirp.mp3',
   levelSuccess: '/audio/Success-fanfare.mp3',
+  rankUp: '/audio/rankUp.mp3',
+  tokenEarned: '/audio/ChaChing.mp3',
+  hintReveal: '/audio/hintReveal.mp3',
+};
+
+/** Per-clip volume (0–1). Default is 1 when omitted. */
+const SFX_VOLUME = {
+  tokenEarned: 0.75,
 };
 
 let enabled = true;
@@ -39,6 +47,7 @@ function getAudio(name) {
   if (!cache.has(name)) {
     const audio = new Audio(src);
     audio.preload = 'auto';
+    audio.volume = SFX_VOLUME[name] ?? 1;
     cache.set(name, audio);
   }
   return cache.get(name);

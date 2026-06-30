@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en" class="tz-phone-preview use-hint-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Use random hint popup tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; color: #c4a35a; }
+    label { display: block; font-size: 0.72rem; color: #a8b8b4; margin-bottom: 4px; }
+    input, textarea {
+      width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35); background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8; font: inherit; font-size: 0.78rem;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .field-btn, .btn {
+      padding: 8px 6px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25); color: #f4ecd8; font: inherit; font-size: 0.68rem; cursor: pointer;
+    }
+    .field-btn { text-align: left; }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .field-btn.is-game-hidden { opacity: 0.45; border-style: dashed; }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .mock-stage { padding: 24px 16px; border: 2px dashed rgba(196, 163, 90, 0.35); touch-action: none; outline: none; }
+    .mock-stage:focus { border-color: #e8b923; }
+    .use-hint-tuner-page .mock-wrap { width: var(--tz-design-width); margin: 0 auto; }
+    .use-hint-tuner-page .tz-use-hint-root { position: relative; display: block; padding: 0; }
+    .use-hint-tuner-page .tz-use-hint-root__backdrop { display: none; }
+    .use-hint-tuner-page .tz-use-hint-dialog { position: relative; margin: 0 auto; }
+    .use-hint-tuner-page .tuner-box {
+      background: rgba(100, 200, 255, 0.28) !important; border: 2px solid rgba(100, 200, 255, 0.85) !important;
+      border-radius: 4px; z-index: 6; cursor: move;
+    }
+    .use-hint-tuner-page .tuner-box.is-tuner-active { border-color: #e8b923 !important; z-index: 7; }
+    .use-hint-tuner-page .tuner-box.is-game-hidden { background: rgba(220,80,80,0.2) !important; border-style: dashed !important; }
+    .use-hint-tuner-page .tuner-box .hit-label {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      padding: 2px; font-size: clamp(7px, 2.5cqi, 11px); font-weight: 600; text-align: center;
+      color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); pointer-events: none;
+    }
+    .use-hint-tuner-page .tz-use-hint-dialog__close img,
+    .use-hint-tuner-page .tz-use-hint-dialog__confirm img { opacity: 0.35; pointer-events: none; }
+    .use-hint-tuner-page .tz-use-hint-dialog__cost.tuner-box,
+    .use-hint-tuner-page .tz-use-hint-dialog__warn.tuner-box {
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: clamp(8px, 2.8cqi, 12px);
+    }
+    .use-hint-tuner-page .tuner-handle { position: absolute; width: 10px; height: 10px; background: #e8b923; border: 1px solid #142c28; z-index: 8; }
+    .use-hint-tuner-page .tuner-handle--e { right: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .use-hint-tuner-page .tuner-handle--s { left: 50%; bottom: -5px; transform: translateX(-50%); cursor: ns-resize; }
+    .use-hint-tuner-page .tuner-handle--se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+    .nudge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 180px; margin: 10px 0; }
+    .nudge-grid .btn-wide { grid-column: span 3; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .status { font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Use random hint popup tuner</h1>
+  <p class="lead">
+    Tune <code>Use ingame hint.png</code> — close X, confirm bubble, and dynamic cost/warning text overlays.
+    Saves to <code>data/use_hint_layout.json</code>.
+    <strong>Use port 8080</strong> — <a href="http://127.0.0.1:8080/use-hint-tuner.html">127.0.0.1:8080</a>.
+    <a href="/tuners.html">All tuners</a> · <a href="/tilezilla-v2.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <label for="baseSrc">Base art path</label>
+      <input id="baseSrc" type="text" spellcheck="false" />
+      <label for="closeArt">Close button art</label>
+      <input id="closeArt" type="text" spellcheck="false" />
+      <label for="confirmArt">Confirm button art</label>
+      <input id="confirmArt" type="text" spellcheck="false" />
+      <div class="field-grid" id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span><button type="button" class="btn" data-nudge="up">↑</button><span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <label><input type="checkbox" id="showWarnPreview" checked /> Preview warning line</label>
+      <div class="btn-row">
+        <button type="button" class="btn" id="hideHitBtn">Hide in game</button>
+        <button type="button" class="btn" id="restoreHitBtn">Restore in game</button>
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false" rows="14"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — 390px dialog</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-wrap">
+          <div class="tz-use-hint-root" id="mockRoot">
+            <div class="tz-use-hint-dialog" role="dialog" aria-label="Use hint preview">
+              <div class="tz-use-hint-dialog__frame" id="mockFrame">
+                <img id="mockBg" class="tz-use-hint-dialog__bg" src="/img/Use ingame hint.png" alt="" width="1376" height="1143" />
+                <p class="tz-use-hint-dialog__cost tuner-box" data-item="cost" id="mockCost">
+                  <span class="hit-label">Cost</span>
+                  You have 18.
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </p>
+                <p class="tz-use-hint-dialog__warn tuner-box" data-item="warn" id="mockWarn">
+                  <span class="hit-label">Warn</span>
+                  Not enough hint tokens.
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </p>
+                <button type="button" class="tz-use-hint-dialog__close tuner-box" data-item="close" id="mockClose">
+                  <img id="mockCloseImg" src="/img/X-gold-rnd-btn.png" alt="" />
+                  <span class="hit-label">Close</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+                <button type="button" class="tz-use-hint-dialog__confirm tuner-box" data-item="confirm" id="mockConfirm">
+                  <img id="mockConfirmImg" src="/img/use hint bubble.png" alt="" />
+                  <span class="hit-label">Confirm</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      USE_HINT_ITEM_DEFS,
+      applyUseHintLayout,
+      buildUseHintLayoutReport,
+      clearUseHintLayoutCache,
+      clearUseHintLayoutDraft,
+      getUseHintItemLayout,
+      loadUseHintLayout,
+      mergeUseHintLayout,
+      stashUseHintLayoutDraft,
+    } from './js/use-hint-layout.js';
+
+    const DIALOG_ITEM = '__dialog__';
+    const POS_STEP = 0.5;
+    const SIZE_STEP = 0.5;
+    const ARROW_STEP = 0.25;
+
+    let workingLayout = mergeUseHintLayout(null);
+    let currentItem = 'confirm';
+    let dragState = null;
+    let saveApiReady = false;
+    let saveTimer = null;
+
+    const els = {
+      fieldGrid: document.getElementById('fieldGrid'),
+      readout: document.getElementById('readout'),
+      jsonOut: document.getElementById('jsonOut'),
+      status: document.getElementById('status'),
+      baseSrc: document.getElementById('baseSrc'),
+      closeArt: document.getElementById('closeArt'),
+      confirmArt: document.getElementById('confirmArt'),
+      showWarnPreview: document.getElementById('showWarnPreview'),
+      mockWarn: document.getElementById('mockWarn'),
+      mockBg: document.getElementById('mockBg'),
+      mockStage: document.getElementById('mockStage'),
+    };
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function patchButtons(patch) {
+      workingLayout.buttons = { ...workingLayout.buttons, ...patch };
+      refresh();
+    }
+
+    function exportJson() {
+      return JSON.stringify(workingLayout, null, 2);
+    }
+
+    function getFrameRect() {
+      return document.getElementById('mockFrame')?.getBoundingClientRect();
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getUseHintItemLayout(currentItem, workingLayout);
+      patchItem(currentItem, {
+        x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
+        y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getUseHintItemLayout(currentItem, workingLayout);
+      const patch = {};
+      if (edges.e || edges.se) patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+      if (edges.s || edges.se) patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+      if (Object.keys(patch).length) patchItem(currentItem, patch);
+    }
+
+    function formatReadout(key) {
+      if (key === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        return [
+          '<strong>Dialog size</strong>',
+          `baseSrc: ${d.baseSrc ?? ''}`,
+          `maxDesignWidth: ${d.maxDesignWidth ?? 390}px`,
+          `widthScale: ${d.widthScale ?? 0.92}`,
+        ].join('<br />');
+      }
+      const box = getUseHintItemLayout(key, workingLayout);
+      const def = USE_HINT_ITEM_DEFS[key];
+      const extra = (key === 'cost' || key === 'warn') ? `<br />fontScale: ${box.fontScale ?? 1}` : '';
+      const hidden = box.hidden ? '<br /><em>Hidden in game</em>' : '';
+      return `<strong>${def?.label || key}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${extra}${hidden}`;
+    }
+
+    function refreshFieldGrid() {
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        const key = btn.dataset.item;
+        btn.classList.toggle('is-active', key === currentItem);
+        if (key !== DIALOG_ITEM) {
+          btn.classList.toggle('is-game-hidden', Boolean(getUseHintItemLayout(key, workingLayout).hidden));
+        }
+      }
+      const hitHidden = currentItem !== DIALOG_ITEM && Boolean(getUseHintItemLayout(currentItem, workingLayout).hidden);
+      document.getElementById('hideHitBtn').disabled = currentItem === DIALOG_ITEM || hitHidden;
+      document.getElementById('restoreHitBtn').disabled = currentItem === DIALOG_ITEM || !hitHidden;
+    }
+
+    function refresh() {
+      applyUseHintLayout(workingLayout, document.documentElement);
+      els.baseSrc.value = workingLayout.dialog?.baseSrc ?? '';
+      els.closeArt.value = workingLayout.buttons?.close ?? '';
+      els.confirmArt.value = workingLayout.buttons?.confirm ?? '';
+      if (els.mockBg && workingLayout.dialog?.baseSrc) els.mockBg.src = workingLayout.dialog.baseSrc;
+      const btns = workingLayout.buttons || {};
+      if (btns.close) document.getElementById('mockCloseImg').src = btns.close;
+      if (btns.confirm) document.getElementById('mockConfirmImg').src = btns.confirm;
+      if (els.mockWarn) {
+        const warnHidden = getUseHintItemLayout('warn', workingLayout).hidden;
+        els.mockWarn.hidden = warnHidden || !els.showWarnPreview.checked;
+      }
+      els.readout.innerHTML = formatReadout(currentItem);
+      els.jsonOut.value = exportJson();
+      stashUseHintLayoutDraft(workingLayout);
+      refreshFieldGrid();
+      scheduleSave();
+    }
+
+    function saveApiHelp() {
+      const port = location.port || '80';
+      return `Save API missing on port ${port}. Open http://127.0.0.1:8080/use-hint-tuner.html then run: docker compose restart web`;
+    }
+
+    async function probeSaveApi() {
+      try {
+        const res = await fetch('/api/dev/save-use-hint-layout', { cache: 'no-store' });
+        const ct = res.headers.get('content-type') || '';
+        if (!res.ok || !ct.includes('json')) throw new Error('missing');
+        const data = await res.json();
+        if (!data?.writable) throw new Error('missing');
+        saveApiReady = true;
+        return true;
+      } catch {
+        saveApiReady = false;
+        els.status.textContent = saveApiHelp();
+        return false;
+      }
+    }
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (!saveApiReady && !(await probeSaveApi())) return;
+      try {
+        const res = await fetch('/api/dev/save-use-hint-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: exportJson(),
+        });
+        const ct = res.headers.get('content-type') || '';
+        if (!res.ok || !ct.includes('json')) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearUseHintLayoutCache();
+        clearUseHintLayoutDraft();
+        localStorage.setItem('tilezilla:use-hint-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:use-hint-layout-saved'));
+        els.status.textContent = quiet ? 'Auto-saved' : 'Saved to data/use_hint_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function buildFieldGrid() {
+      els.fieldGrid.innerHTML = '';
+      const addBtn = (key, label) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+      };
+      addBtn(DIALOG_ITEM, 'Dialog size');
+      for (const [key, def] of Object.entries(USE_HINT_ITEM_DEFS)) addBtn(key, def.label);
+    }
+
+    els.baseSrc.addEventListener('change', () => patchDialog({ baseSrc: els.baseSrc.value.trim() }));
+    els.closeArt.addEventListener('change', () => patchButtons({ close: els.closeArt.value.trim() }));
+    els.confirmArt.addEventListener('change', () => patchButtons({ confirm: els.confirmArt.value.trim() }));
+    els.showWarnPreview.addEventListener('change', () => refresh());
+
+    document.getElementById('reloadBtn').addEventListener('click', async () => {
+      clearUseHintLayoutCache();
+      workingLayout = await loadUseHintLayout({ force: true, fromDisk: true });
+      refresh();
+      els.status.textContent = 'Reloaded from disk';
+    });
+    document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+    document.getElementById('hideHitBtn').addEventListener('click', () => {
+      if (currentItem === DIALOG_ITEM) return;
+      patchItem(currentItem, { hidden: true });
+    });
+    document.getElementById('restoreHitBtn').addEventListener('click', () => {
+      if (currentItem === DIALOG_ITEM) return;
+      patchItem(currentItem, { hidden: false });
+    });
+
+    for (const btn of document.querySelectorAll('[data-nudge]')) {
+      btn.addEventListener('click', () => {
+        if (currentItem === DIALOG_ITEM) return;
+        const box = getUseHintItemLayout(currentItem, workingLayout);
+        const action = btn.dataset.nudge;
+        const map = {
+          left: { x: Math.max(0, box.x - ARROW_STEP) },
+          right: { x: box.x + ARROW_STEP },
+          up: { y: Math.max(0, box.y - ARROW_STEP) },
+          down: { y: box.y + ARROW_STEP },
+          wider: { w: box.w + ARROW_STEP },
+          narrower: { w: Math.max(1, box.w - ARROW_STEP) },
+          taller: { h: box.h + ARROW_STEP },
+          shorter: { h: Math.max(1, box.h - ARROW_STEP) },
+        };
+        patchItem(currentItem, map[action] || {});
+      });
+    }
+
+    els.mockStage.addEventListener('wheel', (e) => {
+      if (e.target.matches('textarea, input')) return;
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      if (currentItem === DIALOG_ITEM) {
+        const d = workingLayout.dialog;
+        if (e.ctrlKey) patchDialog({ widthScale: Math.round(Math.max(0.4, Math.min(1.2, (d.widthScale ?? 0.92) + dir * 0.01)) * 100) / 100 });
+        else if (e.shiftKey) patchDialog({ displayPad: Math.max(8, (d.displayPad ?? 32) + dir * 2) });
+        else patchDialog({ maxDesignWidth: Math.max(280, (d.maxDesignWidth ?? 390) + dir * 4) });
+        return;
+      }
+      const box = getUseHintItemLayout(currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * SIZE_STEP) * 10) / 10) });
+      else if (e.ctrlKey) patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * SIZE_STEP) * 10) / 10) });
+      else if (e.shiftKey) patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
+      else if (e.altKey && (currentItem === 'cost' || currentItem === 'warn')) {
+        patchItem(currentItem, { fontScale: Math.round(Math.max(0.5, Math.min(2, (box.fontScale ?? 1) + dir * 0.05)) * 100) / 100 });
+      } else patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
+    }, { passive: false });
+
+    els.mockStage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const boxEl = e.target.closest('.tuner-box[data-item]');
+      if (handle && boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = { kind: 'resize', edges: { e: true, s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se'), se: handle.classList.contains('tuner-handle--se') } };
+        return;
+      }
+      if (boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = { kind: 'move', lastX: e.clientX, lastY: e.clientY };
+      }
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!dragState) return;
+      if (dragState.kind === 'move') {
+        applyMoveDelta(e.clientX - dragState.lastX, e.clientY - dragState.lastY);
+        dragState.lastX = e.clientX;
+        dragState.lastY = e.clientY;
+      } else applyResizeDelta(e.movementX, e.movementY, dragState.edges);
+    });
+    window.addEventListener('pointerup', () => { dragState = null; });
+
+    buildFieldGrid();
+    void probeSaveApi().then(() => loadUseHintLayout()).then((layout) => {
+      workingLayout = layout;
+      refresh();
+    });
+  </script>
+</body>
+</html>

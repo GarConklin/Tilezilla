@@ -38,6 +38,7 @@ export function clearRegisteredLocalState() {
   localStorage.removeItem(ACTIVE_USER_KEY);
   localStorage.removeItem(REGISTERED_USER_ID_KEY);
   localStorage.removeItem(CONVERTED_GUEST_CODE_KEY);
+  localStorage.removeItem('tilezilla_is_admin');
 }
 
 export function getConvertedGuestCode() {
@@ -320,7 +321,7 @@ export function loginRequiredReturnUrl(source = '') {
     case 'random':
       return '/tilezilla-v2.html?screen=random';
     case 'profile':
-      return '/profile-screen.html';
+      return '/tilezilla-v2.html?profile=1';
     case 'library':
       return '/tilezilla-v2.html';
     default:

@@ -16,7 +16,10 @@ import {
   fetchTodaysChallengeLevelId,
   resolveExpeditionReportDisplay,
 } from './passport-journal-stats.js';
-import { ACTIVE_USER_KEY, getConvertedGuestCode, REGISTERED_USER_ID_KEY } from './tilezilla-guest.js';
+import { ACTIVE_USER_KEY, getConvertedGuestCode, isRegisteredUser, REGISTERED_USER_ID_KEY } from './tilezilla-guest.js';
+
+let passportHydratePromise = null;
+let progressReadyListenerBound = false;
 
 function progressUserKey() {
   return window.__app?.state?.userId
@@ -25,7 +28,83 @@ function progressUserKey() {
     || 'gar';
 }
 
+/** Adventure progress for passport stats — uses in-memory app state or localStorage. */
+export function resolvePassportProgress() {
+  const appProgress = window.__app?.progress;
+  if (appProgress?.load) {
+    appProgress.data = appProgress.load();
+    return appProgress;
+  }
+  if (appProgress?.data && typeof appProgress.data === 'object') {
+    return appProgress;
+  }
+  try {
+    const storageKey = `snake_progress_v1_${progressUserKey()}`;
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== 'object') return null;
+    return { data, storageKey };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Load server progress + hint balance before passport stats (profile page has no app bootstrap).
+ */
+export async function ensurePassportDataHydrated() {
+  if (!isRegisteredUser()) return;
+  if (window.__passportServerProgressHydrated) return;
+
+  if (passportHydratePromise) {
+    await passportHydratePromise;
+    return;
+  }
+
+  passportHydratePromise = (async () => {
+    const userId = localStorage.getItem(REGISTERED_USER_ID_KEY);
+    if (!userId) return;
+
+    let progress = window.__app?.progress;
+    if (progress?.load) {
+      const key = `snake_progress_v1_${userId}`;
+      if (progress.storageKey !== key) {
+        progress.storageKey = key;
+        progress.data = progress.load();
+      }
+    } else {
+      const { Progress } = await import('./progress.js');
+      progress = new Progress({ state: { userId } });
+      progress.storageKey = `snake_progress_v1_${userId}`;
+      progress.data = progress.load();
+    }
+
+    const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+    await hydrateProgressFromServer(progress);
+
+    if (!window.__app?.state) {
+      try {
+        const { fetchHintBalance, cacheHintBalance } = await import('./tilezilla-hints-sync.js');
+        const balance = await fetchHintBalance();
+        cacheHintBalance(userId, balance);
+      } catch {
+        /* session login may have cached balance already */
+      }
+    }
+  })();
+
+  try {
+    await passportHydratePromise;
+  } catch (err) {
+    passportHydratePromise = null;
+    console.warn('Passport data hydrate:', err);
+  }
+}
+
 function hintTokenCount() {
+  const appBalance = window.__app?.state?.hintTokens;
+  if (Number.isFinite(appBalance)) return Math.max(0, Number(appBalance));
   try {
     const userId = progressUserKey();
     const raw = localStorage.getItem(`snake_hint_tokens_v1_${userId}`)
@@ -147,8 +226,10 @@ function passportIdForUser(userId) {
  * @param {Document|HTMLElement} [root]
  */
 export async function refreshProfilePassportStats({ root = document } = {}) {
+  await ensurePassportDataHydrated();
+
   const userId = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
-  const progress = window.__app?.progress ?? null;
+  const progress = resolvePassportProgress();
   const mock = PROFILE_LAYOUT_MOCK;
 
   let rankState = null;
@@ -211,4 +292,22 @@ export async function refreshProfilePassportStats({ root = document } = {}) {
     totalPlaySeconds: systemStats?.totalPlaySeconds,
   });
   syncGuestNoteSlot(root);
+}
+
+let hintBalanceListenerBound = false;
+export function bindProfileHintBalanceListener() {
+  if (hintBalanceListenerBound) return;
+  hintBalanceListenerBound = true;
+  window.addEventListener('tilezilla:hint-balance', () => {
+    void refreshProfilePassportStats();
+  });
+}
+
+export function bindProfileProgressReadyListener() {
+  if (progressReadyListenerBound) return;
+  progressReadyListenerBound = true;
+  window.addEventListener('tilezilla:progress-ready', () => {
+    void refreshProfilePassportStats();
+    void import('./profile-rank-icons.js').then(({ refreshProfileRankIcons }) => refreshProfileRankIcons());
+  });
 }

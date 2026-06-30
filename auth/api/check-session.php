@@ -26,6 +26,8 @@ try {
             'username' => $user['username'],
             'email' => $user['email'],
             'paid' => (bool)$user['paid'],
+            'is_admin' => (bool)($user['is_admin'] ?? false),
+            'hint_tokens' => (int)($user['hint_tokens'] ?? 0),
             'player_name' => $user['player_name'] ?? $user['username'],
             'guest_code' => GuestManager::normalizeGuestCode($user['guest_code'] ?? '') ?: null,
         ],

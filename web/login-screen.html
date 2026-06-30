@@ -53,6 +53,7 @@
         <button type="submit" class="auth-screen__hit auth-screen__hit--submit" aria-label="Open passport"></button>
       </form>
       <a class="auth-screen__hit auth-screen__hit--secondary" href="/create-passport.html" aria-label="Issue new passport"></a>
+      <button type="button" class="auth-screen__hit auth-screen__hit--forgot-password" id="forgotPasswordOpenBtn" aria-label="Forgot password"></button>
       <nav class="auth-screen__bottom-nav" aria-label="Shortcuts">
         <a class="auth-screen__hit auth-screen__hit--nav-daily" href="/tilezilla-v2.html" id="authNavDaily" aria-label="Daily Challenge"></a>
         <button type="button" class="auth-screen__hit auth-screen__hit--nav-logout" id="authNavLogout" aria-label="Log out"></button>
@@ -78,15 +79,49 @@
     </div>
   </div>
 
+  <div class="forgot-password-root" id="forgotPasswordRoot" hidden>
+    <button type="button" class="forgot-password-root__backdrop" id="forgotPasswordBackdrop" aria-label="Close"></button>
+    <div class="forgot-password-dialog" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
+      <h2 class="auth-screen__sr" id="forgotPasswordTitle">Forgot password</h2>
+      <div class="forgot-password-dialog__frame">
+        <img
+          class="forgot-password-dialog__art"
+          src="/img/forgotPassword.png"
+          alt=""
+          width="1402"
+          height="1122"
+          draggable="false"
+        />
+        <label class="auth-screen__sr" for="forgotPasswordEmail">Email address</label>
+        <input
+          class="forgot-password__input"
+          id="forgotPasswordEmail"
+          type="email"
+          name="email"
+          autocomplete="email"
+          inputmode="email"
+          placeholder="Enter your email address"
+        />
+        <p class="forgot-password__feedback" id="forgotPasswordFeedback" hidden role="status" aria-live="polite"></p>
+        <button type="button" class="auth-screen__hit forgot-password__hit--send" id="forgotPasswordSendBtn" aria-label="Send reset link"></button>
+        <button type="button" class="auth-screen__hit forgot-password__hit--cancel" id="forgotPasswordCancelBtn" aria-label="Cancel"></button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="./js/auth-screen-init.js?v=20250630"></script>
   <script type="module">
     import { getGuestCode } from './js/tilezilla-guest.js';
     import { completeLoginFromServer, loginReturnUrl } from './js/tilezilla-auth.js';
     import { initAuthErrorPopup, showAuthErrorPopup } from './js/auth-error-popup.js';
+    import { initForgotPasswordPopup, openForgotPasswordPopup } from './js/forgot-password-popup.js';
     import { initAuthScreenNav } from './js/auth-screen-nav.js';
 
     initAuthErrorPopup();
+    initForgotPasswordPopup({ showError: showAuthErrorPopup });
     initAuthScreenNav({ source: 'login_screen' });
+
+    document.getElementById('forgotPasswordOpenBtn')?.addEventListener('click', () => openForgotPasswordPopup());
 
     const form = document.getElementById('loginForm');
 
@@ -112,7 +147,7 @@
           return;
         }
         await completeLoginFromServer(data, { source: 'login_screen' });
-        window.location.href = loginReturnUrl('/profile-screen.html');
+        window.location.href = loginReturnUrl('/tilezilla-v2.html?profile=1');
       } catch {
         showAuthErrorPopup('Could not reach the passport office. Check your connection and try again.');
       }

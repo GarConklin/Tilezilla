@@ -2,7 +2,7 @@
 import { initAuthScreenChrome } from './auth-screen-chrome.js';
 import { initAuthScreenLayout } from './auth-screen-layout.js';
 import { initPasswordRevealToggles } from './auth-screen-pass-toggle.js';
-import { refreshProfilePassportStats } from './profile-passport-data.js';
+import { refreshProfilePassportStats, bindProfileHintBalanceListener, bindProfileProgressReadyListener } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { applyPassportJournalStats } from './passport-journal-stats.js';
 
@@ -38,8 +38,8 @@ for (const [cls, key] of Object.entries(SCREEN_BY_CLASS)) {
       } else if (key === 'login') {
         void applyPassportJournalStats();
       } else if (key === 'profile') {
-        void refreshProfileRankIcons();
-        void refreshProfilePassportStats();
+        bindProfileHintBalanceListener();
+        bindProfileProgressReadyListener();
       }
     });
     break;

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en" class="rank-award-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Rank award popup tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 52rem; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 340px) 1fr; gap: 16px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; color: #c4a35a; }
+    .field-btn, .btn, select {
+      padding: 8px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.25); color: #f4ecd8; font: inherit; font-size: 0.72rem; cursor: pointer;
+    }
+    select { width: 100%; margin-bottom: 10px; }
+    .field-btn { width: 100%; text-align: left; margin-bottom: 6px; }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .readout { font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; }
+    .mock-stage { padding: 16px; border: 2px dashed rgba(196, 163, 90, 0.35); touch-action: none; outline: none; display: flex; justify-content: center; }
+    .mock-stage:focus { border-color: #e8b923; }
+    .mock-wrap { width: min(100%, 360px); }
+    .tuner-handle { position: absolute; width: 10px; height: 10px; background: #e8b923; border: 1px solid #142c28; z-index: 8; }
+    .tuner-handle--e { right: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .tuner-handle--s { left: 50%; bottom: -5px; transform: translateX(-50%); cursor: ns-resize; }
+    .tuner-handle--se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+    #jsonOut { width: 100%; min-height: 100px; margin-top: 8px; font: ui-monospace, monospace; font-size: 0.7rem; }
+    .nudge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 180px; margin: 10px 0; }
+    .nudge-grid .btn-wide { grid-column: span 3; }
+    .status { font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Rank award popup tuner</h1>
+  <p class="lead">
+    Tune the <strong>Continue journey</strong> hit on <code>RankAwardPlacque*.png</code> (shared by all 9 ranks).
+    Dialog width matches other game popups (390px × 0.92 scale). Saves to <code>data/rank_award_layout.json</code>.
+    <a href="/challenge-begin-tuner.html">Challenge begin tuner</a> ·
+    <a href="/rank-sublevel-tuner.html">Rank sublevel tuner</a> ·
+    <a href="/tilezilla-v2.html">Live game</a>
+  </p>
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <label for="rankSelect" class="tz-sr-only">Preview rank plaque</label>
+      <select id="rankSelect" aria-label="Preview rank plaque">
+        <option value="1">Rank 1 — Wanderer</option>
+        <option value="2">Rank 2 — Pathfinder</option>
+        <option value="3">Rank 3 — Explorer</option>
+        <option value="4">Rank 4 — Trailblazer</option>
+        <option value="5">Rank 5 — Voyager</option>
+        <option value="6">Rank 6 — Expeditioner</option>
+        <option value="7">Rank 7 — Adventurer</option>
+        <option value="8">Rank 8 — Pioneer</option>
+        <option value="9">Rank 9 — Legend</option>
+      </select>
+      <div id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span><button type="button" class="btn" data-nudge="up">↑</button><span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <button type="button" class="btn" id="reloadBtn">Reload</button>
+      <button type="button" class="btn" id="saveBtn">Save now</button>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+    </div>
+    <div class="panel">
+      <h2>Preview — 390px dialog</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-wrap">
+          <div class="tz-rank-award-root" id="mockRoot" style="position:relative;display:block;inset:auto;padding:0;background:transparent;">
+            <div class="tz-rank-award-dialog" role="dialog" aria-label="Rank award preview">
+              <div class="tz-rank-award-dialog__frame" id="mockFrame">
+                <img id="mockArt" class="tz-rank-award-dialog__art" src="/img/ranks/RankAwardPlacque1.png" alt="" width="354" height="534" />
+                <button type="button" class="tz-rank-award__hit tz-rank-award__hit--continue tuner-box" data-item="continue">
+                  <span class="hit-label">Continue journey</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import {
+      RANK_AWARD_ITEM_DEFS,
+      applyRankAwardLayout,
+      clearRankAwardLayoutCache,
+      clearRankAwardLayoutDraft,
+      getRankAwardItemLayout,
+      loadRankAwardLayout,
+      mergeRankAwardLayout,
+      rankAwardPlaqueSrc,
+      stashRankAwardLayoutDraft,
+    } from './js/rank-award-layout.js';
+
+    const DIALOG_ITEM = '__dialog__';
+    const POS_STEP = 0.5;
+    const ARROW_STEP = 0.25;
+
+    let workingLayout = mergeRankAwardLayout(null);
+    let currentItem = 'continue';
+    let dragState = null;
+
+    const els = {
+      fieldGrid: document.getElementById('fieldGrid'),
+      readout: document.getElementById('readout'),
+      status: document.getElementById('status'),
+      jsonOut: document.getElementById('jsonOut'),
+      mockStage: document.getElementById('mockStage'),
+      rankSelect: document.getElementById('rankSelect'),
+      mockArt: document.getElementById('mockArt'),
+    };
+
+    function getFrameRect() {
+      return document.getElementById('mockFrame')?.getBoundingClientRect();
+    }
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getRankAwardItemLayout(currentItem, workingLayout);
+      patchItem(currentItem, {
+        x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
+        y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getRankAwardItemLayout(currentItem, workingLayout);
+      const patch = {};
+      if (edges.e || edges.se) patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+      if (edges.s || edges.se) patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+      if (Object.keys(patch).length) patchItem(currentItem, patch);
+    }
+
+    let saveTimer = null;
+    async function saveToFile({ quiet = false } = {}) {
+      try {
+        const res = await fetch('/api/dev/save-rank-award-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(workingLayout, null, 2),
+        });
+        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearRankAwardLayoutCache();
+        clearRankAwardLayoutDraft();
+        localStorage.setItem('tilezilla:rank-award-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:rank-award-layout-saved'));
+        els.status.textContent = quiet ? 'Auto-saved' : 'Saved to data/rank_award_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refresh() {
+      applyRankAwardLayout(workingLayout, document.documentElement);
+      const box = getRankAwardItemLayout(currentItem, workingLayout);
+      const label = currentItem === DIALOG_ITEM ? 'Dialog size' : (RANK_AWARD_ITEM_DEFS[currentItem]?.label || currentItem);
+      if (currentItem === DIALOG_ITEM) {
+        els.readout.innerHTML = `<strong>${label}</strong><br />maxWidth: ${workingLayout.dialog.maxWidth ?? 390}px · scale: ${workingLayout.dialog.widthScale ?? 0.92}`;
+      } else {
+        els.readout.innerHTML = `<strong>${label}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%`;
+      }
+      els.jsonOut.value = JSON.stringify(workingLayout, null, 2);
+      stashRankAwardLayoutDraft(workingLayout);
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        btn.classList.toggle('is-active', btn.dataset.item === currentItem);
+      }
+      for (const boxEl of document.querySelectorAll('.tuner-box[data-item]')) {
+        boxEl.classList.toggle('is-tuner-active', boxEl.dataset.item === currentItem);
+      }
+      scheduleSave();
+    }
+
+    function buildFieldGrid() {
+      els.fieldGrid.innerHTML = '';
+      const add = (key, label) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+      };
+      add(DIALOG_ITEM, 'Dialog size');
+      for (const [key, def] of Object.entries(RANK_AWARD_ITEM_DEFS)) add(key, def.label);
+    }
+
+    for (const btn of document.querySelectorAll('[data-nudge]')) {
+      btn.addEventListener('click', () => {
+        if (currentItem === DIALOG_ITEM) return;
+        const box = getRankAwardItemLayout(currentItem, workingLayout);
+        const action = btn.dataset.nudge;
+        const map = {
+          left: { x: Math.max(0, box.x - ARROW_STEP) },
+          right: { x: box.x + ARROW_STEP },
+          up: { y: Math.max(0, box.y - ARROW_STEP) },
+          down: { y: box.y + ARROW_STEP },
+          wider: { w: box.w + ARROW_STEP },
+          narrower: { w: Math.max(1, box.w - ARROW_STEP) },
+          taller: { h: box.h + ARROW_STEP },
+          shorter: { h: Math.max(1, box.h - ARROW_STEP) },
+        };
+        patchItem(currentItem, map[action] || {});
+      });
+    }
+
+    els.mockStage.addEventListener('wheel', (e) => {
+      if (e.target.matches('textarea, input, select')) return;
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      if (currentItem === DIALOG_ITEM) {
+        if (e.ctrlKey) patchDialog({ widthScale: Math.round(Math.max(0.4, Math.min(1.2, (workingLayout.dialog.widthScale ?? 0.92) + dir * 0.01)) * 100) / 100 });
+        else patchDialog({ maxWidth: Math.max(280, (workingLayout.dialog.maxWidth ?? 390) + dir * 4) });
+        return;
+      }
+      const box = getRankAwardItemLayout(currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * POS_STEP) * 10) / 10) });
+      else if (e.ctrlKey) patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * POS_STEP) * 10) / 10) });
+      else if (e.shiftKey) patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
+      else patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
+    }, { passive: false });
+
+    els.mockStage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const boxEl = e.target.closest('.tuner-box[data-item]');
+      if (handle && boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = { kind: 'resize', edges: { e: true, s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se') } };
+        return;
+      }
+      if (boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = { kind: 'move', startX: e.clientX, startY: e.clientY };
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!dragState) return;
+      if (dragState.kind === 'move') {
+        applyMoveDelta(e.clientX - dragState.startX, e.clientY - dragState.startY);
+        dragState.startX = e.clientX;
+        dragState.startY = e.clientY;
+      } else if (dragState.kind === 'resize') {
+        applyResizeDelta(e.clientX - (dragState.lastX ?? e.clientX), e.clientY - (dragState.lastY ?? e.clientY), dragState.edges);
+        dragState.lastX = e.clientX;
+        dragState.lastY = e.clientY;
+      }
+    });
+
+    window.addEventListener('pointerup', () => { dragState = null; });
+
+    els.rankSelect.addEventListener('change', () => {
+      const rank = Number(els.rankSelect.value) || 1;
+      els.mockArt.src = rankAwardPlaqueSrc(rank);
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', async () => {
+      clearRankAwardLayoutCache();
+      workingLayout = await loadRankAwardLayout({ force: true });
+      refresh();
+      els.status.textContent = 'Reloaded from file';
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+    buildFieldGrid();
+    void loadRankAwardLayout().then((layout) => {
+      workingLayout = layout;
+      refresh();
+    });
+  </script>
+</body>
+</html>

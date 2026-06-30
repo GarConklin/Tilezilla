@@ -70,17 +70,23 @@ html, body {
 
 .auth-screen__bg .tz-bg__water-layer--a {
   background-image: var(--tz-msv2-bg-water-a, url("/img/Background%20lake%20and%20sun-Just-water1.png"));
-  animation: auth-ripple 18s ease-in-out infinite;
+  animation: auth-ripple-a var(--tz-ripple-duration-a, 14s) ease-in-out infinite;
 }
 
 .auth-screen__bg .tz-bg__water-layer--b {
   background-image: var(--tz-msv2-bg-water-b, url("/img/Background%20lake%20and%20sun-Just-water2.png"));
-  animation: auth-ripple 27s ease-in-out infinite;
+  animation: auth-ripple-b var(--tz-ripple-duration-b, 21s) ease-in-out infinite;
 }
 
-@keyframes auth-ripple {
+@keyframes auth-ripple-a {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(calc(-1 * var(--tz-ripple-amplitude-a, var(--tz-ripple-amplitude, 8px)))); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes auth-ripple-b {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(calc(-1 * var(--tz-ripple-amplitude-b, var(--tz-ripple-amplitude, 8px)))); }
   100% { transform: translateY(0); }
 }
 
@@ -403,6 +409,18 @@ body.auth-screen-chrome .tz-menu-root {
   height: var(--auth-login-submit-h, 4.5%);
 }
 
+.auth-screen--login .auth-screen__hit--forgot-password {
+  left: var(--auth-login-forgotPassword-x, 58%);
+  top: var(--auth-login-forgotPassword-y, 34.2%);
+  width: var(--auth-login-forgotPassword-w, 9%);
+  height: var(--auth-login-forgotPassword-h, 4.2%);
+  z-index: 3;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 .auth-screen--login .auth-screen__hit--secondary {
   left: var(--auth-login-secondary-x, 22%);
   top: var(--auth-login-secondary-y, 47.5%);
@@ -698,5 +716,147 @@ body.auth-error-open {
 }
 
 .auth-error-tuner-page .auth-error-dialog {
+  margin: 0 auto;
+}
+
+/* ── Forgot password popup ── */
+
+body.forgot-password-open {
+  overflow: hidden;
+}
+
+.forgot-password-root {
+  position: fixed;
+  inset: 0;
+  z-index: 205;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+}
+
+.forgot-password-root[hidden] {
+  display: none !important;
+}
+
+.forgot-password-root__backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.72);
+  cursor: pointer;
+}
+
+.forgot-password-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(
+    100vw,
+    calc(var(--forgot-password-max-width, 390px) * var(--forgot-password-width-scale, 0.92)),
+    calc(var(--forgot-password-art-w) * 1px),
+    calc((100svh - 48px) * var(--forgot-password-art-w) / var(--forgot-password-art-h))
+  );
+  aspect-ratio: calc(var(--forgot-password-art-w) / var(--forgot-password-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+}
+
+.forgot-password-dialog__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.forgot-password-dialog__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.forgot-password__input {
+  position: absolute;
+  left: var(--forgot-password-email-x, 22%);
+  top: var(--forgot-password-email-y, 41%);
+  width: var(--forgot-password-email-w, 56%);
+  height: var(--forgot-password-email-h, 6.5%);
+  margin: 0;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border: 1px solid rgba(72, 52, 32, 0.45);
+  border-radius: 2px;
+  background: rgba(255, 250, 235, 0.94);
+  color: #2a2018;
+  font-size: calc(clamp(0.68rem, 2.4cqi, 0.9rem) * var(--forgot-password-email-font-scale, 1));
+  text-align: center;
+  z-index: 2;
+}
+
+.forgot-password__input::placeholder {
+  color: rgba(72, 52, 32, 0.45);
+  font-style: italic;
+}
+
+.forgot-password__input:focus {
+  outline: 2px solid rgba(232, 185, 35, 0.65);
+  outline-offset: 1px;
+}
+
+.forgot-password__feedback {
+  position: absolute;
+  left: var(--forgot-password-feedback-x, 14%);
+  top: var(--forgot-password-feedback-y, 58%);
+  width: var(--forgot-password-feedback-w, 72%);
+  height: var(--forgot-password-feedback-h, 8%);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(clamp(0.62rem, 2.2cqi, 0.82rem) * var(--forgot-password-feedback-font-scale, 1));
+  line-height: 1.3;
+  color: #2a4a42;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.forgot-password__feedback[data-tone="error"] {
+  color: #7a2020;
+  font-weight: 600;
+}
+
+.forgot-password__feedback[hidden] {
+  display: none !important;
+}
+
+.forgot-password__hit--send {
+  left: var(--forgot-password-send-x, 8%);
+  top: var(--forgot-password-send-y, 72%);
+  width: var(--forgot-password-send-w, 42%);
+  height: var(--forgot-password-send-h, 10%);
+}
+
+.forgot-password__hit--cancel {
+  left: var(--forgot-password-cancel-x, 52%);
+  top: var(--forgot-password-cancel-y, 72%);
+  width: var(--forgot-password-cancel-w, 42%);
+  height: var(--forgot-password-cancel-h, 10%);
+}
+
+.auth-screen--login .auth-screen__hit--forgot-password {
+  z-index: 3;
+}
+
+.forgot-password-tuner-page .forgot-password__input.tuner-box,
+.forgot-password-tuner-page .forgot-password__feedback.tuner-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(8px, 2.8cqi, 12px);
+}
+
+.forgot-password-tuner-page .forgot-password-dialog {
   margin: 0 auto;
 }

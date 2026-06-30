@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Admin Users</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/admin-users.css" />
+</head>
+<body class="admin-users-page">
+  <div class="admin-users__bg tz-bg" aria-hidden="true">
+    <div class="tz-bg__sky"></div>
+    <div class="tz-bg__water">
+      <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+      <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+    </div>
+  </div>
+
+  <header class="admin-users__header">
+    <a class="admin-users__back" href="/tilezilla-v2.html">← Back to game</a>
+    <h1 class="admin-users__title">User administration</h1>
+    <p class="admin-users__subtitle" id="adminStatus">Checking access…</p>
+  </header>
+
+  <main class="admin-users__main" id="adminMain" hidden>
+    <section class="admin-users__panel admin-users__panel--list">
+      <div class="admin-users__toolbar">
+        <input type="search" class="admin-users__search" id="userSearch" placeholder="Search username, email, or ID" autocomplete="off" />
+        <button type="button" class="admin-users__btn" id="refreshUsersBtn">Refresh</button>
+      </div>
+      <div class="admin-users__table-wrap">
+        <table class="admin-users__table" id="usersTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Hints</th>
+              <th>Admin</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-users__panel admin-users__panel--detail" id="userDetailPanel" hidden>
+      <h2 class="admin-users__detail-title">Edit user <span id="detailUserId"></span></h2>
+      <form class="admin-users__form" id="editUserForm">
+        <label>Username <input name="username" required /></label>
+        <label>Player name <input name="player_name" /></label>
+        <label>Email <input name="email" type="email" required /></label>
+        <label>Status
+          <select name="status">
+            <option value="active">active</option>
+            <option value="registered">registered</option>
+            <option value="suspended">suspended</option>
+            <option value="expired">expired</option>
+          </select>
+        </label>
+        <label>Active until <input name="active_until" type="date" /><span class="admin-users__hint">Leave blank for no expiry (free account)</span></label>
+        <label class="admin-users__check"><input name="paid" type="checkbox" /> Paid account</label>
+        <label class="admin-users__check"><input name="email_verified" type="checkbox" /> Email verified</label>
+        <label class="admin-users__check"><input name="is_admin" type="checkbox" /> Administrator</label>
+        <div class="admin-users__meta" id="userMeta"></div>
+        <div class="admin-users__actions">
+          <button type="submit" class="admin-users__btn admin-users__btn--primary">Save changes</button>
+          <button type="button" class="admin-users__btn" id="closeDetailBtn">Close</button>
+        </div>
+      </form>
+
+      <hr class="admin-users__divider" />
+
+      <form class="admin-users__form" id="resetPasswordForm">
+        <h3>Reset password</h3>
+        <label>New password <input name="password" type="password" minlength="6" required autocomplete="new-password" /></label>
+        <button type="submit" class="admin-users__btn admin-users__btn--warn">Set password</button>
+      </form>
+
+      <hr class="admin-users__divider" />
+
+      <form class="admin-users__form" id="grantHintsForm">
+        <h3>Grant or deduct hints</h3>
+        <p class="admin-users__hint">Updates the server hint balance immediately — in-game and profile use the same MySQL balance.</p>
+        <label>Amount <input name="amount" type="number" step="1" required placeholder="e.g. 10 or -2" /></label>
+        <label>Reason <input name="reason" maxlength="100" placeholder="Admin Grant" /></label>
+        <button type="submit" class="admin-users__btn admin-users__btn--primary">Apply hints</button>
+      </form>
+
+      <hr class="admin-users__divider" />
+
+      <div class="admin-users__danger">
+        <h3>Delete user</h3>
+        <p>Permanently removes the account and related progress. Cannot delete your own account.</p>
+        <button type="button" class="admin-users__btn admin-users__btn--danger" id="deleteUserBtn">Delete user</button>
+      </div>
+    </section>
+  </main>
+
+  <p class="admin-users__flash" id="adminFlash" hidden role="status"></p>
+
+  <script type="module" src="./js/admin-users.js"></script>
+</body>
+</html>

@@ -13,6 +13,8 @@ import {
   trackGuestEvent,
 } from './tilezilla-guest.js';
 import { hydrateEncounteredTiles } from './tilezilla-encountered-tiles.js';
+import { applyAdminFromSessionUser } from './tilezilla-admin.js';
+import { applySessionHintBalance, cacheHintBalance } from './tilezilla-hints-sync.js';
 
 export const AUTH_API = '/auth/api';
 
@@ -37,6 +39,8 @@ export async function fetchServerSession() {
 
 export function applyServerSession(user) {
   if (!user?.id) return;
+  applyAdminFromSessionUser(user);
+  applySessionHintBalance(user);
   setRegisteredUser({
     id: user.id,
     username: user.username || user.player_name || String(user.id),
@@ -55,7 +59,10 @@ export function applyRegisteredUserToApp(app, user) {
     app.progress.data = app.progress.load();
     hydrateEncounteredTiles(app.progress, userKey);
   }
-  if (typeof app.loadGlobalHintTokens === 'function') {
+  if (user.hint_tokens != null) {
+    app.state.hintTokens = Math.max(0, Number(user.hint_tokens) || 0);
+    cacheHintBalance(userKey, app.state.hintTokens);
+  } else if (typeof app.loadGlobalHintTokens === 'function') {
     app.state.hintTokens = app.loadGlobalHintTokens();
   }
 }
@@ -106,7 +113,7 @@ export async function completeLoginFromServer(loginResponse, meta = {}) {
   return user;
 }
 
-export function loginReturnUrl(fallback = '/profile-screen.html') {
+export function loginReturnUrl(fallback = '/tilezilla-v2.html?profile=1') {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('return');
   if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return fallback;

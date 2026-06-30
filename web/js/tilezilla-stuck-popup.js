@@ -29,6 +29,10 @@ import {
 } from './stuck-reveal-layout.js';
 
 import { isRestrictedFeature } from './tilezilla-guest.js';
+import {
+  exampleRouteBlockReason,
+  refreshHintBalanceForApp,
+} from './tilezilla-hint-access.js';
 
 
 
@@ -175,6 +179,10 @@ function stuckMaxDialogHeight() {
 let getApp = () => null;
 
 let menuApi = null;
+
+let notifyUser = () => {};
+
+let onNeedHints = () => {};
 
 let resizeHandler = null;
 
@@ -601,6 +609,12 @@ async function showStuckPreview() {
 
 
 
+  await refreshHintBalanceForApp(app);
+
+  updateHintCountDisplay(app);
+
+
+
   const placements = await app.getExampleRoutePlacements();
 
   if (!placements?.length) {
@@ -645,6 +659,10 @@ async function showStuckPreview() {
 
         }
 
+        notifyUser('Not enough hint tokens to view the example route.', 'error');
+
+        onNeedHints();
+
         updateViewRouteButton(app);
 
       }
@@ -684,21 +702,31 @@ async function showStuckPreview() {
 
 
 export async function openStuckFlow() {
-  if (isRestrictedFeature('stuck')) return;
+  if (isRestrictedFeature('stuck')) {
+    window.__tilezillaGuest?.showLoginRequired?.();
+    return;
+  }
 
   const app = getApp();
 
   if (!app) return;
 
+  await refreshHintBalanceForApp(app);
 
+  updateHintCountDisplay(app);
+
+  const block = exampleRouteBlockReason(app);
+  if (block.blocked) {
+    notifyUser(block.message || 'Not enough hint tokens.', 'error');
+    if (block.offerBuyHints) onNeedHints();
+    return;
+  }
 
   setStep('confirm');
 
   openStuckPopup();
 
   updateViewRouteButton(app);
-
-
 
   const warn = $('stuckTokenWarn');
 
@@ -714,11 +742,15 @@ export async function openStuckFlow() {
 
 
 
-export async function initStuckPopup({ getApp: getAppFn, menuApi: menu }) {
+export async function initStuckPopup({ getApp: getAppFn, menuApi: menu, notify, onNeedHints: needHints }) {
 
   getApp = getAppFn || (() => null);
 
   menuApi = menu || null;
+
+  notifyUser = typeof notify === 'function' ? notify : notifyUser;
+
+  onNeedHints = typeof needHints === 'function' ? needHints : onNeedHints;
 
 
 
@@ -813,6 +845,16 @@ export async function initStuckPopup({ getApp: getAppFn, menuApi: menu }) {
   $('stuckViewRouteBtn')?.addEventListener('click', () => {
 
     void showStuckPreview();
+
+  });
+
+
+
+  window.addEventListener('tilezilla:hint-balance', () => {
+
+    const app = getApp();
+
+    if (app) updateViewRouteButton(app);
 
   });
 

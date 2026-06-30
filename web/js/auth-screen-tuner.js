@@ -393,6 +393,7 @@ export function initAuthScreenTuner(screenKey, root = document) {
     frame.querySelector('.auth-screen__bottom-nav')?.remove();
     frame.querySelector('.auth-screen__profile-nav')?.remove();
     frame.querySelector('.auth-screen__hit--secondary')?.remove();
+    frame.querySelector('.auth-screen__hit--forgot-password')?.remove();
 
     const viewport = root.getElementById('mockViewport');
     const outside = outsideKeysFor(screenKey);
@@ -414,8 +415,12 @@ export function initAuthScreenTuner(screenKey, root = document) {
       } else if (screenKey === 'profile') {
         // Match live profile-screen.html — stats sit directly on the stage.
         frame.appendChild(box);
-      } else if (key === 'secondary' || ((screenKey === 'login' || screenKey === 'create') && meta.slot)) {
-        // Match live login/create — journal stats on stage, not inside the form overlay.
+      } else if (
+        key === 'secondary'
+        || key === 'forgotPassword'
+        || ((screenKey === 'login' || screenKey === 'create') && meta.slot)
+      ) {
+        // Match live login/create — secondary, forgot-password (?), and journal stats on stage.
         frame.appendChild(box);
       } else if (outside.has(key) && hitsOutside) {
         if (viewport && hitsOutside.parentElement !== viewport) {

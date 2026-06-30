@@ -115,9 +115,7 @@
               width="1071"
               height="1248"
             />
-            <button type="button" class="tz-hint-menu__close" id="hintMenuCloseBtn" aria-label="Close">
-              <img src="/img/usehintmenu-area-exitbtn.png" alt="" width="88" height="88" />
-            </button>
+            <button type="button" class="tz-hint-menu__close" id="hintMenuCloseBtn" aria-label="Close"></button>
             <p class="tz-hint-menu__available" id="hintMenuAvailable" aria-live="polite">2 of 2</p>
             <div class="tz-hint-menu__controls">
               <button
@@ -125,25 +123,19 @@
                 class="tz-hint-menu__token tz-hint-menu__token--random"
                 data-hint-type="random"
                 aria-label="Random tile hint, costs 1 token"
-              >
-                <img src="/img/1Tokenbtn.png" alt="" />
-              </button>
+              ><img src="/img/hintMenu-btn1.png" alt="" /></button>
               <button
                 type="button"
                 class="tz-hint-menu__token tz-hint-menu__token--start"
                 data-hint-type="start"
                 aria-label="Start tile hint, costs 2 tokens"
-              >
-                <img src="/img/2Tokensbtn.png" alt="" />
-              </button>
+              ><img src="/img/hintMenu-btn2.png" alt="" /></button>
               <button
                 type="button"
                 class="tz-hint-menu__token tz-hint-menu__token--end"
                 data-hint-type="end"
                 aria-label="End tile hint, costs 2 tokens"
-              >
-                <img src="/img/2Tokensbtn.png" alt="" />
-              </button>
+              ><img src="/img/hintMenu-btn3.png" alt="" /></button>
               <button type="button" class="tz-hint-menu__cancel" id="hintMenuCancelBtn" aria-label="Cancel">
                 <img src="/img/cancelbtn.png" alt="" />
               </button>
@@ -212,6 +204,9 @@
               <img id="activeImg" class="activeImg" alt="" />
             </div>
             <div class="tz-preview-hint-use-slot" id="previewHintUseSlot" aria-label="Use hint" hidden>
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--use" id="hintPlaqueUse" aria-hidden="true">
+                <img class="tz-preview-v2-hint-plaque__art" src="/img/use hint bubble.png" alt="" />
+              </div>
               <button
                 type="button"
                 class="tz-preview-v2-hint-use-btn"
@@ -571,11 +566,11 @@
         </div>
         <div class="tz-settings-scroll" id="settingsGameplay">
           <h3 class="tz-settings-section">Display</h3>
-          <p class="tz-settings-note">Desktop dev sizing — lock the canvas so the bottom menu tab stays aligned.</p>
+          <p class="tz-settings-note">Lock canvas size for layout work on PC — keeps the bottom menu tab aligned. Tablet layouts later.</p>
 
           <div class="tz-setting" data-setting="desktopScale">
             <div class="tz-setting__label">Desktop size (PC)</div>
-            <div class="tz-setting__help">Auto shrinks to fit. 2× locks 780×1688px · 3× locks 1170×2532px (scroll the window if needed).</div>
+            <div class="tz-setting__help">Auto fits your window (max 2×). Lock 2× (780×1688) or 3× (1170×2532 — needs a tall screen).</div>
             <div class="tz-segmented" role="group" aria-label="Desktop size">
               <button type="button" class="tz-segment" data-value="AUTO" aria-pressed="true">Auto</button>
               <button type="button" class="tz-segment" data-value="2" aria-pressed="false">2×</button>
@@ -584,12 +579,17 @@
           </div>
 
           <div class="tz-setting" data-setting="phonePreview">
-            <div class="tz-setting__label">Phone preview (390px)</div>
-            <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules). Overrides desktop size.</div>
-            <div class="tz-segmented" role="group" aria-label="Phone preview">
+            <div class="tz-setting__label">Mobile size (390px)</div>
+            <div class="tz-setting__help">1× phone canvas — mobile layouts (Hint Rules, etc.). Overrides desktop size.</div>
+            <div class="tz-segmented" role="group" aria-label="Mobile preview">
               <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
               <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
             </div>
+          </div>
+
+          <div class="tz-setting tz-setting--viewport-fit" data-viewport-lock-only hidden>
+            <button type="button" class="tz-settings-action" id="viewportFitWindowBtn">Fit browser window to canvas</button>
+            <p class="tz-setting__help" id="viewportFitHelp"></p>
           </div>
 
           <h3 class="tz-settings-section">Gameplay</h3>
@@ -655,6 +655,12 @@
             <div class="tz-setting__label">Current tileset</div>
             <div class="tz-setting__value" id="settingsTilesetName">—</div>
             <button type="button" class="tz-settings-action" id="settingsOpenTilesetBtn">Choose tileset…</button>
+          </div>
+
+          <div class="tz-settings-admin" id="settingsAdmin" data-admin-only hidden>
+            <h3 class="tz-settings-section">Admin</h3>
+            <p class="tz-settings-note">Manage accounts, passwords, and hint balances.</p>
+            <a class="tz-settings-action tz-settings-action--link" href="/admin-users.html">Manage users &amp; hints</a>
           </div>
 
           <div class="tz-settings-dev" id="settingsDeveloper" data-dev-only hidden>
@@ -1130,6 +1136,104 @@
         <button type="button" class="tz-buy-hints-dialog__exit" id="buyHintsExitBtn" aria-label="Close and return to game">
           <img src="/img/exit-btn.png" alt="" />
         </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-reset-hint-root" id="resetHintTilesRoot" hidden>
+    <button type="button" class="tz-reset-hint-root__backdrop" id="resetHintTilesBackdrop" aria-label="Close"></button>
+    <div class="tz-reset-hint-dialog" role="dialog" aria-modal="true" aria-labelledby="resetHintTilesTitle">
+      <h2 class="tz-sr-only" id="resetHintTilesTitle">Remove hint tiles?</h2>
+      <div class="tz-reset-hint-dialog__frame">
+        <img
+          id="resetHintTilesBg"
+          class="tz-reset-hint-dialog__bg"
+          src="/img/RestWithUsedHints.png"
+          alt=""
+          width="1315"
+          height="1087"
+          draggable="false"
+        />
+        <button
+          type="button"
+          class="tz-reset-hint__hit tz-reset-hint__hit--close"
+          id="resetHintTilesCloseBtn"
+          aria-label="Close"
+        >
+          <img src="/img/X-gold-rnd-btn.png" alt="" />
+        </button>
+        <button
+          type="button"
+          class="tz-reset-hint__hit tz-reset-hint__hit--remove"
+          id="resetHintRemoveBtn"
+          aria-label="Remove hints"
+        ></button>
+        <button
+          type="button"
+          class="tz-reset-hint__hit tz-reset-hint__hit--keep"
+          id="resetHintKeepBtn"
+          aria-label="Keep hints"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-use-hint-root" id="useHintConfirmRoot" hidden>
+    <button type="button" class="tz-use-hint-root__backdrop" id="useHintConfirmBackdrop" aria-label="Close"></button>
+    <div class="tz-use-hint-dialog" role="dialog" aria-modal="true" aria-labelledby="useHintConfirmTitle">
+      <h2 class="tz-sr-only" id="useHintConfirmTitle">Use a random tile hint</h2>
+      <div class="tz-use-hint-dialog__frame">
+        <img
+          id="useHintConfirmBg"
+          class="tz-use-hint-dialog__bg"
+          src="/img/Use ingame hint.png"
+          alt=""
+          width="1376"
+          height="1143"
+          draggable="false"
+        />
+        <p class="tz-use-hint-dialog__cost" id="useHintConfirmCost" aria-live="polite"></p>
+        <p class="tz-use-hint-dialog__warn" id="useHintConfirmWarn" hidden role="alert"></p>
+        <button
+          type="button"
+          class="tz-use-hint-dialog__close"
+          id="useHintConfirmCloseBtn"
+          aria-label="Close"
+        >
+          <img src="/img/X-gold-rnd-btn.png" alt="" />
+        </button>
+        <button
+          type="button"
+          class="tz-use-hint-dialog__confirm"
+          id="useHintConfirmBtn"
+          aria-label="Use random tile hint"
+        >
+          <img src="/img/use hint bubble.png" alt="" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tz-rank-award-root" id="rankAwardRoot" hidden>
+    <button type="button" class="tz-rank-award-root__backdrop" id="rankAwardBackdrop" aria-label="Close"></button>
+    <div class="tz-rank-award-dialog" role="dialog" aria-modal="true" aria-labelledby="rankAwardTitle">
+      <h2 class="tz-sr-only" id="rankAwardTitle">New adventure rank reached</h2>
+      <div class="tz-rank-award-dialog__frame">
+        <img
+          class="tz-rank-award-dialog__art"
+          id="rankAwardArt"
+          src="/img/ranks/RankAwardPlacque1.png"
+          alt=""
+          width="354"
+          height="534"
+          draggable="false"
+        />
+        <button
+          type="button"
+          class="tz-rank-award__hit tz-rank-award__hit--continue"
+          id="rankAwardContinueBtn"
+          aria-label="Continue journey"
+        ></button>
       </div>
     </div>
   </div>

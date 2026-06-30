@@ -10,6 +10,7 @@ import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 import { loadGameplaySettings } from './tilezilla-settings.js';
 import { applyLoadScreenLayout, loadLoadScreenLayout, reloadLoadScreenLayout } from './load-screen-layout.js';
 import { applyMainScreenV2Layout, loadMainScreenV2Layout } from './main-screen-v2-layout.js';
+import { applyWaterRippleLayout, loadWaterRippleLayout, reloadWaterRippleLayout } from './water-ripple-layout.js';
 import { initLoadScreenCarousel } from './load-screen-carousel.js';
 
 async function bootLoadScreen() {
@@ -42,8 +43,10 @@ function applyLoadScreenChrome(loadLayout) {
 void Promise.all([
   loadLoadScreenLayout({ fromDisk: true }),
   loadMainScreenV2Layout(),
-]).then(([loadLayout, msv2]) => {
+  loadWaterRippleLayout({ fromDisk: true }),
+]).then(([loadLayout, msv2, ripple]) => {
   applyMainScreenV2Layout(msv2);
+  applyWaterRippleLayout(ripple);
   applyLoadScreenChrome(loadLayout);
   initLoadScreenCarousel();
 });
@@ -73,6 +76,9 @@ window.addEventListener('storage', (e) => {
   ) {
     void reloadLoadScreenFromDisk();
   }
+  if (e.key === 'tilezilla:water-ripple-layout-version') {
+    void reloadWaterRippleLayout().then((ripple) => applyWaterRippleLayout(ripple));
+  }
 });
 
 window.addEventListener('focus', () => {
@@ -83,6 +89,10 @@ function onViewportChange() {
   applyUiScale();
   reapplyLoadScreenPositions();
 }
+
+window.addEventListener('tilezilla:water-ripple-layout-saved', () => {
+  void reloadWaterRippleLayout().then((ripple) => applyWaterRippleLayout(ripple));
+});
 
 window.addEventListener('resize', onViewportChange);
 window.visualViewport?.addEventListener('resize', onViewportChange);

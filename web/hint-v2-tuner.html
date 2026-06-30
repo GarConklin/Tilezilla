@@ -272,6 +272,10 @@
             <p class="tz-preview-tile__dir" aria-hidden="true">0°</p>
             <div class="tz-preview-renderer-outline" aria-hidden="true"></div>
             <div class="tz-preview-hint-use-slot" id="hintUseRoot">
+              <div class="tz-preview-v2-hint-plaque tz-preview-v2-hint-plaque--use tuner-box" data-item="hintPlaqueUse" id="mockUsePlaque">
+                <img class="tz-preview-v2-hint-plaque__art" src="/img/use hint bubble.png" alt="" />
+                <span class="hit-label">Use bubble</span>
+              </div>
               <button type="button" class="tz-preview-v2-hint-use-btn tuner-box" data-item="hintUseBtn" id="mockUseBtn">
                 <span class="hit-label">Use hint hit</span>
               </button>
@@ -322,6 +326,7 @@
       'hintPlaqueCount',
       'hintTokenCountCount',
       'hintTokenAddCount',
+      'hintPlaqueUse',
       'hintUseBtn',
     ];
 
@@ -533,7 +538,7 @@
 
       els.artHintCount.addEventListener('change', () => {
         const path = els.artHintCount.value.trim();
-        patchArt({ hintPlaqueCount: path, hintPlaqueUse: path });
+        patchArt({ hintPlaqueCount: path });
       });
 
       els.mockStage.addEventListener('wheel', onWheel, { passive: false });

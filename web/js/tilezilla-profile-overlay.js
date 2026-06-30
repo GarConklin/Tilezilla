@@ -48,6 +48,7 @@ async function refreshProfileOverlayStats(root) {
   const progress = await reloadAppProgress();
   await refreshProfileRankIcons(progress, root);
   await refreshProfilePassportStats({ root });
+  await window.__syncPlayerChrome?.();
 }
 
 function refreshProfileFields() {

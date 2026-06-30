@@ -71,6 +71,31 @@ function syncDisplayRowVisibility(panel, settings) {
   if (anchorStyleRow) anchorStyleRow.hidden = settings.previewPlacementAnchor === 'OFF';
   const desktopScaleRow = panel.querySelector('[data-setting="desktopScale"]');
   if (desktopScaleRow) desktopScaleRow.hidden = settings.phonePreview === 'ON';
+  const viewportFitRow = panel.querySelector('[data-viewport-lock-only]');
+  if (viewportFitRow) {
+    viewportFitRow.hidden = settings.phonePreview !== 'ON'
+      && settings.desktopScale !== '2'
+      && settings.desktopScale !== '3';
+  }
+}
+
+export function syncViewportFitHelp(panel) {
+  const help = panel?.querySelector('#viewportFitHelp');
+  if (!help) return;
+  const settings = loadGameplaySettings();
+  if (settings.phonePreview === 'ON') {
+    help.textContent = 'Locks to 390×844 — mobile layouts and bottom menu tab alignment.';
+    return;
+  }
+  if (settings.desktopScale === '2') {
+    help.textContent = 'Locks to 780×1688 — recommended for PC layout tuning.';
+    return;
+  }
+  if (settings.desktopScale === '3') {
+    help.textContent = 'Locks to 1170×2532 — very tall; use Fit window on a large monitor or scroll.';
+    return;
+  }
+  help.textContent = '';
 }
 
 export function getDesktopScalePreference() {
@@ -95,6 +120,7 @@ function renderPanel(root, settings) {
     syncSegment(group, settings[key] ?? GAMEPLAY_DEFAULTS[key]);
   });
   syncDisplayRowVisibility(root, settings);
+  syncViewportFitHelp(root);
 }
 
 export function isPhonePreviewMode() {
@@ -108,7 +134,7 @@ export function applyPhonePreviewMode(on) {
   }));
 }
 
-export function initSettingsUi({ onChange, menuApi, onOpenTileset, getTilesetLabel }) {
+export function initSettingsUi({ onChange, menuApi, onOpenTileset, getTilesetLabel, onViewportFit }) {
   const settingsRoot = document.getElementById('settingsRoot');
   const gameplayPanel = document.getElementById('settingsGameplay');
   if (!settingsRoot || !gameplayPanel) return;
@@ -146,6 +172,10 @@ export function initSettingsUi({ onChange, menuApi, onOpenTileset, getTilesetLab
   };
 
   bindSegment(gameplayPanel, apply);
+
+  document.getElementById('viewportFitWindowBtn')?.addEventListener('click', () => {
+    onViewportFit?.();
+  });
 
   const closeFromBack = () => {
     closeSettings();

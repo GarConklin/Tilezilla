@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en" class="reset-hint-tiles-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Reset with hints popup tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; color: #c4a35a; }
+    label { display: block; font-size: 0.72rem; color: #a8b8b4; margin-bottom: 4px; }
+    input, textarea {
+      width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35); background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8; font: inherit; font-size: 0.78rem;
+    }
+    .field-btn, .btn {
+      padding: 8px 6px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25); color: #f4ecd8; font: inherit; font-size: 0.68rem; cursor: pointer;
+    }
+    .field-btn { width: 100%; text-align: left; margin-bottom: 6px; }
+    .field-btn.is-active { border-color: #e8b923; background: rgba(232, 185, 35, 0.15); }
+    .field-btn.is-game-hidden { opacity: 0.45; border-style: dashed; }
+    .readout { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.45; }
+    .mock-stage { padding: 24px 16px; border: 2px dashed rgba(196, 163, 90, 0.35); touch-action: none; outline: none; display: flex; justify-content: center; }
+    .mock-stage:focus { border-color: #e8b923; }
+    .mock-wrap { width: min(100%, 360px); }
+    .reset-hint-tiles-tuner-page .tz-reset-hint-root { position: relative; display: block; inset: auto; padding: 0; }
+    .reset-hint-tiles-tuner-page .tz-reset-hint-root__backdrop { display: none; }
+    .reset-hint-tiles-tuner-page .tz-reset-hint-dialog { position: relative; margin: 0 auto; }
+    .reset-hint-tiles-tuner-page .tuner-box {
+      background: rgba(100, 200, 255, 0.28) !important;
+      border: 2px solid rgba(100, 200, 255, 0.85) !important;
+      border-radius: 4px; z-index: 6; cursor: move;
+    }
+    .reset-hint-tiles-tuner-page .tz-reset-hint__hit--close img {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .reset-hint-tiles-tuner-page .tuner-box.is-tuner-active { border-color: #e8b923 !important; z-index: 7; }
+    .reset-hint-tiles-tuner-page .tuner-box.is-game-hidden { background: rgba(220, 80, 80, 0.2) !important; border-style: dashed !important; }
+    .reset-hint-tiles-tuner-page .tuner-box .hit-label {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      padding: 2px; font-size: clamp(7px, 2.5cqi, 11px); font-weight: 600; text-align: center;
+      color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); pointer-events: none;
+    }
+    .reset-hint-tiles-tuner-page .tuner-handle { position: absolute; width: 10px; height: 10px; background: #e8b923; border: 1px solid #142c28; z-index: 8; }
+    .reset-hint-tiles-tuner-page .tuner-handle--e { right: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .reset-hint-tiles-tuner-page .tuner-handle--s { left: 50%; bottom: -5px; transform: translateX(-50%); cursor: ns-resize; }
+    .reset-hint-tiles-tuner-page .tuner-handle--se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+    .nudge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 180px; margin: 10px 0; }
+    .nudge-grid .btn-wide { grid-column: span 3; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .status { font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; }
+    .hint { font-size: 0.72rem; color: #a8b8b4; line-height: 1.45; margin: 0 0 10px; }
+  </style>
+</head>
+<body>
+  <h1>Reset with hints popup tuner</h1>
+  <p class="lead">
+    Tune <code>RestWithUsedHints.png</code> — close X graphic, and transparent <strong>Remove Hints</strong> / <strong>Keep Hints</strong> hit areas.
+    Saves to <code>data/reset_hint_tiles_layout.json</code>.
+    <strong>Use port 8080</strong> — <a href="http://127.0.0.1:8080/reset-hint-tiles-tuner.html">127.0.0.1:8080</a>.
+    <a href="/tuners.html">All tuners</a> · <a href="/tilezilla-v2.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Controls</h2>
+      <label for="baseSrc">Base art path</label>
+      <input id="baseSrc" type="text" spellcheck="false" />
+      <label for="closeArt">Close button art</label>
+      <input id="closeArt" type="text" spellcheck="false" />
+      <div id="fieldGrid"></div>
+      <p class="readout" id="readout">—</p>
+      <p class="hint">Wheel on preview: x · Shift+y · Ctrl+w · Alt+Ctrl+h</p>
+      <div class="nudge-grid" id="nudgeGrid">
+        <span></span><button type="button" class="btn" data-nudge="up">↑</button><span></span>
+        <button type="button" class="btn" data-nudge="left">←</button>
+        <button type="button" class="btn" data-nudge="down">↓</button>
+        <button type="button" class="btn" data-nudge="right">→</button>
+        <button type="button" class="btn btn-wide" data-nudge="wider">Wider</button>
+        <button type="button" class="btn btn-wide" data-nudge="narrower">Narrower</button>
+        <button type="button" class="btn btn-wide" data-nudge="taller">Taller</button>
+        <button type="button" class="btn btn-wide" data-nudge="shorter">Shorter</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="hideHitBtn">Hide in game</button>
+        <button type="button" class="btn" id="restoreHitBtn">Restore in game</button>
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" spellcheck="false" rows="14"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Preview — 390px dialog</h2>
+      <div class="mock-stage" id="mockStage" tabindex="0">
+        <div class="mock-wrap">
+          <div class="tz-reset-hint-root" id="mockRoot">
+            <div class="tz-reset-hint-dialog" role="dialog" aria-label="Reset with hints preview">
+              <div class="tz-reset-hint-dialog__frame" id="mockFrame">
+                <img id="mockBg" class="tz-reset-hint-dialog__bg" src="/img/RestWithUsedHints.png" alt="" width="1315" height="1087" />
+                <button type="button" class="tz-reset-hint__hit tz-reset-hint__hit--close tuner-box" data-item="close">
+                  <img id="mockCloseImg" src="/img/X-gold-rnd-btn.png" alt="" />
+                  <span class="hit-label">Close</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+                <button type="button" class="tz-reset-hint__hit tz-reset-hint__hit--remove tuner-box" data-item="remove" aria-label="Remove hints">
+                  <span class="hit-label">Remove</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+                <button type="button" class="tz-reset-hint__hit tz-reset-hint__hit--keep tuner-box" data-item="keep" aria-label="Keep hints">
+                  <span class="hit-label">Keep</span>
+                  <span class="tuner-handle tuner-handle--e"></span>
+                  <span class="tuner-handle tuner-handle--s"></span>
+                  <span class="tuner-handle tuner-handle--se"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      RESET_HINT_TILES_ITEM_DEFS,
+      applyResetHintTilesLayout,
+      clearResetHintTilesLayoutCache,
+      clearResetHintTilesLayoutDraft,
+      getResetHintTilesItemLayout,
+      loadResetHintTilesLayout,
+      mergeResetHintTilesLayout,
+      stashResetHintTilesLayoutDraft,
+    } from './js/reset-hint-tiles-layout.js';
+
+    const DIALOG_ITEM = '__dialog__';
+    const POS_STEP = 0.5;
+    const ARROW_STEP = 0.25;
+
+    let workingLayout = mergeResetHintTilesLayout(null);
+    let currentItem = 'remove';
+    let dragState = null;
+    let saveTimer = null;
+
+    const els = {
+      fieldGrid: document.getElementById('fieldGrid'),
+      readout: document.getElementById('readout'),
+      jsonOut: document.getElementById('jsonOut'),
+      status: document.getElementById('status'),
+      baseSrc: document.getElementById('baseSrc'),
+      closeArt: document.getElementById('closeArt'),
+      mockBg: document.getElementById('mockBg'),
+      mockCloseImg: document.getElementById('mockCloseImg'),
+      mockStage: document.getElementById('mockStage'),
+    };
+
+    function getFrameRect() {
+      return document.getElementById('mockFrame')?.getBoundingClientRect();
+    }
+
+    function patchItem(key, patch) {
+      if (!workingLayout.items[key]) workingLayout.items[key] = {};
+      Object.assign(workingLayout.items[key], patch);
+      refresh();
+    }
+
+    function patchDialog(patch) {
+      workingLayout.dialog = { ...workingLayout.dialog, ...patch };
+      refresh();
+    }
+
+    function patchButtons(patch) {
+      workingLayout.buttons = { ...workingLayout.buttons, ...patch };
+      refresh();
+    }
+
+    function applyMoveDelta(dxPx, dyPx) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getResetHintTilesItemLayout(currentItem, workingLayout);
+      patchItem(currentItem, {
+        x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
+        y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+      });
+    }
+
+    function applyResizeDelta(dxPx, dyPx, edges) {
+      if (currentItem === DIALOG_ITEM) return;
+      const rect = getFrameRect();
+      if (!rect?.width || !rect?.height) return;
+      const box = getResetHintTilesItemLayout(currentItem, workingLayout);
+      const patch = {};
+      if (edges.e || edges.se) patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+      if (edges.s || edges.se) patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+      if (Object.keys(patch).length) patchItem(currentItem, patch);
+    }
+
+    async function saveToFile({ quiet = false } = {}) {
+      try {
+        const res = await fetch('/api/dev/save-reset-hint-tiles-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(workingLayout, null, 2),
+        });
+        if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearResetHintTilesLayoutCache();
+        clearResetHintTilesLayoutDraft();
+        localStorage.setItem('tilezilla:reset-hint-tiles-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:reset-hint-tiles-layout-saved'));
+        els.status.textContent = quiet ? 'Auto-saved' : 'Saved to data/reset_hint_tiles_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err} · draft kept in browser`;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    function refresh() {
+      applyResetHintTilesLayout(workingLayout, document.documentElement);
+      els.baseSrc.value = workingLayout.dialog.baseSrc ?? '/img/RestWithUsedHints.png';
+      els.closeArt.value = workingLayout.buttons?.close ?? '/img/X-gold-rnd-btn.png';
+      els.mockBg.src = els.baseSrc.value;
+      els.mockCloseImg.src = els.closeArt.value;
+
+      const box = currentItem === DIALOG_ITEM
+        ? null
+        : getResetHintTilesItemLayout(currentItem, workingLayout);
+      const label = currentItem === DIALOG_ITEM
+        ? 'Dialog size'
+        : (RESET_HINT_TILES_ITEM_DEFS[currentItem]?.label || currentItem);
+
+      if (currentItem === DIALOG_ITEM) {
+        els.readout.innerHTML = `<strong>${label}</strong><br />maxDesignWidth: ${workingLayout.dialog.maxDesignWidth ?? 390}px · widthScale: ${workingLayout.dialog.widthScale ?? 0.92}`;
+      } else {
+        const hiddenLine = box.hidden ? '<br /><em>hidden in game</em>' : '';
+        els.readout.innerHTML = `<strong>${label}</strong><br />x: ${box.x}% · y: ${box.y}%<br />w: ${box.w}% · h: ${box.h}%${hiddenLine}`;
+      }
+
+      els.jsonOut.value = JSON.stringify(workingLayout, null, 2);
+      stashResetHintTilesLayoutDraft(workingLayout);
+
+      for (const btn of els.fieldGrid.querySelectorAll('.field-btn')) {
+        const key = btn.dataset.item;
+        const hidden = key !== DIALOG_ITEM && getResetHintTilesItemLayout(key, workingLayout).hidden;
+        btn.classList.toggle('is-active', key === currentItem);
+        btn.classList.toggle('is-game-hidden', hidden);
+      }
+
+      for (const boxEl of document.querySelectorAll('.tuner-box[data-item]')) {
+        const key = boxEl.dataset.item;
+        const hidden = getResetHintTilesItemLayout(key, workingLayout).hidden;
+        boxEl.classList.toggle('is-tuner-active', key === currentItem);
+        boxEl.classList.toggle('is-game-hidden', hidden);
+      }
+
+      scheduleSave();
+    }
+
+    function buildFieldGrid() {
+      els.fieldGrid.innerHTML = '';
+      const add = (key, label) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'field-btn';
+        btn.dataset.item = key;
+        btn.textContent = label;
+        btn.addEventListener('click', () => { currentItem = key; refresh(); });
+        els.fieldGrid.appendChild(btn);
+      };
+      add(DIALOG_ITEM, 'Dialog size');
+      for (const [key, def] of Object.entries(RESET_HINT_TILES_ITEM_DEFS)) add(key, def.label);
+    }
+
+    for (const btn of document.querySelectorAll('[data-nudge]')) {
+      btn.addEventListener('click', () => {
+        if (currentItem === DIALOG_ITEM) return;
+        const box = getResetHintTilesItemLayout(currentItem, workingLayout);
+        const action = btn.dataset.nudge;
+        const map = {
+          left: { x: Math.max(0, box.x - ARROW_STEP) },
+          right: { x: box.x + ARROW_STEP },
+          up: { y: Math.max(0, box.y - ARROW_STEP) },
+          down: { y: box.y + ARROW_STEP },
+          wider: { w: box.w + ARROW_STEP },
+          narrower: { w: Math.max(1, box.w - ARROW_STEP) },
+          taller: { h: box.h + ARROW_STEP },
+          shorter: { h: Math.max(1, box.h - ARROW_STEP) },
+        };
+        patchItem(currentItem, map[action] || {});
+      });
+    }
+
+    els.baseSrc.addEventListener('change', () => {
+      patchDialog({ baseSrc: els.baseSrc.value.trim() || '/img/RestWithUsedHints.png' });
+    });
+
+    els.closeArt.addEventListener('change', () => {
+      patchButtons({ close: els.closeArt.value.trim() || '/img/X-gold-rnd-btn.png' });
+    });
+
+    els.mockStage.addEventListener('wheel', (e) => {
+      if (e.target.matches('textarea, input, select')) return;
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      if (currentItem === DIALOG_ITEM) {
+        if (e.ctrlKey) {
+          patchDialog({ widthScale: Math.round(Math.max(0.4, Math.min(1.2, (workingLayout.dialog.widthScale ?? 0.92) + dir * 0.01)) * 100) / 100 });
+        } else {
+          patchDialog({ maxDesignWidth: Math.max(280, (workingLayout.dialog.maxDesignWidth ?? 390) + dir * 4) });
+        }
+        return;
+      }
+      const box = getResetHintTilesItemLayout(currentItem, workingLayout);
+      if (e.altKey && e.ctrlKey) {
+        patchItem(currentItem, { h: Math.max(1, Math.round((box.h + dir * POS_STEP) * 10) / 10) });
+      } else if (e.ctrlKey) {
+        patchItem(currentItem, { w: Math.max(1, Math.round((box.w + dir * POS_STEP) * 10) / 10) });
+      } else if (e.shiftKey) {
+        patchItem(currentItem, { y: Math.max(0, Math.round((box.y + dir * POS_STEP) * 10) / 10) });
+      } else {
+        patchItem(currentItem, { x: Math.max(0, Math.round((box.x + dir * POS_STEP) * 10) / 10) });
+      }
+    }, { passive: false });
+
+    els.mockStage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const handle = e.target.closest('.tuner-handle');
+      const boxEl = e.target.closest('.tuner-box[data-item]');
+      if (handle && boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = {
+          kind: 'resize',
+          edges: {
+            e: handle.classList.contains('tuner-handle--e') || handle.classList.contains('tuner-handle--se'),
+            s: handle.classList.contains('tuner-handle--s') || handle.classList.contains('tuner-handle--se'),
+          },
+        };
+        return;
+      }
+      if (boxEl) {
+        e.preventDefault();
+        currentItem = boxEl.dataset.item;
+        refresh();
+        dragState = { kind: 'move', startX: e.clientX, startY: e.clientY };
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!dragState) return;
+      if (dragState.kind === 'move') {
+        applyMoveDelta(e.clientX - dragState.startX, e.clientY - dragState.startY);
+        dragState.startX = e.clientX;
+        dragState.startY = e.clientY;
+      } else if (dragState.kind === 'resize') {
+        applyResizeDelta(
+          e.clientX - (dragState.lastX ?? e.clientX),
+          e.clientY - (dragState.lastY ?? e.clientY),
+          dragState.edges,
+        );
+        dragState.lastX = e.clientX;
+        dragState.lastY = e.clientY;
+      }
+    });
+
+    window.addEventListener('pointerup', () => { dragState = null; });
+
+    document.getElementById('hideHitBtn').addEventListener('click', () => {
+      if (currentItem === DIALOG_ITEM) return;
+      patchItem(currentItem, { hidden: true });
+    });
+
+    document.getElementById('restoreHitBtn').addEventListener('click', () => {
+      if (currentItem === DIALOG_ITEM) return;
+      patchItem(currentItem, { hidden: false });
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', async () => {
+      clearResetHintTilesLayoutCache();
+      workingLayout = await loadResetHintTilesLayout({ force: true, fromDisk: true });
+      refresh();
+      els.status.textContent = 'Reloaded from file';
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+    buildFieldGrid();
+    void loadResetHintTilesLayout().then((layout) => {
+      workingLayout = layout;
+      refresh();
+    });
+  </script>
+</body>
+</html>

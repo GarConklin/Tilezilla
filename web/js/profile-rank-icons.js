@@ -5,6 +5,7 @@ import {
   getRankPanelState,
   loadAdventurePath,
 } from './adventure-path.js';
+import { resolvePassportProgress, ensurePassportDataHydrated } from './profile-passport-data.js';
 import {
   applySublevelIconOnBadgeStack,
   clearSublevelLayoutCache,
@@ -153,11 +154,9 @@ export async function refreshProfileRankIcons(progress, root = document) {
   const { badges, subs, stacks } = rankElements(root);
   if (!badges.length && !subs.length) return;
 
-  let prog = progress;
-  if (!prog && window.__app?.progress?.load) {
-    window.__app.progress.data = window.__app.progress.load();
-    prog = window.__app.progress;
-  }
+  if (!progress) await ensurePassportDataHydrated();
+
+  let prog = progress ?? resolvePassportProgress();
 
   setRankStacksReady(stacks, false);
 

@@ -1,0 +1,22 @@
+ uiClick: '/audio/ui-click.mp3',
+  tilePlace: '/audio/tile-place.mp3',
+  tilePickup: '/audio/tile-pickup.mp3',
+  tileInvalid: '/audio/tile-bump.mp3',
+  solveOk: '/audio/solve-ok.mp3',
+  
+  spinCWTile:'/audio/spinCWTile.mp3'
+  spinCCWTile:'/audio/spinCCWTile.mp3'
+   backButton:'/audio/closebuttonclick.mp3'
+   swipeStartScreen:'/audio/Swipe.mp3'
+   
+   generalSelection:'/audio/ChimeChirp.mp3'
+   
+   LevelSuccess:'/audio/Success-fanfare.mp3'
+   
+
+
+  Future Sound Wishlist
+Sound	     Purpose
+hintReveal	 Special reveal useage of hint token    hintReveal:'/audio/hintReveal.mp3
+rankUp	     New Adventure rank reached             rankUp:'/audio/rankUp.mp3
+tokenEarned	 Bonus token awarded                    tokenEarned:'/audio/ChaChing.mp3

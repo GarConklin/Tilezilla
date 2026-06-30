@@ -3,10 +3,10 @@
     "w": 245,
     "h": 145
   },
-  "tokenCountFont": "clamp(5px, 13cqi, 11px)",
+  "tokenCountFont": "clamp(6px, 18cqi, 11px)",
   "art": {
     "hintPlaqueCount": "/img/hintplaque.png",
-    "hintPlaqueUse": "/img/hintplaque.png",
+    "hintPlaqueUse": "/img/use hint bubble.png",
     "useHintBtn": ""
   },
   "items": {
@@ -17,10 +17,16 @@
       "h": 140
     },
     "hintTokenCountCount": {
-      "x": 103,
-      "y": 78,
-      "w": 52,
-      "h": 34
+      "x": 102,
+      "y": 50,
+      "w": 56,
+      "h": 38
+    },
+    "hintPlaqueUse": {
+      "x": 41,
+      "y": 45,
+      "w": 136,
+      "h": 49
     },
     "hintTokenAddCount": {
       "x": 155,
@@ -29,16 +35,10 @@
       "h": 48
     },
     "hintUseBtn": {
-      "x": 26,
-      "y": 48,
-      "w": 170,
-      "h": 44
-    },
-    "hintPlaqueUse": {
-      "x": 0,
-      "y": 0,
-      "w": 237,
-      "h": 66
+      "x": 41,
+      "y": 43,
+      "w": 136,
+      "h": 55
     },
     "hintTokenCountUse": {
       "x": 95,

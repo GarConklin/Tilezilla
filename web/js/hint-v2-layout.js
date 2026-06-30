@@ -6,12 +6,12 @@ export const HINT_V2_ART = { w: 245, h: 145 };
 
 export const DEFAULT_HINT_V2_ART = {
   hintPlaqueCount: '/img/hintplaque.png',
-  hintPlaqueUse: '/img/hintplaque.png',
+  hintPlaqueUse: '/img/use hint bubble.png',
   useHintBtn: '',
 };
 
 export const HINT_V2_ITEM_DEFS = {
-  hintPlaqueUse: { label: 'Use plaque (empty board)', cssKey: 'plaque-use' },
+  hintPlaqueUse: { label: 'Use hint bubble (preview tile)', cssKey: 'plaque-use' },
   hintPlaqueCount: { label: 'Count plaque (tiles placed)', cssKey: 'plaque-count' },
   hintTokenCountUse: { label: 'Token count (use plaque)', cssKey: 'token-count-use' },
   hintTokenAddUse: { label: '+ button (use plaque)', cssKey: 'token-add-use' },
@@ -83,9 +83,9 @@ export const DEFAULT_HINT_V2_LAYOUT = {
   items: {
     hintPlaqueCount: { x: 0, y: 0, w: 237, h: 66 },
     hintTokenCountCount: { x: 95, y: 28, w: 48, h: 20 },
+    hintPlaqueUse: { x: 11, y: 35, w: 200, h: 71 },
     hintTokenAddCount: { x: 205, y: 24, w: 24, h: 24 },
-    hintUseBtn: { x: 26, y: 48, w: 170, h: 44 },
-    hintPlaqueUse: { x: 0, y: 0, w: 237, h: 66 },
+    hintUseBtn: { x: 11, y: 35, w: 200, h: 71 },
     hintTokenCountUse: { x: 95, y: 28, w: 48, h: 20 },
     hintTokenAddUse: { x: 205, y: 24, w: 24, h: 24 },
   },
@@ -93,6 +93,11 @@ export const DEFAULT_HINT_V2_LAYOUT = {
 
 const LS_LAYOUT_KEY = 'tilezilla:layouts:hint-v2';
 const LS_PENDING_KEY = 'tilezilla:layouts:hint-v2:pending';
+
+export function isHintV2TunerPage() {
+  return typeof document !== 'undefined'
+    && document.documentElement.classList.contains('hint-v2-tuner-page');
+}
 
 let layoutCache = null;
 
@@ -160,7 +165,7 @@ export async function loadHintV2Layout({ force = false } = {}) {
   let raw = null;
   let pendingDraft = false;
   try {
-    pendingDraft = localStorage.getItem(LS_PENDING_KEY) === '1';
+    pendingDraft = isHintV2TunerPage() && localStorage.getItem(LS_PENDING_KEY) === '1';
     if (pendingDraft) {
       const draft = localStorage.getItem(LS_LAYOUT_KEY);
       if (draft) raw = JSON.parse(draft);

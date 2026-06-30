@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" class="tz-phone-preview water-ripple-tuner-page">
+<head>
+  <meta charset="utf-8" />
+  <script src="js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Water ripple tuner</title>
+  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #f4ecd8; background: #142c28; padding: 16px; }
+    h1 { margin: 0 0 6px; font-size: 1.2rem; color: #e8b923; }
+    .lead { margin: 0 0 16px; font-size: 0.82rem; color: #a8b8b4; line-height: 1.45; max-width: 56rem; }
+    .lead a { color: #8fd49a; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 340px) 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { padding: 12px; border-radius: 10px; background: rgba(20, 48, 44, 0.85); border: 1.5px solid rgba(196, 163, 90, 0.35); }
+    .panel h2 { margin: 0 0 10px; font-size: 0.8rem; text-transform: uppercase; color: #c4a35a; }
+    label { display: block; font-size: 0.72rem; color: #a8b8b4; margin: 10px 0 4px; }
+    label:first-of-type { margin-top: 0; }
+    input[type="range"] { width: 100%; }
+    .val { float: right; color: #e8b923; font-variant-numeric: tabular-nums; }
+    .readout { margin: 12px 0; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #8fd49a; line-height: 1.5; white-space: pre-wrap; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .btn {
+      padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55); color: #f4ecd8; font: inherit; font-size: 0.78rem; cursor: pointer;
+    }
+    .status { font-size: 0.72rem; color: #a8b8b4; min-height: 1.2em; margin-top: 8px; }
+    #jsonOut { width: 100%; min-height: 72px; margin-top: 8px; padding: 8px; border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35); background: rgba(0,0,0,0.3); color: #f4ecd8;
+      font: ui-monospace, monospace; font-size: 0.7rem; }
+    .preview-wrap {
+      padding: 16px;
+      border-radius: 10px;
+      overflow: auto;
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      background: rgba(8, 20, 18, 0.72);
+    }
+    .water-ripple-tuner-page .preview-wrap .tz-app {
+      position: relative;
+      margin: 0 auto;
+      min-height: var(--tz-design-height);
+      height: var(--tz-design-height);
+      overflow: hidden;
+    }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .preset-row .btn { font-size: 0.68rem; padding: 6px 8px; }
+  </style>
+</head>
+<body>
+  <h1>Water ripple tuner</h1>
+  <p class="lead">
+    Tune the two animated lake layers behind the main game screen (same art as <code>tilezilla-v2</code>).
+    Sky and water PNG paths come from <code>data/main_screen_v2_layout.json</code>.
+    Ripple timing and lift save to <code>data/water_ripple_layout.json</code>.
+    <a href="/tuners.html">All tuners</a> · <a href="/tilezilla-v2.html">Open game</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Ripple speeds &amp; lift</h2>
+      <label>Layer A duration <span class="val" id="valA">14s</span></label>
+      <input type="range" id="durationA" min="6" max="40" step="0.5" value="14" />
+      <label>Layer B duration <span class="val" id="valB">21s</span></label>
+      <input type="range" id="durationB" min="8" max="60" step="0.5" value="21" />
+      <label>Layer A vertical lift <span class="val" id="valAmpA">8px</span></label>
+      <input type="range" id="amplitudeAPx" min="0" max="16" step="0.5" value="8" />
+      <label>Layer B vertical lift <span class="val" id="valAmpB">8px</span></label>
+      <input type="range" id="amplitudeBPx" min="0" max="16" step="0.5" value="8" />
+      <p class="readout" id="readout"></p>
+      <div class="preset-row">
+        <button type="button" class="btn" data-preset="classic">Classic (18 / 27)</button>
+        <button type="button" class="btn" data-preset="default">Current default (14 / 21)</button>
+        <button type="button" class="btn" data-preset="lively">Lively (10 / 15)</button>
+        <button type="button" class="btn" data-preset="calm">Calm (22 / 33)</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reloadBtn">Reload file</button>
+        <button type="button" class="btn" id="saveBtn">Save now</button>
+      </div>
+      <p class="status" id="status"></p>
+      <textarea id="jsonOut" readonly spellcheck="false"></textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Live preview — 390×844 (game background)</h2>
+      <div class="preview-wrap" id="previewWrap">
+        <div class="tz-app tz-main-v2-app" id="previewApp">
+          <div class="tz-bg" aria-hidden="true">
+            <div class="tz-bg__sky"></div>
+            <div class="tz-bg__water">
+              <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+              <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      applyWaterRippleLayout,
+      buildWaterRippleLayoutReport,
+      clearWaterRippleLayoutCache,
+      clearWaterRippleLayoutDraft,
+      loadWaterRippleLayout,
+      mergeWaterRippleLayout,
+      stashWaterRippleLayoutDraft,
+    } from './js/water-ripple-layout.js';
+    import { applyMainScreenV2Layout, loadMainScreenV2Layout, reloadMainScreenV2Layout } from './js/main-screen-v2-layout.js';
+
+    const PRESETS = {
+      classic: { durationA: 18, durationB: 27, amplitudeAPx: 8, amplitudeBPx: 8 },
+      default: { durationA: 14, durationB: 21, amplitudeAPx: 8, amplitudeBPx: 8 },
+      lively: { durationA: 10, durationB: 15, amplitudeAPx: 10, amplitudeBPx: 7 },
+      calm: { durationA: 22, durationB: 33, amplitudeAPx: 5, amplitudeBPx: 6 },
+    };
+
+    let working = mergeWaterRippleLayout(null);
+    let saveApiReady = false;
+    let saveTimer = null;
+
+    const els = {
+      durationA: document.getElementById('durationA'),
+      durationB: document.getElementById('durationB'),
+      amplitudeAPx: document.getElementById('amplitudeAPx'),
+      amplitudeBPx: document.getElementById('amplitudeBPx'),
+      valA: document.getElementById('valA'),
+      valB: document.getElementById('valB'),
+      valAmpA: document.getElementById('valAmpA'),
+      valAmpB: document.getElementById('valAmpB'),
+      readout: document.getElementById('readout'),
+      jsonOut: document.getElementById('jsonOut'),
+      status: document.getElementById('status'),
+    };
+
+    function syncControls() {
+      els.durationA.value = String(working.durationA);
+      els.durationB.value = String(working.durationB);
+      els.amplitudeAPx.value = String(working.amplitudeAPx);
+      els.amplitudeBPx.value = String(working.amplitudeBPx);
+      els.valA.textContent = `${working.durationA}s`;
+      els.valB.textContent = `${working.durationB}s`;
+      els.valAmpA.textContent = `${working.amplitudeAPx}px`;
+      els.valAmpB.textContent = `${working.amplitudeBPx}px`;
+    }
+
+    function applyGameBackground(msv2) {
+      applyMainScreenV2Layout(msv2, document.documentElement);
+    }
+
+    function refresh() {
+      applyWaterRippleLayout(working, document.documentElement);
+      syncControls();
+      els.readout.textContent = buildWaterRippleLayoutReport(working);
+      els.jsonOut.value = JSON.stringify(working, null, 2);
+      stashWaterRippleLayoutDraft(working);
+      scheduleSave();
+    }
+
+    async function reloadGameBackground() {
+      applyGameBackground(await reloadMainScreenV2Layout());
+    }
+
+    function patch(partial) {
+      working = mergeWaterRippleLayout({ ...working, ...partial });
+      refresh();
+    }
+
+    function saveApiHelp() {
+      return `Save API missing on port ${location.port || '80'}. Use http://127.0.0.1:8080/water-ripple-tuner.html`;
+    }
+
+    async function probeSaveApi() {
+      try {
+        const res = await fetch('/api/dev/save-water-ripple-layout', { cache: 'no-store' });
+        const ct = res.headers.get('content-type') || '';
+        if (!res.ok || !ct.includes('json')) throw new Error('missing');
+        const data = await res.json();
+        if (!data?.writable) throw new Error('missing');
+        saveApiReady = true;
+        return true;
+      } catch {
+        saveApiReady = false;
+        els.status.textContent = saveApiHelp();
+        return false;
+      }
+    }
+
+    async function saveToFile({ quiet = false } = {}) {
+      if (!saveApiReady && !(await probeSaveApi())) return;
+      try {
+        const res = await fetch('/api/dev/save-water-ripple-layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(working, null, 2),
+        });
+        const ct = res.headers.get('content-type') || '';
+        if (!res.ok || !ct.includes('json')) throw new Error(await res.text() || `HTTP ${res.status}`);
+        clearWaterRippleLayoutCache();
+        clearWaterRippleLayoutDraft();
+        localStorage.setItem('tilezilla:water-ripple-layout-version', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('tilezilla:water-ripple-layout-saved'));
+        els.status.textContent = quiet ? 'Auto-saved' : 'Saved to data/water_ripple_layout.json';
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 600);
+    }
+
+    els.durationA.addEventListener('input', () => patch({ durationA: parseFloat(els.durationA.value) }));
+    els.durationB.addEventListener('input', () => patch({ durationB: parseFloat(els.durationB.value) }));
+    els.amplitudeAPx.addEventListener('input', () => patch({ amplitudeAPx: parseFloat(els.amplitudeAPx.value) }));
+    els.amplitudeBPx.addEventListener('input', () => patch({ amplitudeBPx: parseFloat(els.amplitudeBPx.value) }));
+
+    document.getElementById('reloadBtn').addEventListener('click', async () => {
+      clearWaterRippleLayoutCache();
+      working = await loadWaterRippleLayout({ force: true, fromDisk: true });
+      refresh();
+      els.status.textContent = 'Reloaded from disk';
+    });
+    document.getElementById('saveBtn').addEventListener('click', () => void saveToFile());
+
+    for (const btn of document.querySelectorAll('[data-preset]')) {
+      btn.addEventListener('click', () => patch(PRESETS[btn.dataset.preset] || {}));
+    }
+
+    void probeSaveApi();
+    void Promise.all([
+      loadWaterRippleLayout(),
+      loadMainScreenV2Layout({ fromDisk: true }),
+    ]).then(([ripple, msv2]) => {
+      working = ripple;
+      applyGameBackground(msv2);
+      refresh();
+    });
+
+    window.addEventListener('tilezilla:main-screen-v2-layout-saved', () => {
+      void reloadGameBackground();
+    });
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'tilezilla:main-screen-v2-layout-version') {
+        void reloadGameBackground();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import {
   loadMainScreenV2Layout,
   mergeMainScreenV2Layout,
 } from './main-screen-v2-layout.js';
+import { applyWaterRippleLayout, loadWaterRippleLayout } from './water-ripple-layout.js';
 
 export function applyAuthScreenChrome(layout, target = document.documentElement) {
   const merged = mergeMainScreenV2Layout(layout);
@@ -26,7 +27,11 @@ export function applyAuthScreenChrome(layout, target = document.documentElement)
 }
 
 export async function initAuthScreenChrome({ force = false } = {}) {
-  const layout = await loadMainScreenV2Layout({ force });
+  const [layout, ripple] = await Promise.all([
+    loadMainScreenV2Layout({ force }),
+    loadWaterRippleLayout({ fromDisk: true }),
+  ]);
   applyAuthScreenChrome(layout);
+  applyWaterRippleLayout(ripple);
   return layout;
 }

@@ -11,9 +11,25 @@ import { initTilesetPicker } from './tilezilla-tileset-picker.js';
 import { formatTilesetDisplayName } from './tileset-preferences.js';
 import { initMenuUi } from './tilezilla-menu.js';
 import { initStuckPopup, openStuckFlow } from './tilezilla-stuck-popup.js';
+import {
+  canOpenExampleRoute,
+  boardHintBlockReason,
+  randomHintBlockReason,
+  refreshHintBalanceForApp,
+} from './tilezilla-hint-access.js';
+import {
+  initUseHintConfirmPopup,
+  openUseHintConfirm,
+  wireUseHintConfirmTriggers,
+} from './tilezilla-use-hint-popup.js';
+import {
+  initResetHintTilesPopup,
+  openResetHintTilesPopup,
+} from './tilezilla-reset-hint-tiles-popup.js';
 import { initRandomPuzzlePopup, openRandomPuzzlePopup } from './tilezilla-random-popup.js';
-import { initBuyHintsPopup, wireBuyHintsTriggers } from './tilezilla-buy-hints-popup.js';
+import { initBuyHintsPopup, openBuyHintsPopup, wireBuyHintsTriggers } from './tilezilla-buy-hints-popup.js';
 import { initChallengeBeginPopup, gateAdventureChallengeBegin } from './tilezilla-challenge-begin-popup.js';
+import { initRankAwardPopup, showRankAwardPopup } from './tilezilla-rank-award-popup.js';
 import {
   applyRandomPopupLayout,
   loadRandomPopupLayout,
@@ -73,6 +89,11 @@ import {
   reloadMainScreenV2Layout,
 } from './main-screen-v2-layout.js';
 import {
+  applyWaterRippleLayout,
+  loadWaterRippleLayout,
+  reloadWaterRippleLayout,
+} from './water-ripple-layout.js';
+import {
   applyPreviewV2Layout,
   loadPreviewV2Layout,
   reloadPreviewV2Layout,
@@ -83,6 +104,11 @@ import {
   loadHintV2Layout,
   reloadHintV2Layout,
 } from './hint-v2-layout.js';
+import {
+  applyUseHintStartLayout,
+  loadUseHintStartLayout,
+  reloadUseHintStartLayout,
+} from './use-hint-start-layout.js';
 import {
   PREVIEW_V2_DATA_SECTIONS,
   applyAllPreviewV2DataSublayouts,
@@ -135,6 +161,7 @@ import { resetDevPlayerProgress } from './dev-player-reset.js';
 import { setDiscoveryRecordTexts, setDiscoveryRecordLayout } from './tilezilla-discovery-record.js';
 import { initDevTools } from './tilezilla-dev-tools.js';
 import { syncDevUserUi } from './tilezilla-dev-user.js';
+import { syncAdminUi } from './tilezilla-admin.js';
 import {
   applySublevelIconElement,
   clearSublevelLayoutCache,
@@ -148,6 +175,7 @@ import {
   buildAdventureMetaForLevel,
   findNextUnsolved,
   getPuzzleRequirement,
+  getRankAdvancementAfterLevel,
   getAdvIdForLevel,
   getRankPanelState,
   isAdventurePuzzleComplete,
@@ -155,7 +183,7 @@ import {
   loadAdventurePath,
   resolveAdventureResume,
 } from './adventure-path.js';
-import { applyUiScale, wireUiScaleListeners, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
+import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 
 const $ = (id) => document.getElementById(id);
@@ -171,11 +199,61 @@ function designCanvasWidth() {
   return TZ_DESIGN_WIDTH;
 }
 
+function runViewportFit(showFeedback = false) {
+  applyUiScale();
+  if (!isViewportLocked()) return null;
+  const result = tryFitWindowToViewportLock();
+  if (showFeedback && result?.label) {
+    if (result.ok) {
+      showGameMessage(`Window resized to ${result.label}.`, 'info');
+    } else if (result.reason === 'blocked') {
+      showGameMessage(
+        `Canvas locked to ${result.label}. Resize the browser manually if Fit was blocked.`,
+        'info',
+      );
+    }
+  }
+  return result;
+}
+
+function usesViewportLock(settings) {
+  return settings.phonePreview === 'ON'
+    || settings.desktopScale === '2'
+    || settings.desktopScale === '3';
+}
+
 async function waitForApp() {
-  while (!window.__app) {
+  while (!window.__app?.ready) {
     await new Promise((r) => setTimeout(r, 40));
   }
   return window.__app;
+}
+
+async function waitForAppLevels(app, maxMs = 12000) {
+  if (app?.state?.allLevels?.length) return;
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 50));
+    if (app?.state?.allLevels?.length) return;
+  }
+}
+
+/** Reload progress from storage, then refresh rank badge, hint plaque, and passport slots. */
+async function syncPlayerChrome(app) {
+  if (!app) return;
+  if (app.progress?.load) {
+    app.progress.data = app.progress.load();
+  }
+  await waitForAppLevels(app);
+  await updateRankPanel(app);
+  updateGlobalHintCount(app);
+  updateHintButtonState(app);
+  try {
+    const { refreshProfilePassportStats } = await import('./profile-passport-data.js');
+    await refreshProfilePassportStats();
+  } catch {
+    /* optional */
+  }
 }
 
 function parseDailyCsvDate(raw) {
@@ -428,6 +506,20 @@ async function advanceAdventurePath(app) {
   if (!loaded) return;
 }
 
+async function maybeShowRankAwardThenAdvance(app) {
+  const path = await loadAdventurePath();
+  const rankId = getRankAdvancementAfterLevel(
+    path,
+    app?.state?.currentLevel?.id,
+    app?.progress,
+    adventureLevelContext(app),
+  );
+  if (rankId) {
+    await showRankAwardPopup({ rankId });
+  }
+  await advanceAdventurePath(app);
+}
+
 async function applyAdventureLevelToBoard(app, level, meta, { message } = {}) {
   window.__dailyChallengeMeta = null;
   await loadLevelOnBoard(app, level);
@@ -506,6 +598,7 @@ function ensureBoardCellMetrics(app) {
 }
 
 async function afterLevelApplied(app) {
+  app.clearActivePreviewSelection?.();
   applyBoardFrameLayout(app);
   app.setCssCell?.();
   centerBoardInFrame();
@@ -751,13 +844,34 @@ function formatHintTokenLabel(app) {
 }
 
 let selectedHintType = null;
+let shellMenuApi = null;
 
-function updateGlobalHintCount(app) {
-  const count = String(app.getGlobalHintTokens?.() ?? 0);
+function isHintStartPhase(app) {
+  return app?.boardAllowsHints?.(app?.state?.tiles ?? []) ?? !(app?.state?.tiles || []).length;
+}
+
+function updateGlobalHintCount(app, balanceOverride) {
+  if (!app) return;
+  const n = balanceOverride != null
+    ? Math.max(0, Number(balanceOverride) || 0)
+    : (app.getGlobalHintTokens?.() ?? 0);
+  const count = String(n);
   const el = $('hintCount');
   if (el) el.textContent = count;
   const v2Count = $('previewV2HintCountCount');
-  if (v2Count) v2Count.textContent = count;
+  if (v2Count) {
+    v2Count.textContent = count;
+    v2Count.removeAttribute('hidden');
+  }
+  updateStuckMenuAvailability(app);
+}
+
+function onHintBalanceChanged(app, event) {
+  const balance = event?.detail?.balance;
+  if (balance != null && app?.state) {
+    app.state.hintTokens = Math.max(0, Number(balance) || 0);
+  }
+  updateGlobalHintCount(app, balance);
 }
 
 function previewHasActiveTile(app) {
@@ -766,14 +880,18 @@ function previewHasActiveTile(app) {
 
 function updateHintMenuAvailable(app) {
   const el = $('hintMenuAvailable');
-  if (el) el.textContent = formatHintTokenLabel(app);
+  if (!el) return;
+  const tokens = app?.getGlobalHintTokens?.() ?? 0;
+  el.textContent = String(tokens);
 }
 
 function updateHintMenuControls(app) {
   document.querySelectorAll('.tz-hint-menu__token').forEach((btn) => {
     const type = btn.dataset.hintType;
     const cost = app.getHintCost?.(type) ?? 1;
-    const afford = app.canAffordHint?.(cost) ?? false;
+    const afford = type === 'random'
+      ? (app.canAffordRandomHint?.() ?? false)
+      : (app.canAffordHint?.(cost) ?? false);
     btn.disabled = !afford;
     btn.setAttribute('aria-disabled', afford ? 'false' : 'true');
     if (!afford) {
@@ -805,12 +923,81 @@ function resetHintMenuSelection() {
 function openHintMenu(app) {
   const root = $('hintMenuRoot');
   if (!root) return;
+  shellMenuApi?.closeAll?.();
   resetHintMenuSelection();
   updateHintMenuAvailable(app);
   updateHintMenuControls(app);
+  void loadUseHintStartLayout().then((layout) => applyUseHintStartLayout(layout));
   root.hidden = false;
   document.body.classList.add('tz-modal-open');
   $('hintMenuCloseBtn')?.focus();
+}
+
+async function tryOpenHintStartMenu(app) {
+  await refreshHintBalanceForApp(app);
+  updateGlobalHintCount(app);
+  const block = boardHintBlockReason(app);
+  if (block.blocked) {
+    showGameMessage(block.message, 'error');
+    if (block.offerBuyHints) openBuyHintsPopup();
+    updateHintButtonState(app);
+    return;
+  }
+  openHintMenu(app);
+}
+
+async function tryOpenHintForApp(app) {
+  if (isHintStartPhase(app)) {
+    await tryOpenHintStartMenu(app);
+    return;
+  }
+  await tryOpenUseHintConfirm(app);
+}
+
+async function tryOpenUseHintConfirm(app) {
+  await refreshHintBalanceForApp(app);
+  updateGlobalHintCount(app);
+  const block = randomHintBlockReason(app);
+  if (block.blocked) {
+    showGameMessage(block.message, 'error');
+    if (block.offerBuyHints) openBuyHintsPopup();
+    updateHintButtonState(app);
+    return;
+  }
+  openUseHintConfirm();
+}
+
+async function confirmUseRandomHint(app) {
+  await refreshHintBalanceForApp(app);
+  const block = randomHintBlockReason(app);
+  if (block.blocked) {
+    showGameMessage(block.message, 'error');
+    if (block.offerBuyHints) openBuyHintsPopup();
+    updateHintButtonState(app);
+    return;
+  }
+  const res = await app.applyRandomHint?.();
+  if (!res?.ok) {
+    showGameMessage(res?.msg || 'Hint could not be applied.', 'error');
+    updateHintButtonState(app);
+    return;
+  }
+  updateTileBagCount(app);
+  updateGlobalHintCount(app);
+  updateHintMenuAvailable(app);
+  updateValidationState(app);
+  showGameMessage(res.msg, 'success');
+  updateHintButtonState(app);
+}
+
+function updateStuckMenuAvailability(app) {
+  const btn = $('menuStuckBtn');
+  if (!btn || btn.hidden) return;
+  const allowed = canOpenExampleRoute(app);
+  btn.setAttribute('aria-disabled', allowed ? 'false' : 'true');
+  btn.title = allowed
+    ? "I'm Stuck — view an example route (costs 1 hint token the first time)"
+    : 'Need at least 1 hint token to use I\'m Stuck.';
 }
 
 function closeHintMenu() {
@@ -823,12 +1010,6 @@ function closeHintMenu() {
 }
 
 function wireHintMenu(app) {
-  $('hintBtn')?.addEventListener('click', () => {
-    const btn = $('hintBtn');
-    if (btn?.getAttribute('aria-disabled') === 'true') return;
-    openHintMenu(app);
-  });
-
   $('hintMenuCloseBtn')?.addEventListener('click', closeHintMenu);
   $('hintMenuBackdrop')?.addEventListener('click', closeHintMenu);
   $('hintMenuCancelBtn')?.addEventListener('click', closeHintMenu);
@@ -850,9 +1031,16 @@ function wireHintMenu(app) {
 
   $('hintMenuUseBtn')?.addEventListener('click', async () => {
     if (!selectedHintType) return;
+    await refreshHintBalanceForApp(app);
+    updateGlobalHintCount(app);
     const cost = app.getHintCost?.(selectedHintType) ?? 0;
-    if (!(app.canAffordHint?.(cost))) {
+    const canUse = selectedHintType === 'random'
+      ? (app.canAffordRandomHint?.() ?? false)
+      : (app.canAffordHint?.(cost) ?? false);
+    if (!canUse) {
       showGameMessage('Not enough hint tokens for this hint.', 'error');
+      updateHintMenuControls(app);
+      openBuyHintsPopup();
       return;
     }
     const useBtn = $('hintMenuUseBtn');
@@ -907,6 +1095,7 @@ function updateHintButtonState(app) {
   if (MAIN_V2_SHELL) {
     const slot = $('previewHintSlot');
     const useSlot = $('previewHintUseSlot');
+    const usePlaque = $('hintPlaqueUse');
     const useBtn = $('hintBtn');
     const countPlaque = $('hintPlaqueCount');
     const countCount = $('previewV2HintCountCount');
@@ -914,34 +1103,30 @@ function updateHintButtonState(app) {
 
     const emptyBoard = !(app?.state?.tiles || []).length;
     const hasPreviewTile = previewHasActiveTile(app);
-    const remaining = app.hintsRemainingThisPuzzle?.() ?? 0;
-    const exhausted = remaining <= 0;
+    const showUseHintInPreview = emptyBoard && !hasPreviewTile;
+    const block = showUseHintInPreview ? boardHintBlockReason(app) : randomHintBlockReason(app);
+    const canUseHints = !block.blocked;
 
-    if (hasPreviewTile) {
-      setHintV2Shown(slot, false);
-      setHintV2Shown(useSlot, false);
-      return;
-    }
-
+    // Bottom token plaque stays visible while playing; preview-tile use hint only when empty.
     setHintV2Shown(slot, true);
     setHintV2Shown(countPlaque, true);
     setHintV2Shown(countCount, true);
     setHintV2Shown(addCount, true);
 
-    if (emptyBoard) {
-      setHintV2Shown(useSlot, true);
-      setHintV2Shown(useBtn, true);
-      useBtn?.setAttribute('aria-disabled', exhausted ? 'true' : 'false');
-      useBtn.title = exhausted
-        ? 'No hints remaining for this puzzle.'
-        : HINT_BOARD_TOOLTIP;
+    setHintV2Shown(useSlot, showUseHintInPreview);
+    setHintV2Shown(usePlaque, showUseHintInPreview);
+    setHintV2Shown(useBtn, showUseHintInPreview);
+    if (usePlaque) usePlaque.setAttribute('aria-hidden', showUseHintInPreview ? 'false' : 'true');
+
+    if (showUseHintInPreview) {
+      useBtn?.setAttribute('aria-disabled', canUseHints ? 'false' : 'true');
+      useBtn.title = canUseHints
+        ? HINT_BOARD_TOOLTIP
+        : (block.message || 'Hints unavailable.');
       useBtn?.setAttribute(
         'aria-label',
-        exhausted ? 'Use hint — no hints remaining for this puzzle' : 'Use hint',
+        canUseHints ? 'Use hint' : `Use hint — ${block.message || 'unavailable'}`,
       );
-    } else {
-      setHintV2Shown(useSlot, false);
-      setHintV2Shown(useBtn, false);
     }
     return;
   }
@@ -953,16 +1138,14 @@ function updateHintButtonState(app) {
 
   btn.hidden = false;
 
-  const boardAllowed = app.boardAllowsHints?.(app.state.tiles) ?? true;
-  const remaining = app.hintsRemainingThisPuzzle?.() ?? 0;
-  const exhausted = remaining <= 0;
-  const disabled = !boardAllowed || exhausted;
+  const block = randomHintBlockReason(app);
+  const disabled = block.blocked;
 
   btn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
 
-  if (exhausted) {
-    btn.title = 'No hints remaining for this puzzle.';
-    btn.setAttribute('aria-label', 'Use hint — no hints remaining for this puzzle');
+  if (disabled) {
+    btn.title = block.message || 'Hints unavailable.';
+    btn.setAttribute('aria-label', `Use hint — ${block.message || 'unavailable'}`);
     return;
   }
 
@@ -1428,7 +1611,7 @@ function applyGuestChrome(app) {
   if (MAIN_V2_SHELL) {
     if (guest) {
       for (const id of [
-        'hintBtn', 'hintPlaqueCount', 'previewHintSlot', 'previewHintUseSlot',
+        'hintBtn', 'hintPlaqueUse', 'hintPlaqueCount', 'previewHintSlot', 'previewHintUseSlot',
         'previewV2HintCountCount', 'hintTokenAddBtnCount',
       ]) {
         const el = document.getElementById(id);
@@ -1610,18 +1793,38 @@ function wireBottomNav(getApp) {
 }
 
 function wireActions(app) {
-  $('resetBtn')?.addEventListener('click', async () => {
-    if (app.boardHasHintTiles?.() && !confirm('Remove hint tiles from the board?')) return;
+  const performBoardReset = async (keepHints = false) => {
     if ((app.state.tiles || []).length) {
       boardBeforeResetSnapshot = app.cloneBoardState?.() ?? null;
     } else {
       clearBoardResetSnapshot();
     }
-    await app.clearBoard();
+    if (keepHints) {
+      await app.clearBoardKeepingHints?.();
+    } else {
+      await app.clearBoard();
+    }
     resetPuzzleTimer();
     dismissDiscoveryForBoardEdit();
     syncBoardChrome(app);
-    showGameMessage('Board reset.', 'info');
+    showGameMessage(
+      keepHints ? 'Board reset (hints kept).' : 'Board reset.',
+      'info',
+    );
+  };
+
+  $('resetBtn')?.addEventListener('click', async () => {
+    if (app.boardHasHintTiles?.()) {
+      openResetHintTilesPopup();
+      return;
+    }
+    await performBoardReset(false);
+  });
+
+  initResetHintTilesPopup({
+    menuApi: shellMenuApi,
+    onRemoveHints: () => performBoardReset(false),
+    onKeepHints: () => performBoardReset(true),
   });
 
   $('undoBtn')?.addEventListener('click', async () => {
@@ -1838,7 +2041,12 @@ function wirePuzzleTimer(app) {
     displayBest: (levelId) => displayPuzzleTimerBest(levelId, app.state?.userId || 'gar'),
   };
 
-  window.addEventListener('tilezilla:hint-balance', () => updateGlobalHintCount(app));
+  window.addEventListener('tilezilla:hint-balance', (event) => {
+    onHintBalanceChanged(app, event);
+    updateHintMenuAvailable(app);
+    updateHintMenuControls(app);
+    updateHintButtonState(app);
+  });
 }
 
 function setActiveBottomNav(screen) {
@@ -1989,6 +2197,7 @@ async function loadDailyPuzzle(app) {
     updateChallengePanel(level, { ...meta, screen: 'daily-challenge' });
     updateTileBagCount(app);
     updateValidationState(app);
+    updateHintButtonState(app);
     showGameMessage(`Daily challenge loaded: ${level.id}`, 'info');
   } catch (e) {
     console.error(e);
@@ -2005,6 +2214,11 @@ async function applyShellLayouts() {
       applyMainScreenV2Layout(await loadMainScreenV2Layout());
     } catch (err) {
       console.warn('Main screen v2 layout:', err);
+    }
+    try {
+      applyWaterRippleLayout(await loadWaterRippleLayout({ fromDisk: true }));
+    } catch (err) {
+      console.warn('Water ripple layout:', err);
     }
     try {
       const previewLayout = await loadPreviewV2Layout();
@@ -2058,6 +2272,11 @@ async function applyShellLayouts() {
     console.warn('Challenge begin layout:', err);
   }
   try {
+    applyUseHintStartLayout(await loadUseHintStartLayout());
+  } catch (err) {
+    console.warn('Use Hint start menu layout:', err);
+  }
+  try {
     await refreshProfileOverlayLayoutFromDisk();
   } catch (err) {
     console.warn('Profile overlay layout:', err);
@@ -2072,6 +2291,13 @@ async function init() {
   const authState = isDevAuthBypass()
     ? { mode: 'dev', user: null }
     : await syncAuthFromServer();
+  try {
+    const { bindProfileHintBalanceListener, bindProfileProgressReadyListener } = await import('./profile-passport-data.js');
+    bindProfileHintBalanceListener();
+    bindProfileProgressReadyListener();
+  } catch {
+    /* ignore */
+  }
   applyGuestChrome();
 
   const settings = loadGameplaySettings();
@@ -2079,6 +2305,7 @@ async function init() {
   initTilezillaSfx();
   applyPhonePreviewMode(settings.phonePreview === 'ON');
   applyUiScale();
+  if (usesViewportLock(settings)) runViewportFit(false);
   wireUiScaleListeners();
   await applyShellLayouts();
   const syncBagScroll = wireBagScroll();
@@ -2091,10 +2318,19 @@ async function init() {
   if (authState.mode === 'registered' && authState.user) {
     applyRegisteredUserToApp(app, authState.user);
     applyGuestChrome();
+    syncAdminUi(app.state?.userId);
+    try {
+      const { hydrateHintBalanceForApp } = await import('./tilezilla-hints-sync.js');
+      await hydrateHintBalanceForApp(app);
+      updateGlobalHintCount(app);
+      updateHintMenuAvailable(app);
+    } catch (err) {
+      console.warn('Hint balance hydrate:', err);
+    }
     try {
       const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
       await hydrateProgressFromServer(app.progress);
-      await updateRankPanel(app);
+      await syncPlayerChrome(app);
     } catch (err) {
       console.warn('Server progress hydrate:', err);
     }
@@ -2117,9 +2353,8 @@ async function init() {
   };
   wireBottomNav(() => appRef);
   wireBottomMenuV2();
-  updateGlobalHintCount(app);
   wirePuzzleTimer(app);
-  await updateRankPanel(app);
+  await syncPlayerChrome(app);
   syncTileBagExpandAvailability(app);
   applyResponsiveBoard(app);
   app.applyGameplaySettings(settings);
@@ -2127,7 +2362,13 @@ async function init() {
     getApp: () => appRef,
     openStuckFlow,
   });
-  await initStuckPopup({ getApp: () => appRef, menuApi });
+  shellMenuApi = menuApi;
+  await initStuckPopup({
+    getApp: () => appRef,
+    menuApi,
+    notify: showGameMessage,
+    onNeedHints: openBuyHintsPopup,
+  });
   initRandomPuzzlePopup({
     getApp: () => appRef,
     menuApi,
@@ -2138,12 +2379,13 @@ async function init() {
     menuApi,
     onContinueSearch: async ({ complete } = {}) => {
       if (complete) {
-        await advanceAdventurePath(appRef);
+        await maybeShowRankAwardThenAdvance(appRef);
         return;
       }
       await continueDiscoverySearch(appRef);
     },
   });
+  initRankAwardPopup({ menuApi });
   const journalApi = initJournalUi({
     getApp: () => appRef,
     menuApi,
@@ -2201,6 +2443,15 @@ async function init() {
   initCartographersJournal({ menuApi });
   initBuyHintsPopup({ menuApi });
   wireBuyHintsTriggers();
+  initUseHintConfirmPopup({
+    getApp: () => appRef,
+    menuApi,
+    onConfirm: () => confirmUseRandomHint(appRef),
+  });
+  wireUseHintConfirmTriggers(async () => {
+    if (appRef) await tryOpenHintForApp(appRef);
+    else openUseHintConfirm();
+  });
   initDiscoveryRecord({
     getApp: () => appRef,
     onContinueSearch: () => continueDiscoverySearch(appRef),
@@ -2268,11 +2519,13 @@ async function init() {
       setSfxEnabled(next.soundEffects === 'ON');
       applyPhonePreviewMode(next.phonePreview === 'ON');
       applyUiScale();
+      if (usesViewportLock(next)) runViewportFit(true);
       if (MAIN_V2_SHELL) updateMainV2BoardFit();
       app.applyGameplaySettings(next);
       app.renderTiles();
       updateTileBagCount(app);
     },
+    onViewportFit: () => runViewportFit(true),
     getTilesetLabel: () => formatTilesetDisplayName(appRef?.state?.activeTileset),
     onOpenTileset: () => tilesetPickerApi?.openTilesetPicker?.(),
   });
@@ -2302,7 +2555,12 @@ async function init() {
     onForceDiscovery: forceDiscoveryPreview,
   });
   syncDevUserUi(app.state?.userId);
+  syncAdminUi(app.state?.userId);
   window.__refreshAdventureChrome = () => refreshAdventureChrome(appRef);
+  window.__syncPlayerChrome = () => syncPlayerChrome(appRef);
+  window.addEventListener('tilezilla:progress-ready', () => {
+    void syncPlayerChrome(appRef);
+  });
 
   try {
     const discoveryLayout = await loadDiscoveryRecordLayout();
@@ -2384,8 +2642,17 @@ async function init() {
     guestUser.trackGuestGameplay('Daily Challenge Started', app.state?.currentLevel?.id);
   }
 
-  const startScreen = new URLSearchParams(window.location.search).get('screen');
-  if (startScreen && startScreen !== 'daily-challenge' && !guestUser.isGuestUser()) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const startScreen = urlParams.get('screen');
+  const shouldOpenProfile = (urlParams.get('profile') === '1' || urlParams.get('profile') === 'true')
+    && guestUser.isRegisteredUser();
+
+  if (shouldOpenProfile) {
+    await openProfileOverlay();
+    urlParams.delete('profile');
+    const qs = urlParams.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
+  } else if (startScreen && startScreen !== 'daily-challenge' && !guestUser.isGuestUser()) {
     const hit = document.querySelector(`.tz-bottom-nav__hit[data-nav="${startScreen}"]`);
     hit?.click();
   }
@@ -2525,6 +2792,10 @@ window.addEventListener('tilezilla:main-screen-v2-layout-saved', () => {
   void refreshMainScreenV2LayoutFromDisk();
 });
 
+window.addEventListener('tilezilla:water-ripple-layout-saved', () => {
+  void reloadWaterRippleLayout().then((ripple) => applyWaterRippleLayout(ripple));
+});
+
 window.addEventListener('storage', (e) => {
   if (
     e.key === 'tilezilla:layouts:main-screen-v2'
@@ -2532,6 +2803,9 @@ window.addEventListener('storage', (e) => {
     || e.key === 'tilezilla:main-screen-v2-layout-version'
   ) {
     void refreshMainScreenV2LayoutFromDisk();
+  }
+  if (e.key === 'tilezilla:water-ripple-layout-version') {
+    void reloadWaterRippleLayout().then((ripple) => applyWaterRippleLayout(ripple));
   }
 });
 
@@ -2541,6 +2815,10 @@ window.addEventListener('tilezilla:preview-v2-layout-saved', () => {
 
 window.addEventListener('tilezilla:hint-v2-layout-saved', () => {
   void refreshHintV2LayoutFromDisk();
+});
+
+window.addEventListener('tilezilla:use-hint-start-layout-saved', () => {
+  void reloadUseHintStartLayout().then((layout) => applyUseHintStartLayout(layout));
 });
 
 for (const sectionKey of ['userData', 'gameData', 'infoData', 'timerData']) {
@@ -2562,6 +2840,9 @@ window.addEventListener('storage', (e) => {
     || e.key === 'tilezilla:hint-v2-layout-version'
   ) {
     void refreshHintV2LayoutFromDisk();
+  }
+  if (e.key === 'tilezilla:use-hint-start-layout-version') {
+    void reloadUseHintStartLayout().then((layout) => applyUseHintStartLayout(layout));
   }
   for (const sectionKey of ['userData', 'gameData', 'infoData', 'timerData']) {
     const def = PREVIEW_V2_DATA_SECTIONS[sectionKey];

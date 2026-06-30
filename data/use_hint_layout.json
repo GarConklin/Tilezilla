@@ -1,0 +1,46 @@
+{
+  "dialog": {
+    "artW": 1376,
+    "artH": 1143,
+    "baseSrc": "/img/Use ingame hint.png",
+    "displayPad": 32,
+    "maxDesignWidth": 390,
+    "widthScale": 0.92
+  },
+  "buttons": {
+    "close": "/img/X-gold-rnd-btn.png",
+    "confirm": "/img/use hint bubble.png"
+  },
+  "items": {
+    "close": {
+      "x": 86.5,
+      "y": 1.7,
+      "w": 9.8,
+      "h": 11.1,
+      "hidden": false
+    },
+    "confirm": {
+      "x": 34,
+      "y": 85.2,
+      "w": 30,
+      "h": 13.7,
+      "hidden": false
+    },
+    "cost": {
+      "x": 67,
+      "y": 22,
+      "w": 31.5,
+      "h": 18,
+      "fontScale": 1,
+      "hidden": false
+    },
+    "warn": {
+      "x": 24,
+      "y": 77.6,
+      "w": 54,
+      "h": 7.4,
+      "fontScale": 1,
+      "hidden": false
+    }
+  }
+}

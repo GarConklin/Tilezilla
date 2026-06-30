@@ -1,14 +1,14 @@
 {
   "schema": "system-info-v1",
-  "version": "0.97.178",
-  "lastUpdated": "2026-06-16",
+  "version": "0.98.179",
+  "lastUpdated": "2026-06-26",
   "creator": "Gar Conklin",
   "creationDate": "March 28, 2026",
   "productName": "Tilezilla",
   "environment": "development",
   "logoutRedirectUrl": "https://www.skifflakegames.com/",
   "stats": {
-    "statsUpdatedAt": "2026-06-16",
+    "statsUpdatedAt": "2026-06-26",
     "totalAdventurePuzzles": 7077,
     "totalKnownRoutes": 32430,
     "largestSolution": 524,

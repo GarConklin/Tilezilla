@@ -1,0 +1,70 @@
+{
+  "dialog": {
+    "artW": 1071,
+    "artH": 1248,
+    "displayW": 300,
+    "baseSrc": "/img/usehintmenu-area.png"
+  },
+  "buttons": {
+    "random": "/img/hintMenu-btn1.png",
+    "start": "/img/hintMenu-btn2.png",
+    "end": "/img/hintMenu-btn3.png",
+    "cancel": "/img/cancelbtn.png",
+    "confirm": "/img/UseHintbtn.png"
+  },
+  "items": {
+    "close": {
+      "x": 79.8,
+      "y": 0,
+      "w": 12.7,
+      "h": 9.1,
+      "nudgeX": 10,
+      "nudgeY": 12,
+      "scale": 1.202,
+      "opacity": 1
+    },
+    "available": {
+      "y": 20.2,
+      "nudgeX": -62,
+      "nudgeY": -10,
+      "padX": 6,
+      "fontScale": 1
+    },
+    "random": {
+      "x": 12.6,
+      "y": 32.1,
+      "w": 82.1,
+      "h": 16.1,
+      "nudgeX": -12,
+      "nudgeY": -5
+    },
+    "start": {
+      "x": 12.6,
+      "y": 43.7,
+      "w": 82.1,
+      "h": 16.1,
+      "nudgeX": -12,
+      "nudgeY": 11
+    },
+    "end": {
+      "x": 12.6,
+      "y": 56.9,
+      "w": 82.1,
+      "h": 16.1,
+      "nudgeX": -12,
+      "nudgeY": 22
+    },
+    "cancel": {
+      "x": 6.5,
+      "y": 91,
+      "w": 36,
+      "h": 8.3
+    },
+    "confirm": {
+      "x": 46.6,
+      "y": 91.2,
+      "w": 46.5,
+      "h": 8.4
+    }
+  }
+}

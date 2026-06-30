@@ -1,0 +1,235 @@
+.admin-users-page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #e8f4f2;
+  background: #0f2a28;
+}
+
+.admin-users__bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.admin-users__header,
+.admin-users__main,
+.admin-users__flash {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-users__header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 0.5rem;
+}
+
+.admin-users__back {
+  color: #c9e8e4;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.admin-users__back:hover {
+  text-decoration: underline;
+}
+
+.admin-users__title {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.admin-users__subtitle {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.admin-users__main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 960px) {
+  .admin-users__main {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.admin-users__panel {
+  background: rgba(10, 40, 38, 0.92);
+  border: 1px solid rgba(201, 232, 228, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.admin-users__toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-users__search {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 232, 228, 0.25);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+}
+
+.admin-users__table-wrap {
+  overflow: auto;
+  max-height: 70vh;
+}
+
+.admin-users__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-users__table th,
+.admin-users__table td {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid rgba(201, 232, 228, 0.12);
+}
+
+.admin-users__table tbody tr {
+  cursor: pointer;
+}
+
+.admin-users__table tbody tr:hover,
+.admin-users__table tbody tr.is-selected {
+  background: rgba(201, 232, 228, 0.08);
+}
+
+.admin-users__detail-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.admin-users__form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.admin-users__form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.admin-users__form label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.88rem;
+}
+
+.admin-users__form input,
+.admin-users__form select {
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 232, 228, 0.25);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+}
+
+.admin-users__check {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-users__hint {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.admin-users__meta {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  line-height: 1.45;
+}
+
+.admin-users__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.admin-users__btn {
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 232, 228, 0.3);
+  background: rgba(201, 232, 228, 0.12);
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.admin-users__btn:hover {
+  background: rgba(201, 232, 228, 0.2);
+}
+
+.admin-users__btn--primary {
+  background: #2a7a6e;
+  border-color: #3a9a8c;
+}
+
+.admin-users__btn--warn {
+  background: #8a5a20;
+  border-color: #b07a30;
+}
+
+.admin-users__btn--danger {
+  background: #8a2a2a;
+  border-color: #b04040;
+}
+
+.admin-users__divider {
+  border: none;
+  border-top: 1px solid rgba(201, 232, 228, 0.15);
+  margin: 1rem 0;
+}
+
+.admin-users__danger p {
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  opacity: 0.85;
+}
+
+.admin-users__flash {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  max-width: min(90vw, 520px);
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  background: rgba(20, 60, 55, 0.95);
+  border: 1px solid rgba(201, 232, 228, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.admin-users__flash.is-error {
+  background: rgba(80, 20, 20, 0.95);
+  border-color: rgba(255, 180, 180, 0.4);
+}
+
+.tz-settings-action--link {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}

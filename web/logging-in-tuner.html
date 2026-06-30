@@ -13,9 +13,11 @@
 <body>
   <h1>Logging-in tuner</h1>
   <p class="lead">
-    Tune <code>Logging-in.png</code> fields and hit areas. Saves to <code>data/auth_screen_layout.json</code> (login section).
+    Tune <code>Logging-in.png</code> fields and hit areas (including the <strong>Forgot password (?)</strong> button).
+    Saves to <code>data/auth_screen_layout.json</code> (login section).
     <a href="/login-screen.html">Live login</a> ·
     <a href="/auth-error-tuner.html">Auth error tuner</a> ·
+    <a href="/forgot-password-tuner.html">Forgot password popup</a> ·
     <a href="/dev-player-select.html">Dev tools</a>
   </p>
   <nav class="tuner-nav" aria-label="Auth tuners">
@@ -83,7 +85,7 @@
     </div>
   </div>
   <script type="module">
-    import { initAuthScreenTuner } from './js/auth-screen-tuner.js?v=20250629';
+    import { initAuthScreenTuner } from './js/auth-screen-tuner.js?v=20250630';
     initAuthScreenTuner('login');
   </script>
 </body>

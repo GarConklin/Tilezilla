@@ -1,0 +1,38 @@
+{
+  "dialog": {
+    "artW": 1315,
+    "artH": 1087,
+    "baseSrc": "/img/RestWithUsedHints.png",
+    "displayPad": 32,
+    "maxDesignWidth": 390,
+    "widthScale": 0.92
+  },
+  "buttons": {
+    "close": "/img/X-gold-rnd-btn.png"
+  },
+  "items": {
+    "close": {
+      "x": 87.4,
+      "y": 2.5,
+      "w": 11.6,
+      "h": 14.5,
+      "hidden": false
+    },
+    "remove": {
+      "x": 8,
+      "y": 75.8,
+      "w": 39.3,
+      "h": 14.4,
+      "hidden": false,
+      "fontScale": 1
+    },
+    "keep": {
+      "x": 52.2,
+      "y": 75.2,
+      "w": 39.5,
+      "h": 14.7,
+      "hidden": false,
+      "fontScale": 1
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "dialog": {
+    "artW": 354,
+    "artH": 534,
+    "maxWidth": 390,
+    "widthScale": 0.92
+  },
+  "items": {
+    "continue": {
+      "x": 19,
+      "y": 87.8,
+      "w": 59.8,
+      "h": 10.5,
+      "hidden": false
+    }
+  }
+}

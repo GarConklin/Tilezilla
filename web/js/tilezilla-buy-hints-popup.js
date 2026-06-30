@@ -17,6 +17,7 @@ function anyModalOpen() {
     || $('stuckPopupRoot')?.hidden === false
     || $('randomPopupRoot')?.hidden === false
     || $('buyHintsRoot')?.hidden === false
+    || $('useHintConfirmRoot')?.hidden === false
   );
 }
 

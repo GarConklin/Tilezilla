@@ -21,6 +21,11 @@
   --tz-img-bg-sky: url("/img/Background%20Sky%20and%20dock%20without%20water.png");
   --tz-img-bg-water-a: url("/img/Background%20water1.png");
   --tz-img-bg-water-b: url("/img/Background%20water2.png");
+  --tz-ripple-duration-a: 14s;
+  --tz-ripple-duration-b: 21s;
+  --tz-ripple-amplitude-a: 8px;
+  --tz-ripple-amplitude-b: 8px;
+  --tz-ripple-amplitude: 8px;
   --tz-img-board-frame: url("/img/boardframes/Board%20Area-5x6.png");
   --tz-img-preview-frame: url("/img/preview%20tile%20Area%20bubble.png");
   --tz-img-check-solve-panel: url("/img/Check%20Solve%20nb.png");
@@ -1821,6 +1826,8 @@ button {
   height: calc(var(--tz-preview-hint-preview-h-art) / var(--tz-preview-art-h) * 100%);
 }
 
+.tz-preview-hint-slot > .tz-preview-v2-hint-plaque--count,
+.tz-preview-hint-slot > .tz-preview-v2-hint-token-count--count,
 .tz-preview-hint-slot > .tz-preview-v2-hint-token-add {
   pointer-events: auto;
 }
@@ -1837,6 +1844,7 @@ button {
   height: calc(var(--tz-preview-renderer-h-art) / var(--tz-preview-art-h) * 100%);
 }
 
+.tz-preview-hint-use-slot > .tz-preview-v2-hint-plaque--use,
 .tz-preview-hint-use-slot > .tz-preview-v2-hint-use-btn {
   pointer-events: auto;
 }
@@ -2196,6 +2204,13 @@ button {
   box-sizing: border-box;
 }
 
+.tz-preview-hint-use-slot .tz-preview-v2-hint-plaque--use {
+  left: calc(var(--tz-hint-plaque-use-x-art) / var(--tz-hint-use-art-w, 222) * 100%);
+  top: calc(var(--tz-hint-plaque-use-y-art) / var(--tz-hint-use-art-h, 140) * 100%);
+  width: calc(var(--tz-hint-plaque-use-w-art) / var(--tz-hint-use-art-w, 222) * 100%);
+  height: calc(var(--tz-hint-plaque-use-h-art) / var(--tz-hint-use-art-h, 140) * 100%);
+}
+
 .tz-preview-v2-hint-plaque--use {
   left: calc(var(--tz-hint-plaque-use-x-art) / var(--tz-hint-art-w, 237) * 100%);
   top: calc(var(--tz-hint-plaque-use-y-art) / var(--tz-hint-art-h, 125) * 100%);
@@ -2217,6 +2232,10 @@ button {
   object-position: left top;
   display: block;
   pointer-events: none;
+}
+
+.tz-preview-v2-hint-plaque--use .tz-preview-v2-hint-plaque__art {
+  object-position: center;
 }
 
 .tz-preview-v2-hint-use-btn {
@@ -2307,14 +2326,13 @@ button {
 }
 
 .tz-app[data-validation="ready"] .tz-preview-v2-data,
-.tz-app[data-validation="ready"] .tz-preview-hint-slot,
 .tz-app[data-validation="invalid"] .tz-preview-v2-data,
-.tz-app[data-validation="invalid"] .tz-preview-hint-slot,
-.tz-app.is-discovery-record .tz-preview-v2-data,
-.tz-app.is-discovery-record .tz-preview-hint-slot {
+.tz-app.is-discovery-record .tz-preview-v2-data {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* Token count plaque (.tz-preview-hint-slot) stays visible during check-solve states. */
 
 .preview-v2-tuner-page .tuner-box--hint-data,
 .preview-v2-tuner-page .tuner-box--hint-preview {
@@ -2406,17 +2424,23 @@ button {
 
 .tz-bg__water-layer--a {
   background-image: var(--tz-img-bg-water-a);
-  animation: tz-ripple 18s ease-in-out infinite;
+  animation: tz-ripple-a var(--tz-ripple-duration-a, 14s) ease-in-out infinite;
 }
 
 .tz-bg__water-layer--b {
   background-image: var(--tz-img-bg-water-b);
-  animation: tz-ripple 27s ease-in-out infinite;
+  animation: tz-ripple-b var(--tz-ripple-duration-b, 21s) ease-in-out infinite;
 }
 
-@keyframes tz-ripple {
+@keyframes tz-ripple-a {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(calc(-1 * var(--tz-ripple-amplitude-a, var(--tz-ripple-amplitude, 8px)))); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes tz-ripple-b {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(calc(-1 * var(--tz-ripple-amplitude-b, var(--tz-ripple-amplitude, 8px)))); }
   100% { transform: translateY(0); }
 }
 
@@ -4381,8 +4405,8 @@ button {
   font-size: clamp(0.9rem, 4.2vw, 1.05rem);
   letter-spacing: 0.05em;
   line-height: 1.2;
-  color: #e8c040;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  color: #5c4033;
+  text-shadow: none;
   background: var(--tz-hint-menu-available-bg);
   border-radius: 2px;
   pointer-events: none;
@@ -4401,32 +4425,39 @@ button {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   pointer-events: none;
 }
 
 .tz-hint-menu__token {
-  left: var(--tz-hint-menu-token-x);
-  width: var(--tz-hint-menu-token-w);
-  height: var(--tz-hint-menu-token-h);
+  overflow: visible;
 }
 
 .tz-hint-menu__token--random {
+  left: var(--tz-hint-menu-token-random-x, var(--tz-hint-menu-token-x));
   top: var(--tz-hint-menu-token-random-y);
+  width: var(--tz-hint-menu-token-random-w, var(--tz-hint-menu-token-w));
+  height: var(--tz-hint-menu-token-random-h, var(--tz-hint-menu-token-h));
   transform: translate(
     var(--tz-hint-menu-token-random-nudge-x),
     var(--tz-hint-menu-token-random-nudge-y)
   );
 }
 .tz-hint-menu__token--start {
+  left: var(--tz-hint-menu-token-start-x, var(--tz-hint-menu-token-x));
   top: var(--tz-hint-menu-token-start-y);
+  width: var(--tz-hint-menu-token-start-w, var(--tz-hint-menu-token-w));
+  height: var(--tz-hint-menu-token-start-h, var(--tz-hint-menu-token-h));
   transform: translate(
     var(--tz-hint-menu-token-start-nudge-x),
     var(--tz-hint-menu-token-start-nudge-y)
   );
 }
 .tz-hint-menu__token--end {
+  left: var(--tz-hint-menu-token-end-x, var(--tz-hint-menu-token-x));
   top: var(--tz-hint-menu-token-end-y);
+  width: var(--tz-hint-menu-token-end-w, var(--tz-hint-menu-token-w));
+  height: var(--tz-hint-menu-token-end-h, var(--tz-hint-menu-token-h));
   transform: translate(
     var(--tz-hint-menu-token-end-nudge-x),
     var(--tz-hint-menu-token-end-nudge-y)
@@ -4434,13 +4465,23 @@ button {
 }
 
 .tz-hint-menu__token.is-selected {
-  filter: drop-shadow(0 0 6px rgba(232, 185, 35, 0.85));
+  filter: none;
+}
+
+.tz-hint-menu__token.is-selected img {
+  filter:
+    drop-shadow(0 0 4px rgba(232, 185, 35, 0.95))
+    drop-shadow(0 0 9px rgba(232, 185, 35, 0.65))
+    drop-shadow(0 0 14px rgba(255, 210, 80, 0.4));
 }
 
 .tz-hint-menu__token:disabled {
   cursor: not-allowed;
-  opacity: 0.38;
-  filter: grayscale(0.4);
+  opacity: 0.45;
+}
+
+.tz-hint-menu__token:disabled img {
+  filter: grayscale(0.45);
 }
 
 .tz-hint-menu__cancel {
@@ -5090,6 +5131,410 @@ html.tz-phone-preview .tz-buy-hints-dialog {
 
 .tz-buy-hints-dialog__exit:active {
   transform: scale(0.97);
+}
+
+/* ── Use random hint confirm (Use ingame hint.png) ── */
+
+:root {
+  --tz-use-hint-art-w: 1376;
+  --tz-use-hint-art-h: 1143;
+  --tz-use-hint-display-pad: 32px;
+  --tz-use-hint-max-design-width: 390px;
+  --tz-use-hint-width-scale: 0.92;
+  --tz-use-hint-close-top: 3%;
+  --tz-use-hint-close-right: 4%;
+  --tz-use-hint-close-size: 44px;
+  --tz-use-hint-confirm-bottom: 5%;
+  --tz-use-hint-confirm-w: 72%;
+  --tz-use-hint-confirm-h: 9%;
+}
+
+.tz-use-hint-root {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+}
+
+.tz-use-hint-root[hidden] {
+  display: none !important;
+}
+
+.tz-use-hint-root__backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.68);
+  cursor: pointer;
+}
+
+.tz-use-hint-dialog {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  width: min(
+    100vw,
+    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92)),
+    calc(var(--tz-use-hint-art-w) * 1px),
+    calc((100svh - var(--tz-use-hint-display-pad)) * var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h))
+  );
+  aspect-ratio: calc(var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+}
+
+html.tz-phone-preview .tz-use-hint-dialog {
+  width: min(
+    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92)),
+    calc(var(--tz-use-hint-art-w) * 1px),
+    calc((100svh - var(--tz-use-hint-display-pad)) * var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h))
+  );
+}
+
+.tz-use-hint-dialog__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.tz-use-hint-dialog__bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-use-hint-dialog__cost {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  container-type: inline-size;
+  font-size: clamp(0.62rem, 2.4cqi, 0.82rem);
+  line-height: 1.35;
+  color: #2a4a42;
+  text-shadow: 0 1px 0 rgba(255, 248, 220, 0.55);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tz-use-hint-dialog__warn {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  container-type: inline-size;
+  font-size: clamp(0.62rem, 2.4cqi, 0.8rem);
+  color: #7a2020;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.tz-use-hint-dialog__close {
+  position: absolute;
+  top: var(--tz-use-hint-close-top);
+  right: var(--tz-use-hint-close-right);
+  width: var(--tz-use-hint-close-size);
+  height: var(--tz-use-hint-close-size);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.tz-use-hint-dialog__close img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.tz-use-hint-dialog__confirm {
+  position: absolute;
+  left: 50%;
+  bottom: var(--tz-use-hint-confirm-bottom);
+  transform: translateX(-50%);
+  width: var(--tz-use-hint-confirm-w);
+  height: var(--tz-use-hint-confirm-h);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.tz-use-hint-dialog__confirm img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.tz-use-hint-dialog__confirm:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ── Reset with hint tiles (RestWithUsedHints.png) ── */
+
+:root {
+  --tz-reset-hint-art-w: 1315;
+  --tz-reset-hint-art-h: 1087;
+  --tz-reset-hint-display-pad: 32px;
+  --tz-reset-hint-max-design-width: 390px;
+  --tz-reset-hint-width-scale: 0.92;
+  --tz-reset-hint-close-x: 87.5%;
+  --tz-reset-hint-close-y: 2.2%;
+  --tz-reset-hint-close-w: 9%;
+  --tz-reset-hint-close-h: 8%;
+  --tz-reset-hint-remove-x: 10%;
+  --tz-reset-hint-remove-y: 78.5%;
+  --tz-reset-hint-remove-w: 38%;
+  --tz-reset-hint-remove-h: 12%;
+  --tz-reset-hint-keep-x: 52%;
+  --tz-reset-hint-keep-y: 78.5%;
+  --tz-reset-hint-keep-w: 38%;
+  --tz-reset-hint-keep-h: 12%;
+}
+
+.tz-reset-hint-root {
+  position: fixed;
+  inset: 0;
+  z-index: 112;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+}
+
+.tz-reset-hint-root[hidden] {
+  display: none !important;
+}
+
+.tz-reset-hint-root__backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: rgba(8, 12, 18, 0.62);
+  cursor: pointer;
+}
+
+.tz-reset-hint-dialog {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: min(
+    calc(var(--tz-reset-hint-max-design-width, var(--tz-design-width)) * var(--tz-reset-hint-width-scale, 0.92)),
+    calc(var(--tz-reset-hint-art-w) * 1px),
+    calc((100svh - var(--tz-reset-hint-display-pad)) * var(--tz-reset-hint-art-w) / var(--tz-reset-hint-art-h))
+  );
+  aspect-ratio: calc(var(--tz-reset-hint-art-w) / var(--tz-reset-hint-art-h));
+  flex-shrink: 0;
+}
+
+.tz-reset-hint-dialog__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tz-reset-hint-dialog__bg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-reset-hint__hit {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tz-reset-hint__hit--close {
+  left: var(--tz-reset-hint-close-x);
+  top: var(--tz-reset-hint-close-y);
+  width: var(--tz-reset-hint-close-w);
+  height: var(--tz-reset-hint-close-h);
+  z-index: 2;
+}
+
+.tz-reset-hint__hit--close img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.tz-reset-hint__hit--remove {
+  left: var(--tz-reset-hint-remove-x);
+  top: var(--tz-reset-hint-remove-y);
+  width: var(--tz-reset-hint-remove-w);
+  height: var(--tz-reset-hint-remove-h);
+}
+
+.tz-reset-hint__hit--keep {
+  left: var(--tz-reset-hint-keep-x);
+  top: var(--tz-reset-hint-keep-y);
+  width: var(--tz-reset-hint-keep-w);
+  height: var(--tz-reset-hint-keep-h);
+}
+
+@media (hover: hover) {
+  .tz-reset-hint__hit--remove:hover,
+  .tz-reset-hint__hit--keep:hover {
+    background: rgba(212, 168, 75, 0.12);
+  }
+
+  .tz-reset-hint__hit--close:hover img {
+    filter: brightness(1.08);
+  }
+}
+
+.tz-reset-hint__hit:focus-visible {
+  outline: 2px solid rgba(212, 168, 75, 0.95);
+  outline-offset: 2px;
+}
+
+.tz-reset-hint__hit:active {
+  transform: scale(0.98);
+}
+
+/* ── Rank advancement award popup ── */
+
+.tz-rank-award-root {
+  position: fixed;
+  inset: 0;
+  z-index: 195;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+}
+
+.tz-rank-award-root[hidden] {
+  display: none !important;
+}
+
+.tz-rank-award-root__backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.72);
+  cursor: pointer;
+}
+
+.tz-rank-award-dialog {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: min(
+    calc(var(--tz-rank-award-max-width, 390px) * var(--tz-rank-award-width-scale, 0.92)),
+    calc(var(--tz-rank-award-art-w) * 1px),
+    calc((100svh - 48px) * var(--tz-rank-award-art-w) / var(--tz-rank-award-art-h))
+  );
+  aspect-ratio: calc(var(--tz-rank-award-art-w) / var(--tz-rank-award-art-h));
+  margin: auto;
+}
+
+.tz-rank-award-dialog__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tz-rank-award-dialog__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-rank-award__hit {
+  position: absolute;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tz-rank-award__hit--continue {
+  left: var(--tz-rank-award-continue-x, 14%);
+  top: var(--tz-rank-award-continue-y, 87%);
+  width: var(--tz-rank-award-continue-w, 72%);
+  height: var(--tz-rank-award-continue-h, 9%);
+  z-index: 2;
+}
+
+.rank-award-tuner-page .tz-rank-award__hit.tuner-box {
+  background: rgba(100, 200, 255, 0.28) !important;
+  border: 2px solid rgba(100, 200, 255, 0.85) !important;
+  border-radius: 4px;
+  z-index: 6;
+  cursor: move;
+}
+
+.rank-award-tuner-page .tz-rank-award__hit.tuner-box.is-tuner-active {
+  border-color: #e8b923 !important;
+  z-index: 7;
+}
+
+.rank-award-tuner-page .tz-rank-award__hit.tuner-box .hit-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(7px, 2.2cqi, 11px);
+  font-weight: 600;
+  color: #fff;
+  pointer-events: none;
+  text-align: center;
+}
+
+.tz-preview-v2-hint-plaque--count,
+.tz-preview-v2-hint-token-count--count {
+  cursor: pointer;
 }
 
 /* ── Explorer profile overlay (Logged-in.png) ── */
@@ -6987,6 +7432,37 @@ html.tz-phone-preview .tz-cartographers-journal-window {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)) brightness(0.94);
 }
 
+/* ── Viewport lock (Settings → 2× / 3× / Mobile) ── */
+
+html.tz-viewport-locked {
+  overflow: auto;
+  background: #0a1816;
+}
+
+html.tz-viewport-locked body {
+  width: var(--tz-lock-width);
+  min-width: var(--tz-lock-width);
+  min-height: var(--tz-lock-height);
+  margin: 0 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+html.tz-viewport-locked .tz-app {
+  width: var(--tz-lock-width);
+  height: var(--tz-lock-height);
+  min-height: var(--tz-lock-height);
+  max-width: var(--tz-lock-width);
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+html.tz-viewport-locked .tz-scale-host {
+  flex-shrink: 0;
+}
+
 /* ── Desktop scale lock (Settings → Display → 2× / 3×) ── */
 
 html.tz-desktop-scale-locked {
@@ -7004,6 +7480,13 @@ html.tz-desktop-scale-locked .tz-app {
   min-height: calc(var(--tz-design-height) * var(--tz-ui-scale, 1));
 }
 
+/* When viewport is locked, desktop-scale min-* rules are redundant — lock wins */
+html.tz-viewport-locked.tz-desktop-scale-locked body,
+html.tz-viewport-locked.tz-desktop-scale-locked .tz-app {
+  min-width: unset;
+  min-height: unset;
+}
+
 /* ── Phone preview (Settings → Display) ── */
 
 html.tz-phone-preview body {
@@ -7011,8 +7494,10 @@ html.tz-phone-preview body {
 }
 
 html.tz-phone-preview .tz-app {
-  width: min(var(--tz-design-width), 100vw);
+  width: var(--tz-lock-width, min(var(--tz-design-width), 100vw));
+  height: var(--tz-lock-height, auto);
   max-width: var(--tz-design-width);
+  min-height: var(--tz-lock-height, var(--tz-design-height));
   margin-left: auto;
   margin-right: auto;
   box-shadow:
@@ -7604,6 +8089,13 @@ body.tz-is-dev-user .tz-menu-plaque__hit--cartographers-journal {
   border-color: var(--tz-gold);
   background: rgba(45, 90, 61, 0.75);
   outline: none;
+}
+
+.tz-settings-action--link {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 /* ── Tileset gallery (settings) ── */

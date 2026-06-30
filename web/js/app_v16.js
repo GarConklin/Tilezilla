@@ -4,6 +4,13 @@ import { Solutions } from './solutions.js';
 import { Progress } from './progress.js';
 import { readEncounteredTilesLocal } from './tilezilla-encountered-tiles.js';
 import { isDevUser, syncDevUserUi } from './tilezilla-dev-user.js';
+import { syncAdminUi, isAdminUser } from './tilezilla-admin.js';
+import {
+  usesServerHints,
+  readCachedHintBalance,
+  postHintTransaction,
+  HINT_REASON,
+} from './tilezilla-hints-sync.js';
 import {
   applyTileBoardBackground,
   drawBgTileUnderlay,
@@ -227,6 +234,7 @@ const state = {
   blockerEditMode: false, // toolbar: click cells to place/remove blockers (sandbox only)
   foundListEntries: [], // [{label, placements, kind}]
   hintsUsedThisPuzzle: 0,
+  randomHintsUsedThisPuzzle: 0,
   hintTokens: 18,
   userId: 'gar',
   lastLoadedSolveDoc: null,
@@ -280,21 +288,6 @@ function currentPortablePlacements(){
   }));
 }
 
-function isAdminUser() {
-  return isDevUser(state.userId);
-}
-
-function syncAdminUi() {
-  const admin = isAdminUser();
-  if(approveReviewBtn){
-    approveReviewBtn.style.display = admin ? '' : 'none';
-    approveReviewBtn.disabled = !admin;
-  }
-  if(boardToolsPanel){
-    boardToolsPanel.style.display = admin ? '' : 'none';
-  }
-}
-
 const APPROVED_REVIEW_IDS_KEY = 'snake_review_approved_ids_v1';
 function getApprovedReviewIds(){
   try{
@@ -319,7 +312,7 @@ function renderFoundList(levelId, knownSolutions=[]){
   state.foundListEntries = [];
 
   // Admin can see all known solves; regular users only see what they found.
-  if(isAdminUser()){
+  if(isAdminUser(state.userId)){
     for(let i=0;i<knownSolutions.length;i++){
       const k = knownSolutions[i];
       const opt = document.createElement('option');
@@ -353,13 +346,13 @@ function renderFoundList(levelId, knownSolutions=[]){
   }
 
   if(!state.foundListEntries.length){
-    foundStatus.textContent = isAdminUser()
+    foundStatus.textContent = isAdminUser(state.userId)
       ? 'No known/found solutions for this level yet.'
       : 'No found solutions for this user yet.';
   }else{
     const known = knownSolutions.length;
     const bonus = found.filter(x => x?.bonus).length;
-    foundStatus.textContent = isAdminUser()
+    foundStatus.textContent = isAdminUser(state.userId)
       ? `Known ${known} • Found ${found.length}${bonus ? ` (${bonus} bonus)` : ''}`
       : `Found ${found.length}${bonus ? ` (${bonus} bonus)` : ''}`;
   }
@@ -541,6 +534,10 @@ function canPlaceNew(newR, newC, newDeg, tileRef=null) {
 function updateTilePlacement(tileId, newR, newC, newDeg) {
   const t = state.tiles.find(x => x.id === tileId);
   if (!t) return false;
+
+  if (isHintRotationLocked(t) && normalizeHintDeg(newDeg) !== normalizeHintDeg(t.deg)) {
+    return false;
+  }
 
   if (!canPlace(newR, newC, newDeg, tileId, t.tile)) return false;
 
@@ -2190,13 +2187,19 @@ function getInventoryMismatch(levelTileCounts, placedTiles){
 const HINT_COSTS = { random: 1, start: 2, end: 2 };
 const EXAMPLE_ROUTE_TOKEN_COST = 1;
 const DEFAULT_GLOBAL_HINT_TOKENS = 18;
+const RANDOM_HINTS_PER_PUZZLE = 2;
 const PUZZLE_TIME_BONUS_SECONDS = 30 * 60;
+let randomHintInFlight = false;
 
 function hintTokensStorageKey() {
   return `snake_hint_tokens_v1_${state.userId || 'gar'}`;
 }
 
 function loadGlobalHintTokens() {
+  if (usesServerHints()) {
+    const cached = readCachedHintBalance(state.userId);
+    if (cached != null) return cached;
+  }
   try {
     const raw = localStorage.getItem(hintTokensStorageKey());
     if (raw != null) {
@@ -2213,19 +2216,100 @@ function saveGlobalHintTokens() {
   } catch (e) { /* ignore */ }
 }
 
+function setGlobalHintTokens(balance) {
+  state.hintTokens = Math.max(0, Number(balance) || 0);
+  saveGlobalHintTokens();
+  window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
+    detail: { balance: state.hintTokens },
+  }));
+}
+
 function getGlobalHintTokens() {
   return Math.max(0, Number(state.hintTokens) || 0);
 }
 
-function grantHintTokens(amount, reason = '') {
+async function grantHintTokens(amount, reason = '', referenceId = null) {
   const n = Math.max(0, Number(amount) || 0);
   if (!n) return 0;
+  if (usesServerHints()) {
+    try {
+      const balance = await postHintTransaction(n, reason || 'Hint Grant', referenceId);
+      setGlobalHintTokens(balance);
+      window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
+        detail: { amount: n, reason, balance },
+      }));
+      if (reason === HINT_REASON.puzzleCompletion || reason === HINT_REASON.timeBonus) {
+        playSfx('tokenEarned');
+      }
+      return n;
+    } catch (e) {
+      console.warn('Hint grant failed:', e);
+      return 0;
+    }
+  }
   state.hintTokens = getGlobalHintTokens() + n;
   saveGlobalHintTokens();
   window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
     detail: { amount: n, reason },
   }));
+  if (reason === HINT_REASON.puzzleCompletion || reason === HINT_REASON.timeBonus) {
+    playSfx('tokenEarned');
+  }
   return n;
+}
+
+async function consumeHintTokens(cost, reason = 'Hint', referenceId = null) {
+  const c = Number(cost) || 0;
+  if (!canAffordHint(c)) return false;
+  if (usesServerHints()) {
+    try {
+      const balance = await postHintTransaction(-c, reason, referenceId);
+      state.hintsUsedThisPuzzle = (Number(state.hintsUsedThisPuzzle) || 0) + c;
+      setGlobalHintTokens(balance);
+      playSfx('hintReveal');
+      return true;
+    } catch (e) {
+      console.warn('Hint spend failed:', e);
+      return false;
+    }
+  }
+  state.hintsUsedThisPuzzle = (Number(state.hintsUsedThisPuzzle) || 0) + c;
+  setGlobalHintTokens(Math.max(0, getGlobalHintTokens() - c));
+  playSfx('hintReveal');
+  return true;
+}
+
+async function revertHintSpend(cost, levelRef, { random = false } = {}) {
+  const c = Number(cost) || 0;
+  if (c <= 0) return;
+  state.hintsUsedThisPuzzle = Math.max(0, (Number(state.hintsUsedThisPuzzle) || 0) - c);
+  if (random) {
+    state.randomHintsUsedThisPuzzle = Math.max(
+      0,
+      (Number(state.randomHintsUsedThisPuzzle) || 0) - 1,
+    );
+  }
+  await grantHintTokens(c, HINT_REASON.refund, levelRef);
+}
+
+async function consumeGlobalHintTokens(amount, reason = HINT_REASON.exampleRoute, referenceId = null) {
+  const c = Number(amount) || 0;
+  if (c <= 0 || getGlobalHintTokens() < c) return false;
+  if (usesServerHints()) {
+    try {
+      const balance = await postHintTransaction(-c, reason, referenceId);
+      setGlobalHintTokens(balance);
+      playSfx('hintReveal');
+      return true;
+    } catch (e) {
+      console.warn('Hint spend failed:', e);
+      return false;
+    }
+  }
+  state.hintTokens = Math.max(0, getGlobalHintTokens() - c);
+  saveGlobalHintTokens();
+  playSfx('hintReveal');
+  return true;
 }
 
 function formatCompletionTime(sec) {
@@ -2236,7 +2320,9 @@ function formatCompletionTime(sec) {
 }
 
 function puzzleAttemptUsedHints() {
-  return (Number(state.hintsUsedThisPuzzle) || 0) > 0 || boardHasHintTiles();
+  return (Number(state.hintsUsedThisPuzzle) || 0) > 0
+    || (Number(state.randomHintsUsedThisPuzzle) || 0) > 0
+    || boardHasHintTiles();
 }
 
 function todayChallengeDate() {
@@ -2281,7 +2367,7 @@ function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
   }
 }
 
-function processSolutionFound(lv, res, placements) {
+async function processSolutionFound(lv, res, placements) {
   const guestSession = window.__tilezillaGuest?.isGuestUser?.();
   const timer = window.__puzzleTimer;
   const elapsedSec = timer?.stop?.() ?? 0;
@@ -2352,13 +2438,14 @@ function processSolutionFound(lv, res, placements) {
   const bonusNotes = [];
   let tokensEarned = 0;
   if (hintRewardEligible && !hintsUsed) {
-    grantHintTokens(1, 'Puzzle Completion');
-    tokensEarned += 1;
-    bonusNotes.push('+1 hint (no hints used)');
-    if (elapsedSec > 0 && elapsedSec <= PUZZLE_TIME_BONUS_SECONDS) {
-      grantHintTokens(1, 'Time Bonus');
-      tokensEarned += 1;
-      bonusNotes.push('+1 hint (under 30 min)');
+    const levelRef = lv.id;
+    const granted = await grantHintTokens(1, HINT_REASON.puzzleCompletion, levelRef);
+    tokensEarned += granted;
+    if (granted) bonusNotes.push('+1 hint (no hints used)');
+    if (granted && elapsedSec > 0 && elapsedSec <= PUZZLE_TIME_BONUS_SECONDS) {
+      const bonus = await grantHintTokens(1, HINT_REASON.timeBonus, levelRef);
+      tokensEarned += bonus;
+      if (bonus) bonusNotes.push('+1 hint (under 30 min)');
     }
   }
 
@@ -2394,8 +2481,17 @@ function getHintCost(hintType) {
   return HINT_COSTS[hintType] || 0;
 }
 
-function isHintTile(tile) {
+function isHintPlacedTile(tile) {
   return !!tile?.fromHint;
+}
+
+function isHintRotationLocked(tile) {
+  return !!tile?.hintRotationLocked;
+}
+
+/** Hint-placed tiles or rotation-locked player tiles — no move, rotate, or pickup. */
+function isHintTile(tile) {
+  return isHintPlacedTile(tile) || isHintRotationLocked(tile);
 }
 
 function isStartTileType(typeId) {
@@ -2405,7 +2501,7 @@ function isStartTileType(typeId) {
 function boardAllowsHints(tiles = state.tiles) {
   const placed = tiles || [];
   if (!placed.length) return true;
-  return placed.every((t) => t.fromHint === true);
+  return placed.every((t) => isHintPlacedTile(t));
 }
 
 function hintsRemainingThisPuzzle() {
@@ -2414,31 +2510,27 @@ function hintsRemainingThisPuzzle() {
   return Math.max(0, max - used);
 }
 
+function randomHintsRemainingThisPuzzle() {
+  const used = Number(state.randomHintsUsedThisPuzzle) || 0;
+  return Math.max(0, RANDOM_HINTS_PER_PUZZLE - used);
+}
+
+function canAffordRandomHint() {
+  const cost = getHintCost('random');
+  if (!cost) return false;
+  return randomHintsRemainingThisPuzzle() > 0
+    && hintsRemainingThisPuzzle() >= cost
+    && getGlobalHintTokens() >= cost;
+}
+
 function canAffordHint(cost) {
   const c = Number(cost) || 0;
   if (c <= 0) return false;
   return hintsRemainingThisPuzzle() >= c && getGlobalHintTokens() >= c;
 }
 
-function consumeHintTokens(cost) {
-  const c = Number(cost) || 0;
-  if (!canAffordHint(c)) return false;
-  state.hintsUsedThisPuzzle = (Number(state.hintsUsedThisPuzzle) || 0) + c;
-  state.hintTokens = Math.max(0, getGlobalHintTokens() - c);
-  saveGlobalHintTokens();
-  return true;
-}
-
 function canAffordExampleRoute() {
   return getGlobalHintTokens() >= EXAMPLE_ROUTE_TOKEN_COST;
-}
-
-function consumeGlobalHintTokens(amount) {
-  const c = Number(amount) || 0;
-  if (c <= 0 || getGlobalHintTokens() < c) return false;
-  state.hintTokens = Math.max(0, getGlobalHintTokens() - c);
-  saveGlobalHintTokens();
-  return true;
 }
 
 function getExampleRouteTokenCost() {
@@ -2446,8 +2538,8 @@ function getExampleRouteTokenCost() {
 }
 
 /** @deprecated Use consumeHintTokens(cost) */
-function consumeHintToken() {
-  return consumeHintTokens(1);
+async function consumeHintToken() {
+  return consumeHintTokens(1, HINT_REASON.random);
 }
 
 function findFreeInstanceForTileType(typeId) {
@@ -2550,12 +2642,202 @@ async function placeHintTile(placement) {
   return { ok: true, tile: t };
 }
 
+function normalizeHintDeg(deg) {
+  return ((deg | 0) % 360 + 360) % 360;
+}
+
+function boardHasManualTiles(tiles = state.tiles) {
+  return (tiles || []).some((t) => !isHintPlacedTile(t));
+}
+
+function scoreBoardAgainstSolution(boardTiles, placements) {
+  const list = Array.isArray(placements) ? placements : [];
+  let score = 0;
+  for (const bt of boardTiles || []) {
+    const p = list.find((pl) => (pl.r | 0) === (bt.r | 0) && (pl.c | 0) === (bt.c | 0));
+    if (!p) {
+      score -= 2;
+      continue;
+    }
+    const sameType = tileId(p.tile) === tileId(bt.tile);
+    const sameRot = normalizeHintDeg(p.deg) === normalizeHintDeg(bt.deg);
+    if (sameType && sameRot) score += 3;
+    else if (sameType) score += 1;
+    else score -= 1;
+  }
+  return score;
+}
+
+async function selectSolutionForRandomHint() {
+  const lv = state.currentLevel;
+  if (!lv?.id) return null;
+  const knownSolutions = await loadKnownSolutionsForLevel(lv);
+  if (!knownSolutions.length) return null;
+
+  const board = state.tiles || [];
+  if (!board.length || !boardHasManualTiles(board)) {
+    return selectSolutionForReveal();
+  }
+
+  let best = null;
+  let bestScore = -Infinity;
+  for (let i = 0; i < knownSolutions.length; i++) {
+    const placements = knownSolutions[i]?.placements;
+    if (!Array.isArray(placements) || !placements.length) continue;
+    const score = scoreBoardAgainstSolution(board, placements);
+    if (score > bestScore) {
+      bestScore = score;
+      best = { index: i, solution: knownSolutions[i], placements };
+    }
+  }
+  return best || selectSolutionForReveal();
+}
+
+function pickRandomHintAction(placements) {
+  const list = Array.isArray(placements) ? placements : [];
+  const board = state.tiles || [];
+
+  const rotCandidates = [];
+  for (const bt of board) {
+    const p = list.find((pl) => (pl.r | 0) === (bt.r | 0) && (pl.c | 0) === (bt.c | 0));
+    if (!p) continue;
+    if (tileId(p.tile) !== tileId(bt.tile)) continue;
+    if (normalizeHintDeg(p.deg) === normalizeHintDeg(bt.deg)) continue;
+    rotCandidates.push({ tile: bt, placement: p });
+  }
+  if (rotCandidates.length) {
+    const pick = rotCandidates[Math.floor(Math.random() * rotCandidates.length)];
+    return { action: 'lock', tile: pick.tile, placement: pick.placement };
+  }
+
+  const candidates = list.filter((p) => {
+    const id = tileId(p?.tile);
+    if (!id || isStartTileType(id) || id === 'ET') return false;
+    const occupied = board.some((bt) => (bt.r | 0) === (p.r | 0) && (bt.c | 0) === (p.c | 0));
+    if (occupied) return false;
+    return placementFitsOnBoard(p);
+  });
+  if (!candidates.length) return null;
+  return { action: 'place', placement: candidates[Math.floor(Math.random() * candidates.length)] };
+}
+
+async function lockHintTileRotation(boardTile, placement) {
+  const t = boardTile;
+  if (!t) return { ok: false, msg: 'No tile to lock.' };
+  const lockedDeg = normalizeHintDeg(placement.deg);
+  t.deg = lockedDeg;
+  t.hintRotationLocked = true;
+  t.hintLockedSolutionDeg = lockedDeg;
+  state.selectedTileId = t.id;
+  state.selectedPal = null;
+  state.previewTile = t.tile;
+  state.deg = lockedDeg;
+  if (rotHud) rotHud.textContent = String(lockedDeg);
+  syncActionButtons();
+  rebuildOccFromTiles();
+  playSfx('tilePlace');
+  await renderTiles();
+  await renderActivePreview();
+  clearHover();
+  window.__app?.onBoardStateChanged?.();
+  return { ok: true, tile: t };
+}
+
+async function applyRandomHint() {
+  if (randomHintInFlight) {
+    return { ok: false, msg: 'Hint already in progress.' };
+  }
+  randomHintInFlight = true;
+
+  try {
+    const hintType = 'random';
+    const cost = getHintCost(hintType);
+    if (!cost) return { ok: false, msg: 'Unknown hint type.' };
+    if (!state.currentLevel) return { ok: false, msg: 'No puzzle loaded.' };
+
+    try {
+      const { refreshHintBalanceForApp } = await import('./tilezilla-hint-access.js');
+      await refreshHintBalanceForApp(window.__app);
+    } catch {
+      /* use cached balance */
+    }
+    if (!canAffordRandomHint()) {
+      if (randomHintsRemainingThisPuzzle() <= 0) {
+        return { ok: false, msg: 'No random hints remaining for this puzzle.' };
+      }
+      return { ok: false, msg: 'Not enough hint tokens for this hint.' };
+    }
+
+    const selected = await selectSolutionForRandomHint();
+    if (!selected) {
+      return { ok: false, msg: 'No solutions are available for this puzzle.' };
+    }
+
+    const action = pickRandomHintAction(selected.placements);
+    if (!action) {
+      return {
+        ok: false,
+        msg: `Could not place a random tile from solution ${selected.index + 1}.`,
+      };
+    }
+
+    const levelRef = state.currentLevel?.id || null;
+    const consumed = await consumeHintTokens(cost, HINT_REASON.random, levelRef);
+    if (!consumed) {
+      if (randomHintsRemainingThisPuzzle() <= 0) {
+        return { ok: false, msg: 'No random hints remaining for this puzzle.' };
+      }
+      return { ok: false, msg: 'Not enough hint tokens for this hint.' };
+    }
+
+    state.randomHintsUsedThisPuzzle = (Number(state.randomHintsUsedThisPuzzle) || 0) + 1;
+
+    let result;
+    if (action.action === 'lock') {
+      result = await lockHintTileRotation(action.tile, action.placement);
+    } else {
+      result = await placeHintTile(action.placement);
+    }
+
+    if (!result.ok) {
+      await revertHintSpend(cost, levelRef, { random: true });
+      return result;
+    }
+
+    const typeId = tileId(action.placement?.tile) || action.placement?.tile || '';
+    const solutionNum = selected.index + 1;
+    const msg = action.action === 'lock'
+      ? `Tile locked to correct rotation (${typeId}) — Solution #${solutionNum}.`
+      : `Random tile placed (${typeId}) — Solution #${solutionNum}.`;
+
+    return {
+      ok: true,
+      msg,
+      tile: result.tile,
+      solutionIndex: selected.index,
+      cost,
+      action: action.action,
+    };
+  } finally {
+    randomHintInFlight = false;
+  }
+}
+
 async function applyHint(hintType) {
+  if (hintType === 'random') {
+    return applyRandomHint();
+  }
   const cost = getHintCost(hintType);
   if (!cost) return { ok: false, msg: 'Unknown hint type.' };
   if (!state.currentLevel) return { ok: false, msg: 'No puzzle loaded.' };
   if (!boardAllowsHints()) {
     return { ok: false, msg: 'Hints may only be used on an empty board or a board containing only hint tiles.' };
+  }
+  try {
+    const { refreshHintBalanceForApp } = await import('./tilezilla-hint-access.js');
+    await refreshHintBalanceForApp(window.__app);
+  } catch {
+    /* use cached balance */
   }
   if (!canAffordHint(cost)) {
     return { ok: false, msg: 'Not enough hint tokens for this hint.' };
@@ -2572,10 +2854,23 @@ async function applyHint(hintType) {
     return { ok: false, msg: `Could not place ${labels[hintType] || 'hint'} from solution ${selected.index + 1}.` };
   }
 
-  const placed = await placeHintTile(placement);
-  if (!placed.ok) return placed;
+  const reasonMap = {
+    random: HINT_REASON.random,
+    start: HINT_REASON.start,
+    end: HINT_REASON.end,
+  };
+  const levelRef = state.currentLevel?.id || null;
+  const consumed = await consumeHintTokens(cost, reasonMap[hintType] || 'Hint', levelRef);
+  if (!consumed) {
+    return { ok: false, msg: 'Not enough hint tokens for this hint.' };
+  }
 
-  consumeHintTokens(cost);
+  const placed = await placeHintTile(placement);
+  if (!placed.ok) {
+    await revertHintSpend(cost, levelRef);
+    return placed;
+  }
+
   const typeId = tileId(placement.tile) || placement.tile;
   const labels = { random: 'Random tile', start: 'Start tile', end: 'End tile' };
   return {
@@ -2588,7 +2883,7 @@ async function applyHint(hintType) {
 }
 
 function boardHasHintTiles(tiles = state.tiles) {
-  return (tiles || []).some((t) => t.fromHint);
+  return (tiles || []).some((t) => isHintPlacedTile(t) || isHintRotationLocked(t));
 }
 
 // ---- Board interaction ----
@@ -2764,6 +3059,7 @@ async function clearBoard(){
   state.tiles=[];
   state.used.clear();
   state.hintsUsedThisPuzzle = 0;
+  state.randomHintsUsedThisPuzzle = 0;
   state.selectedTileId = null;
   syncActionButtons();
   state.selectedPal = null;
@@ -2785,11 +3081,42 @@ async function clearBoard(){
   if(solver) solver.reset();
 }
 
+/** Clear player-placed tiles; keep hint tiles locked on board and out of the bag. */
+async function clearBoardKeepingHints() {
+  const hintTiles = (state.tiles || []).filter((t) => isHintTile(t));
+  const keptInstanceIds = new Set(
+    hintTiles.map((t) => t.instanceId).filter((id) => id != null),
+  );
+
+  for (const inst of (state.paletteInstances || [])) {
+    const inUse = state.used.has(inst.instanceId);
+    const keep = keptInstanceIds.has(inst.instanceId);
+    setPaletteUsed(inst.instanceId, inUse && keep);
+  }
+
+  state.tiles = hintTiles.map((t) => ({ ...t }));
+  state.used = keptInstanceIds;
+  state.selectedTileId = null;
+  state.selectedPal = null;
+  state.previewTile = null;
+  state.deg = 0;
+  if (rotHud) rotHud.textContent = '0';
+  markPaletteSelected(null);
+  renderActivePreview();
+  syncActionButtons();
+  rebuildOccFromTiles();
+  await renderTiles();
+  clearHover();
+  if (solver) solver.reset();
+  window.__app?.onBoardStateChanged?.();
+}
+
 function cloneBoardState() {
   return {
     tiles: (state.tiles || []).map((t) => ({ ...t })),
     used: [...(state.used || [])],
     hintsUsedThisPuzzle: state.hintsUsedThisPuzzle ?? 0,
+    randomHintsUsedThisPuzzle: state.randomHintsUsedThisPuzzle ?? 0,
   };
 }
 
@@ -2799,6 +3126,7 @@ async function restoreBoardFromSnapshot(snapshot) {
   state.tiles = snapshot.tiles.map((t) => ({ ...t }));
   state.used = new Set(snapshot.used || []);
   state.hintsUsedThisPuzzle = snapshot.hintsUsedThisPuzzle ?? 0;
+  state.randomHintsUsedThisPuzzle = snapshot.randomHintsUsedThisPuzzle ?? 0;
   state.selectedTileId = null;
   state.selectedPal = null;
   state.previewTile = null;
@@ -3298,11 +3626,19 @@ async function purchaseExampleRoute() {
     return { ok: true, charged: false, alreadyViewed: true };
   }
 
+  try {
+    const { refreshHintBalanceForApp } = await import('./tilezilla-hint-access.js');
+    await refreshHintBalanceForApp(window.__app);
+  } catch {
+    /* use cached balance */
+  }
+
   if (!canAffordExampleRoute()) {
     return { ok: false, reason: 'insufficient-tokens' };
   }
 
-  if (!consumeGlobalHintTokens(EXAMPLE_ROUTE_TOKEN_COST)) {
+  const levelRef = lv.id;
+  if (!(await consumeGlobalHintTokens(EXAMPLE_ROUTE_TOKEN_COST, HINT_REASON.exampleRoute, levelRef))) {
     return { ok: false, reason: 'insufficient-tokens' };
   }
 
@@ -3889,6 +4225,7 @@ async function applyLevel(level){
   state.previewTile = null;
   state.deg = 0;
   state.hintsUsedThisPuzzle = 0;
+  state.randomHintsUsedThisPuzzle = 0;
   nextId = 1;
   occ = Array(CONFIG.rows * CONFIG.cols).fill(null);
 
@@ -3922,7 +4259,7 @@ async function applyLevel(level){
   await renderTiles();
   const previewPlacements = Array.isArray(level?.previewPlacements) ? level.previewPlacements : [];
   // Auto-loading known/preview solutions is admin-only.
-  if(isAdminUser() && solutions && typeof solutions.apply === 'function'){
+  if(isAdminUser(state.userId) && solutions && typeof solutions.apply === 'function'){
     let loadedValidPreview = false;
     if(previewPlacements.length){
       await solutions.apply(previewPlacements);
@@ -4071,7 +4408,7 @@ async function init(){
         window.__invalidSolve?.hide?.();
         playSfx('solveOk');
         if (isGuestSession()) {
-          const outcome = processSolutionFound(lv, catalogRes, placements);
+          const outcome = await processSolutionFound(lv, catalogRes, placements);
           showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
           return;
         }
@@ -4087,7 +4424,7 @@ async function init(){
       if(Number.isFinite(catalogRes.index)){
         window.__invalidSolve?.hide?.();
         playSfx('levelSuccess');
-        const outcome = processSolutionFound(lv, catalogRes, placements);
+        const outcome = await processSolutionFound(lv, catalogRes, placements);
         if (isGuestSession()) {
           showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
           return;
@@ -4124,7 +4461,7 @@ async function init(){
         return;
       }
 
-      const outcome = processSolutionFound(lv, catalogRes, placements);
+      const outcome = await processSolutionFound(lv, catalogRes, placements);
       if (isGuestSession()) {
         showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
         return;
@@ -4271,7 +4608,7 @@ async function init(){
 
   if (approveReviewBtn) {
     approveReviewBtn.addEventListener('click', async () => {
-      if(!isAdminUser()){
+      if(!isAdminUser(state.userId)){
         setCheckMessage('Approve Review is admin-only.', 'checkWarn');
         return;
       }
@@ -4355,15 +4692,16 @@ async function init(){
     claimCells, clearTileFromOcc, rebuildOccFromTiles, occ, occIdx, resolveTileAsset, tileId,
     applySolveDocObject, applyLevel, buildGrid, setCssCell, clearBoard, totalKnownForLevel,
     applyGameplaySettings, buildPalette, getInventoryMismatch, boardAllowsHints,
-    hintsRemainingThisPuzzle, consumeHintToken, consumeHintTokens,
-    getGlobalHintTokens, grantHintTokens, getHintCost, canAffordHint, applyHint, isHintTile,
+    hintsRemainingThisPuzzle, randomHintsRemainingThisPuzzle, consumeHintToken, consumeHintTokens,
+    getGlobalHintTokens, grantHintTokens, getHintCost, canAffordHint, canAffordRandomHint,
+    applyHint, applyRandomHint, isHintTile,
     loadGlobalHintTokens,
     puzzleAttemptUsedHints, processSolutionFound, PUZZLE_TIME_BONUS_SECONDS,
     boardHasHintTiles,
     getMenuPuzzleInfo, getMenuFoundSolutions, getDevKnownSolutions: getMenuDevKnownSolutions,
     getExampleRoutePlacements, selectSolutionForReveal, getRevealSolutionPlacements,
     applyKnownSolutionToBoard, loadFirstValidKnownSolution, applyPlacementsToBoard,
-    clearBoard, setCheckMessage, isDevUser,
+    clearBoard, clearBoardKeepingHints, setCheckMessage, isDevUser,
     cloneBoardState, restoreBoardFromSnapshot,
     canAffordExampleRoute, getExampleRouteTokenCost, purchaseExampleRoute,
     hasViewedExampleRoute, hasLeaderboardForfeit, hasHintCompletionRewardForfeit,
@@ -4460,15 +4798,15 @@ async function init(){
   }
   if(userSelect){
     userSelect.value = state.userId;
-    syncAdminUi();
+    syncAdminUi(state.userId);
     userSelect.addEventListener('change', async () => {
       state.userId = userSelect.value || 'gar';
       localStorage.setItem('snake_active_user_v1', state.userId);
       state.hintTokens = loadGlobalHintTokens();
       progress.storageKey = `snake_progress_v1_${state.userId}`;
       progress.data = progress.load();
-      syncAdminUi();
       syncDevUserUi(state.userId);
+      syncAdminUi(state.userId);
       const lv = state.currentLevel;
       const knownSolutions = lv ? await loadKnownSolutionsForLevel(lv) : [];
       if(lv) renderFoundList(lv.id, knownSolutions);
@@ -4478,8 +4816,8 @@ async function init(){
       setCheckMessage(`Active user: ${state.userId}`, 'checkWarn');
     });
   }
-  syncAdminUi();
   syncDevUserUi(state.userId);
+  syncAdminUi(state.userId);
   if(state.currentLevel){
     const knownSolutions = await loadKnownSolutionsForLevel(state.currentLevel);
     renderFoundList(state.currentLevel.id, knownSolutions);

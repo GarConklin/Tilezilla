@@ -63,10 +63,16 @@ TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 TILEBAG_V2_LAYOUT_PATH = ROOT / "data" / "tilebag_v2_layout.json"
 RANDOM_POPUP_LAYOUT_PATH = ROOT / "data" / "random_popup_layout.json"
 GUEST_LOGIN_REQUIRED_LAYOUT_PATH = ROOT / "data" / "guest_login_required_layout.json"
+USE_HINT_LAYOUT_PATH = ROOT / "data" / "use_hint_layout.json"
+USE_HINT_START_LAYOUT_PATH = ROOT / "data" / "use_hint_start_layout.json"
+RESET_HINT_TILES_LAYOUT_PATH = ROOT / "data" / "reset_hint_tiles_layout.json"
+WATER_RIPPLE_LAYOUT_PATH = ROOT / "data" / "water_ripple_layout.json"
 REVISIT_LAYOUT_PATH = ROOT / "data" / "revisit_layout.json"
 LOAD_SCREEN_LAYOUT_PATH = ROOT / "data" / "load_screen_layout.json"
 AUTH_SCREEN_LAYOUT_PATH = ROOT / "data" / "auth_screen_layout.json"
 AUTH_ERROR_LAYOUT_PATH = ROOT / "data" / "auth_error_layout.json"
+FORGOT_PASSWORD_LAYOUT_PATH = ROOT / "data" / "forgot_password_layout.json"
+RANK_AWARD_LAYOUT_PATH = ROOT / "data" / "rank_award_layout.json"
 CHALLENGE_BEGIN_LAYOUT_PATH = ROOT / "data" / "challenge_begin_layout.json"
 MAIN_SCREEN_V2_LAYOUT_PATH = ROOT / "data" / "main_screen_v2_layout.json"
 LAYOUT_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
@@ -573,6 +579,46 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-use-hint-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/use_hint_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-use-hint-start-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/use_hint_start_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-reset-hint-tiles-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/reset_hint_tiles_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-water-ripple-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/water_ripple_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/dev/save-revisit-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/revisit_layout.json"}
@@ -606,6 +652,26 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/dev/save-auth-error-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/auth_error_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-forgot-password-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/forgot_password_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-rank-award-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/rank_award_layout.json"}
             ).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -711,6 +777,22 @@ class Handler(SimpleHTTPRequestHandler):
                 parsed, GUEST_LOGIN_REQUIRED_LAYOUT_PATH, validate_guest_login_required_layout
             )
             return
+        if parsed.path == "/api/dev/save-use-hint-layout":
+            self._save_json_layout(parsed, USE_HINT_LAYOUT_PATH, validate_use_hint_layout)
+            return
+        if parsed.path == "/api/dev/save-use-hint-start-layout":
+            self._save_json_layout(
+                parsed, USE_HINT_START_LAYOUT_PATH, validate_use_hint_start_layout
+            )
+            return
+        if parsed.path == "/api/dev/save-reset-hint-tiles-layout":
+            self._save_json_layout(
+                parsed, RESET_HINT_TILES_LAYOUT_PATH, validate_reset_hint_tiles_layout
+            )
+            return
+        if parsed.path == "/api/dev/save-water-ripple-layout":
+            self._save_json_layout(parsed, WATER_RIPPLE_LAYOUT_PATH, validate_water_ripple_layout)
+            return
         if parsed.path == "/api/dev/save-revisit-layout":
             self._save_json_layout(parsed, REVISIT_LAYOUT_PATH, validate_revisit_layout)
             return
@@ -722,6 +804,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-auth-error-layout":
             self._save_json_layout(parsed, AUTH_ERROR_LAYOUT_PATH, validate_auth_error_layout)
+            return
+        if parsed.path == "/api/dev/save-forgot-password-layout":
+            self._save_json_layout(parsed, FORGOT_PASSWORD_LAYOUT_PATH, validate_forgot_password_layout)
+            return
+        if parsed.path == "/api/dev/save-rank-award-layout":
+            self._save_json_layout(parsed, RANK_AWARD_LAYOUT_PATH, validate_rank_award_layout)
             return
         if parsed.path == "/api/dev/save-challenge-begin-layout":
             self._save_json_layout(parsed, CHALLENGE_BEGIN_LAYOUT_PATH, validate_challenge_begin_layout)
@@ -1005,6 +1093,100 @@ def validate_guest_login_required_layout(payload: object) -> str | None:
     return None
 
 
+def validate_water_ripple_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    for key in ("durationA", "durationB", "amplitudePx", "amplitudeAPx", "amplitudeBPx"):
+        if key in payload and not isinstance(payload[key], (int, float)):
+            return f"{key} must be a number"
+    return None
+
+
+USE_HINT_ITEM_KEYS = ("close", "confirm", "cost", "warn")
+USE_HINT_START_ITEM_KEYS = (
+    "close",
+    "available",
+    "random",
+    "start",
+    "end",
+    "cancel",
+    "confirm",
+)
+
+
+def validate_use_hint_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+        if "baseSrc" in dialog and not isinstance(dialog["baseSrc"], str):
+            return "dialog.baseSrc must be a string"
+    buttons = payload.get("buttons")
+    if buttons is not None and not isinstance(buttons, dict):
+        return "buttons must be an object"
+    if isinstance(buttons, dict):
+        for key in ("close", "confirm"):
+            if key in buttons and not isinstance(buttons[key], str):
+                return f"buttons.{key} must be a string"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in USE_HINT_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "fontScale"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
+def validate_use_hint_start_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayW"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+        if "baseSrc" in dialog and not isinstance(dialog["baseSrc"], str):
+            return "dialog.baseSrc must be a string"
+    buttons = payload.get("buttons")
+    if buttons is not None and not isinstance(buttons, dict):
+        return "buttons must be an object"
+    if isinstance(buttons, dict):
+        for key in ("close", "random", "start", "end", "cancel", "confirm"):
+            if key in buttons and not isinstance(buttons[key], str):
+                return f"buttons.{key} must be a string"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in USE_HINT_START_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in (
+                "x", "y", "w", "h", "nudgeX", "nudgeY", "scale", "opacity",
+                "padX", "fontScale",
+            ):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+    return None
+
+
 REVISIT_ITEM_KEYS = ("puzzleId", "solutions", "solved", "cancel", "revisit")
 
 
@@ -1152,7 +1334,7 @@ def validate_load_screen_layout(payload: object) -> str | None:
 
 AUTH_SCREEN_KEYS = ("login", "create", "profile")
 AUTH_SCREEN_ITEM_KEYS = {
-    "login": ("user", "pass", "passReveal", "submit", "secondary", "navDaily", "navLogout", "explorersRegistered", "totalAdventurePuzzles", "totalKnownRoutes", "largestSolution", "todaysChallenge", "recentPuzzleSolved", "recentDailyCompleted", "mostSolvedPuzzle", "latestDiscovery", "totalPlayTime"),
+    "login": ("user", "pass", "passReveal", "submit", "forgotPassword", "secondary", "navDaily", "navLogout", "explorersRegistered", "totalAdventurePuzzles", "totalKnownRoutes", "largestSolution", "todaysChallenge", "recentPuzzleSolved", "recentDailyCompleted", "mostSolvedPuzzle", "latestDiscovery", "totalPlayTime"),
     "create": ("name", "email", "pass", "passReveal", "pass2", "pass2Reveal", "submit", "secondary", "navDaily", "navLogout", "totalAdventurePuzzles", "ranksToEarn", "challengeGates", "totalKnownRoutes"),
     "profile": (
         "profileName",
@@ -1245,6 +1427,104 @@ def validate_auth_error_layout(payload: object) -> str | None:
             for dim in ("x", "y", "w", "h", "fontScale"):
                 if dim in box and not isinstance(box[dim], (int, float)):
                     return f"items.{key}.{dim} must be a number"
+    return None
+
+
+FORGOT_PASSWORD_ITEM_KEYS = ("email", "send", "cancel", "feedback")
+
+
+def validate_forgot_password_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "maxWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in FORGOT_PASSWORD_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "fontScale"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
+RESET_HINT_TILES_ITEM_KEYS = ("close", "remove", "keep")
+
+
+def validate_reset_hint_tiles_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+        if "baseSrc" in dialog and not isinstance(dialog["baseSrc"], str):
+            return "dialog.baseSrc must be a string"
+    buttons = payload.get("buttons")
+    if buttons is not None and not isinstance(buttons, dict):
+        return "buttons must be an object"
+    if isinstance(buttons, dict):
+        if "close" in buttons and not isinstance(buttons["close"], str):
+            return "buttons.close must be a string"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in RESET_HINT_TILES_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
+RANK_AWARD_ITEM_KEYS = ("continue",)
+
+
+def validate_rank_award_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "maxWidth", "widthScale"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in RANK_AWARD_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
     return None
 
 
@@ -1507,10 +1787,16 @@ def main() -> None:
     print("Tile bag v2 tuner save API: POST /api/dev/save-tilebag-v2-layout")
     print("Random popup tuner save API: POST /api/dev/save-random-popup-layout")
     print("Guest login required tuner save API: POST /api/dev/save-guest-login-required-layout")
+    print("Use random hint popup tuner save API: POST /api/dev/save-use-hint-layout")
+    print("Use Hint start menu tuner save API: POST /api/dev/save-use-hint-start-layout")
+    print("Reset hint tiles popup tuner save API: POST /api/dev/save-reset-hint-tiles-layout")
+    print("Water ripple tuner save API: POST /api/dev/save-water-ripple-layout")
     print("Revisit popup tuner save API: POST /api/dev/save-revisit-layout")
     print("Load screen tuner save API: POST /api/dev/save-load-screen-layout")
     print("Auth screen tuner save API: POST /api/dev/save-auth-screen-layout")
     print("Auth error tuner save API: POST /api/dev/save-auth-error-layout")
+    print("Forgot password tuner save API: POST /api/dev/save-forgot-password-layout")
+    print("Rank award popup tuner save API: POST /api/dev/save-rank-award-layout")
     print("Challenge begin tuner save API: POST /api/dev/save-challenge-begin-layout")
     server.serve_forever()
 
