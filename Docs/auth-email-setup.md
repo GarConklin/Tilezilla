@@ -18,7 +18,7 @@ Browser  →  Tilezilla PHP (auth/api/*.php)
 | Accounts | `tilegame.users` | Register, login, email verification, guest_code |
 | Game data | `tilegame` | Levels, hints, daily, `tile_profiles`, progress |
 | Auth code | `auth/` in this repo | PHP API + login/register pages |
-| Static game | `web/` + Python `scripts/server.py` | Gameplay (port 8080 dev stack) |
+| Static game | `web/` + Python `scripts/server.py` | Gameplay (Docker dev stack: port 3000; local Python: 8081) |
 
 **Upgrading from WordsOnline accounts:** run `.\scripts\migrate-auth-to-tilegame.ps1` once (preserves user ids).
 

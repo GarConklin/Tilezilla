@@ -6,6 +6,8 @@ import {
 } from './tilezilla-guest.js';
 import { applyServerSession, fetchServerSession, isDevAuthBypass } from './tilezilla-auth.js';
 import { applyUiScale } from './tilezilla-ui-scale.js';
+import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
+import { loadGameplaySettings } from './tilezilla-settings.js';
 import { applyLoadScreenLayout, loadLoadScreenLayout, reloadLoadScreenLayout } from './load-screen-layout.js';
 import { applyMainScreenV2Layout, loadMainScreenV2Layout } from './main-screen-v2-layout.js';
 import { initLoadScreenCarousel } from './load-screen-carousel.js';
@@ -24,6 +26,10 @@ async function bootLoadScreen() {
 }
 
 void bootLoadScreen();
+
+const loadSettings = loadGameplaySettings();
+setSfxEnabled(loadSettings.soundEffects === 'ON');
+initTilezillaSfx();
 
 let activeLoadLayout = null;
 

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Start Tilezilla dev stack on port 8080 (web + auth + shared MySQL).
+  Start Tilezilla dev stack — web on port 3000, auth on 3001 (shared MySQL).
 
 .DESCRIPTION
   - Ensures tilezilla_shared_mysql_data exists (migrates legacy volumes if needed)
@@ -70,14 +70,15 @@ try {
   $args = @("compose", "up", "-d")
   if (-not $NoBuild) { $args += "--build" }
 
-  Write-Step "Starting docker compose (port 8080)"
+  Write-Step "Starting docker compose (web 3000, auth 3001)"
   & docker @args
   if ($LASTEXITCODE -ne 0) {
     throw "docker compose up failed (exit $LASTEXITCODE)"
   }
 
   Write-Host ""
-  Write-Host "Tilezilla: http://localhost:8080/" -ForegroundColor Green
+  Write-Host "Tilezilla:  http://localhost:3000/" -ForegroundColor Green
+  Write-Host "Auth:       http://localhost:3001/register.html" -ForegroundColor Green
   Write-Host "MySQL volume: $SharedVolume (accounts persist across restarts)" -ForegroundColor DarkGray
 }
 finally {

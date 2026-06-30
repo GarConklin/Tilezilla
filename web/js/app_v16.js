@@ -1,4 +1,5 @@
 import { Solver } from './solver.js';
+import { playSfx } from './tilezilla-sfx.js';
 import { Solutions } from './solutions.js';
 import { Progress } from './progress.js';
 import { readEncounteredTilesLocal } from './tilezilla-encountered-tiles.js';
@@ -1363,6 +1364,7 @@ async function renderTiles(){
       }
       const removed = removeTileById(t.id);
       if(!removed) return;
+      playSfx('tilePickup');
       window.__discoveryRecord?.resumeForBoardEdit?.();
       state.selectedTileId = null;
       syncActionButtons();
@@ -1670,6 +1672,7 @@ function selectPaletteInstance(instanceId) {
   const tileName = inst.tile;
   if (!isSandboxLevel() && isBlockerTile(tileName)) return;
   if (state.used.has(instanceId)) return;
+  playSfx('generalSelection');
   state.selectedPal = instanceId;
   state.previewTile = tileName;
   state.selectedTileId = null;
@@ -2329,6 +2332,23 @@ function processSolutionFound(lv, res, placements) {
     leaderboardSubmitted,
   });
 
+  void import('./tilezilla-progress-sync.js').then(({ syncSolveToServer }) => syncSolveToServer({
+    levelId: lv.id,
+    placements,
+    check: {
+      index: res.index,
+      bonus: !!res.bonus,
+      duplicate: !!res.duplicate,
+    },
+    meta: {
+      completionTimeSeconds: elapsedSec,
+      hintsUsed,
+      exampleRouteViewed,
+      leaderboardSubmitted,
+      challengeDate: leaderboardEligible ? todayChallengeDate() : null,
+    },
+  }));
+
   const bonusNotes = [];
   let tokensEarned = 0;
   if (hintRewardEligible && !hintsUsed) {
@@ -2523,6 +2543,7 @@ async function placeHintTile(placement) {
   state.selectedPal = null;
   syncActionButtons();
   rebuildOccFromTiles();
+  playSfx('tilePlace');
   await renderTiles();
   clearHover();
   window.__app?.onBoardStateChanged?.();
@@ -2602,6 +2623,7 @@ async function placeSelectedPaletteTileAt(r, c) {
   rotHud.textContent = state.deg + '';
   renderActivePreview();
   rebuildOccFromTiles();
+  playSfx('tilePlace');
   await renderTiles();
   clearHover();
   if (typeof window.__app?.onManualTilePlaced === 'function') {
@@ -2628,7 +2650,8 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
 
   // place from palette
   if(state.selectedPal){
-    await placeSelectedPaletteTileAt(r, c);
+    const placed = await placeSelectedPaletteTileAt(r, c);
+    if (!placed) playSfx('tileInvalid');
     return;
   }
 
@@ -2640,7 +2663,11 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
       status('Hint tiles cannot be moved.');
       return;
     }
-    if(!updateTilePlacement(t.id, r, c, t.deg)) { status(`Move blocked @ (${r},${c}) ${t.deg} (out of bounds, overlap, or blocker)`); return; }
+    if(!updateTilePlacement(t.id, r, c, t.deg)) {
+      playSfx('tileInvalid');
+      status(`Move blocked @ (${r},${c}) ${t.deg} (out of bounds, overlap, or blocker)`);
+      return;
+    }
     
     await renderTiles();
     clearHover();
@@ -2672,9 +2699,11 @@ async function rotateBy(delta) {
     if (updateTilePlacement(t.id, t.r, t.c, nextDeg)) {
       state.deg = nextDeg;
       rotHud.textContent = nextDeg + '';
+      playSfx(delta > 0 ? 'spinCWTile' : 'spinCCWTile');
       await renderTiles();
       return;
     }
+    playSfx('tileInvalid');
     status(`Rotate blocked @ (${t.r},${t.c}) ${nextDeg}°`);
     return;
   }
@@ -2684,6 +2713,7 @@ async function rotateBy(delta) {
     const nextDeg = (state.deg + delta + 360) % 360;
     state.deg = nextDeg;
     rotHud.textContent = nextDeg + '';
+    playSfx(delta > 0 ? 'spinCWTile' : 'spinCCWTile');
     await renderActivePreview();
     if (state.selectedPal) await ensureBagThumbAtZero(state.selectedPal);
   }
@@ -4039,6 +4069,7 @@ async function init(){
       const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
       if(catalogRes.duplicate){
         window.__invalidSolve?.hide?.();
+        playSfx('solveOk');
         if (isGuestSession()) {
           const outcome = processSolutionFound(lv, catalogRes, placements);
           showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
@@ -4055,6 +4086,7 @@ async function init(){
       }
       if(Number.isFinite(catalogRes.index)){
         window.__invalidSolve?.hide?.();
+        playSfx('levelSuccess');
         const outcome = processSolutionFound(lv, catalogRes, placements);
         if (isGuestSession()) {
           showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
@@ -4087,6 +4119,7 @@ async function init(){
       const v = validateBoard();
       if(!v.ok){
         window.__invalidSolve?.show?.();
+        playSfx('tileInvalid');
         setCheckMessage(v.msg || 'Board is not valid yet.', 'checkError');
         return;
       }

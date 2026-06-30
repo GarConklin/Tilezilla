@@ -10,7 +10,7 @@
   <div class="card">
     <h1 id="title">Verifying email…</h1>
     <p id="message" style="text-align:center;color:#555;line-height:1.6"></p>
-    <p class="links" id="actions" style="display:none"><a href="login.html" class="button-link">Go to login</a></p>
+    <p class="links" id="actions" style="display:none"><a href="/login-screen.html" class="button-link">Go to login</a></p>
   </div>
   <script>
     const token = new URLSearchParams(location.search).get('token');
@@ -22,7 +22,7 @@
       title.textContent = 'Verification failed';
       message.textContent = 'No verification token provided.';
     } else {
-      fetch('/api/verify-email.php?token=' + encodeURIComponent(token))
+      fetch('/auth/api/verify-email.php?token=' + encodeURIComponent(token))
         .then(r => r.json())
         .then(data => {
           if (data.success) {

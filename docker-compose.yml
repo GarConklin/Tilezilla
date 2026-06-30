@@ -1,6 +1,7 @@
 # Tilezilla — default dev stack (game + auth + shared MySQL).
-# Prefer .\scripts\start-remote-test.ps1 for LAN testing with nginx gateway on 8080.
+# Prefer .\scripts\start-remote-test.ps1 for LAN testing with nginx gateway on 3000.
 #
+# Host ports: web 3000, auth 3001 (internal containers still use 8080 / 80).
 # MySQL data persists in Docker volume tilezilla_shared_mysql_data (survives restarts).
 # Run .\scripts\ensure-shared-mysql-volume.ps1 before first boot if upgrading from older volumes.
 
@@ -10,10 +11,15 @@ services:
   web:
     build: .
     ports:
-      - "8080:8080"
+      - "3000:8080"
     environment:
       PORT: "8080"
       AUTH_UPSTREAM: "http://php-auth"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
+      MYSQL_USER: ${MYSQL_USER:-tilegame}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
     volumes:
       - .:/app
     depends_on:
@@ -29,7 +35,7 @@ services:
     container_name: tilezilla_auth
     restart: unless-stopped
     ports:
-      - "${AUTH_PORT:-8090}:80"
+      - "${AUTH_PORT:-3001}:80"
     expose:
       - "80"
     volumes:
@@ -46,7 +52,7 @@ services:
       GAME_DB_USER: ${MYSQL_USER:-tilegame}
       GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
       GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
-      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
       APP_NAME: Tilezilla
       APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
       APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}

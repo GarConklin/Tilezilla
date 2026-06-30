@@ -21,7 +21,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 SCRIPTS = ROOT / "scripts"
-# Default 8081 avoids Docker Desktop binding host port 8080 (docker-compose web service).
+# Default 8081 avoids Docker Desktop binding host port 3000 (docker-compose web service).
 PORT = int(os.environ.get("PORT", "8081"))
 # Proxy /auth/* to PHP auth. In Docker Compose, set AUTH_UPSTREAM=http://php-auth.
 # On the host (python scripts/server.py), auth is published on AUTH_PORT (default 8090).
@@ -94,6 +94,12 @@ from lib.adventure_path_build import (  # noqa: E402
     load_adventure_path_from_json,
     load_adventure_path_from_mysql,
 )
+from lib.progress_store import (  # noqa: E402
+    migrate_progress,
+    progress_response,
+    record_solve,
+)
+from lib.session_auth import verify_session_cookie  # noqa: E402
 from lib.system_info import (  # noqa: E402
     load_system_info_from_json,
     load_system_info_from_mysql,
@@ -165,16 +171,20 @@ class Handler(SimpleHTTPRequestHandler):
                 target = ROOT / "img" / "Stuff" / rel
             if not target.exists():
                 target = WEB / "img" / rel
+        elif req.startswith("/audio/"):
+            target = ROOT / "audio" / req[len("/audio/") :]
         # Frontend assets as if /web were web root
         else:
             target = WEB / req.lstrip("/")
 
-        # Fall back to web index for unknown app paths only (never for assets).
+        # Fall back to web index for unknown app paths only (never for assets or APIs).
         if (
             not target.exists()
             and not req.startswith("/data/")
             and not req.startswith("/solves/")
             and not req.startswith("/img/")
+            and not req.startswith("/audio/")
+            and not req.startswith("/api/")
         ):
             target = WEB / "index.html"
 
@@ -263,6 +273,76 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
         return True
 
+    def _send_json(self, status: int, payload: dict) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _read_json_body(self) -> dict | None:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0:
+            self._send_json(400, {"ok": False, "error": "Empty body"})
+            return None
+        try:
+            payload = json.loads(self.rfile.read(length).decode("utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self._send_json(400, {"ok": False, "error": "Invalid JSON"})
+            return None
+        if not isinstance(payload, dict):
+            self._send_json(400, {"ok": False, "error": "Body must be a JSON object"})
+            return None
+        return payload
+
+    def _require_auth_user(self) -> dict | None:
+        user = verify_session_cookie(self.headers.get("Cookie", ""))
+        if not user or user.get("id") is None:
+            self._send_json(401, {"ok": False, "error": "Authentication required"})
+            return None
+        return user
+
+    def _handle_get_progress(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        self._send_json(200, progress_response(ROOT, user["id"]))
+
+    def _handle_post_progress_solve(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        level_id = str(payload.get("levelId") or "").strip()
+        placements = payload.get("placements")
+        meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+        check = payload.get("check") if isinstance(payload.get("check"), dict) else {}
+        if check:
+            meta = {**meta, "check": check}
+        if not isinstance(placements, list):
+            self._send_json(400, {"ok": False, "error": "placements must be an array"})
+            return
+        result = record_solve(ROOT, user["id"], level_id, placements, meta)
+        status = 200 if result.get("ok") else 400
+        self._send_json(status, result)
+
+    def _handle_post_progress_migrate(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        data = payload.get("data")
+        if data is None:
+            data = payload
+        result = migrate_progress(ROOT, user["id"], data)
+        status = 200 if result.get("ok") else 409 if result.get("skipped") else 400
+        self._send_json(status, result)
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         req_path = unquote(parsed.path)
@@ -289,6 +369,9 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+            return
+        if parsed.path == "/api/progress":
+            self._handle_get_progress()
             return
         if parsed.path == "/api/dev/save-sublevel-layout":
             body = json.dumps(
@@ -559,6 +642,12 @@ class Handler(SimpleHTTPRequestHandler):
                 return
         if parsed.path == "/api/guest/event":
             self._log_guest_event(parsed)
+            return
+        if parsed.path == "/api/progress/solve":
+            self._handle_post_progress_solve()
+            return
+        if parsed.path == "/api/progress/migrate":
+            self._handle_post_progress_migrate()
             return
         if parsed.path == "/api/dev/save-sublevel-layout":
             self._save_json_layout(parsed, SUBLEVEL_LAYOUT_PATH, validate_sublevel_layout)
@@ -1391,10 +1480,13 @@ def main() -> None:
     print(f"Game: http://127.0.0.1:{PORT}/tilezilla-v2.html")
     print(f"Auth proxy: /auth/* -> {AUTH_UPSTREAM}")
     _probe_auth_upstream()
-    if PORT == 8080:
-        print("(Port 8080 may conflict with Docker — use PORT=8081 python scripts/server.py if you see ERR_EMPTY_RESPONSE)")
+    if PORT == 3000:
+        print("(Port 3000 may conflict with Docker — use PORT=8081 python scripts/server.py if you see ERR_EMPTY_RESPONSE)")
     print("Adventure path API: GET /api/adventure/path")
     print("System info API: GET /api/system-info")
+    print("Player progress API: GET /api/progress")
+    print("Player progress API: POST /api/progress/solve")
+    print("Player progress API: POST /api/progress/migrate")
     print("Sublevel tuner save API: POST /api/dev/save-sublevel-layout")
     print("Discovery tuner save API: POST /api/dev/save-discovery-layout")
     print("Menu tuner save API: POST /api/dev/save-menu-layout")

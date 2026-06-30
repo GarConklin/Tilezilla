@@ -1,5 +1,7 @@
 /** Startup carousel — below Load-Screen.png art (3 slides + demo video). */
 
+import { playSfx } from './tilezilla-sfx.js';
+
 const SLIDES = [
   {
     src: '/img/below start screen 1-3.png',
@@ -54,6 +56,7 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
     const next = Math.max(0, Math.min(SLIDES.length - 1, index + delta));
     if (next === index) return;
     index = next;
+    playSfx('swipeStartScreen');
     render();
   }
 

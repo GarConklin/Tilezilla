@@ -2,14 +2,16 @@
 
 Registration and login use **tilegame.users** in MySQL. Outbound email uses the Words Online **mail relay** on `words_network` (SMTP only — no WordsOnline account DB).
 
-## Local stack (8080)
+## Local stack (3000 / 3001)
 
 ```powershell
 docker compose up -d
 .\scripts\migrate-auth-to-tilegame.ps1   # once, if upgrading from WordsOnline accounts
 ```
 
-## Standalone auth + mail relay (8081)
+Game: http://localhost:3000/ — Auth direct: http://localhost:3001/
+
+## Standalone auth + mail relay (3001)
 
 ```powershell
 # Words mail on words_network (in WordsOnline repo)

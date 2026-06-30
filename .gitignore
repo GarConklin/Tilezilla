@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.auth.example
+!.env.production.example
 __pycache__/
 *.py[cod]
 .DS_Store
@@ -22,3 +23,6 @@ solves/
 data/solver-runs/*
 !data/solver-runs/.gitkeep
 !data/solver-runs/README.txt
+
+# Per-user progress JSON (server-side saves)
+data/progress/users/

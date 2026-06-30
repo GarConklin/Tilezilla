@@ -6,7 +6,9 @@ export const GAMEPLAY_DEFAULTS = {
   liveEdgeValidation: 'OFF',
   showTileBorders: 'ON',
   usedTileBehavior: 'REMOVE',
+  desktopScale: 'AUTO',
   phonePreview: 'OFF',
+  soundEffects: 'ON',
   previewPlacementAnchor: 'ON',
   previewPlacementAnchorStyle: 'LIGHT',
 };
@@ -22,7 +24,11 @@ export function loadGameplaySettings() {
       liveEdgeValidation: parsed.liveEdgeValidation === 'ON' ? 'ON' : 'OFF',
       showTileBorders: parsed.showTileBorders === 'OFF' ? 'OFF' : 'ON',
       usedTileBehavior: parsed.usedTileBehavior === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
+      desktopScale: parsed.desktopScale === '2' || parsed.desktopScale === '3'
+        ? parsed.desktopScale
+        : 'AUTO',
       phonePreview: parsed.phonePreview === 'ON' ? 'ON' : 'OFF',
+      soundEffects: parsed.soundEffects === 'OFF' ? 'OFF' : 'ON',
       previewPlacementAnchor: parsed.previewPlacementAnchor === 'OFF' ? 'OFF' : 'ON',
       previewPlacementAnchorStyle: parsed.previewPlacementAnchorStyle === 'DARK' ? 'DARK' : 'LIGHT',
     };
@@ -49,15 +55,27 @@ function readPanel(panel) {
     liveEdgeValidation: read('liveEdgeValidation') === 'ON' ? 'ON' : 'OFF',
     showTileBorders: read('showTileBorders') === 'OFF' ? 'OFF' : 'ON',
     usedTileBehavior: read('usedTileBehavior') === 'GREY_OUT' ? 'GREY_OUT' : 'REMOVE',
+    desktopScale: (() => {
+      const v = read('desktopScale');
+      return v === '2' || v === '3' ? v : 'AUTO';
+    })(),
     phonePreview: read('phonePreview') === 'ON' ? 'ON' : 'OFF',
+    soundEffects: read('soundEffects') === 'OFF' ? 'OFF' : 'ON',
     previewPlacementAnchor: read('previewPlacementAnchor') === 'OFF' ? 'OFF' : 'ON',
     previewPlacementAnchorStyle: read('previewPlacementAnchorStyle') === 'DARK' ? 'DARK' : 'LIGHT',
   };
 }
 
-function syncAnchorStyleRowVisibility(panel, settings) {
-  const row = panel.querySelector('[data-setting="previewPlacementAnchorStyle"]');
-  if (row) row.hidden = settings.previewPlacementAnchor === 'OFF';
+function syncDisplayRowVisibility(panel, settings) {
+  const anchorStyleRow = panel.querySelector('[data-setting="previewPlacementAnchorStyle"]');
+  if (anchorStyleRow) anchorStyleRow.hidden = settings.previewPlacementAnchor === 'OFF';
+  const desktopScaleRow = panel.querySelector('[data-setting="desktopScale"]');
+  if (desktopScaleRow) desktopScaleRow.hidden = settings.phonePreview === 'ON';
+}
+
+export function getDesktopScalePreference() {
+  const v = loadGameplaySettings().desktopScale;
+  return v === '2' || v === '3' ? v : 'AUTO';
 }
 
 function bindSegment(root, onChange) {
@@ -76,7 +94,7 @@ function renderPanel(root, settings) {
     const key = group.dataset.setting;
     syncSegment(group, settings[key] ?? GAMEPLAY_DEFAULTS[key]);
   });
-  syncAnchorStyleRowVisibility(root, settings);
+  syncDisplayRowVisibility(root, settings);
 }
 
 export function isPhonePreviewMode() {

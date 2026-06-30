@@ -2,10 +2,11 @@
  * Shared 390×844 viewport scaling (same as tilezilla-bootstrap.js).
  */
 
+import { getDesktopScalePreference } from './tilezilla-settings.js';
+
 export const TZ_DESIGN_WIDTH = 390;
 export const TZ_DESIGN_HEIGHT = 844;
-const TZ_DESKTOP_SCALE = 2;
-const TZ_DESKTOP_MIN_WIDTH = TZ_DESIGN_WIDTH * TZ_DESKTOP_SCALE;
+const TZ_DESKTOP_SCALE_AUTO = 2;
 
 function viewportSize() {
   const vp = window.visualViewport;
@@ -15,21 +16,34 @@ function viewportSize() {
   };
 }
 
+export function getLockedDesktopScale() {
+  const pref = getDesktopScalePreference();
+  if (pref === '2' || pref === '3') return Number(pref);
+  return null;
+}
+
 export function applyUiScale() {
   const phonePreview = document.documentElement.classList.contains('tz-phone-preview');
+  const lockedDesktopScale = phonePreview ? null : getLockedDesktopScale();
   const { vw: layoutVw, vh } = viewportSize();
   const vw = phonePreview ? Math.min(TZ_DESIGN_WIDTH, layoutVw) : layoutVw;
-  const isDesktop = !phonePreview && vw >= TZ_DESKTOP_MIN_WIDTH;
+  const desktopMinWidth = TZ_DESIGN_WIDTH * (lockedDesktopScale ?? TZ_DESKTOP_SCALE_AUTO);
+  const isDesktop = !phonePreview && vw >= desktopMinWidth;
   const scaleW = vw / TZ_DESIGN_WIDTH;
   const scaleH = vh / TZ_DESIGN_HEIGHT;
   let scale = 1;
 
-  if (isDesktop) {
-    scale = Math.min(TZ_DESKTOP_SCALE, scaleH);
+  if (lockedDesktopScale) {
+    scale = lockedDesktopScale;
+  } else if (isDesktop) {
+    scale = Math.min(TZ_DESKTOP_SCALE_AUTO, scaleH);
   } else {
     scale = Math.min(scaleW, scaleH);
   }
 
+  const locked = Boolean(lockedDesktopScale);
+  document.documentElement.classList.toggle('tz-desktop-scale-locked', locked);
+  document.documentElement.dataset.desktopScale = locked ? String(lockedDesktopScale) : 'auto';
   document.documentElement.dataset.uiScale = String(scale);
   document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
 
@@ -51,6 +65,7 @@ export function applyUiScale() {
 
   window.__journalApi?.syncJournalDialogTop?.();
   window.__journalApi?.syncJournalLayoutHits?.();
+  window.dispatchEvent(new CustomEvent('tilezilla:ui-scale-changed', { detail: { scale, locked } }));
   return scale;
 }
 

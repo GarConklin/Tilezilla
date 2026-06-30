@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Brings up docker-compose.remote-test.yml:
-    - nginx gateway on TILEZILLA_PORT (default 8080)
+    - nginx gateway on TILEZILLA_PORT (default 3000)
     - Python game server + PHP auth + MySQL
 
   Open the printed LAN URL from a phone or tablet on the same Wi‑Fi.
@@ -20,7 +20,7 @@
 #>
 [CmdletBinding()]
 param(
-  [int]$Port = 8080,
+  [int]$Port = 3000,
   [string]$LanIp = "",
   [switch]$SeedUsers,
   [switch]$OpenFirewall,

@@ -12,7 +12,7 @@ services:
     container_name: tilezilla_auth
     restart: unless-stopped
     ports:
-      - "${AUTH_PORT:-8081}:80"
+      - "${AUTH_PORT:-3001}:80"
     volumes:
       - ./auth/config:/var/www/html/config
       - ./auth/api:/var/www/html/api
@@ -28,7 +28,7 @@ services:
       GAME_DB_USER: ${MYSQL_USER:-tilegame}
       GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
       GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
-      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8081}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
       APP_NAME: ${APP_NAME:-Tilezilla}
       APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
       APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}

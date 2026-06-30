@@ -6,7 +6,7 @@
  *   Common Android  393 × 852   → treated as 1× (within margin)
  *   Large phone     430 × 932   → scale to fit width (≈430/390)
  *   Tablet          768 × 1024+ → 2× canvas (≥780px wide)
- *   Desktop         ≥780px wide → 2× (780 × 1688 visual)
+ *   Desktop         ≥780px wide → 2× auto (Settings: lock 2× or 3×)
  *
  * Background: sky/dock layer + dual animated water layers on .tz-bg; UI on .tz-ui-layer.
  */
@@ -2344,7 +2344,7 @@ button {
   justify-content: center;
 }
 
-/* Reserves scaled layout box (390×844 at 1×, 780×1688 at 2× desktop) */
+/* Reserves scaled layout box (390×844 at 1×, 780×1688 at 2×, 1170×2532 at 3×) */
 .tz-scale-host {
   position: relative;
   z-index: 1;
@@ -6985,6 +6985,23 @@ html.tz-phone-preview .tz-cartographers-journal-window {
 
 .tz-cartographers-journal__exit:active {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)) brightness(0.94);
+}
+
+/* ── Desktop scale lock (Settings → Display → 2× / 3×) ── */
+
+html.tz-desktop-scale-locked {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+html.tz-desktop-scale-locked body {
+  min-width: calc(var(--tz-design-width) * var(--tz-ui-scale, 1));
+  min-height: calc(var(--tz-design-height) * var(--tz-ui-scale, 1));
+  overflow: auto;
+}
+
+html.tz-desktop-scale-locked .tz-app {
+  min-height: calc(var(--tz-design-height) * var(--tz-ui-scale, 1));
 }
 
 /* ── Phone preview (Settings → Display) ── */

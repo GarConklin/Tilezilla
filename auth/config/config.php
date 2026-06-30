@@ -18,7 +18,7 @@ return [
     'app' => [
         'name' => getenv('APP_NAME') ?: 'Tilezilla',
         'from_email' => getenv('APP_FROM_EMAIL') ?: 'words@skifflakegames.com',
-        'base_url' => rtrim(getenv('APP_BASE_URL') ?: 'http://localhost:8080', '/'),
+        'base_url' => rtrim(getenv('APP_BASE_URL') ?: 'http://localhost:3000', '/'),
         'admin_notify_email' => getenv('APP_ADMIN_EMAIL') ?: 'gar@hotmail.ca',
     ],
 ];

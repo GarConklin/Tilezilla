@@ -571,11 +571,21 @@
         </div>
         <div class="tz-settings-scroll" id="settingsGameplay">
           <h3 class="tz-settings-section">Display</h3>
-          <p class="tz-settings-note">Preview how the game looks on a phone while developing on desktop.</p>
+          <p class="tz-settings-note">Desktop dev sizing — lock the canvas so the bottom menu tab stays aligned.</p>
+
+          <div class="tz-setting" data-setting="desktopScale">
+            <div class="tz-setting__label">Desktop size (PC)</div>
+            <div class="tz-setting__help">Auto shrinks to fit. 2× locks 780×1688px · 3× locks 1170×2532px (scroll the window if needed).</div>
+            <div class="tz-segmented" role="group" aria-label="Desktop size">
+              <button type="button" class="tz-segment" data-value="AUTO" aria-pressed="true">Auto</button>
+              <button type="button" class="tz-segment" data-value="2" aria-pressed="false">2×</button>
+              <button type="button" class="tz-segment" data-value="3" aria-pressed="false">3×</button>
+            </div>
+          </div>
 
           <div class="tz-setting" data-setting="phonePreview">
             <div class="tz-setting__label">Phone preview (390px)</div>
-            <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules).</div>
+            <div class="tz-setting__help">Centers the game at mobile width with 1× scaling and mobile layouts (e.g. Hint Rules). Overrides desktop size.</div>
             <div class="tz-segmented" role="group" aria-label="Phone preview">
               <button type="button" class="tz-segment" data-value="OFF" aria-pressed="true">Off</button>
               <button type="button" class="tz-segment" data-value="ON" aria-pressed="false">On</button>
@@ -584,6 +594,15 @@
 
           <h3 class="tz-settings-section">Gameplay</h3>
           <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
+
+          <div class="tz-setting" data-setting="soundEffects">
+            <div class="tz-setting__label">Sound effects</div>
+            <div class="tz-setting__help">UI clicks, tile place/pickup, rotation, solve fanfare, and load-screen swipe.</div>
+            <div class="tz-segmented" role="group" aria-label="Sound effects">
+              <button type="button" class="tz-segment" data-value="ON" aria-pressed="true">On</button>
+              <button type="button" class="tz-segment" data-value="OFF" aria-pressed="false">Off</button>
+            </div>
+          </div>
 
           <div class="tz-setting" data-setting="liveEdgeValidation">
             <div class="tz-setting__label">Live Edge Validation</div>
@@ -1224,7 +1243,7 @@
 
     void guardGameEntry();
   </script>
-  <script type="module" src="js/app_v16.js?v=20250628h"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js?v=20250628h"></script>
+  <script type="module" src="js/app_v16.js?v=20250629a"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20250629a"></script>
 </body>
 </html>

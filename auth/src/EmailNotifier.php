@@ -73,7 +73,7 @@ class EmailNotifier {
             $baseUrl = $protocol . '://' . $host;
         }
 
-        $verificationLink = rtrim($baseUrl, '/') . '/verify-email.html?token=' . urlencode($verificationToken);
+        $verificationLink = rtrim($baseUrl, '/') . '/auth/verify-email.html?token=' . urlencode($verificationToken);
         $template = "Hello [user],\n\nThank you for registering with $appName! Please verify your email to activate your account.\n\n[verify_link]\n\nIf you did not create an account, ignore this email.";
 
         $emailBody = nl2br(htmlspecialchars(str_replace('[user]', $username, $template)));
@@ -102,7 +102,7 @@ class EmailNotifier {
             $baseUrl = $app['base_url'] ?? 'http://localhost:8081';
         }
 
-        $resetLink = rtrim($baseUrl, '/') . '/reset-password.html?token=' . urlencode($resetToken);
+        $resetLink = rtrim($baseUrl, '/') . '/auth/reset-password.html?token=' . urlencode($resetToken);
         $subject = "Password Reset - $appName";
         $message = "
         <html><body style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto'>

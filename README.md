@@ -11,7 +11,7 @@ This is a refactored version that separates:
 ```bash
 docker compose up --build
 ```
-Open http://127.0.0.1:8081/tilezilla-v2.html (default dev port; Docker uses 8080)
+Open http://127.0.0.1:8081/tilezilla-v2.html (local Python dev) or http://127.0.0.1:3000/ (Docker)
 
 ## Remote / LAN testing (Windows 11)
 
@@ -21,14 +21,23 @@ For testing on a phone or tablet on the same Wi‑Fi:
 .\scripts\start-remote-test.ps1 -OpenFirewall -SeedUsers
 ```
 
+## Production deploy (Ubuntu / tile.skifflakegames.com)
+
+See **[Docs/deploy-ubuntu.md](Docs/deploy-ubuntu.md)** — export DB from Windows, restore on server, HTTPS + mail relay.
+
+```powershell
+.\scripts\export-for-deploy.ps1 -IncludeSolves
+```
+
 This starts a self-contained stack (`docker-compose.remote-test.yml`):
 
-- **nginx gateway** on port **8080** — one URL for the game and `/auth/*`
+- **nginx gateway** on port **3000** — one URL for the game and `/auth/*`
+- **PHP auth** direct on port **3001** (optional; same stack)
 - **Python** game server (live-mounted repo)
 - **PHP** auth (local MySQL stub — no Words Online mail stack required)
 - **MySQL** for adventure path API and optional dev logins
 
-The script prints a **LAN URL** (e.g. `http://192.168.1.42:8080`). Open that on your test device.
+The script prints a **LAN URL** (e.g. `http://192.168.1.42:3000`). Open that on your test device.
 
 | Command | Purpose |
 |---------|---------|

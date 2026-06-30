@@ -156,6 +156,7 @@ import {
   resolveAdventureResume,
 } from './adventure-path.js';
 import { applyUiScale, wireUiScaleListeners, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
+import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -2074,6 +2075,8 @@ async function init() {
   applyGuestChrome();
 
   const settings = loadGameplaySettings();
+  setSfxEnabled(settings.soundEffects === 'ON');
+  initTilezillaSfx();
   applyPhonePreviewMode(settings.phonePreview === 'ON');
   applyUiScale();
   wireUiScaleListeners();
@@ -2088,6 +2091,13 @@ async function init() {
   if (authState.mode === 'registered' && authState.user) {
     applyRegisteredUserToApp(app, authState.user);
     applyGuestChrome();
+    try {
+      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+      await hydrateProgressFromServer(app.progress);
+      await updateRankPanel(app);
+    } catch (err) {
+      console.warn('Server progress hydrate:', err);
+    }
   } else if (app.progress && app.state?.userId) {
     const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
     await hydrateEncounteredTiles(app.progress, app.state.userId);
@@ -2255,8 +2265,10 @@ async function init() {
   const settingsApi = initSettingsUi({
     menuApi,
     onChange: (next) => {
+      setSfxEnabled(next.soundEffects === 'ON');
       applyPhonePreviewMode(next.phonePreview === 'ON');
       applyUiScale();
+      if (MAIN_V2_SHELL) updateMainV2BoardFit();
       app.applyGameplaySettings(next);
       app.renderTiles();
       updateTileBagCount(app);
@@ -2360,6 +2372,11 @@ async function init() {
   window.addEventListener('resize', () => {
     applyUiScale();
     if (app?.CONFIG) applyBoardFrameLayout(app);
+    if (MAIN_V2_SHELL) updateMainV2BoardFit();
+  });
+
+  window.addEventListener('tilezilla:ui-scale-changed', () => {
+    if (MAIN_V2_SHELL) updateMainV2BoardFit();
   });
 
   await loadDailyPuzzle(app);

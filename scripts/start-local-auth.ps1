@@ -1,14 +1,13 @@
 <#
 .SYNOPSIS
-  Start MySQL + php-auth for local python dev server (port 8080).
+  Start MySQL + php-auth for local python dev server (port 8081).
 
 .DESCRIPTION
-  Does NOT start the docker web container or touch port 8081 (garz-puzzle-web-1).
-  Auth is published on AUTH_PORT (default 8090) for scripts/server.py to proxy /auth/*.
+  Does NOT start the docker web container or touch port 3000 (Tilezilla Docker web).
+  Auth is published on AUTH_PORT (default 3001) for scripts/server.py to proxy /auth/*.
 
 .EXAMPLE
   .\scripts\start-local-auth.ps1
-  $env:PORT = "8080"
   python scripts/server.py
 #>
 [CmdletBinding()]
@@ -20,7 +19,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$AuthPort = if ($env:AUTH_PORT) { $env:AUTH_PORT } else { "8090" }
+$AuthPort = if ($env:AUTH_PORT) { $env:AUTH_PORT } else { "3001" }
 
 function Test-DockerReady {
   $job = Start-Job { docker info *> $null; return $LASTEXITCODE }
@@ -84,8 +83,8 @@ try {
 
   Write-Host ""
   Write-Host "Auth is up: http://127.0.0.1:$AuthPort" -ForegroundColor Green
-  Write-Host "Game dev server: `$env:PORT='8080'; python scripts/server.py" -ForegroundColor Green
-  Write-Host "Create account: http://127.0.0.1:8080/create-passport.html" -ForegroundColor Green
+  Write-Host "Game dev server: python scripts/server.py   (default port 8081)" -ForegroundColor Green
+  Write-Host "Create account: http://127.0.0.1:8081/create-passport.html" -ForegroundColor Green
 }
 finally {
   Pop-Location
