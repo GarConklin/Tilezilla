@@ -3088,12 +3088,6 @@ async function clearBoardKeepingHints() {
     hintTiles.map((t) => t.instanceId).filter((id) => id != null),
   );
 
-  for (const inst of (state.paletteInstances || [])) {
-    const inUse = state.used.has(inst.instanceId);
-    const keep = keptInstanceIds.has(inst.instanceId);
-    setPaletteUsed(inst.instanceId, inUse && keep);
-  }
-
   state.tiles = hintTiles.map((t) => ({ ...t }));
   state.used = keptInstanceIds;
   state.selectedTileId = null;
@@ -3102,6 +3096,9 @@ async function clearBoardKeepingHints() {
   state.deg = 0;
   if (rotHud) rotHud.textContent = '0';
   markPaletteSelected(null);
+  for (const inst of (state.paletteInstances || [])) {
+    setPaletteUsed(inst.instanceId, state.used.has(inst.instanceId));
+  }
   renderActivePreview();
   syncActionButtons();
   rebuildOccFromTiles();

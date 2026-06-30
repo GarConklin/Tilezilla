@@ -415,7 +415,11 @@ async function undoLastPlacedTile(app) {
       const snapshot = boardBeforeResetSnapshot;
       boardBeforeResetSnapshot = null;
       const restored = await app.restoreBoardFromSnapshot?.(snapshot);
-      if (restored) return 'restored';
+      if (restored) {
+        app.syncPreviewFromBoardSelection?.({ preferLastPlaced: true });
+        await app.renderActivePreview?.();
+        return 'restored';
+      }
     }
     return false;
   }
@@ -430,9 +434,10 @@ async function undoLastPlacedTile(app) {
   if (!last) return false;
 
   app.removeTileById(last.id);
-  app.state.selectedTileId = null;
+  app.clearActivePreviewSelection?.();
   app.rebuildOccFromTiles();
   await app.renderTiles();
+  await app.renderActivePreview?.();
   if (!(app.state.tiles || []).length) resetPuzzleTimer();
   dismissDiscoveryForBoardEdit();
   return true;
@@ -1523,6 +1528,55 @@ const BOTTOM_NAV_LABELS = {
   profile: 'Profile',
 };
 
+const LAST_NAV_SCREEN_KEY = 'tilezilla:last-nav-screen';
+const BOOTABLE_SCREENS = new Set(['daily-challenge', 'adventure']);
+
+function persistNavScreen(screen) {
+  if (!BOOTABLE_SCREENS.has(screen)) return;
+  try {
+    sessionStorage.setItem(LAST_NAV_SCREEN_KEY, screen);
+  } catch {
+    /* ignore */
+  }
+}
+
+function resolveInitialBootScreen(urlParams) {
+  const urlScreen = urlParams.get('screen');
+  if (urlScreen && BOOTABLE_SCREENS.has(urlScreen)) {
+    if (guestUser.isRestrictedNav(urlScreen)) return 'daily-challenge';
+    return urlScreen;
+  }
+
+  if (!guestUser.isGuestUser()) {
+    try {
+      const saved = sessionStorage.getItem(LAST_NAV_SCREEN_KEY);
+      if (saved && BOOTABLE_SCREENS.has(saved)) return saved;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return 'daily-challenge';
+}
+
+function applyInitialBootScreen(screen) {
+  const appRoot = document.querySelector('.tz-app');
+  appRoot?.setAttribute('data-screen', screen);
+  setActiveBottomNav(screen);
+  guestUser.syncGuestBanner();
+}
+
+async function loadInitialScreenPuzzle(app, screen) {
+  if (screen === 'adventure') {
+    await loadAdventurePuzzle(app);
+    return;
+  }
+  await loadDailyPuzzle(app);
+  if (guestUser.isGuestUser()) {
+    guestUser.trackGuestGameplay('Daily Challenge Started', app.state?.currentLevel?.id);
+  }
+}
+
 const RANDOM_VENTURE_SIZES = new Set(['4x5', '5x5', '4x6', '5x6']);
 
 function adventureSizeFromLevelId(levelId) {
@@ -1557,6 +1611,7 @@ async function switchToAdventureScreen(app) {
   const appRoot = document.querySelector('.tz-app');
   setActiveBottomNav('adventure');
   appRoot?.setAttribute('data-screen', 'adventure');
+  persistNavScreen('adventure');
   await loadAdventurePuzzle(app);
 }
 
@@ -1775,6 +1830,7 @@ function wireBottomNav(getApp) {
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
       });
       appRoot?.setAttribute('data-screen', screen);
+      persistNavScreen(screen);
       guestUser.syncGuestBanner();
       if (MAIN_V2_SHELL) closeBottomMenuV2();
 
@@ -1831,8 +1887,6 @@ function wireActions(app) {
     const removed = await undoLastPlacedTile(app);
     if (removed === 'restored') {
       syncBoardChrome(app);
-      app.syncPreviewFromBoardSelection?.({ preferLastPlaced: true });
-      app.renderActivePreview?.();
       showGameMessage('Board restored.', 'info');
       return;
     }
@@ -1846,8 +1900,6 @@ function wireActions(app) {
       return;
     }
     syncBoardChrome(app);
-    app.syncPreviewFromBoardSelection?.({ preferLastPlaced: true });
-    app.renderActivePreview?.();
     showGameMessage('Last tile removed.', 'info');
   });
 
@@ -2288,6 +2340,10 @@ async function init() {
   guestUser.wireLoginRequiredModal();
   guestUser.wireGuestCompletionModal();
 
+  const appRoot = document.querySelector('.tz-app');
+  appRoot?.classList.add('is-shell-booting');
+  const bootLoading = $('loadingHud');
+
   const authState = isDevAuthBypass()
     ? { mode: 'dev', user: null }
     : await syncAuthFromServer();
@@ -2416,6 +2472,7 @@ async function init() {
       const appRoot = document.querySelector('.tz-app');
       dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'daily-challenge');
+      persistNavScreen('daily-challenge');
       guestUser.syncGuestBanner();
       if (app) await loadDailyPuzzle(app);
     },
@@ -2424,6 +2481,7 @@ async function init() {
       const appRoot = document.querySelector('.tz-app');
       dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'adventure');
+      persistNavScreen('adventure');
       guestUser.syncGuestBanner();
       if (app) await loadAdventurePuzzle(app);
     },
@@ -2502,9 +2560,7 @@ async function init() {
       const app = appRef;
       if (!app) return;
       const removed = await undoLastPlacedTile(app);
-      app.clearActivePreviewSelection?.();
       syncBoardChrome(app);
-      await app.renderActivePreview?.();
       if (removed === 'restored') {
         showGameMessage('Board restored.', 'info');
       } else if (removed) {
@@ -2637,26 +2693,23 @@ async function init() {
     if (MAIN_V2_SHELL) updateMainV2BoardFit();
   });
 
-  await loadDailyPuzzle(app);
-  if (guestUser.isGuestUser()) {
-    guestUser.trackGuestGameplay('Daily Challenge Started', app.state?.currentLevel?.id);
-  }
-
   const urlParams = new URLSearchParams(window.location.search);
-  const startScreen = urlParams.get('screen');
   const shouldOpenProfile = (urlParams.get('profile') === '1' || urlParams.get('profile') === 'true')
     && guestUser.isRegisteredUser();
+  const initialScreen = resolveInitialBootScreen(urlParams);
+
+  applyInitialBootScreen(initialScreen);
+  await loadInitialScreenPuzzle(app, initialScreen);
 
   if (shouldOpenProfile) {
     await openProfileOverlay();
     urlParams.delete('profile');
     const qs = urlParams.toString();
     window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
-  } else if (startScreen && startScreen !== 'daily-challenge' && !guestUser.isGuestUser()) {
-    const hit = document.querySelector(`.tz-bottom-nav__hit[data-nav="${startScreen}"]`);
-    hit?.click();
   }
 
+  appRoot?.classList.remove('is-shell-booting');
+  if (bootLoading) bootLoading.hidden = true;
   applyGuestChrome(appRef);
 }
 

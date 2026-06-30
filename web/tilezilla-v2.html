@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body>
-  <div class="tz-app tz-main-v2-app" data-screen="daily-challenge">
+  <div class="tz-app tz-main-v2-app is-shell-booting" data-screen="daily-challenge">
 
     <div class="tz-bg" aria-hidden="true">
       <div class="tz-bg__sky"></div>
@@ -94,6 +94,7 @@
         <p id="gameMessage" class="tz-game-message" role="status" aria-live="polite"></p>
 
         <section class="tz-board-section" aria-label="Puzzle board">
+          <p id="shellBootLoader" class="tz-shell-boot-loader" aria-live="polite">Loading Game Interface...</p>
           <div class="tz-board-frame">
             <div class="tz-board-wrap boardWrap" id="boardWrap">
               <div class="tz-board board" id="board" aria-label="Puzzle board"></div>
