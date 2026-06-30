@@ -91,11 +91,6 @@ if [[ ! -f "$REPO_ROOT/auth/config/config.php" ]]; then
 fi
 
 echo "==> Start full production stack"
-if ! docker network inspect words_network >/dev/null 2>&1; then
-  echo "WARNING: Docker network 'words_network' not found — auth email will fail until mail relay is linked." >&2
-  echo "         See Docs/deploy-ubuntu.md § Mail server" >&2
-fi
-
 docker compose -f docker-compose.production.yml --env-file "$ENV_FILE" up -d --build
 
 echo ""

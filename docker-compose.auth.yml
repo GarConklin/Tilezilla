@@ -1,4 +1,4 @@
-# Tilezilla auth service — joins Words Online mail relay on words_network (SMTP only).
+# Tilezilla auth service — standalone PHP auth + direct SMTP.
 # Accounts live in tilegame MySQL (same as the game stack).
 #
 # Usage:
@@ -32,10 +32,9 @@ services:
       APP_NAME: ${APP_NAME:-Tilezilla}
       APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
       APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
-    networks:
-      - words_network
-
-networks:
-  words_network:
-    external: true
-    name: words_network
+      SMTP_ENABLED: ${SMTP_ENABLED:-true}
+      SMTP_HOST: ${SMTP_HOST:-mail.skifflakegames.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-none}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}

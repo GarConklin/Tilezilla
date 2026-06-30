@@ -4,8 +4,6 @@
 # Docs:   Docs/deploy-ubuntu.md
 #
 # Gateway listens on 127.0.0.1:3000 — host nginx on the VPS terminates HTTPS and proxies here.
-# Auth is also exposed on 127.0.0.1:3001 for direct local access (optional).
-# PHP auth joins words_network for outbound mail (Words mailserver relay).
 
 name: tilezilla
 
@@ -80,12 +78,15 @@ services:
       APP_NAME: ${APP_NAME:-Tilezilla}
       APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
       APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+      SMTP_ENABLED: ${SMTP_ENABLED:-true}
+      SMTP_HOST: ${SMTP_HOST:-mail.skifflakegames.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-none}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
     depends_on:
       mysql:
         condition: service_healthy
-    networks:
-      - default
-      - words_network
 
   mysql:
     image: mysql:8.4
@@ -112,8 +113,3 @@ volumes:
   mysql_data:
     name: tilezilla_shared_mysql_data
     external: true
-
-networks:
-  words_network:
-    external: true
-    name: words_network

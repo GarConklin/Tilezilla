@@ -22,4 +22,12 @@ return [
         'base_url' => rtrim(getenv('APP_BASE_URL') ?: 'http://localhost:3000', '/'),
         'admin_notify_email' => getenv('APP_ADMIN_EMAIL') ?: 'gar@hotmail.ca',
     ],
+    'smtp' => [
+        'enabled' => filter_var(getenv('SMTP_ENABLED') ?: 'true', FILTER_VALIDATE_BOOLEAN),
+        'host' => getenv('SMTP_HOST') ?: 'mail.skifflakegames.com',
+        'port' => (int) (getenv('SMTP_PORT') ?: 587),
+        'tls' => getenv('SMTP_TLS') ?: 'none',
+        'user' => getenv('SMTP_USER') ?: '',
+        'password' => getenv('SMTP_PASS') ?: '',
+    ],
 ];

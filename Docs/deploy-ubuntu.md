@@ -14,7 +14,7 @@ Step-by-step for moving your **Windows dev stack** (code + MySQL + users) to a l
 | Auth (register/login) | PHP in Docker (`tilezilla_auth`) |
 | MySQL | Docker volume `tilezilla_shared_mysql_data` |
 | HTTPS | **Host nginx** (already on the VPS) → Docker gateway on `127.0.0.1:3000` |
-| Email | PHP `mail()` → sendmail → **Words mail relay** on Docker `words_network` |
+| Email | `EmailNotifier.php` → SMTP **mail.skifflakegames.com:587** (separate VPS; no TLS initially) |
 
 **Host ports (do not use 8080 on the VPS):**
 
@@ -179,46 +179,51 @@ curl -s https://tile.skifflakegames.com/api/system-info | head
 
 ---
 
-## Part 5 — Mail server (registration / password reset)
+## Part 5 — Mail (registration / password reset)
 
-Tilezilla auth sends mail via **PHP `mail()` → sendmail → SMTP relay** configured in `docker/php/Dockerfile`:
+Tilezilla and Words Online run on **separate servers**. Auth sends mail via a direct SMTP socket from `auth/src/EmailNotifier.php` to **mail.skifflakegames.com:587**. No sendmail, no Docker shared networks, no port 25.
 
-- Relay host: `mailserver` (Docker hostname)
-- Port: `587`
-- Network: **`words_network`** (external Docker network)
+The mail relay trusts the Tilezilla VPS IP and does not require TLS or AUTH initially.
 
-The production compose file attaches `tilezilla_auth` to `words_network`. That network and the mail container must exist **before** email works.
+| Setting | Production value | Where |
+|---------|------------------|--------|
+| `SMTP_ENABLED` | `true` | `.env.production` |
+| `SMTP_HOST` | `mail.skifflakegames.com` | `.env.production` |
+| `SMTP_PORT` | `587` | `.env.production` |
+| `SMTP_TLS` | `none` | `.env.production` |
+| `SMTP_USER` | (empty) | only if relay requires AUTH later |
+| `SMTP_PASS` | (empty) | only if relay requires AUTH later |
+| `APP_FROM_EMAIL` | `words@skifflakegames.com` | must be allowed by relay |
+| `APP_NAME` | `Tilezilla` | email subject prefix |
 
-### Option A — Same server already runs Words Online mail (typical Skifflake setup)
-
-On the server (Words Online repo):
-
-```bash
-cd /path/to/WordsOnline
-docker compose up -d
-docker compose -f docker-compose.mail.yml up -d
-```
-
-Verify:
+Add to `.env.production`:
 
 ```bash
-docker network inspect words_network --format '{{range .Containers}}{{.Name}} {{end}}'
-# Should include something like words_mailserver
+SMTP_ENABLED=true
+SMTP_HOST=mail.skifflakegames.com
+SMTP_PORT=587
+SMTP_TLS=none
 ```
 
-Then restart Tilezilla auth:
+Verify port 587 from the Tilezilla VPS (port 25 is not required):
+
+```bash
+nc -zv mail.skifflakegames.com 587
+```
+
+Rebuild and restart auth after changing mail settings:
 
 ```bash
 cd /opt/tilezilla
 docker compose -f docker-compose.production.yml --env-file .env.production up -d --build php-auth
 ```
 
-Test email from the auth container:
+Test from the auth container:
 
 ```bash
 docker exec -it tilezilla_auth php -r "
 require_once '/var/www/html/src/EmailNotifier.php';
-\$ok = EmailNotifier::send('your@email.com', 'Tilezilla test', '<p>Mail relay works.</p>');
+\$ok = EmailNotifier::send('your@email.com', 'Tilezilla test', '<p>SMTP works.</p>');
 echo \$ok ? 'sent' : 'failed';
 "
 ```
@@ -226,26 +231,12 @@ echo \$ok ? 'sent' : 'failed';
 If it fails:
 
 ```bash
-docker logs tilezilla_auth --tail 30
-docker logs words_mailserver --tail 30   # name may vary
+docker logs tilezilla_auth --tail 50
 ```
 
-### Option B — Mail on another machine
+Common causes: `SMTP_ENABLED=false`, firewall blocking outbound 587, relay IP allowlist missing Tilezilla VPS, or `APP_FROM_EMAIL` not permitted.
 
-You need a reachable SMTP relay and must update `docker/php/Dockerfile` `SMART_HOST` (or use a different PHP mail transport). Discuss with whoever runs `words@skifflakegames.com` DNS (SPF/DKIM).
-
-### Option C — Test without mail first
-
-Guest play and existing logins work without mail. New registrations will create accounts but **verification email won’t send** until Option A/B is wired.
-
-### Email settings checklist
-
-| Setting | Where | Value |
-|---------|--------|--------|
-| `APP_BASE_URL` | `.env.production` | `https://tile.skifflakegames.com` |
-| `APP_FROM_EMAIL` | `.env.production` | `words@skifflakegames.com` (must match relay policy) |
-| Auth container on `words_network` | `docker-compose.production.yml` | automatic |
-| DNS SPF | DNS panel | must authorize sending server |
+Guest play works without mail. New registrations need working SMTP for verification emails.
 
 Verification link format:  
 `https://tile.skifflakegames.com/auth/verify-email.html?token=...`
@@ -314,10 +305,7 @@ docker compose -f docker-compose.production.yml exec -T mysql \
 
 | Problem | Fix |
 |---------|-----|
-| `words_network` not found | Start Words mail stack or create network: `docker network create words_network` (mail still won’t work until relay exists) |
 | 502 on HTTPS | `curl http://127.0.0.1:3000/` — if fail, `docker compose logs gateway web`; if OK, check host nginx error log |
 | Login works locally not on HTTPS | `APP_BASE_URL` must be `https://…`; cookies need same site |
-| Email not received | Test with `docker exec` snippet above; check spam; check `words_mailserver` logs |
+| Email not received | `SMTP_ENABLED=true`; test `nc -zv mail.skifflakegames.com 587`; check `docker logs tilezilla_auth` |
 | Empty adventure / stats | Run `refresh-system-stats.py`; confirm SQL import succeeded |
-
-For ChatGPT / mail deep-dive, share: output of `docker network inspect words_network`, auth test send result, and whether Words Online mail compose is on the **same VPS** or a separate host.

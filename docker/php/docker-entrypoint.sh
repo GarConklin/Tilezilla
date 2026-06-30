@@ -8,8 +8,4 @@ if [ ! -e /var/www/html/public/api ]; then
   fi
 fi
 
-if [ -f /usr/sbin/sendmail ]; then
-  service sendmail start || true
-fi
-
 exec "$@"

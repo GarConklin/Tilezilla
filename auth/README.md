@@ -1,28 +1,26 @@
 # Tilezilla auth (PHP)
 
-Registration and login use **tilegame.users** in MySQL. Outbound email uses the Words Online **mail relay** on `words_network` (SMTP only — no WordsOnline account DB).
+Registration and login use **tilegame.users** in MySQL on the Tilezilla server. Outbound email uses **direct SMTP** to `mail.skifflakegames.com:587` (separate VPS from Words Online).
 
 ## Local stack (3000 / 3001)
 
 ```powershell
 docker compose up -d
-.\scripts\migrate-auth-to-tilegame.ps1   # once, if upgrading from WordsOnline accounts
 ```
 
-Game: http://localhost:3000/ — Auth direct: http://localhost:3001/
+Game: http://localhost:3000/ — Auth: http://localhost:3001/register.html
 
-## Standalone auth + mail relay (3001)
+## Standalone auth (3001)
 
 ```powershell
-# Words mail on words_network (in WordsOnline repo)
-docker compose -f docker-compose.mail.yml up -d
-
 docker compose -f docker-compose.auth.yml up -d --build
 ```
 
+Set `SMTP_ENABLED=false` in env to skip real mail during local dev.
+
 | File | Role |
 |------|------|
-| `src/Db.php` | Single tilegame connection |
+| `src/EmailNotifier.php` | Direct SMTP client |
 | `src/AuthManager.php` | Register/login against `tilegame.users` |
 | `src/GuestManager.php` | Guest codes in tilegame |
 | `api/*.php` | JSON auth API |

@@ -1,100 +1,90 @@
 # Tilezilla — Auth & Email Setup
 
-Tilezilla stores **accounts in `tilegame.users`**. Outbound email uses the **Words Online mail relay** only (no WordsOnline account database).
+Tilezilla runs on its **own VPS** (`tile.skifflakegames.com`). Accounts live in **`tilegame.users`** on the Tilezilla MySQL container. Outbound mail goes **directly over SMTP** to the Skifflake mail server — no Docker shared networks, no sendmail, no Words Online container hostnames.
 
 ## Architecture
 
 ```
-Browser  →  Tilezilla PHP (auth/api/*.php)
+Browser  →  tile.skifflakegames.com (nginx → Docker gateway)
               ↓
-         tilegame MySQL (users table — register, login, verify)
+         PHP auth (auth/api/*.php)
               ↓
-         PHP mail()  →  sendmail  →  mailserver:587  →  words_mailserver
+         tilegame MySQL (users, profiles, progress)
+              ↓
+         EmailNotifier.php  →  SMTP socket  →  mail.skifflakegames.com:587
 ```
 
 | Layer | Location | Purpose |
 |-------|----------|---------|
-| Mail relay | `words_mailserver` on Docker network `words_network` | Postfix SMTP only |
-| Accounts | `tilegame.users` | Register, login, email verification, guest_code |
-| Game data | `tilegame` | Levels, hints, daily, `tile_profiles`, progress |
+| Tilezilla VPS | Separate server (e.g. `76.13.26.113`) | Game, auth, MySQL |
+| Mail server | `mail.skifflakegames.com` | Postfix relay (port **587** open; port **25** not used from Tilezilla) |
+| Accounts | `tilegame.users` | Register, login, email verification |
 | Auth code | `auth/` in this repo | PHP API + login/register pages |
-| Static game | `web/` + Python `scripts/server.py` | Gameplay (Docker dev stack: port 3000; local Python: 8081) |
 
-**Upgrading from WordsOnline accounts:** run `.\scripts\migrate-auth-to-tilegame.ps1` once (preserves user ids).
+Tilezilla and Words Online are **separate deployments**. They communicate only via public SMTP to `mail.skifflakegames.com`, not via Docker networks.
 
-## Quick start (production server)
+## SMTP settings (`.env.production` or auth container env)
 
-Words Online and the mail server must already be running:
+| Variable | Production value | Notes |
+|----------|------------------|-------|
+| `SMTP_ENABLED` | `true` | Set `false` to disable outbound mail |
+| `SMTP_HOST` | `mail.skifflakegames.com` | Public hostname of mail server |
+| `SMTP_PORT` | `587` | Submission relay port |
+| `SMTP_TLS` | `none` | `none`, `starttls`, or `ssl` (use `none` to match current IP-trusted relay) |
+| `SMTP_USER` | (empty) | Set when relay requires AUTH |
+| `SMTP_PASS` | (empty) | Set when relay requires AUTH |
+| `APP_FROM_EMAIL` | `words@skifflakegames.com` | From header — must be allowed by relay |
+| `APP_NAME` | `Tilezilla` | Shown in email subjects |
+| `APP_BASE_URL` | `https://tile.skifflakegames.com` | Verification/reset links |
 
-```bash
-# On server — mail + words stack
-cd /path/to/WordsOnline
-docker compose up -d
-docker compose -f docker-compose.mail.yml up -d
-```
+Relay policy today: **no TLS, no AUTH** — the mail server trusts the Tilezilla VPS IP (`76.13.26.113`). Enable `SMTP_TLS` or credentials later if relay policy changes.
 
-Then start Tilezilla auth:
+## Production test
 
-```bash
-cd /path/to/Tilezilla
-cp auth/config/config.example.php auth/config/config.php
-# Edit config.php: DB host, base_url, admin email
-
-docker compose -f docker-compose.auth.yml up -d --build
-```
-
-Test email from the auth container:
+After `docker compose -f docker-compose.production.yml --env-file .env.production up -d --build php-auth`:
 
 ```bash
 docker exec -it tilezilla_auth php -r "
 require_once '/var/www/html/src/EmailNotifier.php';
-\$ok = EmailNotifier::send('your@email.com', 'Tilezilla test', '<p>Mail relay works.</p>');
+\$ok = EmailNotifier::send('your@email.com', 'Tilezilla test', '<p>SMTP works.</p>');
 echo \$ok ? 'sent' : 'failed';
 "
 ```
 
-## Quick start (local dev)
+On failure:
 
-1. Start Words Online stack (creates `words_network` + `words_mailserver`):
+```bash
+docker logs tilezilla_auth --tail 50
+```
 
-   ```powershell
-   cd D:\Words-Online\WordsOnline
-   docker compose up -d
-   docker compose -f docker-compose.mail.yml up -d
-   ```
+From the Tilezilla host, confirm port 587 is reachable (port 25 is not required):
 
-2. Copy and edit config:
+```bash
+nc -zv mail.skifflakegames.com 587
+```
 
-   ```powershell
-   cd C:\Users\~Gar\Tile-Puzzle\Tilezilla
-   copy auth\config\config.example.php auth\config\config.php
-   ```
+## Local dev
 
-   Set `db.host` to `words_db` (container name on `words_network`).
+Auth uses the same SMTP settings. For local registration testing without sending real mail, set `SMTP_ENABLED=false` in your env file.
 
-3. Start auth service:
-
-   ```powershell
-   docker compose -f docker-compose.auth.yml up -d --build
-   ```
-
-4. Open `http://localhost:8081/register.html` to test registration.
+```powershell
+docker compose up -d
+# or standalone auth:
+docker compose -f docker-compose.auth.yml up -d --build
+```
 
 ## Config (`auth/config/config.php`)
 
-| Key | Example | Notes |
-|-----|---------|-------|
-| `db.host` | `words_db` | Words MySQL container on `words_network` |
-| `db.database` | `WordsOnline` | Shared user accounts |
-| `game_db.host` | `garz-puzzle-mysql` | Tilezilla MySQL (optional, for profiles) |
-| `game_db.database` | `tilegame` | Game progress DB |
-| `app.base_url` | `https://tile.skifflakegames.com` | Verification/reset links in emails |
-| `app.from_email` | `words@skifflakegames.com` | Same sender domain as Words |
-| `app.name` | `Tilezilla` | Shown in email subjects |
+Environment variables override file defaults. See `auth/config/config.example.php`.
+
+| Key | Notes |
+|-----|-------|
+| `db.*` | Tilezilla MySQL (`mysql` in Docker) |
+| `app.base_url` | Public HTTPS URL for email links |
+| `app.from_email` | Sender address |
+| `smtp.*` | Mirrors `SMTP_*` env vars |
 
 ## API endpoints
-
-All served from the auth container (`/api/`):
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -106,76 +96,26 @@ All served from the auth container (`/api/`):
 | `/api/forgot-password.php` | POST | Send reset email |
 | `/api/reset-password.php` | POST | Set new password |
 
-### Register (JSON body)
-
-```json
-{ "username": "player1", "email": "you@example.com", "password": "secret12" }
-```
-
-### Login (JSON body)
-
-```json
-{ "username": "player1", "password": "secret12" }
-```
-
-Username field accepts **username or email**.
-
 ## Web pages
 
 | Page | Path |
 |------|------|
-| Login | `/login.html` |
-| Register | `/register.html` |
-| Verify email | `/verify-email.html?token=...` |
-| Game | `/web/index.html` (static, Python server or nginx proxy) |
+| Login | `/auth/login.html` |
+| Register | `/auth/register.html` |
+| Verify email | `/auth/verify-email.html?token=...` |
 
-## Wiring the game client (`web/js/app_v16.js`)
+## Nginx (production)
 
-Replace the local `userSelect` dropdown with session auth:
-
-```javascript
-// At startup
-const auth = await fetch('/api/check-session.php').then(r => r.json());
-if (!auth.authenticated) {
-  window.location.href = '/login.html?return=' + encodeURIComponent(location.pathname);
-}
-state.userId = String(auth.user.id);  // WordsOnline users.id
-```
-
-Include `auth/public/js/auth-utils.js` on game pages if you proxy API through the same host.
-
-## Shared accounts
-
-- One Skifflake account works for **Words** and **Tilezilla**.
-- `users.id` from WordsOnline is the `user_id` / `words_user_id` in tilegame tables.
-- See `docker/mysql/init/05-tile-profiles.sql` for tilegame-specific profile fields.
-
-## Alternative: call Words APIs directly (no local PHP)
-
-If you prefer zero mail config in Tilezilla, point forms at Words Online:
-
-- `POST https://words.skifflakegames.com/api/register.php`
-- `GET https://words.skifflakegames.com/api/verify-email.php?token=...`
-- `POST https://words.skifflakegames.com/api/login.php`
-
-Downside: PHP sessions are per-domain unless cookies use `.skifflakegames.com`.
-
-**Recommended:** use the local `auth/` package on `words_network` so verification links and sessions stay on the Tilezilla domain.
-
-## Nginx reverse proxy (production)
-
-Example host `tile.skifflakegames.com`:
-
-- `/api/*`, `/login.html`, `/register.html`, `/verify-email.html` → `tilezilla_auth:80`
-- `/web/*`, `/data/*`, `/solves/*` → Python static server or nginx static root
+Host nginx terminates TLS and proxies to Docker gateway on `127.0.0.1:3000`. The gateway routes `/auth/` to PHP auth. See `Docs/deploy-ubuntu.md` and `docker/nginx/host-reverse-proxy.example.conf`.
 
 ## Troubleshooting
 
 | Problem | Check |
 |---------|-------|
-| Email not sent | `docker logs words_mailserver --tail 20` |
-| Connection refused to mail | Auth container on `words_network`? `docker network inspect words_network` |
-| DB connection failed | `db.host` must be reachable from auth container (`words_db` on server) |
-| Login says verify email | User must click link from registration email first |
+| Email not sent | `docker logs tilezilla_auth`; verify `SMTP_ENABLED=true` |
+| Connection refused | `nc -zv mail.skifflakegames.com 587` from Tilezilla VPS |
+| Relay denied | Tilezilla VPS IP allowlisted on mail server? `APP_FROM_EMAIL` permitted? |
+| Login says verify email | User must click registration link first |
+| DB connection failed | MySQL healthy? `.env.production` passwords match volume? |
 
-See also: `D:\Words-Online\WordsOnline\TEST_EMAIL_SETUP.md`
+See also: `Docs/deploy-ubuntu.md`

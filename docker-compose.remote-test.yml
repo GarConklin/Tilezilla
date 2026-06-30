@@ -78,6 +78,12 @@ services:
       APP_NAME: Tilezilla
       APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
       APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+      SMTP_ENABLED: ${SMTP_ENABLED:-true}
+      SMTP_HOST: ${SMTP_HOST:-mail.skifflakegames.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-none}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
     depends_on:
       mysql:
         condition: service_healthy
