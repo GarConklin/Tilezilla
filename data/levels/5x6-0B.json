@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "5x6",
   "tier": "0B",
-  "count": 2259,
+  "count": 2383,
   "levels": [
     {
       "id": "5x6-0B-AAA",
@@ -52243,6 +52243,2873 @@
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0B-DIX",
+      "name": "DIX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DIX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DIY",
+      "name": "DIY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 6,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DIY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DIZ",
+      "name": "DIZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DIZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJA",
+      "name": "DJA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJB",
+      "name": "DJB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJC",
+      "name": "DJC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJD",
+      "name": "DJD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJE",
+      "name": "DJE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJF",
+      "name": "DJF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJG",
+      "name": "DJG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJH",
+      "name": "DJH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJI",
+      "name": "DJI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJJ",
+      "name": "DJJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJK",
+      "name": "DJK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJL",
+      "name": "DJL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJM",
+      "name": "DJM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJN",
+      "name": "DJN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJO",
+      "name": "DJO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJP",
+      "name": "DJP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJQ",
+      "name": "DJQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJR",
+      "name": "DJR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJS",
+      "name": "DJS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJT",
+      "name": "DJT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJU",
+      "name": "DJU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJV",
+      "name": "DJV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJW",
+      "name": "DJW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJX",
+      "name": "DJX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJY",
+      "name": "DJY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DJZ",
+      "name": "DJZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DJZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKA",
+      "name": "DKA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKB",
+      "name": "DKB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKC",
+      "name": "DKC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKD",
+      "name": "DKD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKE",
+      "name": "DKE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKF",
+      "name": "DKF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKG",
+      "name": "DKG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKH",
+      "name": "DKH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKI",
+      "name": "DKI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKJ",
+      "name": "DKJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKK",
+      "name": "DKK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKL",
+      "name": "DKL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKM",
+      "name": "DKM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKN",
+      "name": "DKN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKO",
+      "name": "DKO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QS": 2,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKP",
+      "name": "DKP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKQ",
+      "name": "DKQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKR",
+      "name": "DKR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKS",
+      "name": "DKS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 3,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKT",
+      "name": "DKT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKU",
+      "name": "DKU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKV",
+      "name": "DKV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKW",
+      "name": "DKW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKX",
+      "name": "DKX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKY",
+      "name": "DKY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DKZ",
+      "name": "DKZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DKZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLA",
+      "name": "DLA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLB",
+      "name": "DLB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLC",
+      "name": "DLC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLD",
+      "name": "DLD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLE",
+      "name": "DLE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLF",
+      "name": "DLF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLG",
+      "name": "DLG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLH",
+      "name": "DLH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLI",
+      "name": "DLI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLJ",
+      "name": "DLJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLK",
+      "name": "DLK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLL",
+      "name": "DLL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLM",
+      "name": "DLM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLN",
+      "name": "DLN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLO",
+      "name": "DLO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLP",
+      "name": "DLP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLQ",
+      "name": "DLQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLR",
+      "name": "DLR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLS",
+      "name": "DLS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLT",
+      "name": "DLT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLU",
+      "name": "DLU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLV",
+      "name": "DLV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLW",
+      "name": "DLW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLX",
+      "name": "DLX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLY",
+      "name": "DLY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DLZ",
+      "name": "DLZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DLZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMA",
+      "name": "DMA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMB",
+      "name": "DMB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMC",
+      "name": "DMC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMD",
+      "name": "DMD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DME",
+      "name": "DME",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DME.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMF",
+      "name": "DMF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMG",
+      "name": "DMG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMH",
+      "name": "DMH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMI",
+      "name": "DMI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMJ",
+      "name": "DMJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMK",
+      "name": "DMK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 2,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DML",
+      "name": "DML",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DML.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMM",
+      "name": "DMM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 4,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMN",
+      "name": "DMN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMO",
+      "name": "DMO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 5,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMP",
+      "name": "DMP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMQ",
+      "name": "DMQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMR",
+      "name": "DMR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMS",
+      "name": "DMS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMT",
+      "name": "DMT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMU",
+      "name": "DMU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMV",
+      "name": "DMV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMW",
+      "name": "DMW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMX",
+      "name": "DMX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMY",
+      "name": "DMY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 4,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DMZ",
+      "name": "DMZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DMZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNA",
+      "name": "DNA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNB",
+      "name": "DNB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNC",
+      "name": "DNC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DND",
+      "name": "DND",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DND.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNE",
+      "name": "DNE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 2,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNF",
+      "name": "DNF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNG",
+      "name": "DNG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNH",
+      "name": "DNH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNI",
+      "name": "DNI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNJ",
+      "name": "DNJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNK",
+      "name": "DNK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNL",
+      "name": "DNL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNM",
+      "name": "DNM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNN",
+      "name": "DNN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNO",
+      "name": "DNO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNP",
+      "name": "DNP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNQ",
+      "name": "DNQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "QC": 3,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
     }
   ]
 }
