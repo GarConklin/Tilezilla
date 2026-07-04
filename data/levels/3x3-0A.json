@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "3x3",
   "tier": "0A",
-  "count": 5,
+  "count": 6,
   "levels": [
     {
       "id": "3x3-0A-AAA",
@@ -78,6 +78,26 @@
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 2
+    },
+    {
+      "id": "3x3-0A-AAD",
+      "name": "AAD",
+      "board": {
+        "rows": 3,
+        "cols": 3
+      },
+      "tiles": {
+        "SH": 1,
+        "LL": 1,
+        "UT": 1,
+        "ET": 1,
+        "B1": 1
+      },
+      "blockers": [],
+      "solvesFile": "3x3-0A-AAD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
     },
     {
       "id": "3x3-0A-AAE",

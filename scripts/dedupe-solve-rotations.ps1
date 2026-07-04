@@ -77,6 +77,21 @@ if ($AuditOnly) {
 Write-RunLog "STEP: sync catalog pathCount" "Cyan"
 Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-path-count-from-solves.js" -ExtraArgs @("--apply") -LogWriter $logWriter
 
+Write-RunLog "STEP: sync daily_challenges_import.csv from catalog" "Cyan"
+Push-Location $RepoRoot
+try {
+  $prev = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  $out = & python scripts/sync-daily-csv-from-catalog.py 2>&1
+  $ErrorActionPreference = $prev
+  foreach ($line in $out) {
+    Write-RunLog "$line"
+  }
+}
+finally {
+  Pop-Location
+}
+
 if (-not $SkipCsv) {
   Write-RunLog "STEP: export levels-solution-counts.csv" "Cyan"
   Push-Location $RepoRoot
