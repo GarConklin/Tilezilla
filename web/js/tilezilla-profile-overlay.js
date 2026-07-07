@@ -179,7 +179,8 @@ export function initProfileOverlay({
     closeProfileOverlayPopup();
   });
 
-  void ensureProfileOverlayLayout(document);
+  void requestIdleCallback?.(() => ensureProfileOverlayLayout(document))
+    ?? setTimeout(() => { void ensureProfileOverlayLayout(document); }, 0);
 
   window.addEventListener('tilezilla:auth-screen-layout-saved', () => {
     void ensureProfileOverlayLayout(document);
@@ -198,9 +199,4 @@ export function initProfileOverlay({
   });
 
   return { openProfileOverlay, closeProfileOverlayPopup };
-}
-
-// Apply tuned layout as soon as overlay markup exists (tilezilla-v2.html body is parsed before modules run).
-if (document.getElementById('profileOverlayRoot')) {
-  void refreshProfileOverlayLayoutFromDisk();
 }

@@ -1681,7 +1681,7 @@ function selectPaletteInstance(instanceId) {
   void renderTiles();
 }
 
-async function buildPalette(){
+async function buildPalette({ deferThumbs = false } = {}){
   paletteEl.innerHTML='';
   const instances = state.paletteInstances || [];
   for(const inst of instances){
@@ -1723,7 +1723,16 @@ async function buildPalette(){
     });
     paletteEl.appendChild(item);
   }
-  await Promise.all(instances.map((inst) => ensureBagThumbAtZero(inst.instanceId)));
+  if (deferThumbs) {
+    for (const inst of instances) {
+      const item = paletteEl.querySelector(`[data-tile="${CSS.escape(inst.instanceId)}"]`);
+      const img = item?.querySelector('.palThumb img');
+      if (img) img.src = 'img/' + resolveTileAsset(inst.tile, state.activeTileset);
+    }
+    void Promise.all(instances.map((inst) => ensureBagThumbAtZero(inst.instanceId)));
+  } else {
+    await Promise.all(instances.map((inst) => ensureBagThumbAtZero(inst.instanceId)));
+  }
   for (const inst of instances) syncPaletteItemPresentation(inst.instanceId);
 }
 
@@ -4229,8 +4238,9 @@ function populateSizeAndLevelUI(){
   }
 }
 
-async function applyLevel(level){
+async function applyLevel(level, { onShellReady = null } = {}){
   if(!level || !level.board) return;
+  const isShell = !!document.querySelector('.tz-app');
   state.currentLevel = level;
   state.levelTileCounts = (level.tiles && typeof level.tiles === 'object') ? normalizeLevelTiles(level.tiles) : null;
   resetBlockerState();
@@ -4291,11 +4301,20 @@ async function applyLevel(level){
   if(levelSelect) levelSelect.value = level.id;
   setCssCell();
   buildGrid();
-  await preloadLevelTileImages(level);
-  await buildPalette();
-  renderActivePreview();
-  rebuildOccFromTiles();
-  await renderTiles();
+  if (isShell) {
+    onShellReady?.();
+    await buildPalette({ deferThumbs: true });
+    renderActivePreview();
+    rebuildOccFromTiles();
+    void renderTiles();
+    void preloadLevelTileImages(level);
+  } else {
+    await preloadLevelTileImages(level);
+    await buildPalette();
+    renderActivePreview();
+    rebuildOccFromTiles();
+    await renderTiles();
+  }
   const previewPlacements = Array.isArray(level?.previewPlacements) ? level.previewPlacements : [];
   // Auto-loading known/preview solutions is admin-only.
   if(isAdminUser(state.userId) && solutions && typeof solutions.apply === 'function'){

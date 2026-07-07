@@ -631,7 +631,14 @@ async function afterLevelApplied(app) {
 async function loadLevelOnBoard(app, level) {
   clearBoardResetSnapshot();
   ensureBoardCellMetrics(app);
-  await app.applyLevel(level);
+  const appRoot = document.querySelector('.tz-app');
+  const loading = $('loadingHud');
+  await app.applyLevel(level, {
+    onShellReady: () => {
+      appRoot?.classList.remove('is-loading-puzzle');
+      if (loading) loading.hidden = true;
+    },
+  });
   await afterLevelApplied(app);
 }
 
@@ -1588,24 +1595,19 @@ function applyInitialBootScreen(screen) {
 
 async function preloadBootLevels(app, screen) {
   if (!app?.ensureLevel) return;
-  if (screen === 'adventure') {
-    const path = await loadAdventurePath();
-    const levelContext = await ensureAdventureLevelContext(app);
-    const location = findNextUnsolved(app.progress, path, { levelContext });
-    const ids = [];
-    if (location?.puzzle?.levelId) ids.push(location.puzzle.levelId);
-    const nextLoc = location?.puzzle?.levelId
-      ? findNextUnsolved(app.progress, path, { afterLevelId: location.puzzle.levelId, levelContext })
-      : null;
-    if (nextLoc?.puzzle?.levelId && !ids.includes(nextLoc.puzzle.levelId)) {
-      ids.push(nextLoc.puzzle.levelId);
-    }
-    if (ids.length && app.ensureLevels) await app.ensureLevels(ids);
-    return;
+  if (screen !== 'adventure') return;
+  const path = await loadAdventurePath();
+  const levelContext = await ensureAdventureLevelContext(app);
+  const location = findNextUnsolved(app.progress, path, { levelContext });
+  const ids = [];
+  if (location?.puzzle?.levelId) ids.push(location.puzzle.levelId);
+  const nextLoc = location?.puzzle?.levelId
+    ? findNextUnsolved(app.progress, path, { afterLevelId: location.puzzle.levelId, levelContext })
+    : null;
+  if (nextLoc?.puzzle?.levelId && !ids.includes(nextLoc.puzzle.levelId)) {
+    ids.push(nextLoc.puzzle.levelId);
   }
-  const { fetchTodaysChallengeLevelId } = await import('./passport-journal-stats.js');
-  const todayId = await fetchTodaysChallengeLevelId();
-  if (todayId) await app.ensureLevel(todayId);
+  if (ids.length && app.ensureLevels) await app.ensureLevels(ids);
 }
 
 async function loadInitialScreenPuzzle(app, screen) {
@@ -2270,7 +2272,6 @@ async function loadDailyPuzzle(app) {
   dismissDiscoveryForBoardEdit();
   const loading = $('loadingHud');
   const appRoot = document.querySelector('.tz-app');
-  if (loading) loading.hidden = false;
   appRoot?.classList.add('is-loading-puzzle');
 
   try {
@@ -2435,6 +2436,10 @@ async function applyDeferredMenuLayouts() {
 
 async function deferredShellWarmup(app, authState, { progressHydrated = false } = {}) {
   if (!app) return;
+  if (app.progress && app.state?.userId && authState?.mode !== 'registered') {
+    const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
+    void hydrateEncounteredTiles(app.progress, app.state.userId);
+  }
   if (!progressHydrated && authState?.mode === 'registered' && authState?.user) {
     try {
       const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
@@ -2673,9 +2678,9 @@ async function init() {
   appRoot?.classList.add('is-shell-booting');
   const bootLoading = $('loadingHud');
 
-  const authState = isDevAuthBypass()
-    ? { mode: 'dev', user: null }
-    : await syncAuthFromServer();
+  const authPromise = isDevAuthBypass()
+    ? Promise.resolve({ mode: 'dev', user: null })
+    : syncAuthFromServer();
   try {
     const { bindProfileHintBalanceListener, bindProfileProgressReadyListener } = await import('./profile-passport-data.js');
     bindProfileHintBalanceListener();
@@ -2698,7 +2703,7 @@ async function init() {
   wireTileBagExpand(syncBagScroll, () => appRef);
   resetPuzzleTimer();
 
-  const app = await waitForApp();
+  const [authState, app] = await Promise.all([authPromise, waitForApp()]);
   appRef = app;
   if (authState.mode === 'registered' && authState.user) {
     applyRegisteredUserToApp(app, authState.user);
@@ -2711,9 +2716,6 @@ async function init() {
         updateHintMenuAvailable(app);
       })
       .catch((err) => console.warn('Hint balance hydrate:', err));
-  } else if (app.progress && app.state?.userId) {
-    const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
-    void hydrateEncounteredTiles(app.progress, app.state.userId);
   }
   const origRenderActivePreview = app.renderActivePreview?.bind(app);
   if (origRenderActivePreview) {
@@ -2771,13 +2773,10 @@ async function init() {
   appRoot?.classList.remove('is-shell-booting');
   if (bootLoading) bootLoading.hidden = true;
 
-  await Promise.all([
-    (async () => {
-      await preloadBootLevels(app, initialScreen);
-      await loadInitialScreenPuzzle(app, initialScreen);
-    })(),
-    initShellExtendedUi(appRef, settings),
-  ]);
+  await preloadBootLevels(app, initialScreen);
+  await loadInitialScreenPuzzle(app, initialScreen);
+
+  void initShellExtendedUi(appRef, settings);
 
   if (shouldOpenProfile) {
     await openProfileOverlay();

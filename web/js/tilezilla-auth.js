@@ -17,6 +17,7 @@ import { applyAdminFromSessionUser } from './tilezilla-admin.js';
 import { applySessionHintBalance, cacheHintBalance } from './tilezilla-hints-sync.js';
 
 export const AUTH_API = '/auth/api';
+const SESSION_TIMEOUT_MS = 2500;
 
 export { clearRegisteredLocalState } from './tilezilla-guest.js';
 
@@ -24,17 +25,39 @@ export function isDevAuthBypass() {
   return new URLSearchParams(window.location.search).has('dev');
 }
 
-export async function fetchServerSession() {
-  try {
-    const res = await fetch(`${AUTH_API}/check-session.php`, { credentials: 'include' });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data?.authenticated && data?.user?.id != null) {
-      return { ok: true, user: data.user };
+let cachedSession = null;
+let sessionFetchPromise = null;
+
+export function getCachedServerSession() {
+  return cachedSession;
+}
+
+export async function fetchServerSession({ force = false } = {}) {
+  if (!force && cachedSession) return cachedSession;
+  if (!force && sessionFetchPromise) return sessionFetchPromise;
+
+  sessionFetchPromise = (async () => {
+    try {
+      const res = await fetch(`${AUTH_API}/check-session.php`, {
+        credentials: 'include',
+        signal: AbortSignal.timeout(SESSION_TIMEOUT_MS),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.authenticated && data?.user?.id != null) {
+        cachedSession = { ok: true, user: data.user };
+        return cachedSession;
+      }
+      cachedSession = { ok: false, user: null };
+      return cachedSession;
+    } catch {
+      cachedSession = { ok: false, user: null, offline: true };
+      return cachedSession;
+    } finally {
+      sessionFetchPromise = null;
     }
-    return { ok: false, user: null };
-  } catch {
-    return { ok: false, user: null, offline: true };
-  }
+  })();
+
+  return sessionFetchPromise;
 }
 
 export function applyServerSession(user) {
