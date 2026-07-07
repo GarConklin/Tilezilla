@@ -145,6 +145,20 @@ export async function ensureLevel(levelId, state = null) {
   const cached = levelById.get(id);
   if (cached) return cached;
 
+  try {
+    const res = await fetch(`/api/level/${encodeURIComponent(id)}`, { cache: 'no-store' });
+    if (res.ok) {
+      const payload = await res.json();
+      const level = payload?.level;
+      if (level?.id) {
+        registerLevelInState(state, level);
+        return level;
+      }
+    }
+  } catch (e) {
+    console.warn('level API unavailable', id, e);
+  }
+
   const file = bucketFileForLevelId(id);
   if (!file) return null;
 

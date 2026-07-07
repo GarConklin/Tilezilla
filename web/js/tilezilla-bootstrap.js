@@ -2503,7 +2503,7 @@ async function init() {
     }
   } else if (app.progress && app.state?.userId) {
     const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
-    await hydrateEncounteredTiles(app.progress, app.state.userId);
+    void hydrateEncounteredTiles(app.progress, app.state.userId);
   }
   const origRenderActivePreview = app.renderActivePreview?.bind(app);
   if (origRenderActivePreview) {
@@ -2529,12 +2529,12 @@ async function init() {
     openStuckFlow,
   });
   shellMenuApi = menuApi;
-  await initStuckPopup({
+  void initStuckPopup({
     getApp: () => appRef,
     menuApi,
     notify: showGameMessage,
     onNeedHints: openBuyHintsPopup,
-  });
+  }).catch((err) => console.warn('Stuck popup init:', err));
   initRandomPuzzlePopup({
     getApp: () => appRef,
     menuApi,
@@ -2769,6 +2769,10 @@ async function init() {
   }
 
   await preloadBootLevels(app, initialScreen);
+
+  appRoot?.classList.remove('is-shell-booting');
+  if (bootLoading) bootLoading.hidden = true;
+
   await loadInitialScreenPuzzle(app, initialScreen);
 
   if (shouldOpenProfile) {
@@ -2778,8 +2782,6 @@ async function init() {
     window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
   }
 
-  appRoot?.classList.remove('is-shell-booting');
-  if (bootLoading) bootLoading.hidden = true;
   applyGuestChrome(appRef);
   void deferredShellWarmup(appRef, authState, { progressHydrated });
 }

@@ -102,6 +102,7 @@ from lib.adventure_path_build import (  # noqa: E402
     load_adventure_path_from_json,
     load_adventure_path_from_mysql,
 )
+from lib.level_catalog import lookup_level  # noqa: E402
 from lib.progress_store import (  # noqa: E402
     all_time_best_daily,
     daily_leaderboard_for_date,
@@ -370,6 +371,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+            return
+        if req_path.startswith("/api/level/"):
+            level_id = req_path[len("/api/level/") :].strip("/")
+            level = lookup_level(ROOT, level_id) if level_id else None
+            if not level:
+                self._send_json(404, {"ok": False, "error": "Level not found"})
+                return
+            self._send_json(200, {"ok": True, "level": level})
             return
         if parsed.path == "/api/system-info":
             status, payload = system_info_api_response()
