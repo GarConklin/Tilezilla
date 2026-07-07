@@ -123,6 +123,12 @@ body.auth-screen-chrome .tz-menu-root {
   pointer-events: none !important;
 }
 
+/* Hide misaligned inputs/stats until tuned layout JSON is applied (prevents login flash). */
+body.auth-screen--layout-pending .auth-screen__stage > :not(.auth-screen__art) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .auth-screen__viewport {
   position: relative;
   z-index: 1;
@@ -381,37 +387,37 @@ body.auth-screen-chrome .tz-menu-root {
 }
 
 .auth-screen--login .auth-screen__input--user {
-  left: var(--auth-login-user-x, 18%);
-  top: var(--auth-login-user-y, 28.8%);
-  width: var(--auth-login-user-w, 64%);
-  height: var(--auth-login-user-h, 3.2%);
+  left: var(--auth-login-user-x, 28.7%);
+  top: var(--auth-login-user-y, 18.5%);
+  width: var(--auth-login-user-w, 43.1%);
+  height: var(--auth-login-user-h, 4%);
 }
 
 .auth-screen--login .auth-screen__input--pass {
-  left: var(--auth-login-pass-x, 18%);
-  top: var(--auth-login-pass-y, 34.8%);
-  width: var(--auth-login-pass-w, 64%);
-  height: var(--auth-login-pass-h, 3.2%);
+  left: var(--auth-login-pass-x, 29.1%);
+  top: var(--auth-login-pass-y, 23.5%);
+  width: var(--auth-login-pass-w, 35.9%);
+  height: var(--auth-login-pass-h, 4%);
 }
 
 .auth-screen--login .auth-screen__hit--pass-reveal {
-  left: var(--auth-login-passReveal-x, 78%);
-  top: var(--auth-login-passReveal-y, 34.8%);
-  width: var(--auth-login-passReveal-w, 8%);
-  height: var(--auth-login-passReveal-h, 3.2%);
+  left: var(--auth-login-passReveal-x, 65.8%);
+  top: var(--auth-login-passReveal-y, 23.7%);
+  width: var(--auth-login-passReveal-w, 10.3%);
+  height: var(--auth-login-passReveal-h, 4.4%);
   z-index: 2;
 }
 
 .auth-screen--login .auth-screen__hit--submit {
-  left: var(--auth-login-submit-x, 22%);
-  top: var(--auth-login-submit-y, 40.5%);
-  width: var(--auth-login-submit-w, 56%);
-  height: var(--auth-login-submit-h, 4.5%);
+  left: var(--auth-login-submit-x, 23.1%);
+  top: var(--auth-login-submit-y, 28.8%);
+  width: var(--auth-login-submit-w, 52.9%);
+  height: var(--auth-login-submit-h, 5.7%);
 }
 
 .auth-screen--login .auth-screen__hit--forgot-password {
-  left: var(--auth-login-forgotPassword-x, 58%);
-  top: var(--auth-login-forgotPassword-y, 34.2%);
+  left: var(--auth-login-forgotPassword-x, 77.4%);
+  top: var(--auth-login-forgotPassword-y, 33%);
   width: var(--auth-login-forgotPassword-w, 9%);
   height: var(--auth-login-forgotPassword-h, 4.2%);
   z-index: 3;
@@ -422,24 +428,24 @@ body.auth-screen-chrome .tz-menu-root {
 }
 
 .auth-screen--login .auth-screen__hit--secondary {
-  left: var(--auth-login-secondary-x, 22%);
-  top: var(--auth-login-secondary-y, 47.5%);
-  width: var(--auth-login-secondary-w, 56%);
-  height: var(--auth-login-secondary-h, 4%);
+  left: var(--auth-login-secondary-x, 24.3%);
+  top: var(--auth-login-secondary-y, 36.9%);
+  width: var(--auth-login-secondary-w, 52.4%);
+  height: var(--auth-login-secondary-h, 6.8%);
 }
 
 .auth-screen--login .auth-screen__hit--nav-daily {
-  left: var(--auth-login-navDaily-x, 3%);
-  top: var(--auth-login-navDaily-y, 92%);
-  width: var(--auth-login-navDaily-w, 45%);
-  height: var(--auth-login-navDaily-h, 5.5%);
+  left: var(--auth-login-navDaily-x, 3.1%);
+  top: var(--auth-login-navDaily-y, 94.2%);
+  width: var(--auth-login-navDaily-w, 24.3%);
+  height: var(--auth-login-navDaily-h, 5.4%);
 }
 
 .auth-screen--login .auth-screen__hit--nav-logout {
-  left: var(--auth-login-navLogout-x, 52%);
-  top: var(--auth-login-navLogout-y, 92%);
-  width: var(--auth-login-navLogout-w, 45%);
-  height: var(--auth-login-navLogout-h, 5.5%);
+  left: var(--auth-login-navLogout-x, 71.2%);
+  top: var(--auth-login-navLogout-y, 93.6%);
+  width: var(--auth-login-navLogout-w, 26.8%);
+  height: var(--auth-login-navLogout-h, 6.1%);
 }
 
 .auth-screen--create .auth-screen__input--name {

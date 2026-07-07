@@ -23,25 +23,30 @@ function wireAuthScreenLayoutReload(screenKey) {
   });
 }
 
+async function bootAuthScreen(screenKey) {
+  document.body.classList.add('auth-screen-chrome', 'auth-screen--layout-pending');
+  wireAuthScreenLayoutReload(screenKey);
+  try {
+    await initAuthScreenChrome();
+    await initAuthScreenLayout(screenKey, { preferFile: true });
+    initPasswordRevealToggles();
+    if (screenKey === 'create') {
+      const { applySystemStatsToAuthScreen } = await import('./system-info.js');
+      void applySystemStatsToAuthScreen();
+    } else if (screenKey === 'login') {
+      void applyPassportJournalStats();
+    } else if (screenKey === 'profile') {
+      bindProfileHintBalanceListener();
+      bindProfileProgressReadyListener();
+    }
+  } finally {
+    document.body.classList.remove('auth-screen--layout-pending');
+  }
+}
+
 for (const [cls, key] of Object.entries(SCREEN_BY_CLASS)) {
   if (document.body.classList.contains(cls)) {
-    document.body.classList.add('auth-screen-chrome');
-    wireAuthScreenLayoutReload(key);
-    void Promise.all([
-      initAuthScreenChrome(),
-      initAuthScreenLayout(key, { preferFile: true }),
-    ]).then(async () => {
-      initPasswordRevealToggles();
-      if (key === 'create') {
-        const { applySystemStatsToAuthScreen } = await import('./system-info.js');
-        void applySystemStatsToAuthScreen();
-      } else if (key === 'login') {
-        void applyPassportJournalStats();
-      } else if (key === 'profile') {
-        bindProfileHintBalanceListener();
-        bindProfileProgressReadyListener();
-      }
-    });
+    void bootAuthScreen(key);
     break;
   }
 }

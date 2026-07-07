@@ -509,32 +509,32 @@
 }
 
 .auth-screen--login [data-profile-slot="explorersRegistered"] {
-  left: var(--auth-login-explorersRegistered-x, 30.8%);
-  top: var(--auth-login-explorersRegistered-y, 60.9%);
+  left: var(--auth-login-explorersRegistered-x, 32.1%);
+  top: var(--auth-login-explorersRegistered-y, 61.2%);
   width: var(--auth-login-explorersRegistered-w, 14.8%);
   height: var(--auth-login-explorersRegistered-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-explorersRegistered-font-scale, 1));
 }
 
 .auth-screen--login [data-profile-slot="totalAdventurePuzzles"] {
-  left: var(--auth-login-totalAdventurePuzzles-x, 30.8%);
-  top: var(--auth-login-totalAdventurePuzzles-y, 64.7%);
+  left: var(--auth-login-totalAdventurePuzzles-x, 32.4%);
+  top: var(--auth-login-totalAdventurePuzzles-y, 65.3%);
   width: var(--auth-login-totalAdventurePuzzles-w, 14.8%);
   height: var(--auth-login-totalAdventurePuzzles-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-totalAdventurePuzzles-font-scale, 1));
 }
 
 .auth-screen--login [data-profile-slot="totalKnownRoutes"] {
-  left: var(--auth-login-totalKnownRoutes-x, 30.8%);
-  top: var(--auth-login-totalKnownRoutes-y, 68.6%);
+  left: var(--auth-login-totalKnownRoutes-x, 32.4%);
+  top: var(--auth-login-totalKnownRoutes-y, 69.2%);
   width: var(--auth-login-totalKnownRoutes-w, 14.8%);
   height: var(--auth-login-totalKnownRoutes-h, 2.9%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-totalKnownRoutes-font-scale, 1));
 }
 
 .auth-screen--login [data-profile-slot="largestSolution"] {
-  left: var(--auth-login-largestSolution-x, 30.8%);
-  top: var(--auth-login-largestSolution-y, 73.2%);
+  left: var(--auth-login-largestSolution-x, 34.4%);
+  top: var(--auth-login-largestSolution-y, 72.6%);
   width: var(--auth-login-largestSolution-w, 18%);
   height: var(--auth-login-largestSolution-h, 4.8%);
   font-size: calc(clamp(0.58rem, 2.2vw, 0.78rem) * var(--auth-login-largestSolution-font-scale, 0.85));
