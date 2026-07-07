@@ -3028,6 +3028,20 @@ button {
   pointer-events: none;
 }
 
+/* Post-login path picker — hide game chrome until user chooses daily / adventure / random */
+.tz-app[data-screen="profile-picker"] .tz-board-frame,
+.tz-app[data-screen="profile-picker"] .tz-preview-section,
+.tz-app[data-screen="profile-picker"] .tz-tilebag-container,
+.tz-app[data-screen="profile-picker"] .tz-bottom-menu-v2,
+.tz-app[data-screen="profile-picker"] .tz-info-tip,
+.tz-app[data-screen="profile-picker"] .tz-info-bar,
+.tz-app[data-screen="profile-picker"] .tz-hint-menu-root,
+.tz-app[data-screen="profile-picker"] .tz-challenge-panel,
+.tz-app[data-screen="profile-picker"] .tz-game-message {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* Hide tile bag + preview until puzzle is laid out at 55px cell size */
 .tz-app.is-loading-puzzle .tz-preview-section,
 .tz-app.is-loading-puzzle .tz-tilebag-container {

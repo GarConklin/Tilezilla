@@ -24,6 +24,9 @@ let menuApi = null;
 let onDaily = null;
 let onAdventure = null;
 let onRandom = null;
+let onDeferredBootFallback = null;
+let deferBootPuzzle = false;
+let profilePathChosen = false;
 
 async function waitForCatalogReady(maxMs = 12000) {
   const { isCatalogReady } = await import('./level-catalog.js');
@@ -101,8 +104,13 @@ function openProfileOverlayPopup() {
 function closeProfileOverlayPopup() {
   const root = $('profileOverlayRoot');
   if (!root || root.hidden) return;
+  const needsFallback = deferBootPuzzle && !profilePathChosen;
   root.hidden = true;
   document.body.classList.remove('tz-modal-open');
+  if (needsFallback) {
+    deferBootPuzzle = false;
+    void onDeferredBootFallback?.();
+  }
 }
 
 async function ensureProfileOverlayLayout(root = document) {
@@ -117,11 +125,8 @@ export async function openProfileOverlay() {
   const overlayRoot = document.getElementById('profileOverlayRoot');
   await ensureProfileOverlayLayout(document);
   refreshProfileFields();
-  await refreshProfileOverlayStats(overlayRoot || document);
-  await ensureProfileOverlayLayout(document);
   openProfileOverlayPopup();
-  requestAnimationFrame(() => {
-    void refreshProfileOverlayStats(overlayRoot || document);
+  void refreshProfileOverlayStats(overlayRoot || document).then(() => {
     void ensureProfileOverlayLayout(document);
   });
 }
@@ -131,11 +136,16 @@ export function initProfileOverlay({
   onDaily: dailyFn,
   onAdventure: adventureFn,
   onRandom: randomFn,
+  deferBootPuzzle: deferBoot,
+  onDeferredBootFallback: deferredFallback,
 } = {}) {
   menuApi = menu || null;
   onDaily = dailyFn || null;
   onAdventure = adventureFn || null;
   onRandom = randomFn || null;
+  onDeferredBootFallback = deferredFallback || null;
+  deferBootPuzzle = !!deferBoot;
+  profilePathChosen = false;
 
   const root = $('profileOverlayRoot');
   if (!root) return null;
@@ -145,6 +155,8 @@ export function initProfileOverlay({
   $('profileOverlayBack')?.addEventListener('click', closeProfileOverlayPopup);
 
   $('profileOverlayNavDaily')?.addEventListener('click', () => {
+    profilePathChosen = true;
+    deferBootPuzzle = false;
     closeProfileOverlayPopup();
     void onDaily?.();
   });
@@ -155,6 +167,8 @@ export function initProfileOverlay({
       showLoginRequired({ source: 'adventure' });
       return;
     }
+    profilePathChosen = true;
+    deferBootPuzzle = false;
     closeProfileOverlayPopup();
     void onAdventure?.();
   });
@@ -165,6 +179,8 @@ export function initProfileOverlay({
       showLoginRequired({ source: 'random' });
       return;
     }
+    profilePathChosen = true;
+    deferBootPuzzle = false;
     closeProfileOverlayPopup();
     onRandom?.();
   });

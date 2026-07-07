@@ -2456,7 +2456,7 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
   await syncPlayerChrome(app);
 }
 
-async function initShellExtendedUi(appRef, settings) {
+async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false } = {}) {
   const app = appRef;
   const menuApi = initMenuUi({
     getApp: () => appRef,
@@ -2514,11 +2514,21 @@ async function initShellExtendedUi(appRef, settings) {
   initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
   initProfileOverlay({
     menuApi,
+    deferBootPuzzle,
+    onDeferredBootFallback: async () => {
+      const app = appRef;
+      applyInitialBootScreen('daily-challenge');
+      guestUser.syncGuestBanner();
+      if (app && !app.state?.currentLevel) {
+        await loadDailyPuzzle(app);
+      }
+    },
     onDaily: async () => {
       const app = appRef;
       const appRoot = document.querySelector('.tz-app');
       dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'daily-challenge');
+      setActiveBottomNav('daily-challenge');
       persistNavScreen('daily-challenge');
       guestUser.syncGuestBanner();
       if (app) await loadDailyPuzzle(app);
@@ -2528,6 +2538,7 @@ async function initShellExtendedUi(appRef, settings) {
       const appRoot = document.querySelector('.tz-app');
       dismissDiscoveryForBoardEdit();
       appRoot?.setAttribute('data-screen', 'adventure');
+      setActiveBottomNav('adventure');
       persistNavScreen('adventure');
       guestUser.syncGuestBanner();
       if (app) await loadAdventurePuzzle(app);
@@ -2704,6 +2715,12 @@ async function init() {
   if (usesViewportLock(settings)) runViewportFit(false);
   wireUiScaleListeners();
   await applyShellLayouts();
+  const earlyUrlParams = new URLSearchParams(window.location.search);
+  const profileLayoutWarm = (earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true')
+    ? refreshProfileOverlayLayoutFromDisk().catch((err) => {
+      console.warn('Profile overlay layout (warm):', err);
+    })
+    : null;
   const syncBagScroll = wireBagScroll();
   let appRef = null;
   wireTileBagExpand(syncBagScroll, () => appRef);
@@ -2761,12 +2778,17 @@ async function init() {
   const urlParams = new URLSearchParams(window.location.search);
   const shouldOpenProfile = (urlParams.get('profile') === '1' || urlParams.get('profile') === 'true')
     && guestUser.isRegisteredUser();
+  const deferBootPuzzle = shouldOpenProfile;
   const initialScreen = resolveInitialBootScreen(urlParams);
 
-  applyInitialBootScreen(initialScreen);
+  if (deferBootPuzzle) {
+    appRoot?.setAttribute('data-screen', 'profile-picker');
+  } else {
+    applyInitialBootScreen(initialScreen);
+  }
 
   let progressHydrated = false;
-  if (authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
+  if (!deferBootPuzzle && authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
     try {
       const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
       await hydrateProgressFromServer(app.progress);
@@ -2776,16 +2798,20 @@ async function init() {
     }
   }
 
-  appRoot?.classList.remove('is-shell-booting');
-  if (bootLoading) bootLoading.hidden = true;
+  if (!deferBootPuzzle) {
+    appRoot?.classList.remove('is-shell-booting');
+    if (bootLoading) bootLoading.hidden = true;
+    await preloadBootLevels(app, initialScreen);
+    await loadInitialScreenPuzzle(app, initialScreen);
+  }
 
-  await preloadBootLevels(app, initialScreen);
-  await loadInitialScreenPuzzle(app, initialScreen);
-
-  void initShellExtendedUi(appRef, settings);
+  await initShellExtendedUi(appRef, settings, { deferBootPuzzle });
 
   if (shouldOpenProfile) {
+    if (profileLayoutWarm) await profileLayoutWarm;
     await openProfileOverlay();
+    appRoot?.classList.remove('is-shell-booting');
+    if (bootLoading) bootLoading.hidden = true;
     urlParams.delete('profile');
     const qs = urlParams.toString();
     window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
