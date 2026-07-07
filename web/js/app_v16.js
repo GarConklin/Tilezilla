@@ -1683,7 +1683,8 @@ function selectPaletteInstance(instanceId) {
 
 async function buildPalette(){
   paletteEl.innerHTML='';
-  for(const inst of (state.paletteInstances || [])){
+  const instances = state.paletteInstances || [];
+  for(const inst of instances){
     const tileName = inst.tile;
     const instanceId = inst.instanceId;
 
@@ -1705,7 +1706,6 @@ async function buildPalette(){
     meta.className='palMeta';
     const name=document.createElement('div');
     name.className='palName';
-    // show "TileName #n"
     const parts = instanceId.split('#');
     name.textContent = parts[0] + ' #' + (parts[1] || '');
     const used=document.createElement('div');
@@ -1722,9 +1722,16 @@ async function buildPalette(){
       selectPaletteInstance(instanceId);
     });
     paletteEl.appendChild(item);
-    await ensureBagThumbAtZero(instanceId);
   }
-  for (const inst of (state.paletteInstances || [])) syncPaletteItemPresentation(inst.instanceId);
+  await Promise.all(instances.map((inst) => ensureBagThumbAtZero(inst.instanceId)));
+  for (const inst of instances) syncPaletteItemPresentation(inst.instanceId);
+}
+
+async function preloadLevelTileImages(level) {
+  const counts = level?.tiles && typeof level.tiles === 'object' ? level.tiles : {};
+  const names = [...new Set(Object.keys(counts).filter(Boolean))];
+  if (!names.length) return;
+  await Promise.all(names.map((tileName) => loadImage(tileName, state.activeTileset).catch(() => null)));
 }
 
 
@@ -4267,8 +4274,13 @@ async function applyLevel(level){
         : undefined,
     });
   }
-  const knownSolutions = await loadKnownSolutionsForLevel(level);
-  renderFoundList(level.id, knownSolutions);
+  const knownSolutionsPromise = loadKnownSolutionsForLevel(level);
+  if (!isAdminUser(state.userId)) {
+    void knownSolutionsPromise.then((knownSolutions) => {
+      renderFoundList(level.id, knownSolutions);
+      updateProgressHud(level);
+    });
+  }
   setCheckMessage('');
   setBlockerEditMode(false);
   syncBlockerToolbar();
@@ -4279,6 +4291,7 @@ async function applyLevel(level){
   if(levelSelect) levelSelect.value = level.id;
   setCssCell();
   buildGrid();
+  await preloadLevelTileImages(level);
   await buildPalette();
   renderActivePreview();
   rebuildOccFromTiles();
@@ -4286,6 +4299,8 @@ async function applyLevel(level){
   const previewPlacements = Array.isArray(level?.previewPlacements) ? level.previewPlacements : [];
   // Auto-loading known/preview solutions is admin-only.
   if(isAdminUser(state.userId) && solutions && typeof solutions.apply === 'function'){
+    const knownSolutions = await knownSolutionsPromise;
+    renderFoundList(level.id, knownSolutions);
     let loadedValidPreview = false;
     if(previewPlacements.length){
       await solutions.apply(previewPlacements);

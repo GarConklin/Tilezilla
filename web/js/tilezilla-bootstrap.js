@@ -2274,8 +2274,6 @@ async function loadDailyPuzzle(app) {
   appRoot?.classList.add('is-loading-puzzle');
 
   try {
-    await waitForCatalogReady();
-
     const { level, meta } = await resolveDailyChallenge(app);
     if (!level) throw new Error('No puzzle level available');
 
@@ -2283,7 +2281,6 @@ async function loadDailyPuzzle(app) {
     resetPuzzleTimer();
     displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     window.__dailyChallengeMeta = meta;
-    await refreshPaletteIfReady(app);
     updateChallengePanel(level, { ...meta, screen: 'daily-challenge' });
     updateTileBagCount(app);
     updateValidationState(app);
@@ -2453,77 +2450,8 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
   await syncPlayerChrome(app);
 }
 
-async function init() {
-  window.__tilezillaGuest = guestUser;
-  guestUser.wireLoginRequiredModal();
-  guestUser.wireGuestCompletionModal();
-
-  const appRoot = document.querySelector('.tz-app');
-  appRoot?.classList.add('is-shell-booting');
-  const bootLoading = $('loadingHud');
-
-  const authState = isDevAuthBypass()
-    ? { mode: 'dev', user: null }
-    : await syncAuthFromServer();
-  try {
-    const { bindProfileHintBalanceListener, bindProfileProgressReadyListener } = await import('./profile-passport-data.js');
-    bindProfileHintBalanceListener();
-    bindProfileProgressReadyListener();
-  } catch {
-    /* ignore */
-  }
-  applyGuestChrome();
-
-  const settings = loadGameplaySettings();
-  setSfxEnabled(settings.soundEffects === 'ON');
-  initTilezillaSfx();
-  applyPhonePreviewMode(settings.phonePreview === 'ON');
-  applyUiScale();
-  if (usesViewportLock(settings)) runViewportFit(false);
-  wireUiScaleListeners();
-  await applyShellLayouts();
-  const syncBagScroll = wireBagScroll();
-  let appRef = null;
-  wireTileBagExpand(syncBagScroll, () => appRef);
-  resetPuzzleTimer();
-
-  const app = await waitForApp();
-  appRef = app;
-  if (authState.mode === 'registered' && authState.user) {
-    applyRegisteredUserToApp(app, authState.user);
-    applyGuestChrome();
-    syncAdminUi(app.state?.userId);
-    try {
-      const { hydrateHintBalanceForApp } = await import('./tilezilla-hints-sync.js');
-      await hydrateHintBalanceForApp(app);
-      updateGlobalHintCount(app);
-      updateHintMenuAvailable(app);
-    } catch (err) {
-      console.warn('Hint balance hydrate:', err);
-    }
-  } else if (app.progress && app.state?.userId) {
-    const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
-    void hydrateEncounteredTiles(app.progress, app.state.userId);
-  }
-  const origRenderActivePreview = app.renderActivePreview?.bind(app);
-  if (origRenderActivePreview) {
-    app.renderActivePreview = async (...args) => {
-      await origRenderActivePreview(...args);
-      updateHintButtonState(app);
-    };
-  }
-  app.onBoardStateChanged = () => {
-    if (boardBeforeResetSnapshot && (app.state.tiles || []).length) {
-      clearBoardResetSnapshot();
-    }
-    syncBoardChrome(app);
-  };
-  wireBottomNav(() => appRef);
-  wireBottomMenuV2();
-  wirePuzzleTimer(app);
-  syncTileBagExpandAvailability(app);
-  applyResponsiveBoard(app);
-  app.applyGameplaySettings(settings);
+async function initShellExtendedUi(appRef, settings) {
+  const app = appRef;
   const menuApi = initMenuUi({
     getApp: () => appRef,
     openStuckFlow,
@@ -2732,10 +2660,82 @@ async function init() {
     $('checkSolBtn')?.click();
   });
 
-  wireActions(app);
   wirePreviewV2DataClicks();
-  wireHintMenu(app);
   wireCheckMessageMirror();
+}
+
+async function init() {
+  window.__tilezillaGuest = guestUser;
+  guestUser.wireLoginRequiredModal();
+  guestUser.wireGuestCompletionModal();
+
+  const appRoot = document.querySelector('.tz-app');
+  appRoot?.classList.add('is-shell-booting');
+  const bootLoading = $('loadingHud');
+
+  const authState = isDevAuthBypass()
+    ? { mode: 'dev', user: null }
+    : await syncAuthFromServer();
+  try {
+    const { bindProfileHintBalanceListener, bindProfileProgressReadyListener } = await import('./profile-passport-data.js');
+    bindProfileHintBalanceListener();
+    bindProfileProgressReadyListener();
+  } catch {
+    /* ignore */
+  }
+  applyGuestChrome();
+
+  const settings = loadGameplaySettings();
+  setSfxEnabled(settings.soundEffects === 'ON');
+  initTilezillaSfx();
+  applyPhonePreviewMode(settings.phonePreview === 'ON');
+  applyUiScale();
+  if (usesViewportLock(settings)) runViewportFit(false);
+  wireUiScaleListeners();
+  await applyShellLayouts();
+  const syncBagScroll = wireBagScroll();
+  let appRef = null;
+  wireTileBagExpand(syncBagScroll, () => appRef);
+  resetPuzzleTimer();
+
+  const app = await waitForApp();
+  appRef = app;
+  if (authState.mode === 'registered' && authState.user) {
+    applyRegisteredUserToApp(app, authState.user);
+    applyGuestChrome();
+    syncAdminUi(app.state?.userId);
+    void import('./tilezilla-hints-sync.js')
+      .then(({ hydrateHintBalanceForApp }) => hydrateHintBalanceForApp(app))
+      .then(() => {
+        updateGlobalHintCount(app);
+        updateHintMenuAvailable(app);
+      })
+      .catch((err) => console.warn('Hint balance hydrate:', err));
+  } else if (app.progress && app.state?.userId) {
+    const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
+    void hydrateEncounteredTiles(app.progress, app.state.userId);
+  }
+  const origRenderActivePreview = app.renderActivePreview?.bind(app);
+  if (origRenderActivePreview) {
+    app.renderActivePreview = async (...args) => {
+      await origRenderActivePreview(...args);
+      updateHintButtonState(app);
+    };
+  }
+  app.onBoardStateChanged = () => {
+    if (boardBeforeResetSnapshot && (app.state.tiles || []).length) {
+      clearBoardResetSnapshot();
+    }
+    syncBoardChrome(app);
+  };
+  wireBottomNav(() => appRef);
+  wireBottomMenuV2();
+  wirePuzzleTimer(app);
+  syncTileBagExpandAvailability(app);
+  applyResponsiveBoard(app);
+  app.applyGameplaySettings(settings);
+  wireActions(app);
+  wireHintMenu(app);
   wirePreviewSync();
   wirePaletteHooks(app);
   wireBoardHooks(app);
@@ -2768,12 +2768,16 @@ async function init() {
     }
   }
 
-  await preloadBootLevels(app, initialScreen);
-
   appRoot?.classList.remove('is-shell-booting');
   if (bootLoading) bootLoading.hidden = true;
 
-  await loadInitialScreenPuzzle(app, initialScreen);
+  await Promise.all([
+    (async () => {
+      await preloadBootLevels(app, initialScreen);
+      await loadInitialScreenPuzzle(app, initialScreen);
+    })(),
+    initShellExtendedUi(appRef, settings),
+  ]);
 
   if (shouldOpenProfile) {
     await openProfileOverlay();
