@@ -2517,8 +2517,9 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
     deferBootPuzzle,
     onDeferredBootFallback: async () => {
       const app = appRef;
+      dismissDiscoveryForBoardEdit();
       applyInitialBootScreen('daily-challenge');
-      guestUser.syncGuestBanner();
+      persistNavScreen('daily-challenge');
       if (app && !app.state?.currentLevel) {
         await loadDailyPuzzle(app);
       }
