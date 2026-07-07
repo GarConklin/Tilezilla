@@ -1,0 +1,211 @@
+{
+  "dialog": {
+    "artW": 933,
+    "artH": 1686,
+    "displayPad": 16,
+    "maxDesignWidth": 394,
+    "topNudge": 0
+  },
+  "typography": {
+    "fieldColor": "#3d2e1a",
+    "fieldFont": "calc(0.58rem + 1px)",
+    "headerFont": "calc(0.52rem + 1px)"
+  },
+  "tabs": {
+    "leaderboard": {
+      "idle": "/img/LeaderBoard-W.png",
+      "active": "/img/LeaderBoard-G.png"
+    },
+    "personalBest": {
+      "idle": "/img/Personal-Best-W.png",
+      "active": "/img/Personal-Best-G.png"
+    }
+  },
+  "items": {
+    "tabLeaderboard": {
+      "x": 88.2,
+      "y": 8.5,
+      "w": 8.8,
+      "h": 11.2,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "tabPersonalBest": {
+      "x": 88.9,
+      "y": 20.9,
+      "w": 7.800000000000001,
+      "h": 10.7,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "fieldDailyPuzzleId": {
+      "x": 10,
+      "y": 13.2,
+      "w": 34,
+      "h": 3.2,
+      "fontScale": 1.15,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "fieldDailyDate": {
+      "x": 44,
+      "y": 13.2,
+      "w": 32,
+      "h": 3.2,
+      "fontScale": 1.05,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "fieldDailyTime": {
+      "x": 76,
+      "y": 13.2,
+      "w": 14,
+      "h": 3.2,
+      "fontScale": 1.15,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "paneTop": {
+      "x": 10.6,
+      "y": 15.3,
+      "w": 74,
+      "h": 32.1,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "paneBl": {
+      "x": 8.4,
+      "y": 61.4,
+      "w": 37,
+      "h": 30.2,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "paneBr": {
+      "x": 49,
+      "y": 61.5,
+      "w": 36,
+      "h": 30,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "listTop": {
+      "x": 10,
+      "y": 22,
+      "w": 74,
+      "h": 22,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "scrollerTop": {
+      "x": 84.5,
+      "y": 22,
+      "h": 24,
+      "trackScale": 0.55,
+      "pinScale": 0.66,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "listBl": {
+      "x": 10.25,
+      "y": 56,
+      "w": 33,
+      "h": 22,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "scrollerBl": {
+      "x": 43.5,
+      "y": 56,
+      "h": 20,
+      "trackScale": 0.5,
+      "pinScale": 0.66,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "listBr": {
+      "x": 52,
+      "y": 56,
+      "w": 33,
+      "h": 22,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "scrollerBr": {
+      "x": 85.5,
+      "y": 56,
+      "h": 20,
+      "trackScale": 0.5,
+      "pinScale": 0.66,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "listRow": {
+      "fontScale": 1,
+      "padY": 4,
+      "padX": 6,
+      "gap": 2
+    },
+    "colRank": {
+      "w": 18
+    },
+    "colUser": {
+      "w": 52
+    },
+    "colTime": {
+      "w": 30
+    },
+    "colSize": {
+      "w": 22
+    },
+    "colPuzzle": {
+      "w": 48
+    },
+    "personalPane": {
+      "x": 7.5,
+      "y": 16.5,
+      "w": 79,
+      "h": 64,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    },
+    "listPersonal": {
+      "x": 10,
+      "y": 22,
+      "w": 74,
+      "h": 56,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    },
+    "scrollerPersonal": {
+      "x": 84.5,
+      "y": 22,
+      "h": 56,
+      "trackScale": 0.55,
+      "pinScale": 0.66,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": true
+    },
+    "btnBack": {
+      "x": 6.2,
+      "y": 1.9,
+      "w": 9,
+      "h": 5.2,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": false
+    },
+    "btnClose": {
+      "x": 78.2,
+      "y": 1.4,
+      "w": 9,
+      "h": 5.2,
+      "nudgeX": 0,
+      "nudgeY": 0,
+      "hidden": false
+    }
+  }
+}

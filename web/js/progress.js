@@ -309,6 +309,9 @@ export class Progress {
       elapsedMs: completionTimeSeconds * 1000,
       completionTimeSeconds,
       hintsUsed: !!meta.hintsUsed,
+      hintsUsedCount: Number.isFinite(Number(meta.hintsUsedCount))
+        ? Math.max(0, Number(meta.hintsUsedCount))
+        : (meta.hintsUsed ? 1 : 0),
       exampleRouteViewed: !!meta.exampleRouteViewed,
       leaderboardSubmitted: !!meta.leaderboardSubmitted,
       foundAt: new Date().toISOString(),
@@ -350,6 +353,7 @@ export class Progress {
       solutionBonus = false,
       completionTimeSeconds,
       hintsUsed = false,
+      hintsUsedCount,
       exampleRouteViewed = false,
       completedAt,
     } = entry || {};
@@ -359,6 +363,9 @@ export class Progress {
     }
 
     const sec = Math.max(0, Number(completionTimeSeconds) || 0);
+    const hintCount = Number.isFinite(Number(hintsUsedCount))
+      ? Math.max(0, Number(hintsUsedCount))
+      : (hintsUsed ? 1 : 0);
     const store = this.loadDailyResults();
     const rowKey = `${challengeDate}:${userId}`;
     const existing = store[rowKey];
@@ -374,7 +381,8 @@ export class Progress {
       solutionId: Number.isFinite(solutionIndex) ? solutionIndex : null,
       solutionBonus: !!solutionBonus,
       completionTimeSeconds: sec,
-      hintsUsed: !!hintsUsed,
+      hintsUsed: hintCount > 0,
+      hintsUsedCount: hintCount,
       exampleRouteViewed: !!exampleRouteViewed,
       completedAt: completedAt || new Date().toISOString(),
     };

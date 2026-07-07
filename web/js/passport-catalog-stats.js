@@ -6,6 +6,7 @@ import {
   loadAdventurePath,
   resolveLevelTotalKnown,
 } from './adventure-path.js';
+import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
 
 let catalogCache = null;
 
@@ -13,15 +14,29 @@ export function clearAdventureCatalogStatsCache() {
   catalogCache = null;
 }
 
+async function ensureLevelStatsOnApp(app) {
+  if (app?.state?.levelStatsById) return app.state.levelStatsById;
+  const stats = await loadLevelStatsIndex();
+  const byId = stats?.byId || {};
+  if (app?.state) app.state.levelStatsById = byId;
+  return byId;
+}
+
 /**
  * @returns {Promise<{ totalAdventurePuzzles: number, totalKnownRoutes: number, largestSolution: number } | null>}
  */
 export async function loadAdventureCatalogStats(app = window.__app, { force = false } = {}) {
-  const levelsReady = (app?.state?.allLevels?.length ?? 0) > 0;
+  const statsReady = isCatalogReady();
   if (catalogCache && !force) return catalogCache;
   try {
-    const path = await loadAdventurePath();
-    const levelContext = adventureLevelContext(app || {});
+    const [path, levelStatsById] = await Promise.all([
+      loadAdventurePath(),
+      ensureLevelStatsOnApp(app),
+    ]);
+    const levelContext = {
+      ...adventureLevelContext(app || {}),
+      levelStatsById,
+    };
     const puzzles = [...(path?.flat || []), ...(path?.postgame || [])];
     let totalKnownRoutes = 0;
     let largestSolution = 0;
@@ -36,8 +51,7 @@ export async function loadAdventureCatalogStats(app = window.__app, { force = fa
       totalKnownRoutes,
       largestSolution,
     };
-    // Avoid caching zeros before level catalog / solution counts are loaded.
-    if (levelsReady && totalKnownRoutes > 0) {
+    if (statsReady && totalKnownRoutes > 0) {
       catalogCache = result;
     }
     return result;

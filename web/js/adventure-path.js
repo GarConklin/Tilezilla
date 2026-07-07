@@ -36,7 +36,7 @@ function stepToRankSub(stepIndex) {
 
 
 
-/** @typedef {{ levels?: Array, solutionCountByLevelId?: Record<string, number> }} AdventureLevelContext */
+/** @typedef {{ levels?: Array, solutionCountByLevelId?: Record<string, number>, levelStatsById?: Record<string, { t?: number, r?: number, c?: number }> }} AdventureLevelContext */
 
 
 
@@ -48,6 +48,8 @@ export function adventureLevelContext(app) {
 
     solutionCountByLevelId: app?.state?.solutionCountByLevelId,
 
+    levelStatsById: app?.state?.levelStatsById,
+
   };
 
 }
@@ -58,9 +60,27 @@ export function findLevel(levelContext, levelId) {
 
   const levels = levelContext?.levels;
 
-  if (!levels?.length || !levelId) return null;
+  if (levels?.length && levelId) {
 
-  return levels.find((l) => l.id === levelId) || null;
+    const hit = levels.find((l) => l.id === levelId);
+
+    if (hit) return hit;
+
+  }
+
+  const stats = levelContext?.levelStatsById?.[levelId];
+
+  if (!stats || !levelId) return null;
+
+  return {
+
+    id: levelId,
+
+    totalUniqueSolutions: Number(stats.t) || 0,
+
+    board: { rows: Number(stats.r) || 0, cols: Number(stats.c) || 0 },
+
+  };
 
 }
 
@@ -873,7 +893,13 @@ export async function resolveAdventureResume(app) {
 
 
 
-  const level = app?.state?.allLevels?.find((l) => l.id === location.puzzle.levelId);
+  let level = app?.state?.allLevels?.find((l) => l.id === location.puzzle.levelId);
+
+  if (!level && app?.ensureLevel) {
+
+    level = await app.ensureLevel(location.puzzle.levelId);
+
+  }
 
   const meta = buildAdventureMeta(path, location, progress, levelContext);
 

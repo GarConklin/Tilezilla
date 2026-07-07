@@ -1,0 +1,48 @@
+{
+  "board": { "rows": 5, "cols": 6, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "CR": 1,
+    "CT": 1,
+    "CQ": 1,
+    "RC": 2,
+    "DB": 1,
+    "LC": 1,
+    "VL": 2,
+    "HL": 1,
+    "SZ": 1,
+    "LR": 1,
+    "LL": 1,
+    "ET": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "source": "hand-made",
+    "validatedBy": "player",
+    "note": "5x6-0c-XX4 — CR+CT+CQ, native 5×6 recording"
+  },
+  "solutions": [{
+    "id": "2026-07-03T14:04:27.879Z-3b51e53c0df9f",
+    "label": "5x6-0c-XX4",
+    "placements": [
+      { "tile": "CQ", "r": 1, "c": 4, "deg": 0 },
+      { "tile": "CR", "r": 0, "c": 2, "deg": 90 },
+      { "tile": "SH", "r": 0, "c": 0, "deg": 0 },
+      { "tile": "CT", "r": 2, "c": 4, "deg": 180 },
+      { "tile": "RC", "r": 0, "c": 5, "deg": 180 },
+      { "tile": "DB", "r": 0, "c": 3, "deg": 90 },
+      { "tile": "RC", "r": 3, "c": 5, "deg": 270 },
+      { "tile": "LC", "r": 4, "c": 5, "deg": 180 },
+      { "tile": "VL", "r": 3, "c": 4, "deg": 180 },
+      { "tile": "ET", "r": 4, "c": 0, "deg": 270 },
+      { "tile": "VL", "r": 2, "c": 2, "deg": 90 },
+      { "tile": "SZ", "r": 3, "c": 1, "deg": 90 },
+      { "tile": "HL", "r": 4, "c": 3, "deg": 180 },
+      { "tile": "LR", "r": 2, "c": 0, "deg": 0 },
+      { "tile": "LL", "r": 1, "c": 0, "deg": 0 }
+    ]
+  }],
+  "levelId": "5x6-0C-AAQ",
+  "generatedAt": "2026-07-03T14:04:27.879Z"
+}

@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "5x6",
   "tier": "0B",
-  "count": 2383,
+  "count": 2388,
   "levels": [
     {
       "id": "5x6-0B-AAA",
@@ -55107,6 +55107,127 @@
       },
       "blockers": [],
       "solvesFile": "5x6-0B-DNQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNR",
+      "name": "DNR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNS",
+      "name": "DNS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0B-DNT",
+      "name": "DNT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNU",
+      "name": "DNU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "VL": 4
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0B-DNV",
+      "name": "DNV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0B-DNV.json",
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 1

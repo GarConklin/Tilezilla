@@ -1,0 +1,145 @@
+{
+  "board": { "rows": 6, "cols": 5, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": { "SH": 1, "CR": 1, "DB": 1, "CQ": 1, "RC": 3, "LC": 3, "LR": 2, "UT": 2, "ET": 1 },
+  "totalUniqueSolutions": 1,
+  "solverMeta": { "source": "hand-made", "note": "2026-07-03 puzzle 1" },
+  "solutions": [{
+    "id": "2026-07-03T13:20:30.278Z-9c4eda27e43898",
+    "label": "Solve 1",
+    "placements": [
+      { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+      { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+      { "tile": "DB", "r": 3, "c": 3, "deg": 0 },
+      { "tile": "RC", "r": 5, "c": 4, "deg": 270 },
+      { "tile": "CQ", "r": 4, "c": 3, "deg": 90 },
+      { "tile": "RC", "r": 5, "c": 1, "deg": 0 },
+      { "tile": "RC", "r": 3, "c": 2, "deg": 90 },
+      { "tile": "LC", "r": 5, "c": 0, "deg": 270 },
+      { "tile": "ET", "r": 3, "c": 1, "deg": 90 },
+      { "tile": "LR", "r": 2, "c": 0, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 1, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 0, "deg": 270 },
+      { "tile": "LR", "r": 0, "c": 2, "deg": 180 },
+      { "tile": "LC", "r": 2, "c": 2, "deg": 270 },
+      { "tile": "LC", "r": 0, "c": 3, "deg": 90 }
+    ]
+  }],
+  "generatedAt": "2026-07-03T13:20:30.278Z"
+}
+{
+  "board": { "rows": 6, "cols": 5, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": { "SH": 1, "CR": 1, "DB": 1, "CQ": 1, "RC": 1, "DC": 1, "SZ": 1, "LC": 2, "LR": 2, "UT": 3, "ET": 1 },
+  "totalUniqueSolutions": 1,
+  "solverMeta": { "source": "hand-made", "note": "2026-07-03 puzzle 2" },
+  "solutions": [{
+    "id": "2026-07-03T13:27:18.461Z-a6aeacf4436a9",
+    "label": "Solve 1",
+    "placements": [
+      { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+      { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+      { "tile": "DB", "r": 3, "c": 3, "deg": 0 },
+      { "tile": "RC", "r": 5, "c": 4, "deg": 270 },
+      { "tile": "CQ", "r": 4, "c": 3, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 1, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 0, "deg": 270 },
+      { "tile": "LR", "r": 0, "c": 2, "deg": 180 },
+      { "tile": "LC", "r": 2, "c": 2, "deg": 270 },
+      { "tile": "LC", "r": 0, "c": 3, "deg": 90 },
+      { "tile": "ET", "r": 3, "c": 0, "deg": 270 },
+      { "tile": "DC", "r": 5, "c": 2, "deg": 270 },
+      { "tile": "UT", "r": 3, "c": 1, "deg": 0 },
+      { "tile": "SZ", "r": 4, "c": 0, "deg": 0 },
+      { "tile": "LR", "r": 5, "c": 0, "deg": 0 }
+    ]
+  }],
+  "generatedAt": "2026-07-03T13:27:18.461Z"
+}
+{
+  "board": { "rows": 6, "cols": 5, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": { "SH": 1, "CR": 1, "DB": 1, "DC": 2, "SZ": 1, "LC": 2, "LL": 1, "LR": 2, "UT": 3, "ET": 1 },
+  "totalUniqueSolutions": 1,
+  "solverMeta": { "source": "hand-made", "note": "2026-07-03 puzzle 3" },
+  "solutions": [{
+    "id": "2026-07-03T13:28:33.102Z-846ddb2ba3fbc",
+    "label": "Solve 1",
+    "placements": [
+      { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+      { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+      { "tile": "DB", "r": 3, "c": 3, "deg": 0 },
+      { "tile": "UT", "r": 1, "c": 1, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 0, "deg": 270 },
+      { "tile": "LR", "r": 0, "c": 2, "deg": 180 },
+      { "tile": "LC", "r": 2, "c": 2, "deg": 270 },
+      { "tile": "LC", "r": 0, "c": 3, "deg": 90 },
+      { "tile": "ET", "r": 3, "c": 0, "deg": 270 },
+      { "tile": "DC", "r": 5, "c": 2, "deg": 270 },
+      { "tile": "UT", "r": 3, "c": 1, "deg": 0 },
+      { "tile": "SZ", "r": 4, "c": 0, "deg": 0 },
+      { "tile": "LR", "r": 5, "c": 0, "deg": 0 },
+      { "tile": "DC", "r": 4, "c": 4, "deg": 180 },
+      { "tile": "LL", "r": 5, "c": 4, "deg": 180 }
+    ]
+  }],
+  "generatedAt": "2026-07-03T13:28:33.102Z"
+}
+{
+  "board": { "rows": 6, "cols": 5, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": { "SH": 1, "CR": 1, "RC": 1, "SS": 1, "VL": 1, "DC": 1, "SZ": 1, "LC": 2, "LL": 1, "LR": 2, "UT": 2, "ET": 1 },
+  "totalUniqueSolutions": 1,
+  "solverMeta": { "source": "hand-made", "note": "2026-07-03 puzzle 4" },
+  "solutions": [{
+    "id": "2026-07-03T13:29:56.270Z-739810dc565d88",
+    "label": "Solve 4",
+    "placements": [
+      { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+      { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+      { "tile": "UT", "r": 1, "c": 1, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 0, "deg": 270 },
+      { "tile": "LR", "r": 0, "c": 2, "deg": 180 },
+      { "tile": "LC", "r": 2, "c": 2, "deg": 270 },
+      { "tile": "LC", "r": 0, "c": 3, "deg": 90 },
+      { "tile": "ET", "r": 3, "c": 0, "deg": 270 },
+      { "tile": "SZ", "r": 4, "c": 0, "deg": 0 },
+      { "tile": "LR", "r": 5, "c": 0, "deg": 0 },
+      { "tile": "DC", "r": 3, "c": 4, "deg": 180 },
+      { "tile": "LL", "r": 3, "c": 1, "deg": 0 },
+      { "tile": "VL", "r": 5, "c": 2, "deg": 270 },
+      { "tile": "RC", "r": 5, "c": 4, "deg": 270 },
+      { "tile": "SS", "r": 4, "c": 3, "deg": 90 }
+    ]
+  }],
+  "generatedAt": "2026-07-03T13:29:56.270Z"
+}
+{
+  "board": { "rows": 6, "cols": 5, "cells": 30 },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": { "SH": 1, "CR": 1, "RC": 2, "VL": 1, "DC": 1, "LC": 3, "LL": 1, "LR": 2, "UT": 2, "ET": 1 },
+  "totalUniqueSolutions": 1,
+  "solverMeta": { "source": "hand-made", "note": "2026-07-03 puzzle 5 (label 5x6-0c-XX1)" },
+  "solutions": [{
+    "id": "2026-07-03T13:34:18.038Z-8d9d9576d851a8",
+    "label": "5x6-0c-XX1",
+    "placements": [
+      { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+      { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+      { "tile": "UT", "r": 1, "c": 1, "deg": 90 },
+      { "tile": "UT", "r": 1, "c": 0, "deg": 270 },
+      { "tile": "LR", "r": 0, "c": 2, "deg": 180 },
+      { "tile": "LC", "r": 2, "c": 2, "deg": 270 },
+      { "tile": "LC", "r": 0, "c": 3, "deg": 90 },
+      { "tile": "DC", "r": 3, "c": 4, "deg": 180 },
+      { "tile": "LL", "r": 3, "c": 1, "deg": 0 },
+      { "tile": "RC", "r": 5, "c": 4, "deg": 270 },
+      { "tile": "LR", "r": 2, "c": 0, "deg": 90 },
+      { "tile": "LC", "r": 5, "c": 0, "deg": 270 },
+      { "tile": "RC", "r": 5, "c": 1, "deg": 270 },
+      { "tile": "ET", "r": 5, "c": 2, "deg": 270 },
+      { "tile": "VL", "r": 4, "c": 3, "deg": 90 }
+    ]
+  }],
+  "generatedAt": "2026-07-03T13:34:18.038Z"
+}

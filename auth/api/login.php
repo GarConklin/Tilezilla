@@ -46,27 +46,8 @@ try {
         throw new Exception("Invalid username/email or password");
     }
 
-    if (isset($row['status']) && $row['status'] === 'suspended') {
-        throw new Exception("Account is suspended");
-    }
-
-    if (isset($row['status']) && $row['status'] === 'expired') {
-        throw new Exception("Your account has expired.");
-    }
-
-    if (empty($row['email_verified'])) {
-        throw new Exception("Please verify your email before logging in.");
-    }
-
-    if (isset($row['status']) && $row['status'] === 'registered') {
-        throw new Exception("Account is not yet activated.");
-    }
-
-    if (isset($row['active_until']) && $row['active_until'] !== null) {
-        if (new DateTime($row['active_until']) < new DateTime()) {
-            throw new Exception("Your subscription has expired.");
-        }
-    }
+    $authManager = new AuthManager($conn);
+    $authManager->assertUserMayAuthenticate($row);
 
     $userId = (int)$row['user_id'];
     $_SESSION['user_id'] = $userId;

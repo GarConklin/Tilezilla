@@ -1,0 +1,6 @@
+{
+  "unwantedRecommendations": [
+    "ms-python.python",
+    "anysphere.cursorpyright"
+  ]
+}

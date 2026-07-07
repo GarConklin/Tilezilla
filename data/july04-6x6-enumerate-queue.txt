@@ -1,0 +1,13 @@
+# July 4 2026 — 6x6 hand-made seeds (pathCount 1 → full enumerate)
+# Source: data/6x6 tilepz solves 4 July  2026.txt
+#   0C-ACD→ADT  0C-ACE→ADU  0A-ACW→ADV  0A-ACX→ADW  0A-ACY→ADX
+#   (all catalog ids are 6x6-0B-* after bag match)
+#
+# Run (6x6 can be slow — run alone or after 5x6 batch):
+#   .\scripts\run-enumerate-levels.ps1 -LevelListFile data/july04-6x6-enumerate-queue.txt -SyncCatalog -ContinueOnError -NoTty
+#
+6x6-0B-ADT
+6x6-0B-ADU
+6x6-0B-ADV
+6x6-0B-ADW
+6x6-0B-ADX

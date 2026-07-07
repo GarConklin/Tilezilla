@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -245,12 +246,15 @@ def sync_mysql_after_solve(
     completion_time_seconds: int,
     challenge_date: Optional[str] = None,
     leaderboard_saved: bool = False,
+    hints_used_count: int = 0,
 ) -> None:
     """Best-effort MySQL summary; JSON file remains authoritative for full history."""
     rebuild_mysql_from_progress(repo_root, user_id, progress_data)
 
     if not leaderboard_saved or not challenge_date or bonus or index is None:
         return
+
+    hint_count = max(0, int(hints_used_count or 0))
 
     try:
         conn = _mysql_connect()
@@ -264,8 +268,8 @@ def sync_mysql_after_solve(
                 """
                 INSERT INTO daily_results (
                     challenge_date, user_id, completion_time_seconds,
-                    solution_id, completed_at
-                ) VALUES (%s, %s, %s, %s, %s)
+                    solution_id, completed_at, hints_used_count
+                ) VALUES (%s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
                     completion_time_seconds = LEAST(
                         completion_time_seconds, VALUES(completion_time_seconds)
@@ -279,6 +283,11 @@ def sync_mysql_after_solve(
                         VALUES(completion_time_seconds) < completion_time_seconds,
                         VALUES(completed_at),
                         completed_at
+                    ),
+                    hints_used_count = IF(
+                        VALUES(completion_time_seconds) < completion_time_seconds,
+                        VALUES(hints_used_count),
+                        hints_used_count
                     )
                 """,
                 (
@@ -287,6 +296,7 @@ def sync_mysql_after_solve(
                     max(0, int(completion_time_seconds)),
                     int(index) + 1,
                     now,
+                    hint_count,
                 ),
             )
         conn.commit()
@@ -349,6 +359,10 @@ def record_solve(
     completion_time_seconds = max(
         0, int(meta.get("completionTimeSeconds") or meta.get("elapsedSec") or 0)
     )
+    hints_used_count = meta.get("hintsUsedCount")
+    if hints_used_count is None:
+        hints_used_count = 1 if meta.get("hintsUsed") else 0
+    hints_used_count = max(0, int(hints_used_count or 0))
     found_at = _now_iso()
     entry = {
         "index": index,
@@ -364,7 +378,8 @@ def record_solve(
         "bonus": bool(bonus),
         "elapsedMs": completion_time_seconds * 1000,
         "completionTimeSeconds": completion_time_seconds,
-        "hintsUsed": bool(meta.get("hintsUsed")),
+        "hintsUsed": hints_used_count > 0,
+        "hintsUsedCount": hints_used_count,
         "exampleRouteViewed": bool(meta.get("exampleRouteViewed")),
         "leaderboardSubmitted": bool(meta.get("leaderboardSubmitted")),
         "foundAt": found_at,
@@ -382,6 +397,7 @@ def record_solve(
         completion_time_seconds=completion_time_seconds,
         challenge_date=str(meta.get("challengeDate") or "").strip() or None,
         leaderboard_saved=bool(meta.get("leaderboardSubmitted")),
+        hints_used_count=hints_used_count,
     )
 
     return {
@@ -406,6 +422,131 @@ def migrate_progress(
     save_progress(repo_root, user_id, incoming)
     rebuild_mysql_from_progress(repo_root, int(user_id), incoming)
     return {"ok": True, "migrated": True}
+
+
+def all_time_best_daily(repo_root: Path) -> dict[str, Any]:  # noqa: ARG001
+    """Fastest daily-challenge solve ever recorded, across all users.
+
+    Joins daily_results → daily_challenges (for level_id) → users (for name).
+    Returns {ok, best: {puzzleId, date, timeSeconds, user} | None}.
+    """
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"ok": False, "best": None, "error": "db-unavailable"}
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    dr.completion_time_seconds AS time_seconds,
+                    dr.challenge_date          AS challenge_date,
+                    dc.level_id                AS level_id,
+                    u.username                 AS username
+                FROM daily_results dr
+                JOIN daily_challenges dc ON dc.challenge_date = dr.challenge_date
+                LEFT JOIN users u ON u.user_id = dr.user_id
+                WHERE dr.completion_time_seconds > 0
+                ORDER BY dr.completion_time_seconds ASC, dr.completed_at ASC
+                LIMIT 1
+                """
+            )
+            row = cur.fetchone()
+    except Exception:
+        return {"ok": False, "best": None, "error": "query-failed"}
+    finally:
+        conn.close()
+
+    if not row:
+        return {"ok": True, "best": None}
+
+    date_val = row.get("challenge_date")
+    date_iso = date_val.isoformat() if hasattr(date_val, "isoformat") else str(date_val or "")
+    return {
+        "ok": True,
+        "best": {
+            "puzzleId": str(row.get("level_id") or ""),
+            "date": date_iso,
+            "timeSeconds": int(row.get("time_seconds") or 0),
+            "user": str(row.get("username") or ""),
+        },
+    }
+
+
+def _iso_date(value: Any) -> str:
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+    return str(value or "").strip()
+
+
+def daily_leaderboard_for_date(
+    repo_root: Path,  # noqa: ARG001
+    challenge_date: str,
+) -> dict[str, Any]:
+    """All players' fastest daily times for one challenge date (MySQL daily_results)."""
+    date_key = str(challenge_date or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return {"ok": False, "error": "invalid-date", "rows": []}
+
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"ok": False, "error": "db-unavailable", "rows": []}
+
+    rows: list[dict[str, Any]] = []
+    level_id = ""
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT level_id FROM daily_challenges WHERE challenge_date = %s LIMIT 1",
+                (date_key,),
+            )
+            challenge = cur.fetchone()
+            level_id = str(challenge.get("level_id") or "") if challenge else ""
+
+            cur.execute(
+                """
+                SELECT
+                    dr.user_id                 AS user_id,
+                    u.username                 AS username,
+                    dr.completion_time_seconds AS time_seconds,
+                    dr.hints_used_count        AS hints_used_count,
+                    dr.completed_at            AS completed_at
+                FROM daily_results dr
+                LEFT JOIN users u ON u.user_id = dr.user_id
+                WHERE dr.challenge_date = %s
+                  AND dr.completion_time_seconds > 0
+                ORDER BY dr.completion_time_seconds ASC, dr.completed_at ASC
+                """,
+                (date_key,),
+            )
+            for row in cur.fetchall() or []:
+                username = str(row.get("username") or "").strip()
+                user_id = row.get("user_id")
+                display = username or str(user_id or "")
+                rows.append(
+                    {
+                        "userId": display,
+                        "username": display,
+                        "completionTimeSeconds": int(row.get("time_seconds") or 0),
+                        "hintsUsedCount": max(0, int(row.get("hints_used_count") or 0)),
+                        "levelId": level_id,
+                        "challengeDate": date_key,
+                        "completedAt": _iso_date(row.get("completed_at")),
+                    }
+                )
+    except Exception:
+        return {"ok": False, "error": "query-failed", "rows": []}
+    finally:
+        conn.close()
+
+    return {
+        "ok": True,
+        "date": date_key,
+        "levelId": level_id,
+        "rows": rows,
+    }
 
 
 def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:

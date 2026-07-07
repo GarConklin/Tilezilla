@@ -1,0 +1,12 @@
+{
+  "exportedAt": "2026-06-30T00:32:27.1714327Z",
+  "gitCommit": "77020efe99351c2d8b9231442b72b2e7f58b7e47",
+  "database": "tilegame",
+  "files": [
+    ".env.production.example",
+    "solves.zip",
+    "tilegame.sql"
+  ],
+  "restoreHint": "On Ubuntu: git pull, copy this folder, run ./scripts/restore-on-ubuntu.sh 20260629-213226",
+  "productionUrl": "https://tile.skifflakegames.com"
+}

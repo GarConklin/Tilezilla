@@ -16,11 +16,15 @@
 .EXAMPLE
   .\scripts\run-enumerate-levels.ps1 -LevelIds "5x6-0B-AUY" -DryRun
 
+.EXAMPLE
+  .\scripts\run-enumerate-levels.ps1 -LevelListFile "data/june30-enumerate-queue.txt" -SyncCatalog -ContinueOnError
+
   Stop: .\scripts\stop-solve-docker-runs.ps1 (2nd terminal), then Ctrl+C here.
 #>
 param(
-  [Parameter(Mandatory = $true)]
-  [string]$LevelIds,
+  [string]$LevelIds = "",
+
+  [string]$LevelListFile = "",
 
   [string]$RepoRoot = "",
 
@@ -54,14 +58,29 @@ if (-not (Test-DockerCompose -RepoRoot $RepoRoot)) {
   throw "docker compose not available from $RepoRoot"
 }
 
+$rawIds = @()
+if ($LevelListFile) {
+  $listPath = if ([System.IO.Path]::IsPathRooted($LevelListFile)) {
+    $LevelListFile
+  } else {
+    Join-Path $RepoRoot ($LevelListFile -replace '/', '\')
+  }
+  if (-not (Test-Path $listPath)) {
+    throw "Level list file not found: $listPath"
+  }
+  $rawIds += Get-Content -Path $listPath | ForEach-Object { $_.Trim() } | Where-Object { $_ -and -not $_.StartsWith('#') }
+}
+if ($LevelIds) {
+  $rawIds += $LevelIds -split '[,\s]+' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+}
+
 $ids = @(
-  $LevelIds -split '[,\s]+' |
-    ForEach-Object { $_.Trim() } |
+  $rawIds |
     Where-Object { $_ -match '^\d+x\d+-\S+-\S+$' }
 )
 
 if ($ids.Count -eq 0) {
-  throw "No valid level ids in -LevelIds (expected e.g. 5x6-0B-AUY)"
+  throw "No valid level ids. Use -LevelIds or -LevelListFile (expected e.g. 5x6-0B-AUY)."
 }
 
 function Write-Step([string]$Message) {

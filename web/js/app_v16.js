@@ -2361,6 +2361,19 @@ function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
   payload.showAdvancePath = false;
   payload.showFoundBook = false;
   payload.showViewFound = false;
+  if (document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge') {
+    payload.dailyLeaderboardFlow = true;
+    payload.continueAriaLabel = 'View today\'s leaderboard';
+    payload.showContinueSearch = true;
+    if (outcome.elapsedSec > 0 && !catalogRes.duplicate) {
+      window.__guestDailyLeaderboardPreview = {
+        challengeDate: todayChallengeDate(),
+        levelId: lv.id,
+        completionTimeSeconds: outcome.elapsedSec,
+        hintsUsedCount: outcome.hintsUsedCount ?? (outcome.hintsUsed ? 1 : 0),
+      };
+    }
+  }
   window.__discoveryRecord?.show?.(payload);
   if (document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge') {
     window.__tilezillaGuest?.trackGuestGameplay?.('Daily Challenge Solved', lv.id);
@@ -2372,6 +2385,10 @@ async function processSolutionFound(lv, res, placements) {
   const timer = window.__puzzleTimer;
   const elapsedSec = timer?.stop?.() ?? 0;
   const hintsUsed = puzzleAttemptUsedHints();
+  const hintsUsedCount = Math.max(
+    0,
+    (Number(state.hintsUsedThisPuzzle) || 0) + (Number(state.randomHintsUsedThisPuzzle) || 0),
+  );
 
   if (guestSession) {
     const n = Number.isFinite(res?.index) ? res.index + 1 : '★';
@@ -2381,6 +2398,8 @@ async function processSolutionFound(lv, res, placements) {
     return {
       msg,
       elapsedSec,
+      hintsUsedCount,
+      hintsUsed,
       tokensEarned: 0,
       bonusNotes: [],
       leaderboardSubmitted: false,
@@ -2402,6 +2421,7 @@ async function processSolutionFound(lv, res, placements) {
       solutionBonus: !!res.bonus,
       completionTimeSeconds: elapsedSec,
       hintsUsed,
+      hintsUsedCount,
       exampleRouteViewed,
       completedAt: new Date().toISOString(),
     });
@@ -2414,6 +2434,7 @@ async function processSolutionFound(lv, res, placements) {
   progress.recordFound(lv.id, res.index, placements, !!res.bonus, elapsedSec * 1000, {
     completionTimeSeconds: elapsedSec,
     hintsUsed,
+    hintsUsedCount,
     exampleRouteViewed,
     leaderboardSubmitted,
   });
@@ -2429,6 +2450,7 @@ async function processSolutionFound(lv, res, placements) {
     meta: {
       completionTimeSeconds: elapsedSec,
       hintsUsed,
+      hintsUsedCount,
       exampleRouteViewed,
       leaderboardSubmitted,
       challengeDate: leaderboardEligible ? todayChallengeDate() : null,
@@ -3718,6 +3740,13 @@ async function loadAllLevels(){
   return null;
 }
 
+async function initShellLevelCatalog(){
+  const { initLevelCatalog, ensureLevel, ensureLevels } = await import('./level-catalog.js');
+  await initLevelCatalog(state);
+  state.allLevels = [];
+  return { initLevelCatalog, ensureLevel, ensureLevels };
+}
+
 /**
  * Canonical size key for UI/filtering. The readable "5x6" board is rows=6, cols=5 in data.
  * Legacy saves may still use size key "6x5".
@@ -4314,34 +4343,41 @@ async function init(){
     if (id && !state.tileAssetById[id]) state.tileAssetById[id] = k;
   }
   const isTilezillaShell = !!document.querySelector('.tz-app');
-  const loadedLevels = await loadAllLevels();
-  if (loadedLevels && loadedLevels.length) {
-    state.allLevels = loadedLevels;
-    populateSizeAndLevelUI();
-    if (!isTilezillaShell) {
+  let ensureLevelFn = null;
+  let ensureLevelsFn = null;
+  if (isTilezillaShell) {
+    const catalog = await initShellLevelCatalog();
+    ensureLevelFn = (levelId) => catalog.ensureLevel(levelId, state);
+    ensureLevelsFn = (levelIds) => catalog.ensureLevels(levelIds, state);
+    state.allLevels = [];
+  } else {
+    const loadedLevels = await loadAllLevels();
+    if (loadedLevels && loadedLevels.length) {
+      state.allLevels = loadedLevels;
+      populateSizeAndLevelUI();
       const first = getSortedLevels()[0];
       if (first) await applyLevel(first);
+    } else {
+      state.allLevels = null;
+      state.levelTileCounts = null;
+      state.tileCatalog = Object.keys(state.liveEdges).filter(k => !k.startsWith('_'));
+      state.paletteInstances = buildPaletteInstances();
+      await buildPalette();
+      renderActivePreview();
+      rebuildOccFromTiles();
+      await renderTiles();
+      if(boardSizeSelect) boardSizeSelect.innerHTML = '';
+      if(levelSelect) levelSelect.innerHTML = '';
+      if(levelHud) levelHud.textContent = '--';
+      if(progressHud) progressHud.textContent = '0 / ?';
+      if(foundStatus) foundStatus.textContent = 'No solutions found yet.';
+      if(foundList) foundList.innerHTML = '';
+      if(blockerHud) blockerHud.style.visibility = 'hidden';
+      syncBlockerToolbar();
     }
-  } else {
-    state.allLevels = null;
-    state.levelTileCounts = null;
-    state.tileCatalog = Object.keys(state.liveEdges).filter(k => !k.startsWith('_'));
-    state.paletteInstances = buildPaletteInstances();
-    await buildPalette();
-    renderActivePreview();
-    rebuildOccFromTiles();
-    await renderTiles();
-    if(boardSizeSelect) boardSizeSelect.innerHTML = '';
-    if(levelSelect) levelSelect.innerHTML = '';
-    if(levelHud) levelHud.textContent = '--';
-    if(progressHud) progressHud.textContent = '0 / ?';
-    if(foundStatus) foundStatus.textContent = 'No solutions found yet.';
-    if(foundList) foundList.innerHTML = '';
-    if(blockerHud) blockerHud.style.visibility = 'hidden';
-    syncBlockerToolbar();
   }
 
-  if (boardSizeSelect && state.allLevels) {
+  if (!isTilezillaShell && boardSizeSelect && state.allLevels) {
     boardSizeSelect.addEventListener('change', async () => {
       const sizeKey = boardSizeSelect.value;
       if(loadingHud) loadingHud.style.display = 'flex';
@@ -4705,6 +4741,8 @@ async function init(){
     renderSolutionPreview, findClosestSolutionPlacements,
     loadKnownSolutionsForLevel,
     setActiveTileset,
+    ensureLevel: ensureLevelFn,
+    ensureLevels: ensureLevelsFn,
     onManualTilePlaced: null,
     onBoardStateChanged: null,
     currentPortablePlacements, displayDimsForBoard,

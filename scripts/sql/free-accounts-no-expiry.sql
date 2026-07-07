@@ -3,10 +3,9 @@
 --
 -- On production:
 --   cd /opt/tilezilla
---   git pull
---   docker compose -f docker-compose.production.yml --env-file .env.production restart php-auth
 --   docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
---     mysql -utilegame -p tilegame < scripts/sql/free-accounts-no-expiry.sql
+--     sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+--     < scripts/sql/free-accounts-no-expiry.sql
 
 USE tilegame;
 

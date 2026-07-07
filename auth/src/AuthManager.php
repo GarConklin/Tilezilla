@@ -74,20 +74,59 @@ class AuthManager {
             throw new Exception("Invalid username or password");
         }
 
-        if ($user['status'] === 'suspended') {
+        $this->assertUserMayAuthenticate($user);
+
+        $this->updateLastLogin($user['id']);
+        unset($user['password_hash']);
+        return $user;
+    }
+
+    /**
+     * Free play when registration_settings.trial_period_days <= 0.
+     * Legacy rows may still have active_until or status=expired from the old trial.
+     */
+    public function isFreeAccountsMode(): bool {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        $stmt = $this->conn->prepare(
+            "SELECT setting_value FROM registration_settings WHERE setting_key = 'trial_period_days' LIMIT 1"
+        );
+        if (!$stmt) {
+            $cached = true;
+            return true;
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        $cached = ((int)($row['setting_value'] ?? 0)) <= 0;
+        return $cached;
+    }
+
+    /** Shared login/session gate — throws when the account may not authenticate. */
+    public function assertUserMayAuthenticate(array $user): void {
+        if (($user['status'] ?? '') === 'suspended') {
             throw new Exception("Account is suspended");
         }
 
-        if ($user['status'] === 'expired') {
-            throw new Exception("Your account has expired. Please renew to continue playing.");
-        }
-
-        $emailVerified = isset($user['email_verified']) ? (bool)$user['email_verified'] : false;
-        if (!$emailVerified) {
+        if (empty($user['email_verified'])) {
             throw new Exception("Please verify your email address before logging in. Check your inbox for the verification email.");
         }
 
-        if ($user['status'] === 'registered') {
+        if ($this->isFreeAccountsMode()) {
+            if (($user['status'] ?? '') === 'registered') {
+                throw new Exception("Account is not yet activated. Please contact support.");
+            }
+            return;
+        }
+
+        if (($user['status'] ?? '') === 'expired') {
+            throw new Exception("Your account has expired. Please renew to continue playing.");
+        }
+
+        if (($user['status'] ?? '') === 'registered') {
             throw new Exception("Account is not yet activated. Please contact support.");
         }
 
@@ -97,10 +136,16 @@ class AuthManager {
                 throw new Exception("Your subscription expired on " . $activeUntil->format('Y-m-d') . ". Please renew to continue playing.");
             }
         }
+    }
 
-        $this->updateLastLogin($user['id']);
-        unset($user['password_hash']);
-        return $user;
+    /** Session check without throwing (for verifySession). */
+    public function userSessionAllowed(array $user): bool {
+        try {
+            $this->assertUserMayAuthenticate($user);
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     private function usernameExists($username) {
@@ -178,13 +223,7 @@ class AuthManager {
         }
         $user = $this->getUserById($_SESSION['user_id']);
         if (!$user) return null;
-        if (isset($user['status']) && in_array($user['status'], ['suspended', 'expired', 'registered'], true)) {
-            return null;
-        }
-        if (empty($user['email_verified'])) return null;
-        if (isset($user['active_until']) && $user['active_until'] !== null) {
-            if (new DateTime($user['active_until']) < new DateTime()) return null;
-        }
+        if (!$this->userSessionAllowed($user)) return null;
         return $user;
     }
 

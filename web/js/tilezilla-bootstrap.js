@@ -185,6 +185,7 @@ import {
 } from './adventure-path.js';
 import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
+import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -229,13 +230,31 @@ async function waitForApp() {
   return window.__app;
 }
 
-async function waitForAppLevels(app, maxMs = 12000) {
-  if (app?.state?.allLevels?.length) return;
+async function waitForCatalogReady(maxMs = 12000) {
+  if (isCatalogReady()) return;
   const deadline = Date.now() + maxMs;
   while (Date.now() < deadline) {
+    if (isCatalogReady()) return;
     await new Promise((r) => setTimeout(r, 50));
-    if (app?.state?.allLevels?.length) return;
   }
+}
+
+async function ensureAdventureLevelContext(app) {
+  await waitForCatalogReady();
+  if (!app?.state?.levelStatsById) {
+    const stats = await loadLevelStatsIndex();
+    app.state.levelStatsById = stats?.byId || {};
+  }
+  return adventureLevelContext(app);
+}
+
+async function resolveCatalogLevel(app, levelId) {
+  if (!app || !levelId) return null;
+  let level = app.state?.allLevels?.find((l) => l.id === levelId);
+  if (!level && app.ensureLevel) {
+    level = await app.ensureLevel(levelId);
+  }
+  return level || null;
 }
 
 /** Reload progress from storage, then refresh rank badge, hint plaque, and passport slots. */
@@ -244,7 +263,7 @@ async function syncPlayerChrome(app) {
   if (app.progress?.load) {
     app.progress.data = app.progress.load();
   }
-  await waitForAppLevels(app);
+  await ensureAdventureLevelContext(app);
   await updateRankPanel(app);
   updateGlobalHintCount(app);
   updateHintButtonState(app);
@@ -314,7 +333,7 @@ async function resolveDailyChallenge(app) {
   }
 
   if (row?.levelId) {
-    const level = app.state.allLevels?.find((l) => l.id === row.levelId);
+    const level = await resolveCatalogLevel(app, row.levelId);
     if (level) {
       const dateIso = parseDailyCsvDate(row.date) || row.date;
       return {
@@ -328,8 +347,7 @@ async function resolveDailyChallenge(app) {
     }
   }
 
-  const fallback = app.state.allLevels?.find((l) => l.id === '5x6-0B-AAC')
-    || app.state.allLevels?.[0];
+  const fallback = await resolveCatalogLevel(app, '5x6-0B-AAC');
   return {
     level: fallback || null,
     meta: {
@@ -357,7 +375,7 @@ async function loadDailyCsvRows() {
 /** Resolve daily challenge meta when opening a puzzle from the journal (incl. past dailies). */
 async function resolveDailyMetaForJournalLevel(app, levelId, explicitChallengeDate = null) {
   const progress = app?.progress;
-  const level = app.state.allLevels?.find((l) => l.id === levelId);
+  const level = await resolveCatalogLevel(app, levelId);
   if (!level) return null;
 
   const progressMeta = progress?.getLevelMeta?.(levelId);
@@ -459,7 +477,7 @@ async function continueDiscoverySearch(app) {
 async function refreshAdventureChrome(app) {
   if (document.querySelector('.tz-app')?.dataset?.screen !== 'adventure') return;
   const path = await loadAdventurePath();
-  const levelContext = adventureLevelContext(app);
+  const levelContext = await ensureAdventureLevelContext(app);
   const level = app?.state?.currentLevel;
   if (level?.id) {
     const meta = buildAdventureMetaForLevel(path, level.id, app?.progress, levelContext);
@@ -474,7 +492,7 @@ async function refreshAdventureChrome(app) {
 async function advanceAdventurePath(app) {
   const path = await loadAdventurePath();
   const progress = app?.progress || window.__app?.progress;
-  const levelContext = adventureLevelContext(app);
+  const levelContext = await ensureAdventureLevelContext(app);
   const currentId = app.state.currentLevel?.id;
 
   if (currentId && !isAdventurePuzzleComplete(progress, path, currentId, levelContext)) {
@@ -493,7 +511,7 @@ async function advanceAdventurePath(app) {
     showGameMessage('Adventure path complete!', 'success');
     return;
   }
-  const level = app.state.allLevels?.find((l) => l.id === location.puzzle.levelId);
+  const level = await resolveCatalogLevel(app, location.puzzle.levelId);
   if (!level) {
     showGameMessage(`Next adventure puzzle (${location.puzzle.levelId}) is not in the catalog yet.`, 'warn');
     return;
@@ -513,11 +531,12 @@ async function advanceAdventurePath(app) {
 
 async function maybeShowRankAwardThenAdvance(app) {
   const path = await loadAdventurePath();
+  const levelContext = await ensureAdventureLevelContext(app);
   const rankId = getRankAdvancementAfterLevel(
     path,
     app?.state?.currentLevel?.id,
     app?.progress,
-    adventureLevelContext(app),
+    levelContext,
   );
   if (rankId) {
     await showRankAwardPopup({ rankId });
@@ -760,10 +779,11 @@ async function loadAdventureRanks() {
 
 async function updateRankPanel(app) {
   const path = await loadAdventurePath();
+  const levelContext = await ensureAdventureLevelContext(app);
   const rankState = getRankPanelState(
     app?.progress || window.__app?.progress,
     path,
-    adventureLevelContext(app),
+    levelContext,
   );
   const ranks = await loadAdventureRanks();
   const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
@@ -1566,6 +1586,28 @@ function applyInitialBootScreen(screen) {
   guestUser.syncGuestBanner();
 }
 
+async function preloadBootLevels(app, screen) {
+  if (!app?.ensureLevel) return;
+  if (screen === 'adventure') {
+    const path = await loadAdventurePath();
+    const levelContext = await ensureAdventureLevelContext(app);
+    const location = findNextUnsolved(app.progress, path, { levelContext });
+    const ids = [];
+    if (location?.puzzle?.levelId) ids.push(location.puzzle.levelId);
+    const nextLoc = location?.puzzle?.levelId
+      ? findNextUnsolved(app.progress, path, { afterLevelId: location.puzzle.levelId, levelContext })
+      : null;
+    if (nextLoc?.puzzle?.levelId && !ids.includes(nextLoc.puzzle.levelId)) {
+      ids.push(nextLoc.puzzle.levelId);
+    }
+    if (ids.length && app.ensureLevels) await app.ensureLevels(ids);
+    return;
+  }
+  const { fetchTodaysChallengeLevelId } = await import('./passport-journal-stats.js');
+  const todayId = await fetchTodaysChallengeLevelId();
+  if (todayId) await app.ensureLevel(todayId);
+}
+
 async function loadInitialScreenPuzzle(app, screen) {
   if (screen === 'adventure') {
     await loadAdventurePuzzle(app);
@@ -1598,13 +1640,10 @@ async function pickRandomVentureLevel(app) {
   for (const puzzle of path.flat || []) consider(puzzle);
   for (const puzzle of path.postgame || []) consider(puzzle);
 
-  const levels = app?.state?.allLevels || [];
-  const candidates = [...ids]
-    .map((id) => levels.find((l) => l.id === id))
-    .filter(Boolean);
-
-  if (!candidates.length) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  const idList = [...ids];
+  if (!idList.length) return null;
+  const pickedId = idList[Math.floor(Math.random() * idList.length)];
+  return resolveCatalogLevel(app, pickedId);
 }
 
 async function switchToAdventureScreen(app) {
@@ -1622,9 +1661,7 @@ async function loadRandomVenturePuzzle(app) {
   appRoot?.classList.add('is-loading-puzzle');
 
   try {
-    while (!app.state.allLevels?.length) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
+    await waitForCatalogReady();
 
     const level = await pickRandomVentureLevel(app);
     if (!level) throw new Error('No matching random puzzles available');
@@ -2113,11 +2150,9 @@ function setActiveBottomNav(screen) {
 async function loadJournalPuzzleOnBoard(app, levelId, { challengeDate = null } = {}) {
   if (!app || !levelId) return false;
 
-  while (!app.state.allLevels?.length) {
-    await new Promise((r) => setTimeout(r, 50));
-  }
+  await waitForCatalogReady();
 
-  const level = app.state.allLevels.find((l) => l.id === levelId);
+  const level = await resolveCatalogLevel(app, levelId);
   if (!level) {
     showGameMessage(`Puzzle ${levelId} is not in the catalog.`, 'error');
     return false;
@@ -2128,7 +2163,7 @@ async function loadJournalPuzzleOnBoard(app, levelId, { challengeDate = null } =
   let journalSource = progress?.getLevelMeta?.(levelId)?.journalSource || null;
   if (!journalSource) {
     const path = await loadAdventurePath();
-    const levelContext = adventureLevelContext(app);
+    const levelContext = await ensureAdventureLevelContext(app);
     if (buildAdventureMetaForLevel(path, levelId, progress, levelContext)) {
       journalSource = 'adventure';
     }
@@ -2150,7 +2185,7 @@ async function loadJournalPuzzleOnBoard(app, levelId, { challengeDate = null } =
     window.__dailyChallengeMeta = null;
     await loadLevelOnBoard(app, level);
     const path = await loadAdventurePath();
-    const levelContext = adventureLevelContext(app);
+    const levelContext = await ensureAdventureLevelContext(app);
     const meta = buildAdventureMetaForLevel(path, levelId, progress, levelContext);
     if (meta) window.__adventureMeta = meta;
     updateChallengePanel(level, { ...meta, screen: 'adventure' });
@@ -2191,22 +2226,27 @@ async function loadAdventurePuzzle(app) {
   appRoot?.classList.add('is-loading-puzzle');
 
   try {
-    while (!app.state.allLevels?.length) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
+    await waitForCatalogReady();
 
     let { level, meta, location, path } = await resolveAdventureResume(app);
     const progress = app?.progress || window.__app?.progress;
-    const levelContext = adventureLevelContext(app);
+    const levelContext = await ensureAdventureLevelContext(app);
 
     while (level && location?.puzzle && isPuzzleSatisfied(progress, location.puzzle, levelContext)) {
       location = findNextUnsolved(progress, path, { afterLevelId: level.id, levelContext });
       if (!location?.puzzle) break;
-      level = app.state.allLevels?.find((l) => l.id === location.puzzle.levelId);
+      level = await resolveCatalogLevel(app, location.puzzle.levelId);
       meta = level ? buildAdventureMeta(path, location, progress, levelContext) : null;
     }
 
     if (!level) throw new Error('No adventure puzzle available');
+
+    const nextLoc = location?.puzzle?.levelId
+      ? findNextUnsolved(progress, path, { afterLevelId: location.puzzle.levelId, levelContext })
+      : null;
+    if (nextLoc?.puzzle?.levelId) {
+      void app.ensureLevel?.(nextLoc.puzzle.levelId);
+    }
 
     const loaded = await loadAdventureLevelWithChallengeGate(app, {
       level,
@@ -2234,9 +2274,7 @@ async function loadDailyPuzzle(app) {
   appRoot?.classList.add('is-loading-puzzle');
 
   try {
-    while (!app.state.allLevels?.length) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
+    await waitForCatalogReady();
 
     const { level, meta } = await resolveDailyChallenge(app);
     if (!level) throw new Error('No puzzle level available');
@@ -2446,7 +2484,7 @@ async function init() {
     getApp: () => appRef,
     menuApi,
     loadPuzzleLevel: (levelId, opts) => loadJournalPuzzleOnBoard(appRef, levelId, opts),
-    onResumeGame: ({ levelId: _levelId, resumeScreen } = {}) => {
+    onResumeGame: ({ levelId: _levelId, resumeScreen, postDailyLeaderboard } = {}) => {
       const app = appRef;
       if (!app) return;
       const appRoot = document.querySelector('.tz-app');
@@ -2458,6 +2496,9 @@ async function init() {
       const pinfo = $('puzzleInfoRoot');
       if (pinfo) pinfo.hidden = true;
       dismissDiscoveryForBoardEdit();
+      if (postDailyLeaderboard) {
+        resetPreviewAfterSolve();
+      }
       syncBoardChrome(app);
       void app.renderActivePreview?.();
     },
@@ -2513,6 +2554,9 @@ async function init() {
   initDiscoveryRecord({
     getApp: () => appRef,
     onContinueSearch: () => continueDiscoverySearch(appRef),
+    onDailyViewLeaderboard: async () => {
+      await journalApi?.openDailyLeaderboardAfterSolve?.();
+    },
     onAdvancePath: async () => {
       const appRoot = document.querySelector('.tz-app');
       if (appRoot?.dataset?.screen === 'daily-challenge') {
@@ -2699,6 +2743,7 @@ async function init() {
   const initialScreen = resolveInitialBootScreen(urlParams);
 
   applyInitialBootScreen(initialScreen);
+  await preloadBootLevels(app, initialScreen);
   await loadInitialScreenPuzzle(app, initialScreen);
 
   if (shouldOpenProfile) {

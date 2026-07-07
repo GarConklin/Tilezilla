@@ -1,0 +1,10 @@
+# 0C hand-made puzzles — enumerate when solver supports path tiles
+# Blocked: solves/solve-level.js snake-walk ≠ game graph rules for CR/CQ/CT
+# Validate first: docker compose run --rm web node scripts/validate-0c-ingested.js
+5x6-0C-AAL
+5x6-0C-AAM
+5x6-0C-AAN
+5x6-0C-AAO
+5x6-0C-AAP
+5x6-0C-AAQ
+5x6-0C-AAK

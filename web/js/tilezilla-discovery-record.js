@@ -27,6 +27,8 @@ let onResumeBoardEdit = () => {};
 let onAdventureProgress = async () => {};
 let pendingViewFoundIndex = null;
 let pendingRecordMode = null;
+let pendingDailyLeaderboardFlow = false;
+let onDailyViewLeaderboard = async () => {};
 
 function isDailyChallengeScreen() {
   return document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
@@ -146,6 +148,9 @@ export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdva
   }
   if (advanceBtn) advanceBtn.hidden = !showAdvance;
   if (continueBtn) continueBtn.hidden = options.showContinueSearch === false;
+  if (continueBtn && options.continueAriaLabel) {
+    continueBtn.setAttribute('aria-label', options.continueAriaLabel);
+  }
 }
 
 /** Fill discovery plaque fields — same logic as in-game popup (shared with tuner). */
@@ -161,7 +166,14 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
   );
   const showContinueSearch = payload?.showContinueSearch !== false;
   const showFoundBook = payload?.showFoundBook !== false;
-  applyRecordMode(root, mode, ids, showAdvance, { showViewFound, showContinueSearch, showFoundBook });
+  const continueAriaLabel = payload?.continueAriaLabel
+    || (payload?.dailyLeaderboardFlow ? 'View today\'s leaderboard' : 'Continue search');
+  applyRecordMode(root, mode, ids, showAdvance, {
+    showViewFound,
+    showContinueSearch,
+    showFoundBook,
+    continueAriaLabel,
+  });
   if (discoveryLayout) {
     applyDiscoveryPopupLayout(
       discoveryLayout,
@@ -200,7 +212,10 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     }
   } else {
     const titleEl = fieldEl('title', ids);
-    if (titleEl) titleEl.textContent = 'Discovery recorded';
+    if (titleEl) {
+      titleEl.textContent = payload.title
+        || (payload.dailyLeaderboardFlow ? 'Daily challenge complete!' : 'Discovery recorded');
+    }
     setFieldText('note', '', ids);
     setFieldText('solutionTotal', payload.challengeProgress, ids);
     setFieldText('puzzleId', payload.levelId, ids);
@@ -258,6 +273,7 @@ async function showDiscoveryRecordAsync(payload) {
 
   applyDiscoveryRecordContent(enriched);
   pendingRecordMode = enriched?.mode === 'duplicate' ? 'duplicate' : 'new';
+  pendingDailyLeaderboardFlow = !!enriched?.dailyLeaderboardFlow;
   pendingViewFoundIndex = Number.isFinite(enriched.solutionIndex) ? enriched.solutionIndex : null;
 
   void onAdventureProgress();
@@ -271,6 +287,7 @@ function hideDiscoveryRecord() {
   document.querySelector('.tz-app')?.classList.remove('is-discovery-record');
   pendingViewFoundIndex = null;
   pendingRecordMode = null;
+  pendingDailyLeaderboardFlow = false;
 }
 
 /** Player picked up a board tile while the plaque is open — restore preview + tile bag. */
@@ -282,6 +299,11 @@ function resumeForBoardEdit() {
 }
 
 async function handleContinueSearch() {
+  if (pendingDailyLeaderboardFlow) {
+    hideDiscoveryRecord();
+    await onDailyViewLeaderboard();
+    return;
+  }
   if (await onContinueSearch() === false) return;
   hideDiscoveryRecord();
 }
@@ -325,8 +347,21 @@ function puzzleSearchComplete(foundCount, totalKnown) {
   return Math.max(0, Number(foundCount) || 0) >= total;
 }
 
+function dailyDiscoveryOptions(foundCount, totalKnown) {
+  if (!isDailyChallengeScreen()) return null;
+  return {
+    showAdvancePath: false,
+    showFoundBook: false,
+    showContinueSearch: true,
+    dailyLeaderboardFlow: true,
+    continueAriaLabel: 'View today\'s leaderboard',
+    showViewFound: false,
+  };
+}
+
 function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
-  let showAdvancePath = isDailyChallengeScreen();
+  const daily = dailyDiscoveryOptions(foundCount, totalKnown);
+  let showAdvancePath = daily?.showAdvancePath ?? isDailyChallengeScreen();
   if (isAdventureScreen()) {
     /* Resolved in enrichAdventurePayload when the step is fully cleared. */
     showAdvancePath = false;
@@ -334,7 +369,8 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
   return {
     mode: 'new',
     showAdvancePath,
-    showContinueSearch: !puzzleSearchComplete(foundCount, totalKnown),
+    showContinueSearch: daily ? true : !puzzleSearchComplete(foundCount, totalKnown),
+    ...(daily || {}),
     levelId: level?.id || '—',
     challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     solutionNumber: solutionLabel(res),
@@ -345,11 +381,17 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
 }
 
 function buildDuplicatePayload(level, res, foundCount = 0, totalKnown = 0) {
+  const daily = dailyDiscoveryOptions(foundCount, totalKnown);
   return {
     mode: 'duplicate',
-    /** Adventure: enriched on show. Daily: always offer advance + continue. */
-    showAdvancePath: isDailyChallengeScreen() ? true : false,
-    showContinueSearch: !puzzleSearchComplete(foundCount, totalKnown),
+    /** Adventure: enriched on show. Daily: leaderboard after fanfare. */
+    showAdvancePath: daily ? false : false,
+    showContinueSearch: daily ? true : !puzzleSearchComplete(foundCount, totalKnown),
+    ...(daily ? {
+      dailyLeaderboardFlow: true,
+      continueAriaLabel: 'View today\'s leaderboard',
+      showFoundBook: false,
+    } : {}),
     challengeProgress: buildChallengeProgress(foundCount, totalKnown),
     title: duplicateTitle(res),
     note: discoveryTexts.duplicateNote,
@@ -398,6 +440,7 @@ export function initDiscoveryRecord(options = {}) {
   onOpenFoundSolutions = options.onOpenFoundSolutions || onOpenFoundSolutions;
   onResumeBoardEdit = options.onResumeBoardEdit || onResumeBoardEdit;
   onAdventureProgress = options.onAdventureProgress || onAdventureProgress;
+  onDailyViewLeaderboard = options.onDailyViewLeaderboard || onDailyViewLeaderboard;
 
   $('discoveryContinueBtn')?.addEventListener('click', () => { void handleContinueSearch(); });
   $('discoveryAdvanceBtn')?.addEventListener('click', () => { void handleAdvancePath(); });

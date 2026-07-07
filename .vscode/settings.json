@@ -1,0 +1,11 @@
+{
+  "python.languageServer": "None",
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.exclude": ["**"],
+
+  "cursorpyright.disableLanguageServices": true,
+  "cursorpyright.analysis.diagnosticMode": "openFilesOnly",
+  "cursorpyright.analysis.typeCheckingMode": "off",
+  "cursorpyright.analysis.exclude": ["**"]
+}

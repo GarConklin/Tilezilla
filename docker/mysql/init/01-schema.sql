@@ -140,6 +140,8 @@ CREATE TABLE daily_results (
 
     completed_at DATETIME NOT NULL,
 
+    hints_used_count INT NOT NULL DEFAULT 0,
+
     PRIMARY KEY (
         challenge_date,
         user_id

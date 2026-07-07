@@ -1,0 +1,52 @@
+{
+  "board": {
+    "rows": 5,
+    "cols": 6,
+    "cells": 30,
+    "note": "Player recording coordinates (5 tall x 6 wide). Catalog 5x6-* uses rows:6 cols:5 — transpose r<->c and swap deg 0<->90, 180<->270."
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "CR": 1,
+    "RC": 3,
+    "CQ": 1,
+    "DB": 1,
+    "UT": 2,
+    "SS": 2,
+    "LR": 2,
+    "VL": 1,
+    "ET": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "source": "hand-made",
+    "validatedBy": "player",
+    "note": "Known-valid solve — saved 2026-07-03"
+  },
+  "solutions": [
+    {
+      "id": "2026-07-02T04:30:52.046Z-bac71bff4065b8",
+      "label": "Solve 1",
+      "placements": [
+        { "tile": "SH", "r": 0, "c": 0, "deg": 0 },
+        { "tile": "CR", "r": 0, "c": 2, "deg": 90 },
+        { "tile": "RC", "r": 0, "c": 5, "deg": 180 },
+        { "tile": "CQ", "r": 1, "c": 4, "deg": 0 },
+        { "tile": "DB", "r": 0, "c": 3, "deg": 90 },
+        { "tile": "UT", "r": 2, "c": 5, "deg": 180 },
+        { "tile": "SS", "r": 1, "c": 1, "deg": 90 },
+        { "tile": "RC", "r": 1, "c": 0, "deg": 90 },
+        { "tile": "SS", "r": 3, "c": 0, "deg": 0 },
+        { "tile": "RC", "r": 4, "c": 0, "deg": 0 },
+        { "tile": "LR", "r": 4, "c": 2, "deg": 270 },
+        { "tile": "UT", "r": 2, "c": 2, "deg": 0 },
+        { "tile": "VL", "r": 3, "c": 3, "deg": 0 },
+        { "tile": "LR", "r": 4, "c": 3, "deg": 0 },
+        { "tile": "ET", "r": 3, "c": 5, "deg": 90 }
+      ]
+    }
+  ],
+  "levelId": "5x6-0C-AAK",
+  "generatedAt": "2026-07-02T04:30:52.046Z"
+}

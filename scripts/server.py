@@ -11,10 +11,11 @@ from __future__ import annotations
 import gzip
 import json
 import os
+from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -59,6 +60,7 @@ PUZZLE_INFO_LAYOUT_PATH = ROOT / "data" / "puzzle_info_layout.json"
 HINT_RULES_LAYOUT_PATH = ROOT / "data" / "hint_rules_layout.json"
 CARTOGRAPHERS_JOURNAL_LAYOUT_PATH = ROOT / "data" / "cartographers_journal_layout.json"
 JOURNAL_LAYOUT_PATH = ROOT / "data" / "journal_layout.json"
+RECORDS_LAYOUT_PATH = ROOT / "data" / "records_layout.json"
 TILEBAG_LAYOUT_PATH = ROOT / "data" / "tilebag_layout.json"
 TILEBAG_V2_LAYOUT_PATH = ROOT / "data" / "tilebag_v2_layout.json"
 RANDOM_POPUP_LAYOUT_PATH = ROOT / "data" / "random_popup_layout.json"
@@ -101,6 +103,8 @@ from lib.adventure_path_build import (  # noqa: E402
     load_adventure_path_from_mysql,
 )
 from lib.progress_store import (  # noqa: E402
+    all_time_best_daily,
+    daily_leaderboard_for_date,
     migrate_progress,
     progress_response,
     record_solve,
@@ -379,6 +383,16 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/progress":
             self._handle_get_progress()
             return
+        if parsed.path == "/api/daily-leaderboard/best":
+            self._send_json(200, all_time_best_daily(ROOT))
+            return
+        if parsed.path == "/api/daily-leaderboard":
+            qs = parse_qs(parsed.query or "")
+            date_raw = (qs.get("date") or [""])[0].strip()
+            if not date_raw:
+                date_raw = datetime.now(timezone.utc).date().isoformat()
+            self._send_json(200, daily_leaderboard_for_date(ROOT, date_raw))
+            return
         if parsed.path == "/api/dev/save-sublevel-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/sublevel_icon_layout.json"}
@@ -532,6 +546,16 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/dev/save-journal-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/journal_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/dev/save-records-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/records_layout.json"}
             ).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -762,6 +786,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-journal-layout":
             self._save_json_layout(parsed, JOURNAL_LAYOUT_PATH, validate_journal_layout)
+            return
+        if parsed.path == "/api/dev/save-records-layout":
+            self._save_json_layout(parsed, RECORDS_LAYOUT_PATH, validate_records_layout)
             return
         if parsed.path == "/api/dev/save-tilebag-layout":
             self._save_json_layout(parsed, TILEBAG_LAYOUT_PATH, validate_tilebag_layout)
@@ -1047,6 +1074,55 @@ def validate_random_popup_layout(payload: object) -> str | None:
             if not isinstance(box, dict):
                 return f"items.{key} must be an object"
             for dim in ("x", "y", "w", "h"):
+                if dim in box and not isinstance(box[dim], (int, float)):
+                    return f"items.{key}.{dim} must be a number"
+            if "hidden" in box and not isinstance(box["hidden"], bool):
+                return f"items.{key}.hidden must be a boolean"
+    return None
+
+
+RECORDS_ITEM_KEYS = (
+    "tabLeaderboard", "tabPersonalBest",
+    "fieldDailyPuzzleId", "fieldDailyDate", "fieldDailyTime",
+    "paneTop", "paneBl", "paneBr",
+    "listTop", "scrollerTop", "listBl", "scrollerBl", "listBr", "scrollerBr",
+    "listRow", "colRank", "colUser", "colTime", "colSize", "colPuzzle",
+    "personalPane", "listPersonal", "scrollerPersonal",
+    "btnBack", "btnClose",
+)
+RECORDS_TAB_KEYS = ("leaderboard", "personalBest")
+
+
+def validate_records_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    dialog = payload.get("dialog")
+    if dialog is not None and not isinstance(dialog, dict):
+        return "dialog must be an object"
+    if isinstance(dialog, dict):
+        for key in ("artW", "artH", "displayPad", "maxDesignWidth", "topNudge"):
+            if key in dialog and not isinstance(dialog[key], (int, float)):
+                return f"dialog.{key} must be a number"
+    typography = payload.get("typography")
+    if typography is not None and not isinstance(typography, dict):
+        return "typography must be an object"
+    tabs = payload.get("tabs")
+    if tabs is not None and not isinstance(tabs, dict):
+        return "tabs must be an object"
+    if isinstance(tabs, dict):
+        for key in tabs:
+            if key not in RECORDS_TAB_KEYS:
+                return f"Unknown tab key: {key}"
+    items = payload.get("items")
+    if items is not None and not isinstance(items, dict):
+        return "items must be an object"
+    if isinstance(items, dict):
+        for key, box in items.items():
+            if key not in RECORDS_ITEM_KEYS:
+                return f"Unknown item key: {key}"
+            if not isinstance(box, dict):
+                return f"items.{key} must be an object"
+            for dim in ("x", "y", "w", "h", "nudgeX", "nudgeY", "fontScale", "padX", "padY", "gap", "trackScale", "pinScale"):
                 if dim in box and not isinstance(box[dim], (int, float)):
                     return f"items.{key}.{dim} must be a number"
             if "hidden" in box and not isinstance(box["hidden"], bool):
@@ -1765,6 +1841,8 @@ def main() -> None:
     print("Adventure path API: GET /api/adventure/path")
     print("System info API: GET /api/system-info")
     print("Player progress API: GET /api/progress")
+    print("Daily leaderboard API: GET /api/daily-leaderboard?date=YYYY-MM-DD")
+    print("Daily leaderboard API: GET /api/daily-leaderboard/best")
     print("Player progress API: POST /api/progress/solve")
     print("Player progress API: POST /api/progress/migrate")
     print("Sublevel tuner save API: POST /api/dev/save-sublevel-layout")
@@ -1783,6 +1861,7 @@ def main() -> None:
     print("Hint Rules tuner save API: POST /api/dev/save-hint-rules-layout")
     print("Cartographer's Journal tuner save API: POST /api/dev/save-cartographers-journal-layout")
     print("Journal tuner save API: POST /api/dev/save-journal-layout")
+    print("Records tuner save API: POST /api/dev/save-records-layout")
     print("Tile bag tuner save API: POST /api/dev/save-tilebag-layout")
     print("Tile bag v2 tuner save API: POST /api/dev/save-tilebag-v2-layout")
     print("Random popup tuner save API: POST /api/dev/save-random-popup-layout")

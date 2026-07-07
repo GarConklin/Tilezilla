@@ -1,0 +1,24 @@
+# July 4 2026 — all 10 new levels (5×5x6 + 5×6x6), seeds only → full enumerate
+#
+# Ingest already done. Each level has pathCount 1 / pathMode single.
+#
+# Run everything (5x6 first in file order, then 6x6):
+#   .\scripts\run-enumerate-levels.ps1 -LevelListFile data/july04-enumerate-queue.txt -SyncCatalog -ContinueOnError -NoTty
+#
+# Or split:
+#   .\scripts\run-enumerate-levels.ps1 -LevelListFile data/july04-5x6-enumerate-queue.txt -SyncCatalog -ContinueOnError -NoTty
+#   .\scripts\run-enumerate-levels.ps1 -LevelListFile data/july04-6x6-enumerate-queue.txt -SyncCatalog -ContinueOnError -NoTty
+#
+# Stop mid-batch: .\scripts\stop-solve-docker-runs.ps1 (2nd terminal), then Ctrl+C
+# After all finish: .\scripts\dedupe-solve-rotations.ps1
+#
+5x6-0B-DNR
+5x6-0B-DNS
+5x6-0B-DNT
+5x6-0B-DNU
+5x6-0B-DNV
+6x6-0B-ADT
+6x6-0B-ADU
+6x6-0B-ADV
+6x6-0B-ADW
+6x6-0B-ADX

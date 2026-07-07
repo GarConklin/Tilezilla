@@ -1,0 +1,74 @@
+{
+  "board": {
+    "rows": 3,
+    "cols": 3,
+    "cells": 9
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "LL": 1,
+    "UT": 1,
+    "ET": 1,
+    "B1": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "source": "hand-made",
+    "note": "B1 as placeable tile in bag (not fixed blocker)"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "hand-made 3x3 B1-in-bag",
+      "placements": [
+        { "tile": "SH", "r": 0, "c": 0, "deg": 0 },
+        { "tile": "LL", "r": 0, "c": 2, "deg": 90 },
+        { "tile": "UT", "r": 2, "c": 2, "deg": 180 },
+        { "tile": "ET", "r": 1, "c": 0, "deg": 0 },
+        { "tile": "B1", "r": 2, "c": 0, "deg": 0 }
+      ]
+    }
+  ],
+  "levelId": "3x3-0A-handmade-b1-bag",
+  "generatedAt": "2026-06-28T00:13:22.580Z"
+}
+{
+  "board": {
+    "rows": 3,
+    "cols": 6,
+    "cells": 18
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 2,
+    "HL": 2,
+    "ET": 2,
+    "LC": 1,
+    "LR": 1,
+    "CT": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "source": "hand-made"
+  },
+  "solutions": [
+    {
+      "id": "solve-1",
+      "label": "hand-made 3x6 dual-SH",
+      "placements": [
+        { "tile": "SH", "r": 1, "c": 4, "deg": 180 },
+        { "tile": "HL", "r": 0, "c": 3, "deg": 180 },
+        { "tile": "SH", "r": 0, "c": 5, "deg": 180 },
+        { "tile": "HL", "r": 2, "c": 4, "deg": 180 },
+        { "tile": "ET", "r": 1, "c": 5, "deg": 90 },
+        { "tile": "LC", "r": 0, "c": 0, "deg": 0 },
+        { "tile": "LR", "r": 2, "c": 1, "deg": 0 },
+        { "tile": "ET", "r": 2, "c": 0, "deg": 270 },
+        { "tile": "CT", "r": 1, "c": 1, "deg": 0 }
+      ]
+    }
+  ],
+  "levelId": "3x6-0C-handmade-dual-sh",
+  "generatedAt": "2026-06-27T12:56:14.301Z"
+}

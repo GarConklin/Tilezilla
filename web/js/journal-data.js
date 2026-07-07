@@ -220,8 +220,13 @@ export async function getJournalRecord(app, levelId) {
   const state = app?.state;
   if (!levelId || !progress || !state) return null;
 
-  const level = state.allLevels?.find((l) => l.id === levelId)
-    || (state.currentLevel?.id === levelId ? state.currentLevel : null);
+  let level = state.currentLevel?.id === levelId ? state.currentLevel : null;
+  if (!level && app.ensureLevel) {
+    level = await app.ensureLevel(levelId);
+  }
+  if (!level) {
+    level = state.allLevels?.find((l) => l.id === levelId) || null;
+  }
   if (!level) return null;
 
   const known = await app.loadKnownSolutionsForLevel?.(level) || [];
@@ -421,11 +426,19 @@ async function getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, p
 
 export async function getJournalLibraryIndex(app, filters = {}) {
   const progress = app?.progress;
-  const levels = app?.state?.allLevels || [];
-  const levelById = new Map(levels.map((level) => [level.id, level]));
   if (!progress) {
     return { sizeCounts: [], puzzles: [], filters };
   }
+
+  const journalLevelIds = Object.keys(progress.data || {}).filter(
+    (levelId) => levelId && !levelId.startsWith('_') && progress.hasJournalEntry(levelId),
+  );
+  if (app?.ensureLevels && journalLevelIds.length) {
+    await app.ensureLevels(journalLevelIds);
+  }
+
+  const levels = app?.state?.allLevels || [];
+  const levelById = new Map(levels.map((level) => [level.id, level]));
 
   const {
     dailyReleaseByLevelId: dailyByLevelId,

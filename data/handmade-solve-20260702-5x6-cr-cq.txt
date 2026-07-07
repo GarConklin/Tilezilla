@@ -1,0 +1,51 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 5,
+    "cells": 30
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "SH": 1,
+    "CR": 1,
+    "RC": 3,
+    "CQ": 1,
+    "DB": 1,
+    "UT": 2,
+    "SS": 2,
+    "LR": 2,
+    "VL": 1,
+    "ET": 1
+  },
+  "totalUniqueSolutions": 1,
+  "solverMeta": {
+    "source": "hand-made",
+    "validatedBy": "player",
+    "note": "Canonical catalog layout — see handmade-solve-5x6-0C-AAK.json"
+  },
+  "solutions": [
+    {
+      "id": "2026-07-03T13:15:20.741Z-e9bdbbb5c9e6f",
+      "label": "Solve 1",
+      "placements": [
+        { "tile": "SH", "r": 0, "c": 4, "deg": 90 },
+        { "tile": "CR", "r": 2, "c": 3, "deg": 0 },
+        { "tile": "DB", "r": 3, "c": 3, "deg": 0 },
+        { "tile": "RC", "r": 5, "c": 4, "deg": 270 },
+        { "tile": "CQ", "r": 4, "c": 3, "deg": 90 },
+        { "tile": "UT", "r": 5, "c": 2, "deg": 270 },
+        { "tile": "ET", "r": 5, "c": 1, "deg": 180 },
+        { "tile": "LR", "r": 3, "c": 0, "deg": 0 },
+        { "tile": "VL", "r": 4, "c": 0, "deg": 0 },
+        { "tile": "UT", "r": 2, "c": 2, "deg": 90 },
+        { "tile": "LR", "r": 2, "c": 0, "deg": 0 },
+        { "tile": "RC", "r": 0, "c": 0, "deg": 90 },
+        { "tile": "SS", "r": 0, "c": 1, "deg": 90 },
+        { "tile": "RC", "r": 0, "c": 3, "deg": 180 },
+        { "tile": "SS", "r": 1, "c": 2, "deg": 0 }
+      ]
+    }
+  ],
+  "levelId": "5x6-0C-AAK",
+  "generatedAt": "2026-07-03T13:15:20.741Z"
+}

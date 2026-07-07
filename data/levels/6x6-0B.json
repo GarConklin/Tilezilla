@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "6x6",
   "tier": "0B",
-  "count": 97,
+  "count": 102,
   "levels": [
     {
       "id": "6x6-0B-AAA",
@@ -2335,6 +2335,125 @@
       },
       "blockers": [],
       "solvesFile": "6x6-0B-ADS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0B-ADT",
+      "name": "ADT",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 4,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0B-ADT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0B-ADU",
+      "name": "ADU",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 3,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "UT": 5,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0B-ADU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0B-ADV",
+      "name": "ADV",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 4,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0B-ADV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0B-ADW",
+      "name": "ADW",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 3,
+        "UT": 4
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0B-ADW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "6x6-0B-ADX",
+      "name": "ADX",
+      "board": {
+        "rows": 6,
+        "cols": 6
+      },
+      "tiles": {
+        "ET": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 4,
+        "UT": 1,
+        "VL": 2
+      },
+      "blockers": [],
+      "solvesFile": "6x6-0B-ADX.json",
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 1

@@ -25,12 +25,13 @@ let onDaily = null;
 let onAdventure = null;
 let onRandom = null;
 
-async function waitForAppLevels(maxMs = 12000) {
-  if (window.__app?.state?.allLevels?.length) return;
+async function waitForCatalogReady(maxMs = 12000) {
+  const { isCatalogReady } = await import('./level-catalog.js');
+  if (isCatalogReady()) return;
   const deadline = Date.now() + maxMs;
   while (Date.now() < deadline) {
     await new Promise((resolve) => setTimeout(resolve, 50));
-    if (window.__app?.state?.allLevels?.length) return;
+    if (isCatalogReady()) return;
   }
 }
 
@@ -44,7 +45,13 @@ async function reloadAppProgress() {
 
 async function refreshProfileOverlayStats(root) {
   clearAdventureCatalogStatsCache();
-  await waitForAppLevels();
+  await waitForCatalogReady();
+  const app = window.__app;
+  if (app?.state && !app.state.levelStatsById) {
+    const { loadLevelStatsIndex } = await import('./level-catalog.js');
+    const stats = await loadLevelStatsIndex();
+    app.state.levelStatsById = stats?.byId || {};
+  }
   const progress = await reloadAppProgress();
   await refreshProfileRankIcons(progress, root);
   await refreshProfilePassportStats({ root });

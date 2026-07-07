@@ -14,12 +14,14 @@ import { getJournalRecord, getJournalLibraryIndex } from './journal-data.js';
 import { applyRevisitLayout, loadRevisitLayout, reloadRevisitLayout } from './revisit-layout.js';
 import { initJournalListScroller } from './journal-scroller.js';
 import { closePuzzleInfoPopup } from './tilezilla-puzzle-info.js';
+import { initRecordsPanel } from './tilezilla-records.js';
 
 let getApp = () => null;
 let menuApi = null;
 let loadPuzzleLevel = async () => false;
 let onResumeGame = null;
 let listScroller = null;
+let recordsApi = null;
 let journalLayoutCache = null;
 let previewRenderToken = 0;
 let previewContext = null;
@@ -37,6 +39,7 @@ let state = {
   resumeScreen: null,
   returnToLibrary: false,
   challengeDate: null,
+  postDailyLeaderboard: false,
 };
 
 function $(id) {
@@ -161,8 +164,11 @@ function closeJournal() {
   const resumeGame = state.resumeGameOnClose;
   const resumeLevelId = state.resumeLevelId;
   const resumeScreen = state.resumeScreen;
+  const wasPostDaily = state.postDailyLeaderboard;
   clearJournalResumeState();
   state.returnToLibrary = false;
+  state.postDailyLeaderboard = false;
+  root.removeAttribute('data-post-daily-leaderboard');
 
   root.hidden = true;
   $('journalLoadConfirm')?.setAttribute('hidden', '');
@@ -171,7 +177,7 @@ function closeJournal() {
   syncModalOpenState();
 
   if (resumeGame) {
-    onResumeGame?.({ levelId: resumeLevelId, resumeScreen });
+    onResumeGame?.({ levelId: resumeLevelId, resumeScreen, postDailyLeaderboard: wasPostDaily });
   }
 }
 
@@ -217,6 +223,10 @@ function isJournalArtTab() {
   return state.activeTab === 'stats' || state.activeTab === 'records';
 }
 
+function isJournalRecordsTab() {
+  return state.activeTab === 'records';
+}
+
 function syncJournalTabContent() {
   const artTab = isJournalArtTab();
   const frame = $('journalRoot')?.querySelector('.tz-journal-dialog__frame');
@@ -229,6 +239,16 @@ function syncJournalTabContent() {
 
   for (const sel of ['.tz-journal-pane--top', '.tz-journal-pane--bl', '.tz-journal-pane--br']) {
     frame?.querySelector(sel)?.toggleAttribute('hidden', artTab);
+  }
+
+  recordsApi?.showRecordsPanel?.(isJournalRecordsTab());
+
+  const hideJournalChrome = isJournalRecordsTab();
+  for (const id of ['journalBtnFilter', 'journalBtnStats', 'journalBtnPrev', 'journalBtnNext', 'journalBtnExit']) {
+    $(id)?.toggleAttribute('hidden', hideJournalChrome || state.postDailyLeaderboard);
+  }
+  for (const id of ['journalTabPuzzle', 'journalTabStats', 'journalTabFilter', 'journalTabRecords']) {
+    $(id)?.toggleAttribute('hidden', state.postDailyLeaderboard);
   }
 
   if (artTab) {
@@ -254,13 +274,51 @@ function setModeUi(mode) {
   syncBackButtonVisibility();
 }
 
+/** Post–daily-challenge solve: fanfare → leaderboard → return to daily hub. */
+export async function openDailyLeaderboardAfterSolve() {
+  const root = $('journalRoot');
+  const app = getApp();
+  if (!root || !app) return;
+
+  await applyLayoutFromDisk({ force: true });
+
+  menuApi?.closeMenu?.();
+  menuApi?.closePanel?.();
+  closePuzzleInfoPopup();
+
+  state.postDailyLeaderboard = true;
+  state.mode = 'record';
+  state.activeTab = 'records';
+  state.levelId = app.state?.currentLevel?.id || null;
+  state.challengeDate = window.__dailyChallengeMeta?.date || null;
+  state.resumeGameOnClose = true;
+  state.resumeLevelId = state.levelId;
+  state.resumeScreen = 'daily-challenge';
+  state.returnToLibrary = false;
+  state.selectedSolutionIndex = null;
+
+  root.dataset.postDailyLeaderboard = 'true';
+  setModeUi('record');
+  root.hidden = false;
+  setModalOpen(true);
+  syncJournalDialogTop();
+
+  await activateJournalTab('records');
+  recordsApi?.setRecordsSubTab?.('leaderboard');
+  await recordsApi?.refreshRecordsView?.();
+}
+
 async function activateJournalTab(tab) {
   state.activeTab = tab;
   syncJournalTabContent();
   syncJournalOverlays();
   syncBackButtonVisibility();
 
-  if (tab === 'stats' || tab === 'records') return;
+  if (tab === 'stats') return;
+  if (tab === 'records') {
+    recordsApi?.refreshRecordsView?.();
+    return;
+  }
 
   if (state.mode === 'record') {
     await refreshRecordView();
@@ -815,6 +873,16 @@ export function initJournalUi({
     pinEl: $('journalListScrollerPin'),
   });
 
+  recordsApi = initRecordsPanel({
+    getApp,
+    getPostDailyLeaderboard: () => state.postDailyLeaderboard,
+    onBack: () => {
+      if (state.postDailyLeaderboard) closeJournal();
+      else void activateJournalTab('puzzle');
+    },
+    onClose: closeJournal,
+  });
+
   $('journalBackdrop')?.addEventListener('click', closeJournal);
   $('journalBtnExit')?.addEventListener('click', closeJournal);
   $('journalBtnLibraryBack')?.addEventListener('click', () => {
@@ -937,6 +1005,7 @@ export function initJournalUi({
 
   return {
     openJournal,
+    openDailyLeaderboardAfterSolve,
     closeJournal,
     applyLayoutFromDisk,
     syncJournalDialogTop,

@@ -244,8 +244,18 @@ After pulling a build with the updated `verify-email.php`, run once on the serve
 
 ```bash
 cd /opt/tilezilla
+
+# Uses MYSQL_* env vars already set inside the mysql container (from .env.production).
 docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
-  mysql -utilegame -p tilegame < scripts/sql/free-accounts-no-expiry.sql
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < scripts/sql/free-accounts-no-expiry.sql
+```
+
+You should see no errors (the script has no SELECT output). Verify:
+
+```bash
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" -e "SELECT user_id, username, status, active_until FROM users ORDER BY user_id LIMIT 20;"'
 ```
 
 This sets `active_until = NULL` for all verified users (no end date). New verifications do the same automatically.
