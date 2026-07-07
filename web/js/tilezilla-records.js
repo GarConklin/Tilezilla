@@ -8,6 +8,7 @@ import {
   loadRecordsLayout,
   syncRecordsItemVisibility,
 } from './records-layout.js';
+import { getActiveUsername } from './tilezilla-guest.js';
 import {
   buildRankedEntries,
   fetchLeaderboardRows,
@@ -15,11 +16,12 @@ import {
   getGuestLeaderboardPreview,
   partitionLeaderboardByHints,
   renderRecordsList,
-  resolveAllTimeBestDaily,
+  resolveDailyChallengeHeader,
   resolveGuestPlacementSummary,
   resolveLastDailyCompletion,
   setGuestPlacementBanner,
   setRecordsHeaderFields,
+  syncRecordsHeaderVisibility,
 } from './records-data.js';
 
 const $ = (id) => document.getElementById(id);
@@ -30,13 +32,20 @@ let scrollers = {};
 let getApp = () => null;
 let onBack = null;
 let onClose = null;
+let getChallengeDate = () => null;
 let getPostDailyLeaderboard = () => false;
+
+function recordsChallengeDateIso() {
+  const fromJournal = typeof getChallengeDate === 'function' ? getChallengeDate() : null;
+  return String(fromJournal || '').trim().slice(0, 10) || null;
+}
 
 function syncSubTabViews() {
   const panel = $('journalRecordsPanel');
   if (!panel) return;
   const isLeaderboard = activeSubTab === 'leaderboard';
   panel.dataset.recordsMode = isLeaderboard ? 'leaderboard' : 'personal';
+  syncRecordsHeaderVisibility(document, { showTime: !isLeaderboard });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
   const postDaily = getPostDailyLeaderboard();
   panel.querySelector('[data-records-tab="personalBest"]')
@@ -44,11 +53,17 @@ function syncSubTabViews() {
 }
 
 async function renderLeaderboardLists(progress) {
-  const rows = await fetchLeaderboardRows(progress);
+  const challengeDate = recordsChallengeDateIso();
+  const rows = await fetchLeaderboardRows(progress, challengeDate);
   const partitions = partitionLeaderboardByHints(rows);
-  const zeroEntries = buildRankedEntries(partitions.zero);
-  const oneEntries = buildRankedEntries(partitions.one);
-  const twoEntries = buildRankedEntries(partitions.two);
+  const app = getApp();
+  const rankOpts = {
+    currentUserId: app?.state?.userId,
+    currentUsername: getActiveUsername(),
+  };
+  const zeroEntries = buildRankedEntries(partitions.zero, rankOpts);
+  const oneEntries = buildRankedEntries(partitions.one, rankOpts);
+  const twoEntries = buildRankedEntries(partitions.two, rankOpts);
   renderRecordsList($('recordsListTop'), zeroEntries);
   renderRecordsList($('recordsListBl'), oneEntries, { emptyText: 'No 1-hint times yet.' });
   renderRecordsList($('recordsListBr'), twoEntries, { emptyText: 'No 2-hint times yet.' });
@@ -82,13 +97,17 @@ export async function refreshRecordsView() {
   }
 
   if (activeSubTab === 'leaderboard') {
+    const challengeDate = recordsChallengeDateIso();
     await renderLeaderboardLists(progress);
-    const best = await resolveAllTimeBestDaily(app);
-    setRecordsHeaderFields(document, best || { date: '—', puzzleId: '—', time: '—' });
+    const header = await resolveDailyChallengeHeader({ challengeDate });
+    setRecordsHeaderFields(document, { ...header, showTime: false });
   } else {
     renderPersonalBestLists(app);
     const last = resolveLastDailyCompletion(app);
-    setRecordsHeaderFields(document, last || { date: '—', puzzleId: '—', time: '—' });
+    setRecordsHeaderFields(document, {
+      ...(last || { date: '—', puzzleId: '—', time: '—' }),
+      showTime: true,
+    });
     setGuestPlacementBanner(document, null);
   }
 
@@ -101,6 +120,7 @@ export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
   recordsLayout = await loadRecordsLayout({ force });
   applyRecordsLayoutEverywhere(recordsLayout);
   syncRecordsItemVisibility(recordsLayout);
+  syncRecordsHeaderVisibility(document, { showTime: activeSubTab !== 'leaderboard' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
   for (const scroller of Object.values(scrollers)) {
     scroller?.sync?.();
@@ -127,11 +147,13 @@ function wireScroller(key, scrollId, scrollerId, trackId, pinId) {
 export function initRecordsPanel({
   getApp: getAppFn,
   getPostDailyLeaderboard: getPostDailyLeaderboardFn,
+  getChallengeDate: getChallengeDateFn,
   onBack: onBackFn,
   onClose: onCloseFn,
 } = {}) {
   getApp = getAppFn || (() => null);
   getPostDailyLeaderboard = getPostDailyLeaderboardFn || (() => false);
+  getChallengeDate = getChallengeDateFn || (() => null);
   onBack = onBackFn || null;
   onClose = onCloseFn || null;
 
@@ -175,7 +197,9 @@ export function initRecordsPanel({
     setRecordsSubTab: activateRecordsSubTab,
     showRecordsPanel(show) {
       panel.toggleAttribute('hidden', !show);
-      if (show) refreshRecordsView();
+      if (show) {
+        void applyRecordsLayoutFromDisk({ force: true }).then(() => refreshRecordsView());
+      }
     },
   };
 }

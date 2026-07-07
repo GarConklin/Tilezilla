@@ -160,6 +160,7 @@ import { initJournalUi } from './tilezilla-journal.js';
 import { resetDevPlayerProgress } from './dev-player-reset.js';
 import { setDiscoveryRecordTexts, setDiscoveryRecordLayout } from './tilezilla-discovery-record.js';
 import { initDevTools } from './tilezilla-dev-tools.js';
+import { initDevelopmentMenu } from './tilezilla-development-menu.js';
 import { syncDevUserUi } from './tilezilla-dev-user.js';
 import { syncAdminUi } from './tilezilla-admin.js';
 import {
@@ -2652,6 +2653,11 @@ async function initShellExtendedUi(appRef, settings) {
     getApp: () => appRef,
     menuApi,
     onForceDiscovery: forceDiscoveryPreview,
+  });
+  initDevelopmentMenu({
+    menuApi,
+    onForceDiscovery: forceDiscoveryPreview,
+    openDevToolsPanel: () => menuApi?.openPanel?.('dev-tools'),
   });
   syncDevUserUi(app.state?.userId);
   syncAdminUi(app.state?.userId);

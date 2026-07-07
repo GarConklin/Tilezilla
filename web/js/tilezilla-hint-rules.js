@@ -84,6 +84,8 @@ function closeHintRulesPopup() {
 
     && $('stuckPopupRoot')?.hidden !== false
 
+    && $('developmentMenuRoot')?.hidden !== false
+
   ) {
 
     document.body.classList.remove('tz-modal-open');

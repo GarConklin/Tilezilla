@@ -118,6 +118,12 @@ export function playAsGuest() {
   return guestCode;
 }
 
+export function getActiveUsername() {
+  const raw = localStorage.getItem(ACTIVE_USER_KEY);
+  if (!raw || isGuestCode(raw)) return '';
+  return String(raw).trim();
+}
+
 export function setRegisteredUser(userOrName) {
   localStorage.setItem(AUTH_MODE_KEY, 'registered');
   if (userOrName && typeof userOrName === 'object') {

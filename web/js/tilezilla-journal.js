@@ -68,6 +68,9 @@ async function applyLayoutFromDisk({ force = false } = {}) {
       : await loadJournalLayout();
     if (journalOpen) {
       applyEffectiveJournalLayout();
+      if (state.activeTab === 'records') {
+        await recordsApi?.applyRecordsLayoutFromDisk?.({ force: true });
+      }
     } else {
       applyJournalLayoutEverywhere(journalLayoutCache);
     }
@@ -242,13 +245,16 @@ function syncJournalTabContent() {
   }
 
   recordsApi?.showRecordsPanel?.(isJournalRecordsTab());
+  if (isJournalRecordsTab()) {
+    void recordsApi?.applyRecordsLayoutFromDisk?.({ force: true });
+  }
 
   const hideJournalChrome = isJournalRecordsTab();
   for (const id of ['journalBtnFilter', 'journalBtnStats', 'journalBtnPrev', 'journalBtnNext', 'journalBtnExit']) {
     $(id)?.toggleAttribute('hidden', hideJournalChrome || state.postDailyLeaderboard);
   }
   for (const id of ['journalTabPuzzle', 'journalTabStats', 'journalTabFilter', 'journalTabRecords']) {
-    $(id)?.toggleAttribute('hidden', state.postDailyLeaderboard);
+    $(id)?.toggleAttribute('hidden', hideJournalChrome || state.postDailyLeaderboard);
   }
 
   if (artTab) {
@@ -267,7 +273,10 @@ function syncBackButtonVisibility() {
 
 function setModeUi(mode) {
   const root = $('journalRoot');
-  if (root) root.dataset.journalMode = mode;
+  if (root) {
+    root.dataset.journalMode = mode;
+    root.dataset.activeTab = state.activeTab;
+  }
   applyEffectiveJournalLayout();
   syncJournalTabContent();
   syncJournalOverlays();
@@ -310,6 +319,8 @@ export async function openDailyLeaderboardAfterSolve() {
 
 async function activateJournalTab(tab) {
   state.activeTab = tab;
+  const root = $('journalRoot');
+  if (root) root.dataset.activeTab = tab;
   syncJournalTabContent();
   syncJournalOverlays();
   syncBackButtonVisibility();
@@ -792,6 +803,7 @@ export async function openJournal({
   resumeScreen = null,
   fromLibrary = false,
   challengeDate = null,
+  activeTab = null,
 } = {}) {
   const root = $('journalRoot');
   const app = getApp();
@@ -809,7 +821,7 @@ export async function openJournal({
     state.resumeLevelId = resumeLevelId || app.state?.currentLevel?.id || null;
     state.resumeScreen = resumeScreen || null;
   }
-  state.activeTab = mode === 'library' ? 'filter' : 'puzzle';
+  state.activeTab = activeTab || (mode === 'library' ? 'filter' : 'puzzle');
   if (fromLibrary) {
     state.returnToLibrary = true;
   } else if (mode === 'library') {
@@ -835,11 +847,14 @@ export async function openJournal({
 
   if (mode === 'library') {
     await refreshLibraryView();
-  } else {
+  } else if (state.activeTab !== 'records') {
     await refreshRecordView();
     if (Number.isFinite(state.selectedSolutionIndex)) {
       scrollActiveListRowIntoView();
     }
+  } else {
+    recordsApi?.setRecordsSubTab?.('leaderboard');
+    await recordsApi?.refreshRecordsView?.();
   }
 
   listScroller?.sync?.();
@@ -876,9 +891,10 @@ export function initJournalUi({
   recordsApi = initRecordsPanel({
     getApp,
     getPostDailyLeaderboard: () => state.postDailyLeaderboard,
+    getChallengeDate: () => state.challengeDate || window.__dailyChallengeMeta?.date || null,
     onBack: () => {
       if (state.postDailyLeaderboard) closeJournal();
-      else void activateJournalTab('puzzle');
+      else void activateJournalTab('stats');
     },
     onClose: closeJournal,
   });

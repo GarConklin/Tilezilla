@@ -510,6 +510,7 @@ def daily_leaderboard_for_date(
                 SELECT
                     dr.user_id                 AS user_id,
                     u.username                 AS username,
+                    u.player_name              AS player_name,
                     dr.completion_time_seconds AS time_seconds,
                     dr.hints_used_count        AS hints_used_count,
                     dr.completed_at            AS completed_at
@@ -523,12 +524,13 @@ def daily_leaderboard_for_date(
             )
             for row in cur.fetchall() or []:
                 username = str(row.get("username") or "").strip()
+                player_name = str(row.get("player_name") or "").strip()
+                display_name = username or player_name
                 user_id = row.get("user_id")
-                display = username or str(user_id or "")
                 rows.append(
                     {
-                        "userId": display,
-                        "username": display,
+                        "userId": user_id,
+                        "username": display_name,
                         "completionTimeSeconds": int(row.get("time_seconds") or 0),
                         "hintsUsedCount": max(0, int(row.get("hints_used_count") or 0)),
                         "levelId": level_id,

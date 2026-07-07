@@ -2,6 +2,7 @@
  * Hamburger menu navigation and informational panels.
  */
 
+import { closeDevelopmentMenu } from './tilezilla-development-menu.js';
 import { openPuzzleInfo } from './tilezilla-puzzle-info.js';
 import { refreshDevToolsPanel } from './tilezilla-dev-tools.js';
 import { openJournal } from './tilezilla-journal.js';
@@ -178,6 +179,7 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
   const closeAll = () => {
     closePanel();
     closeMenu();
+    closeDevelopmentMenu();
     if (settingsRoot) settingsRoot.hidden = true;
     const tilesetPickerRoot = $('tilesetPickerRoot');
     if (tilesetPickerRoot) tilesetPickerRoot.hidden = true;
@@ -230,8 +232,13 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     api.openSettings();
   });
 
-  menuRoot.querySelector('.tz-menu-plaque__hit--switch-player')?.addEventListener('click', () => {
-    closeAll();
+  $('menuLeaderboardBtn')?.addEventListener('click', () => {
+    closeMenu();
+    void openJournal({
+      mode: 'record',
+      activeTab: 'records',
+      resumeGameOnClose: false,
+    });
   });
 
   $('menuPanelBackBtn')?.addEventListener('click', backFromPanel);
@@ -257,6 +264,7 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     if ($('stuckPopupRoot') && !$('stuckPopupRoot').hidden) return;
     if ($('puzzleInfoRoot') && !$('puzzleInfoRoot').hidden) return;
     if ($('hintRulesRoot') && !$('hintRulesRoot').hidden) return;
+    if ($('developmentMenuRoot') && !$('developmentMenuRoot').hidden) return;
     if ($('cartographersJournalRoot') && !$('cartographersJournalRoot').hidden) return;
     if ($('tilesetPickerRoot') && !$('tilesetPickerRoot').hidden) return;
     if (settingsRoot && !settingsRoot.hidden) return;

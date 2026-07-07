@@ -28,7 +28,7 @@ const PREVIEW_MODES = {
   leaderboard: {
     tabKey: 'leaderboard',
     title: 'Daily Leaderboard',
-    detail: 'Header: all-time best daily (puzzle ID · date · time). Lists: rank · user · time.',
+    detail: "Header: today's daily challenge (puzzle ID · date). Lists: rank · user · time.",
     mockStageClass: 'preview-mode-leaderboard',
   },
   personalBest: {
@@ -169,10 +169,14 @@ async function saveToFile({ quiet = false } = {}) {
       body: exportJson(),
     });
     if (!res.ok) {
+      const errText = await res.text();
       if (res.status === 404 || res.status === 501) {
-        throw new Error('Stale dev server — restart: python scripts/server.py');
+        throw new Error('Stale dev server — use http://localhost:3000 and run: docker compose restart web');
       }
-      throw new Error(await res.text() || `HTTP ${res.status}`);
+      if (res.status === 400 && /Unknown item key/i.test(errText)) {
+        throw new Error('Stale dev server (records layout API) — run: docker compose restart web');
+      }
+      throw new Error(errText || `HTTP ${res.status}`);
     }
     clearRecordsLayoutCache();
     clearRecordsLayoutDraft();
@@ -253,7 +257,7 @@ function updatePreviewBanner() {
   }
   if (els.controlsModeHint) {
     els.controlsModeHint.textContent = previewSubTab === 'leaderboard'
-      ? 'Leaderboard — header shows all-time best daily; lists are rank / user / time'
+      ? "Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time"
       : 'Personal Best — header shows your last daily completion; lists are size / puzzle / time';
   }
   for (const [key, cfg] of Object.entries(PREVIEW_MODES)) {
@@ -323,10 +327,10 @@ function refresh() {
   els.reportOut.value = buildRecordsLayoutReport(workingLayout);
   if (previewSubTab === 'personalBest') {
     renderMockPersonalBestLists();
-    setRecordsHeaderFields(document, MOCK_PERSONAL_HEADER);
+    setRecordsHeaderFields(document, { ...MOCK_PERSONAL_HEADER, showTime: true });
   } else {
     renderMockLeaderboardLists();
-    setRecordsHeaderFields(document, MOCK_RECORDS_HEADER);
+    setRecordsHeaderFields(document, { ...MOCK_RECORDS_HEADER, showTime: false });
   }
   for (const scroller of Object.values(scrollers)) scroller?.sync?.();
   scheduleSave();

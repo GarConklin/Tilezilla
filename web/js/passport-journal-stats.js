@@ -24,10 +24,10 @@ function parseDailyCsvDate(value) {
   return `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
 }
 
-export async function fetchTodaysChallengeLevelId() {
-  const today = todayIso();
+export async function fetchChallengeLevelIdForDate(challengeDateIso = todayIso()) {
+  const dateKey = String(challengeDateIso || todayIso()).trim();
   try {
-    const csv = await fetch(`/data/daily_challenges_import.csv?t=${today}`, { cache: 'no-store' }).then((r) =>
+    const csv = await fetch(`/data/daily_challenges_import.csv?t=${dateKey}`, { cache: 'no-store' }).then((r) =>
       r.ok ? r.text() : '',
     );
     if (!csv) return null;
@@ -37,15 +37,18 @@ export async function fetchTodaysChallengeLevelId() {
       if (!line) continue;
       const [challengeDate, levelId] = line.split(',');
       const rowDate = parseDailyCsvDate(challengeDate?.trim()) || challengeDate?.trim();
-      if (rowDate === today) {
+      if (rowDate === dateKey) {
         return (levelId || '').trim().replace(/\.json$/i, '') || null;
       }
     }
-    const first = lines[1]?.split(',')?.[1];
-    return first ? first.trim().replace(/\.json$/i, '') : null;
+    return null;
   } catch {
     return null;
   }
+}
+
+export async function fetchTodaysChallengeLevelId() {
+  return fetchChallengeLevelIdForDate(todayIso());
 }
 
 function pickStatNumber(systemVal, catalogVal, mockVal) {

@@ -14,7 +14,7 @@ export const RECORDS_ITEM_DEFS = {
   tabPersonalBest: { cssKey: 'tab-personal', kind: 'tab', label: 'Tab — Personal Best', tabKey: 'personalBest', screens: ['leaderboard', 'personal'] },
   fieldDailyPuzzleId: { cssKey: 'daily-puzzle-id', kind: 'text', label: 'Header — puzzle ID', slot: 'dailyPuzzleId', screens: ['leaderboard', 'personal'] },
   fieldDailyDate: { cssKey: 'daily-date', kind: 'text', label: 'Header — date', slot: 'dailyDate', screens: ['leaderboard', 'personal'] },
-  fieldDailyTime: { cssKey: 'daily-time', kind: 'text', label: 'Header — time', slot: 'dailyTime', screens: ['leaderboard', 'personal'] },
+  fieldDailyTime: { cssKey: 'daily-time', kind: 'text', label: 'Header — time', slot: 'dailyTime', screens: ['personal'] },
   paneTop: { cssKey: 'pane-top', kind: 'pane', label: 'Top pane (0 hints)', screens: ['leaderboard', 'personal'] },
   paneBl: { cssKey: 'pane-bl', kind: 'pane', label: 'Bottom-left pane (1 hint)', screens: ['leaderboard', 'personal'] },
   paneBr: { cssKey: 'pane-br', kind: 'pane', label: 'Bottom-right pane (2 hints)', screens: ['leaderboard', 'personal'] },
@@ -52,17 +52,17 @@ export const DEFAULT_RECORDS_LAYOUT = {
   },
   tabs: { ...DEFAULT_RECORDS_TAB_ART },
   items: {
-    tabLeaderboard: { x: 89.2, y: 34, w: 10.8, h: 11.5, nudgeX: 0, nudgeY: 0 },
-    tabPersonalBest: { x: 89.2, y: 46.5, w: 10.8, h: 11.5, nudgeX: 0, nudgeY: 0 },
+    tabLeaderboard: { x: 88.2, y: 8.5, w: 8.8, h: 11.2, nudgeX: 0, nudgeY: 0 },
+    tabPersonalBest: { x: 88.9, y: 20.9, w: 7.8, h: 10.7, nudgeX: 0, nudgeY: 0 },
     fieldDailyPuzzleId: { x: 10, y: 13.2, w: 34, h: 3.2, fontScale: 1.15, nudgeX: 0, nudgeY: 0 },
     fieldDailyDate: { x: 44, y: 13.2, w: 32, h: 3.2, fontScale: 1.05, nudgeX: 0, nudgeY: 0 },
     fieldDailyTime: { x: 76, y: 13.2, w: 14, h: 3.2, fontScale: 1.15, nudgeX: 0, nudgeY: 0 },
-    paneTop: { x: 7.5, y: 16.5, w: 79, h: 30, nudgeX: 0, nudgeY: 0 },
-    paneBl: { x: 7.5, y: 50.5, w: 38.5, h: 30, nudgeX: 0, nudgeY: 0 },
-    paneBr: { x: 49.5, y: 50.5, w: 38.5, h: 30, nudgeX: 0, nudgeY: 0 },
+    paneTop: { x: 10.6, y: 15.3, w: 74, h: 32.1, nudgeX: 0, nudgeY: 0 },
+    paneBl: { x: 8.4, y: 61.4, w: 37, h: 30.2, nudgeX: 0, nudgeY: 0 },
+    paneBr: { x: 49, y: 61.5, w: 36, h: 30, nudgeX: 0, nudgeY: 0 },
     listTop: { x: 10, y: 22, w: 74, h: 22, nudgeX: 0, nudgeY: 0 },
     scrollerTop: { x: 84.5, y: 22, h: 24, trackScale: 0.55, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
-    listBl: { x: 10, y: 56, w: 33, h: 22, nudgeX: 0, nudgeY: 0 },
+    listBl: { x: 10.25, y: 56, w: 33, h: 22, nudgeX: 0, nudgeY: 0 },
     scrollerBl: { x: 43.5, y: 56, h: 20, trackScale: 0.5, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
     listBr: { x: 52, y: 56, w: 33, h: 22, nudgeX: 0, nudgeY: 0 },
     scrollerBr: { x: 85.5, y: 56, h: 20, trackScale: 0.5, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
@@ -75,8 +75,8 @@ export const DEFAULT_RECORDS_LAYOUT = {
     personalPane: { x: 7.5, y: 16.5, w: 79, h: 64, nudgeX: 0, nudgeY: 0, hidden: true },
     listPersonal: { x: 10, y: 22, w: 74, h: 56, nudgeX: 0, nudgeY: 0, hidden: true },
     scrollerPersonal: { x: 84.5, y: 22, h: 56, trackScale: 0.55, pinScale: 0.66, nudgeX: 0, nudgeY: 0, hidden: true },
-    btnBack: { x: 2.5, y: 1.8, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
-    btnClose: { x: 88.5, y: 1.8, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
+    btnBack: { x: 6.2, y: 1.9, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
+    btnClose: { x: 78.2, y: 1.4, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
   },
 };
 
@@ -326,6 +326,12 @@ export function syncRecordsItemVisibility(layout, root = document) {
         el.hidden = hidden;
       });
     }
+  }
+  const recordsMode = panel.dataset.recordsMode || 'leaderboard';
+  if (recordsMode === 'leaderboard') {
+    panel.querySelectorAll('[data-records-item="fieldDailyTime"], .tz-records-field--daily-time').forEach((el) => {
+      el.hidden = true;
+    });
   }
 }
 

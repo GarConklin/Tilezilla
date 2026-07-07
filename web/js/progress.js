@@ -348,6 +348,7 @@ export class Progress {
     const {
       challengeDate,
       userId,
+      username,
       levelId,
       solutionIndex,
       solutionBonus = false,
@@ -377,6 +378,7 @@ export class Progress {
     store[rowKey] = {
       challengeDate,
       userId,
+      username: String(username || '').trim() || null,
       levelId,
       solutionId: Number.isFinite(solutionIndex) ? solutionIndex : null,
       solutionBonus: !!solutionBonus,

@@ -23,69 +23,69 @@
   },
   "items": {
     "tabLeaderboard": {
-      "x": 88.2,
-      "y": 8.5,
-      "w": 8.8,
-      "h": 11.2,
+      "x": 86.6,
+      "y": 7.9,
+      "w": 12.4,
+      "h": 13,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "tabPersonalBest": {
-      "x": 88.9,
-      "y": 20.9,
-      "w": 7.800000000000001,
-      "h": 10.7,
+      "x": 86.5,
+      "y": 21.9,
+      "w": 13.8,
+      "h": 15.6,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldDailyPuzzleId": {
-      "x": 10,
-      "y": 13.2,
-      "w": 34,
+      "x": 52.7,
+      "y": 8.5,
+      "w": 28.75,
       "h": 3.2,
       "fontScale": 1.15,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldDailyDate": {
-      "x": 44,
-      "y": 13.2,
-      "w": 32,
+      "x": 21.2,
+      "y": 8.5,
+      "w": 24.5,
       "h": 3.2,
       "fontScale": 1.05,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "fieldDailyTime": {
-      "x": 76,
-      "y": 13.2,
-      "w": 14,
+      "x": 41,
+      "y": 8.5,
+      "w": 10,
       "h": 3.2,
       "fontScale": 1.15,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "paneTop": {
-      "x": 10.6,
-      "y": 15.3,
-      "w": 74,
-      "h": 32.1,
+      "x": 9.2,
+      "y": 11.4,
+      "w": 69.6,
+      "h": 38,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "paneBl": {
-      "x": 8.4,
-      "y": 61.4,
+      "x": 6,
+      "y": 56.7,
       "w": 37,
-      "h": 30.2,
+      "h": 34.1,
       "nudgeX": 0,
       "nudgeY": 0
     },
     "paneBr": {
-      "x": 49,
-      "y": 61.5,
+      "x": 48.3,
+      "y": 56.8,
       "w": 36,
-      "h": 30,
+      "h": 34,
       "nudgeX": 0,
       "nudgeY": 0
     },
@@ -99,8 +99,8 @@
     },
     "scrollerTop": {
       "x": 84.5,
-      "y": 22,
-      "h": 24,
+      "y": 13.7,
+      "h": 31.5,
       "trackScale": 0.55,
       "pinScale": 0.66,
       "nudgeX": 0,
@@ -115,9 +115,9 @@
       "nudgeY": 0
     },
     "scrollerBl": {
-      "x": 43.5,
-      "y": 56,
-      "h": 20,
+      "x": 43.1,
+      "y": 59.5,
+      "h": 28.5,
       "trackScale": 0.5,
       "pinScale": 0.66,
       "nudgeX": 0,
@@ -132,9 +132,9 @@
       "nudgeY": 0
     },
     "scrollerBr": {
-      "x": 85.5,
-      "y": 56,
-      "h": 20,
+      "x": 84.1,
+      "y": 59.3,
+      "h": 28.75,
       "trackScale": 0.5,
       "pinScale": 0.66,
       "nudgeX": 0,

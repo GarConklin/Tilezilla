@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1a3d3a" />
   <title>Tilezilla — Main screen v2</title>
-  <link rel="stylesheet" href="css/tilezilla-shell.css" />
+  <link rel="stylesheet" href="css/tilezilla-shell.css?v=20260707j" />
   <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body>
@@ -452,12 +452,11 @@
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--stuck" id="menuStuckBtn" aria-label="I'm Stuck"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--hint-rules" id="menuHintRulesBtn" aria-label="Hint Rules"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--settings" id="menuOpenSettingsBtn" aria-label="Settings"></button>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--leaderboard" id="menuLeaderboardBtn" aria-label="Leaderboard"></button>
         <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--cartographers-journal" id="menuCartographersJournalBtn" aria-label="The Cartographer's Journal"></button>
         <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-login" id="menuGuestLoginBtn" href="/login-screen.html" hidden aria-label="Login"></a>
         <a class="tz-menu-plaque__hit tz-menu-plaque__hit--guest-create" id="menuGuestCreateBtn" href="/create-passport.html" hidden aria-label="Create Account"></a>
-        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--dev-tools" id="menuDevToolsBtn" data-dev-only hidden aria-label="Dev Tools"></button>
-        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--force-discovery" id="menuDevForceDiscoveryBtn" data-dev-only hidden aria-label="Force Solution Popup"></button>
-        <a class="tz-menu-plaque__hit tz-menu-plaque__hit--switch-player" href="/dev-player-select.html" data-dev-only hidden aria-label="Switch test player"></a>
+        <button type="button" class="tz-menu-plaque__hit tz-menu-plaque__hit--development" id="menuDevelopmentBtn" data-dev-only hidden aria-label="Development"></button>
         <div class="tz-menu-plaque__system-info" id="menuSystemInfo" hidden aria-label="Application version"></div>
       </div>
     </div>
@@ -1139,6 +1138,36 @@
     </div>
   </div>
 
+  <div class="tz-development-root" id="developmentMenuRoot" hidden>
+    <button type="button" class="tz-development-root__backdrop" aria-label="Close development menu"></button>
+    <div class="tz-development-frame" role="dialog" aria-modal="true" aria-labelledby="developmentMenuTitle">
+      <img
+        class="tz-development-frame__art"
+        src="/img/Hint%20Rules-Blank.png"
+        alt=""
+        width="709"
+        height="824"
+        draggable="false"
+      />
+      <div class="tz-development-panel">
+        <div class="tz-settings-chrome tz-settings-chrome--top">
+          <button type="button" class="tz-settings-hit tz-settings-hit--exit" id="developmentMenuCloseBtn" aria-label="Close">
+            <img src="/img/X-gold-rnd-btn.png" alt="" />
+          </button>
+        </div>
+        <div class="tz-development-scroll">
+          <h2 class="tz-sr-only" id="developmentMenuTitle">Development</h2>
+          <nav class="tz-development-list" aria-label="Development tools">
+            <button type="button" class="tz-development-action" id="developmentDevToolsBtn">Dev Tools</button>
+            <button type="button" class="tz-development-action" id="developmentForceDiscoveryBtn">Force Solution Popup</button>
+            <a class="tz-development-action tz-development-action--link" href="/dev-player-select.html" id="developmentSwitchPlayerLink">Switch test player</a>
+            <a class="tz-development-action tz-development-action--link" href="/tuners.html" id="developmentTunersLink">Layout tuners</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="tz-cartographers-journal-root" id="cartographersJournalRoot" hidden>
     <div
       class="tz-cartographers-journal-window"
@@ -1405,7 +1434,7 @@
 
     void guardGameEntry();
   </script>
-  <script type="module" src="js/app_v16.js?v=20260707d"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js?v=20260707d"></script>
+  <script type="module" src="js/app_v16.js?v=20260707j"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20260707j"></script>
 </body>
 </html>

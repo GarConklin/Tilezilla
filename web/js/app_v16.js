@@ -19,6 +19,7 @@ import {
   toTileImgUrl,
 } from './tile-bg-setup.js';
 import { loadActiveTilesetPreference, saveActiveTilesetPreference } from './tileset-preferences.js';
+import { getActiveUsername } from './tilezilla-guest.js';
 
 const CONFIG = {
   rows: 6,
@@ -2432,6 +2433,7 @@ async function processSolutionFound(lv, res, placements) {
     const lb = progress?.recordLeaderboardResult?.({
       challengeDate: todayChallengeDate(),
       userId: state.userId || 'gar',
+      username: getActiveUsername() || null,
       levelId: lv.id,
       solutionIndex: res.index,
       solutionBonus: !!res.bonus,

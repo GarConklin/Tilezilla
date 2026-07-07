@@ -397,18 +397,10 @@
   --tz-menu-dev-journal-y: 63%;
   --tz-menu-dev-journal-w: 74%;
   --tz-menu-dev-journal-h: 6.8%;
-  --tz-menu-dev-tools-x: 50%;
-  --tz-menu-dev-tools-y: 59%;
-  --tz-menu-dev-tools-w: 74%;
-  --tz-menu-dev-tools-h: 6.8%;
-  --tz-menu-dev-force-x: 50%;
-  --tz-menu-dev-force-y: 67%;
-  --tz-menu-dev-force-w: 74%;
-  --tz-menu-dev-force-h: 6.8%;
-  --tz-menu-dev-switch-x: 50%;
-  --tz-menu-dev-switch-y: 75%;
-  --tz-menu-dev-switch-w: 74%;
-  --tz-menu-dev-switch-h: 6.8%;
+  --tz-menu-dev-development-x: 50%;
+  --tz-menu-dev-development-y: 75%;
+  --tz-menu-dev-development-w: 74%;
+  --tz-menu-dev-development-h: 6.8%;
   --tz-menu-offset-y: -50px;
   --tz-h-tilebag-hdr: 0px;
   --tz-h-tilebag-frame: 94px;
@@ -7907,6 +7899,13 @@ body.tz-is-dev-user .tz-menu-plaque__bg--devtools {
   height: var(--tz-menu-settings-h);
 }
 
+.tz-menu-plaque__hit--leaderboard {
+  left: var(--tz-menu-leaderboard-x);
+  top: var(--tz-menu-leaderboard-y);
+  width: var(--tz-menu-leaderboard-w);
+  height: var(--tz-menu-leaderboard-h);
+}
+
 .tz-menu-plaque__hit--cartographers-journal {
   left: var(--tz-menu-journal-x);
   top: var(--tz-menu-journal-y);
@@ -7914,25 +7913,18 @@ body.tz-is-dev-user .tz-menu-plaque__bg--devtools {
   height: var(--tz-menu-journal-h);
 }
 
-.tz-menu-plaque__hit--dev-tools {
-  left: var(--tz-menu-dev-tools-x);
-  top: var(--tz-menu-dev-tools-y);
-  width: var(--tz-menu-dev-tools-w);
-  height: var(--tz-menu-dev-tools-h);
+.tz-menu-plaque__hit--development {
+  left: var(--tz-menu-dev-development-x);
+  top: var(--tz-menu-dev-development-y);
+  width: var(--tz-menu-dev-development-w);
+  height: var(--tz-menu-dev-development-h);
 }
 
-.tz-menu-plaque__hit--force-discovery {
-  left: var(--tz-menu-dev-force-x);
-  top: var(--tz-menu-dev-force-y);
-  width: var(--tz-menu-dev-force-w);
-  height: var(--tz-menu-dev-force-h);
-}
-
-.tz-menu-plaque__hit--switch-player {
-  left: var(--tz-menu-dev-switch-x);
-  top: var(--tz-menu-dev-switch-y);
-  width: var(--tz-menu-dev-switch-w);
-  height: var(--tz-menu-dev-switch-h);
+body.tz-is-dev-user .tz-menu-plaque__hit--development {
+  left: var(--tz-menu-dev-development-x);
+  top: var(--tz-menu-dev-development-y);
+  width: var(--tz-menu-dev-development-w);
+  height: var(--tz-menu-dev-development-h);
 }
 
 body.tz-is-dev-user .tz-menu-plaque__hit--puzzle-info {
@@ -7970,11 +7962,135 @@ body.tz-is-dev-user .tz-menu-plaque__hit--settings {
   height: var(--tz-menu-dev-settings-h);
 }
 
+body.tz-is-dev-user .tz-menu-plaque__hit--leaderboard {
+  left: var(--tz-menu-dev-leaderboard-x);
+  top: var(--tz-menu-dev-leaderboard-y);
+  width: var(--tz-menu-dev-leaderboard-w);
+  height: var(--tz-menu-dev-leaderboard-h);
+}
+
 body.tz-is-dev-user .tz-menu-plaque__hit--cartographers-journal {
   left: var(--tz-menu-dev-journal-x);
   top: var(--tz-menu-dev-journal-y);
   width: var(--tz-menu-dev-journal-w);
   height: var(--tz-menu-dev-journal-h);
+}
+
+/* ── Development submenu (scroll popup) ── */
+
+.tz-development-root {
+  position: fixed;
+  inset: 0;
+  z-index: 111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: max(12px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+}
+
+.tz-development-root[hidden] {
+  display: none !important;
+}
+
+.tz-development-root__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(8, 20, 18, 0.62);
+  cursor: pointer;
+}
+
+.tz-development-frame {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  width: min(
+    calc(100% - 32px),
+    var(--tz-development-max-width, 390px),
+    calc((100svh - 24px) * 709 / 824)
+  );
+  aspect-ratio: calc(709 / 824);
+  max-height: calc(100svh - 24px);
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+}
+
+.tz-development-frame__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tz-development-panel {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 22%;
+  bottom: 16%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tz-development-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.tz-development-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 4px 0 12px;
+}
+
+.tz-development-action {
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(120, 78, 36, 0.55);
+  background: rgba(255, 248, 230, 0.72);
+  color: #3d2810;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+.tz-development-action:hover,
+.tz-development-action:focus-visible {
+  border-color: rgba(160, 110, 48, 0.85);
+  background: rgba(255, 252, 240, 0.92);
+  outline: none;
+}
+
+.tz-development-action--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .tz-sheet-root {
@@ -9015,17 +9131,17 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-field--tab-leaderboard {
-  left: calc(var(--tz-records-tab-leaderboard-x, 89.2) * 1% + var(--tz-records-tab-leaderboard-nudge-x, 0px));
-  top: calc(var(--tz-records-tab-leaderboard-y, 34) * 1% + var(--tz-records-tab-leaderboard-nudge-y, 0px));
-  width: calc(var(--tz-records-tab-leaderboard-w, 10.8) * 1%);
-  height: calc(var(--tz-records-tab-leaderboard-h, 11.5) * 1%);
+  left: calc(var(--tz-records-tab-leaderboard-x, 88.2) * 1% + var(--tz-records-tab-leaderboard-nudge-x, 0px));
+  top: calc(var(--tz-records-tab-leaderboard-y, 8.5) * 1% + var(--tz-records-tab-leaderboard-nudge-y, 0px));
+  width: calc(var(--tz-records-tab-leaderboard-w, 8.8) * 1%);
+  height: calc(var(--tz-records-tab-leaderboard-h, 11.2) * 1%);
 }
 
 .tz-records-field--tab-personal {
-  left: calc(var(--tz-records-tab-personal-best-x, 89.2) * 1% + var(--tz-records-tab-personal-best-nudge-x, 0px));
-  top: calc(var(--tz-records-tab-personal-best-y, 46.5) * 1% + var(--tz-records-tab-personal-best-nudge-y, 0px));
-  width: calc(var(--tz-records-tab-personal-best-w, 10.8) * 1%);
-  height: calc(var(--tz-records-tab-personal-best-h, 11.5) * 1%);
+  left: calc(var(--tz-records-tab-personal-best-x, 88.9) * 1% + var(--tz-records-tab-personal-best-nudge-x, 0px));
+  top: calc(var(--tz-records-tab-personal-best-y, 20.9) * 1% + var(--tz-records-tab-personal-best-nudge-y, 0px));
+  width: calc(var(--tz-records-tab-personal-best-w, 7.8) * 1%);
+  height: calc(var(--tz-records-tab-personal-best-h, 10.7) * 1%);
 }
 
 .tz-records-field {
@@ -9096,23 +9212,23 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-field--pane-top {
-  left: calc(var(--tz-records-pane-top-x, 7.5) * 1% + var(--tz-records-pane-top-nudge-x, 0px));
-  top: calc(var(--tz-records-pane-top-y, 16.5) * 1% + var(--tz-records-pane-top-nudge-y, 0px));
-  width: calc(var(--tz-records-pane-top-w, 79) * 1%);
-  height: calc(var(--tz-records-pane-top-h, 30) * 1%);
+  left: calc(var(--tz-records-pane-top-x, 10.6) * 1% + var(--tz-records-pane-top-nudge-x, 0px));
+  top: calc(var(--tz-records-pane-top-y, 15.3) * 1% + var(--tz-records-pane-top-nudge-y, 0px));
+  width: calc(var(--tz-records-pane-top-w, 74) * 1%);
+  height: calc(var(--tz-records-pane-top-h, 32.1) * 1%);
 }
 
 .tz-records-field--pane-bl {
-  left: calc(var(--tz-records-pane-bl-x, 7.5) * 1% + var(--tz-records-pane-bl-nudge-x, 0px));
-  top: calc(var(--tz-records-pane-bl-y, 50.5) * 1% + var(--tz-records-pane-bl-nudge-y, 0px));
-  width: calc(var(--tz-records-pane-bl-w, 38.5) * 1%);
-  height: calc(var(--tz-records-pane-bl-h, 30) * 1%);
+  left: calc(var(--tz-records-pane-bl-x, 8.4) * 1% + var(--tz-records-pane-bl-nudge-x, 0px));
+  top: calc(var(--tz-records-pane-bl-y, 61.4) * 1% + var(--tz-records-pane-bl-nudge-y, 0px));
+  width: calc(var(--tz-records-pane-bl-w, 37) * 1%);
+  height: calc(var(--tz-records-pane-bl-h, 30.2) * 1%);
 }
 
 .tz-records-field--pane-br {
-  left: calc(var(--tz-records-pane-br-x, 49.5) * 1% + var(--tz-records-pane-br-nudge-x, 0px));
-  top: calc(var(--tz-records-pane-br-y, 50.5) * 1% + var(--tz-records-pane-br-nudge-y, 0px));
-  width: calc(var(--tz-records-pane-br-w, 38.5) * 1%);
+  left: calc(var(--tz-records-pane-br-x, 49) * 1% + var(--tz-records-pane-br-nudge-x, 0px));
+  top: calc(var(--tz-records-pane-br-y, 61.5) * 1% + var(--tz-records-pane-br-nudge-y, 0px));
+  width: calc(var(--tz-records-pane-br-w, 36) * 1%);
   height: calc(var(--tz-records-pane-br-h, 30) * 1%);
 }
 
@@ -9335,17 +9451,21 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-field--btn-back {
-  left: calc(var(--tz-records-btn-back-x, 2.5) * 1% + var(--tz-records-btn-back-nudge-x, 0px));
-  top: calc(var(--tz-records-btn-back-y, 1.8) * 1% + var(--tz-records-btn-back-nudge-y, 0px));
+  left: calc(var(--tz-records-btn-back-x, 6.2) * 1% + var(--tz-records-btn-back-nudge-x, 0px));
+  top: calc(var(--tz-records-btn-back-y, 1.9) * 1% + var(--tz-records-btn-back-nudge-y, 0px));
   width: calc(var(--tz-records-btn-back-w, 9) * 1%);
   height: calc(var(--tz-records-btn-back-h, 5.2) * 1%);
 }
 
 .tz-records-field--btn-close {
-  left: calc(var(--tz-records-btn-close-x, 88.5) * 1% + var(--tz-records-btn-close-nudge-x, 0px));
-  top: calc(var(--tz-records-btn-close-y, 1.8) * 1% + var(--tz-records-btn-close-nudge-y, 0px));
+  left: calc(var(--tz-records-btn-close-x, 78.2) * 1% + var(--tz-records-btn-close-nudge-x, 0px));
+  top: calc(var(--tz-records-btn-close-y, 1.4) * 1% + var(--tz-records-btn-close-nudge-y, 0px));
   width: calc(var(--tz-records-btn-close-w, 9) * 1%);
   height: calc(var(--tz-records-btn-close-h, 5.2) * 1%);
+}
+
+.tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--daily-time {
+  display: none !important;
 }
 
 .tz-records-view[hidden] {
@@ -9353,6 +9473,19 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-hit[data-records-tab="personalBest"][hidden] {
+  display: none !important;
+}
+
+/* Records tab — hide journal side tabs until Back returns to profile/stats */
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-puzzle,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-stats,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-filter,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-records,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-filter,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-stats,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-prev,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-next,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-exit {
   display: none !important;
 }
 

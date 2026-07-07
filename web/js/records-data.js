@@ -1,6 +1,6 @@
 /** Daily leaderboard rows for the Records screen. */
 
-import { fetchTodaysChallengeLevelId } from './passport-journal-stats.js';
+import { fetchChallengeLevelIdForDate, fetchTodaysChallengeLevelId } from './passport-journal-stats.js';
 
 export function formatLeaderboardTime(totalSeconds) {
   const total = Math.max(0, Number(totalSeconds) || 0);
@@ -115,22 +115,55 @@ export function resolveLastDailyCompletion(app = null) {
   };
 }
 
-export async function resolveDailyChallengeHeader() {
+/** Today's daily challenge identity for the leaderboard header (puzzle ID + date). */
+export async function resolveDailyChallengeHeader({ challengeDate } = {}) {
+  const dateIso = String(challengeDate || todayChallengeDateIso()).trim();
   const meta = window.__dailyChallengeMeta;
-  if (meta?.levelId) {
+  if (meta?.levelId && (!challengeDate || String(meta.date || '').slice(0, 10) === dateIso)) {
     return {
-      date: formatDailyChallengeDate(meta.date || todayChallengeDateIso()),
-      puzzleId: String(meta.levelId).replace(/\.json$/i, ''),
+      date: formatDailyChallengeDate(meta.date || dateIso),
+      puzzleId: String(meta.levelId).replace(/\.json$/i, '') || '—',
     };
   }
-  const puzzleId = await fetchTodaysChallengeLevelId();
+
+  try {
+    const res = await fetch(`/api/daily-leaderboard?date=${encodeURIComponent(dateIso)}`, {
+      credentials: 'include',
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.ok) {
+        const levelId = String(json.levelId || '').replace(/\.json$/i, '');
+        if (levelId) {
+          return {
+            date: formatDailyChallengeDate(json.date || dateIso),
+            puzzleId: levelId,
+          };
+        }
+      }
+    }
+  } catch {
+    /* offline — fall through to CSV */
+  }
+
+  const puzzleId = await fetchChallengeLevelIdForDate(dateIso)
+    || (dateIso === todayChallengeDateIso() ? await fetchTodaysChallengeLevelId() : null);
   return {
-    date: formatDailyChallengeDate(todayChallengeDateIso()),
+    date: formatDailyChallengeDate(dateIso),
     puzzleId: puzzleId || '—',
   };
 }
 
-export function setRecordsHeaderFields(root = document, { date, puzzleId, time } = {}) {
+export function syncRecordsHeaderVisibility(root = document, { showTime = false } = {}) {
+  const panel = root.getElementById?.('journalRecordsPanel') || root.querySelector?.('#journalRecordsPanel');
+  if (!panel) return;
+  panel.querySelectorAll('[data-records-item="fieldDailyTime"], .tz-records-field--daily-time').forEach((el) => {
+    el.toggleAttribute('hidden', !showTime);
+  });
+}
+
+export function setRecordsHeaderFields(root = document, { date, puzzleId, time, showTime = true } = {}) {
   const panel = root.getElementById?.('journalRecordsPanel') || root.querySelector?.('#journalRecordsPanel');
   if (!panel) return;
   panel.querySelectorAll('[data-records-slot="dailyPuzzleId"]').forEach((el) => {
@@ -139,15 +172,17 @@ export function setRecordsHeaderFields(root = document, { date, puzzleId, time }
   panel.querySelectorAll('[data-records-slot="dailyDate"]').forEach((el) => {
     el.textContent = date ?? '—';
   });
-  panel.querySelectorAll('[data-records-slot="dailyTime"]').forEach((el) => {
-    el.textContent = time ?? '—';
-  });
+  syncRecordsHeaderVisibility(root, { showTime });
+  if (showTime) {
+    panel.querySelectorAll('[data-records-slot="dailyTime"]').forEach((el) => {
+      el.textContent = time ?? '—';
+    });
+  }
 }
 
 export const MOCK_RECORDS_HEADER = {
-  date: 'Jul 4, 2026',
-  puzzleId: '5x6-0B-BYY',
-  time: '2:41',
+  date: 'Jul 7, 2026',
+  puzzleId: '5x6-0A-ALC',
 };
 
 export const MOCK_PERSONAL_HEADER = {
@@ -157,8 +192,11 @@ export const MOCK_PERSONAL_HEADER = {
 };
 
 export function todayChallengeDateIso() {
-  return window.__dailyChallengeMeta?.date
-    || new Date().toISOString().slice(0, 10);
+  if (window.__dailyChallengeMeta?.date) {
+    return String(window.__dailyChallengeMeta.date).slice(0, 10);
+  }
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 /** Guest daily solve — session-only preview (not saved to MySQL). */
@@ -227,7 +265,10 @@ export function setGuestPlacementBanner(root = document, summary = null) {
  */
 export function fetchLocalLeaderboardRows(progress, challengeDate = todayChallengeDateIso()) {
   if (!progress?.getLeaderboardResultsForDate) return [];
-  return progress.getLeaderboardResultsForDate(challengeDate) || [];
+  return (progress.getLeaderboardResultsForDate(challengeDate) || []).map((row) => ({
+    ...row,
+    username: row.username || '',
+  }));
 }
 
 /**
@@ -246,8 +287,8 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
       const json = await res.json();
       if (json?.ok && Array.isArray(json.rows)) {
         rows = json.rows.map((row) => ({
-          userId: row.userId || row.username || '—',
-          username: row.username || row.userId || '—',
+          userId: row.userId ?? row.user_id ?? '',
+          username: String(row.username || '').trim(),
           completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
           hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
           levelId: row.levelId || json.levelId || '',
@@ -286,10 +327,26 @@ export function partitionLeaderboardByHints(rows) {
   return { zero, one, two };
 }
 
-export function buildRankedEntries(rows) {
+/** Prefer display name over numeric user id for leaderboard rows. */
+export function leaderboardDisplayName(row, { currentUserId, currentUsername } = {}) {
+  if (row?.isGuestPreview) return 'You';
+
+  const username = String(row?.username || '').trim();
+  const userId = String(row?.userId ?? '').trim();
+  const selfId = String(currentUserId ?? '').trim();
+  const selfName = String(currentUsername ?? '').trim();
+
+  if (username && !/^\d+$/.test(username)) return username;
+  if (selfName && selfId && userId === selfId) return selfName;
+  if (userId && !/^\d+$/.test(userId)) return userId;
+  if (username) return username;
+  return '—';
+}
+
+export function buildRankedEntries(rows, { currentUserId, currentUsername } = {}) {
   return rows.map((row, idx) => ({
     rank: idx + 1,
-    user: row.isGuestPreview ? 'You' : String(row.userId || row.username || '—'),
+    user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
     time: formatLeaderboardTime(row.completionTimeSeconds),
     levelId: row.levelId || '',
     hintsUsedCount: hintBucket(row),

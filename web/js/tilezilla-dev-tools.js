@@ -129,11 +129,6 @@ export function initDevTools(options = {}) {
   const userId = getApp()?.state?.userId;
   syncDevUserUi(userId);
 
-  $('menuDevToolsBtn')?.addEventListener('click', () => menuApi?.openPanel?.('dev-tools'));
-  $('menuDevForceDiscoveryBtn')?.addEventListener('click', () => {
-    menuApi?.closeMenu?.();
-    onForceDiscovery();
-  });
   $('devForceDiscoveryPopupBtn')?.addEventListener('click', onForceDiscovery);
 
   $('devLoadKnownBtn')?.addEventListener('click', () => { void loadSelectedKnownOnBoard(); });
