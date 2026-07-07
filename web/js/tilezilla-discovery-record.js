@@ -263,20 +263,30 @@ async function showDiscoveryRecordAsync(payload) {
   const root = $('discoveryRecord');
   if (!root) return;
 
-  const enriched = await enrichAdventurePayload(payload);
+  const appRoot = document.querySelector('.tz-app');
+  appRoot?.classList.add('is-discovery-record');
+  if (appRoot) appRoot.dataset.validation = '';
+  $('previewCheckSolve')?.setAttribute('aria-hidden', 'true');
+  window.__invalidSolve?.hide?.();
 
-  // Expand the preview shell first — same geometry as discovery-record-tuner.html.
   root.hidden = false;
   root.setAttribute('aria-hidden', 'false');
-  document.querySelector('.tz-app')?.classList.add('is-discovery-record');
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
-  applyDiscoveryRecordContent(enriched);
-  pendingRecordMode = enriched?.mode === 'duplicate' ? 'duplicate' : 'new';
-  pendingDailyLeaderboardFlow = !!enriched?.dailyLeaderboardFlow;
-  pendingViewFoundIndex = Number.isFinite(enriched.solutionIndex) ? enriched.solutionIndex : null;
+  applyDiscoveryRecordContent(payload);
+  pendingRecordMode = payload?.mode === 'duplicate' ? 'duplicate' : 'new';
+  pendingDailyLeaderboardFlow = !!payload?.dailyLeaderboardFlow;
+  pendingViewFoundIndex = Number.isFinite(payload.solutionIndex) ? payload.solutionIndex : null;
 
   void onAdventureProgress();
+
+  void enrichAdventurePayload(payload).then((enriched) => {
+    if (!document.querySelector('.tz-app')?.classList.contains('is-discovery-record')) return;
+    applyDiscoveryRecordContent(enriched);
+    pendingRecordMode = enriched?.mode === 'duplicate' ? 'duplicate' : 'new';
+    pendingDailyLeaderboardFlow = !!enriched?.dailyLeaderboardFlow;
+    pendingViewFoundIndex = Number.isFinite(enriched.solutionIndex) ? enriched.solutionIndex : null;
+  });
 }
 
 function hideDiscoveryRecord() {
@@ -463,6 +473,8 @@ export {
   hideDiscoveryRecord,
   resumeForBoardEdit,
   buildChallengeProgress,
+  buildNewPayload,
+  buildDuplicatePayload,
   formatTime,
   formatDateTime,
 };

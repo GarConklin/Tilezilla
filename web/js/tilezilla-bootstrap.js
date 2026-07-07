@@ -904,6 +904,7 @@ function formatHintTokenLabel(app) {
 
 let selectedHintType = null;
 let shellMenuApi = null;
+let shellJournalApi = null;
 
 function isHintStartPhase(app) {
   return app?.boardAllowsHints?.(app?.state?.tiles ?? []) ?? !(app?.state?.tiles || []).length;
@@ -2505,6 +2506,56 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
   await syncPlayerChrome(app);
 }
 
+function initDiscoveryRecordShell(appRef, menuApi) {
+  initDiscoveryRecord({
+    getApp: () => appRef,
+    onContinueSearch: () => continueDiscoverySearch(appRef),
+    onDailyViewLeaderboard: async () => {
+      await shellJournalApi?.openDailyLeaderboardAfterSolve?.();
+    },
+    onAdvancePath: async () => {
+      const appRoot = document.querySelector('.tz-app');
+      if (appRoot?.dataset?.screen === 'daily-challenge') {
+        if (guestUser.isGuestUser()) {
+          guestUser.showLoginRequired({ source: 'adventure' });
+          return;
+        }
+        await switchToAdventureScreen(appRef);
+        return;
+      }
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'adventure' });
+        return;
+      }
+      await advanceAdventurePath(appRef);
+    },
+    onAdventureProgress: () => refreshAdventureChrome(appRef),
+    onViewFoundSolve: (solutionIndex) => {
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'found-solutions' });
+        return;
+      }
+      menuApi?.openFoundSolutionAt?.(solutionIndex);
+    },
+    onOpenFoundSolutions: () => {
+      if (guestUser.isGuestUser()) {
+        guestUser.showLoginRequired({ source: 'found-solutions' });
+        return;
+      }
+      void shellJournalApi?.openJournal?.({
+        mode: 'record',
+        levelId: appRef?.state?.currentLevel?.id,
+        resumeGameOnClose: true,
+        resumeLevelId: appRef?.state?.currentLevel?.id,
+      });
+    },
+    onResumeBoardEdit: () => {
+      resetPreviewAfterSolve();
+      if (appRef) syncBoardChrome(appRef);
+    },
+  });
+}
+
 async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false } = {}) {
   const menuApi = initMenuUi({
     getApp: () => appRef,
@@ -2552,6 +2603,7 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
     getApp: () => appRef,
     onDismiss: wireInvalidSolveDismiss(appRef),
   });
+  initDiscoveryRecordShell(appRef, menuApi);
   if (deferBootPuzzle) {
     void initShellExtendedUiModules(appRef, settings, menuApi);
     return;
@@ -2608,6 +2660,7 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
     },
   });
   window.__journalApi = journalApi;
+  shellJournalApi = journalApi;
 
   initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
 
@@ -2623,53 +2676,6 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
   wireUseHintConfirmTriggers(async () => {
     if (appRef) await tryOpenHintForApp(appRef);
     else openUseHintConfirm();
-  });
-  initDiscoveryRecord({
-    getApp: () => appRef,
-    onContinueSearch: () => continueDiscoverySearch(appRef),
-    onDailyViewLeaderboard: async () => {
-      await journalApi?.openDailyLeaderboardAfterSolve?.();
-    },
-    onAdvancePath: async () => {
-      const appRoot = document.querySelector('.tz-app');
-      if (appRoot?.dataset?.screen === 'daily-challenge') {
-        if (guestUser.isGuestUser()) {
-          guestUser.showLoginRequired({ source: 'adventure' });
-          return;
-        }
-        await switchToAdventureScreen(appRef);
-        return;
-      }
-      if (guestUser.isGuestUser()) {
-        guestUser.showLoginRequired({ source: 'adventure' });
-        return;
-      }
-      await advanceAdventurePath(appRef);
-    },
-    onAdventureProgress: () => refreshAdventureChrome(appRef),
-    onViewFoundSolve: (solutionIndex) => {
-      if (guestUser.isGuestUser()) {
-        guestUser.showLoginRequired({ source: 'found-solutions' });
-        return;
-      }
-      menuApi?.openFoundSolutionAt?.(solutionIndex);
-    },
-    onOpenFoundSolutions: () => {
-      if (guestUser.isGuestUser()) {
-        guestUser.showLoginRequired({ source: 'found-solutions' });
-        return;
-      }
-      void journalApi?.openJournal?.({
-        mode: 'record',
-        levelId: appRef?.state?.currentLevel?.id,
-        resumeGameOnClose: true,
-        resumeLevelId: appRef?.state?.currentLevel?.id,
-      });
-    },
-    onResumeBoardEdit: () => {
-      resetPreviewAfterSolve();
-      if (appRef) syncBoardChrome(appRef);
-    },
   });
   let tilesetPickerApi = null;
   const settingsApi = initSettingsUi({

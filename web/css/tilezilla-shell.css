@@ -3592,7 +3592,16 @@ body.tz-modal-open .tz-shell-boot-loader {
   transform: scale(0.97);
 }
 
-.tz-app.is-discovery-record .tz-preview-check-solve,
+.tz-app.is-discovery-record .tz-preview-check-solve {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.tz-app.is-discovery-record .tz-discovery-record {
+  z-index: 7;
+}
+
 .tz-app.is-discovery-record .tz-preview-renderer.activePad,
 .tz-app.is-discovery-record .tz-preview-rotate,
 .tz-app.is-discovery-record .tz-preview-tile__dir,

@@ -20,6 +20,11 @@ import {
 } from './tile-bg-setup.js';
 import { loadActiveTilesetPreference, saveActiveTilesetPreference } from './tileset-preferences.js';
 import { getActiveUsername } from './tilezilla-guest.js';
+import {
+  showDiscoveryRecord,
+  buildNewPayload as buildDiscoveryPayload,
+  buildDuplicatePayload as buildDiscoveryDuplicatePayload,
+} from './tilezilla-discovery-record.js';
 
 const CONFIG = {
   rows: 6,
@@ -2367,14 +2372,21 @@ function guestSolutionsFoundCount(catalogRes) {
   return 0;
 }
 
+function showDiscoveryPopup(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown) {
+  const payload = catalogRes.duplicate
+    ? buildDiscoveryDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown)
+    : buildDiscoveryPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
+  showDiscoveryRecord(payload);
+}
+
 function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
   window.__invalidSolve?.hide?.();
   setCheckMessage(outcome.msg, 'checkSuccess');
   const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
   const solutionsFoundTotal = guestSolutionsFoundCount(catalogRes);
   const payload = catalogRes.duplicate
-    ? window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown)
-    : window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
+    ? buildDiscoveryDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown)
+    : buildDiscoveryPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
   payload.showAdvancePath = false;
   payload.showFoundBook = false;
   payload.showViewFound = false;
@@ -2391,7 +2403,7 @@ function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
       };
     }
   }
-  window.__discoveryRecord?.show?.(payload);
+  showDiscoveryRecord(payload);
   if (document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge') {
     window.__tilezillaGuest?.trackGuestGameplay?.('Daily Challenge Solved', lv.id);
   }
@@ -2429,9 +2441,7 @@ async function runCheckSolution() {
     const found = progress.getFoundForLevel(lv.id) || [];
     const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
     const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
-    window.__discoveryRecord?.show?.(
-      window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown),
-    );
+    showDiscoveryPopup(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
     return;
   }
   if (Number.isFinite(catalogRes.index)) {
@@ -2460,9 +2470,7 @@ async function runCheckSolution() {
       return;
     }
 
-    window.__discoveryRecord?.show?.(
-      window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-    );
+    showDiscoveryPopup(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
     return;
   }
 
@@ -2498,9 +2506,7 @@ async function runCheckSolution() {
     return;
   }
 
-  window.__discoveryRecord?.show?.(
-    window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-  );
+  showDiscoveryPopup(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
 }
 
 async function processSolutionFound(lv, res, placements) {
