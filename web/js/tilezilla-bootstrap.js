@@ -2301,76 +2301,156 @@ async function loadDailyPuzzle(app) {
 async function applyShellLayouts() {
   if (MAIN_V2_SHELL) {
     try {
-      applyMainScreenV2Layout(await loadMainScreenV2Layout());
+      const [
+        mainLayout,
+        previewLayout,
+        hintLayout,
+        tilebagLayout,
+        bottomNavLayout,
+      ] = await Promise.all([
+        loadMainScreenV2Layout(),
+        loadPreviewV2Layout(),
+        loadHintV2Layout(),
+        loadTilebagV2Layout(),
+        loadBottomNavLayout(),
+      ]);
+      if (mainLayout) applyMainScreenV2Layout(mainLayout);
+      if (previewLayout) {
+        applyPreviewV2Layout(previewLayout);
+        if (hintLayout) {
+          applyHintV2Layout(hintLayout, document.documentElement, previewLayout);
+          applyHintV2ArtImages(document);
+        }
+      }
+      if (tilebagLayout) applyTilebagV2Layout(tilebagLayout);
+      if (bottomNavLayout) applyBottomNavLayout(bottomNavLayout);
+      requestAnimationFrame(() => {
+        updateMainV2BoardFit();
+        syncHintRulesWindowGeometry();
+        syncCartographersJournalWindowGeometry();
+      });
     } catch (err) {
-      console.warn('Main screen v2 layout:', err);
+      console.warn('Main shell layouts:', err);
     }
-    try {
-      applyWaterRippleLayout(await loadWaterRippleLayout({ fromDisk: true }));
-    } catch (err) {
-      console.warn('Water ripple layout:', err);
-    }
-    try {
-      const previewLayout = await loadPreviewV2Layout();
-      applyPreviewV2Layout(previewLayout);
-      applyHintV2Layout(await loadHintV2Layout(), document.documentElement, previewLayout);
-      applyHintV2ArtImages(document);
-      await applyAllPreviewV2DataSublayouts();
-    } catch (err) {
-      console.warn('Preview v2 / hint layout:', err);
-    }
-    try {
-      applyTilebagV2Layout(await loadTilebagV2Layout());
-    } catch (err) {
-      console.warn('Tile bag v2 layout:', err);
-    }
-    try {
-      applyBottomNavLayout(await loadBottomNavLayout());
-    } catch (err) {
-      console.warn('Bottom nav layout:', err);
-    }
-    requestAnimationFrame(() => {
-      updateMainV2BoardFit();
-      syncHintRulesWindowGeometry();
-      syncCartographersJournalWindowGeometry();
-    });
   } else {
     try {
-      applyBottomNavLayout(await loadBottomNavLayout());
+      const [bottomNavLayout, previewLayout, tilebagLayout] = await Promise.all([
+        loadBottomNavLayout(),
+        loadPreviewLayout(),
+        loadTilebagLayout(),
+      ]);
+      if (bottomNavLayout) applyBottomNavLayout(bottomNavLayout);
+      if (previewLayout) applyPreviewLayout(previewLayout);
+      if (tilebagLayout) applyTilebagLayout(tilebagLayout);
     } catch (err) {
-      console.warn('Bottom nav layout:', err);
-    }
-    try {
-      applyPreviewLayout(await loadPreviewLayout());
-    } catch (err) {
-      console.warn('Preview layout:', err);
-    }
-    try {
-      applyTilebagLayout(await loadTilebagLayout());
-    } catch (err) {
-      console.warn('Tile bag layout:', err);
+      console.warn('Legacy shell layouts:', err);
     }
   }
-  try {
-    applyRandomPopupLayout(await loadRandomPopupLayout());
-  } catch (err) {
-    console.warn('Random popup layout:', err);
-  }
-  try {
-    applyChallengeBeginLayout(await loadChallengeBeginLayout());
-  } catch (err) {
-    console.warn('Challenge begin layout:', err);
-  }
-  try {
-    applyUseHintStartLayout(await loadUseHintStartLayout());
-  } catch (err) {
-    console.warn('Use Hint start menu layout:', err);
-  }
+}
+
+/** Popups, passport, rank sub-layouts — after first puzzle paint. */
+async function applyDeferredShellLayouts() {
+  const [
+    randomLayout,
+    challengeLayout,
+    useHintLayout,
+    waterLayout,
+  ] = await Promise.all([
+    loadRandomPopupLayout().catch(() => null),
+    loadChallengeBeginLayout().catch(() => null),
+    loadUseHintStartLayout().catch(() => null),
+    MAIN_V2_SHELL ? loadWaterRippleLayout({ fromDisk: true }).catch(() => null) : Promise.resolve(null),
+  ]);
+  if (randomLayout) applyRandomPopupLayout(randomLayout);
+  if (challengeLayout) applyChallengeBeginLayout(challengeLayout);
+  if (useHintLayout) applyUseHintStartLayout(useHintLayout);
+  if (waterLayout) applyWaterRippleLayout(waterLayout);
   try {
     await refreshProfileOverlayLayoutFromDisk();
   } catch (err) {
     console.warn('Profile overlay layout:', err);
   }
+  if (MAIN_V2_SHELL) {
+    try {
+      await applyAllPreviewV2DataSublayouts();
+      requestAnimationFrame(() => updateMainV2BoardFit());
+    } catch (err) {
+      console.warn('Preview v2 data sublayouts:', err);
+    }
+  }
+}
+
+/** Menu / journal overlays — not needed to play the first puzzle. */
+async function applyDeferredMenuLayouts() {
+  try {
+    const discoveryLayout = await loadDiscoveryRecordLayout();
+    applyDiscoveryRecordLayout(discoveryLayout);
+    setDiscoveryRecordLayout(discoveryLayout);
+    setDiscoveryRecordTexts(getDiscoveryTexts(discoveryLayout));
+    applyDiscoveryButtonArt(discoveryLayout, document.getElementById('discoveryRecord'), 'new');
+  } catch (err) {
+    console.warn('Discovery record layout:', err);
+  }
+
+  try {
+    applyMenuLayout(await loadMenuLayout());
+  } catch (err) {
+    console.warn('Menu layout:', err);
+  }
+
+  try {
+    await initMenuSystemInfo();
+  } catch (err) {
+    console.warn('System info:', err);
+  }
+
+  try {
+    applyPuzzleInfoLayout(await loadPuzzleInfoLayout());
+  } catch (err) {
+    console.warn('Puzzle info layout:', err);
+  }
+
+  try {
+    applyHintRulesLayout(await loadHintRulesLayout());
+  } catch (err) {
+    console.warn('Hint rules layout:', err);
+  }
+
+  try {
+    applyCartographersJournalLayout(await loadCartographersJournalLayout());
+  } catch (err) {
+    console.warn("Cartographer's journal layout:", err);
+  }
+
+  try {
+    if (window.__journalApi?.applyLayoutFromDisk) {
+      await window.__journalApi.applyLayoutFromDisk();
+    } else {
+      const layout = await loadJournalLayout();
+      applyJournalLayoutEverywhere(layout);
+      const frame = document.querySelector('#journalRoot .tz-journal-dialog__frame');
+      if (frame) applyJournalOverlays(layout, frame);
+    }
+  } catch (err) {
+    console.warn('Journal layout:', err);
+  }
+}
+
+async function deferredShellWarmup(app, authState, { progressHydrated = false } = {}) {
+  if (!app) return;
+  if (!progressHydrated && authState?.mode === 'registered' && authState?.user) {
+    try {
+      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+      await hydrateProgressFromServer(app.progress);
+    } catch (err) {
+      console.warn('Server progress hydrate (deferred):', err);
+    }
+  }
+  await Promise.all([
+    applyDeferredShellLayouts(),
+    applyDeferredMenuLayouts(),
+  ]);
+  await syncPlayerChrome(app);
 }
 
 async function init() {
@@ -2421,13 +2501,6 @@ async function init() {
     } catch (err) {
       console.warn('Hint balance hydrate:', err);
     }
-    try {
-      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
-      await hydrateProgressFromServer(app.progress);
-      await syncPlayerChrome(app);
-    } catch (err) {
-      console.warn('Server progress hydrate:', err);
-    }
   } else if (app.progress && app.state?.userId) {
     const { hydrateEncounteredTiles } = await import('./tilezilla-encountered-tiles.js');
     await hydrateEncounteredTiles(app.progress, app.state.userId);
@@ -2448,7 +2521,6 @@ async function init() {
   wireBottomNav(() => appRef);
   wireBottomMenuV2();
   wirePuzzleTimer(app);
-  await syncPlayerChrome(app);
   syncTileBagExpandAvailability(app);
   applyResponsiveBoard(app);
   app.applyGameplaySettings(settings);
@@ -2531,12 +2603,6 @@ async function init() {
       openRandomPuzzlePopup();
     },
   });
-
-  try {
-    await refreshProfileOverlayLayoutFromDisk();
-  } catch (err) {
-    console.warn('Profile overlay layout (post-init):', err);
-  }
 
   initHintRules({ menuApi });
   initCartographersJournal({ menuApi });
@@ -2662,59 +2728,6 @@ async function init() {
     void syncPlayerChrome(appRef);
   });
 
-  try {
-    const discoveryLayout = await loadDiscoveryRecordLayout();
-    applyDiscoveryRecordLayout(discoveryLayout);
-    setDiscoveryRecordLayout(discoveryLayout);
-    setDiscoveryRecordTexts(getDiscoveryTexts(discoveryLayout));
-    applyDiscoveryButtonArt(discoveryLayout, document.getElementById('discoveryRecord'), 'new');
-  } catch (err) {
-    console.warn('Discovery record layout:', err);
-  }
-
-  try {
-    applyMenuLayout(await loadMenuLayout());
-  } catch (err) {
-    console.warn('Menu layout:', err);
-  }
-
-  try {
-    await initMenuSystemInfo();
-  } catch (err) {
-    console.warn('System info:', err);
-  }
-
-  try {
-    applyPuzzleInfoLayout(await loadPuzzleInfoLayout());
-  } catch (err) {
-    console.warn('Puzzle info layout:', err);
-  }
-
-  try {
-    applyHintRulesLayout(await loadHintRulesLayout());
-  } catch (err) {
-    console.warn('Hint rules layout:', err);
-  }
-
-  try {
-    applyCartographersJournalLayout(await loadCartographersJournalLayout());
-  } catch (err) {
-    console.warn("Cartographer's journal layout:", err);
-  }
-
-  try {
-    if (window.__journalApi?.applyLayoutFromDisk) {
-      await window.__journalApi.applyLayoutFromDisk();
-    } else {
-      const layout = await loadJournalLayout();
-      applyJournalLayoutEverywhere(layout);
-      const frame = document.querySelector('#journalRoot .tz-journal-dialog__frame');
-      if (frame) applyJournalOverlays(layout, frame);
-    }
-  } catch (err) {
-    console.warn('Journal layout:', err);
-  }
-
   $('previewCheckSolBtn')?.addEventListener('click', () => {
     $('checkSolBtn')?.click();
   });
@@ -2743,6 +2756,18 @@ async function init() {
   const initialScreen = resolveInitialBootScreen(urlParams);
 
   applyInitialBootScreen(initialScreen);
+
+  let progressHydrated = false;
+  if (authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
+    try {
+      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+      await hydrateProgressFromServer(app.progress);
+      progressHydrated = true;
+    } catch (err) {
+      console.warn('Server progress hydrate (adventure boot):', err);
+    }
+  }
+
   await preloadBootLevels(app, initialScreen);
   await loadInitialScreenPuzzle(app, initialScreen);
 
@@ -2756,6 +2781,7 @@ async function init() {
   appRoot?.classList.remove('is-shell-booting');
   if (bootLoading) bootLoading.hidden = true;
   applyGuestChrome(appRef);
+  void deferredShellWarmup(appRef, authState, { progressHydrated });
 }
 
 async function refreshBottomNavLayoutFromDisk() {

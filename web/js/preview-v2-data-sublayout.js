@@ -351,14 +351,14 @@ export function applyPreviewV2DataSublayout(sectionKey, layout, target = documen
 }
 
 export async function applyAllPreviewV2DataSublayouts(target = document.documentElement) {
-  for (const sectionKey of PREVIEW_V2_DATA_SECTION_KEYS) {
+  await Promise.all(PREVIEW_V2_DATA_SECTION_KEYS.map(async (sectionKey) => {
     try {
       const layout = await loadPreviewV2DataSublayout(sectionKey);
       applyPreviewV2DataSublayout(sectionKey, layout, target);
     } catch {
       /* ignore */
     }
-  }
+  }));
 }
 
 export function buildPreviewV2DataSublayoutReport(sectionKey, layout) {
