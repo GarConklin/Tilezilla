@@ -1,0 +1,19 @@
+[Unit]
+Description=Tilezilla production stack health check and ensure-up on boot
+Documentation=file:///opt/tilezilla/Docs/deploy-ubuntu.md
+After=docker.service network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/tilezilla
+ExecStart=/opt/tilezilla/scripts/health-check-production.sh --ensure-up
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+# Run as the user that owns the repo (install script rewrites this if needed).
+User=root
+
+[Install]
+WantedBy=multi-user.target

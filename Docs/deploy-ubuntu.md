@@ -339,6 +339,42 @@ No trailing spaces in `.env.production` values — e.g. `MYSQL_PASSWORD=foo ` wi
 
 ---
 
+## After a VPS reboot
+
+Docker containers use `restart: unless-stopped`, so they usually come back on their own. To **verify and auto-start** the stack after every boot, use the health-check script.
+
+### One-time install (systemd — runs on every reboot)
+
+```bash
+cd /opt/tilezilla
+git pull   # need scripts/health-check-production.sh on the server
+chmod +x scripts/health-check-production.sh scripts/install-production-health-check.sh
+sudo ./scripts/install-production-health-check.sh
+```
+
+Optional: custom repo path or service user (user must be in the `docker` group):
+
+```bash
+sudo ./scripts/install-production-health-check.sh /opt/tilezilla ubuntu
+```
+
+Check status after install or reboot:
+
+```bash
+systemctl status tilezilla-health-check
+journalctl -u tilezilla-health-check -b --no-pager
+```
+
+### Manual check anytime
+
+```bash
+cd /opt/tilezilla
+./scripts/health-check-production.sh              # verify only
+./scripts/health-check-production.sh --ensure-up  # start stack if down, then verify
+```
+
+---
+
 ## Updating later (code only)
 
 ```bash
@@ -370,6 +406,8 @@ docker compose -f docker-compose.production.yml exec -T mysql \
 | `docker/nginx/production.conf` | Internal Docker gateway |
 | `scripts/export-for-deploy.ps1` | Windows export |
 | `scripts/restore-on-ubuntu.sh` | Ubuntu restore |
+| `scripts/health-check-production.sh` | Post-reboot verify + optional `up -d` |
+| `scripts/install-production-health-check.sh` | Install systemd boot hook (one-time) |
 | `Docs/auth-email-setup.md` | Auth + mail architecture |
 
 ---
@@ -378,7 +416,7 @@ docker compose -f docker-compose.production.yml exec -T mysql \
 
 | Problem | Fix |
 |---------|-----|
-| 502 on HTTPS | `curl http://127.0.0.1:3000/` — if fail, `docker compose logs gateway web`; if OK, check host nginx error log |
+| 502 on HTTPS | `curl http://127.0.0.1:3000/` — if fail, run `./scripts/health-check-production.sh --ensure-up`; if OK, check host nginx |
 | Login works locally not on HTTPS | `APP_BASE_URL` must be `https://…`; cookies need same site |
 | Email not received | `SMTP_ENABLED=true`; test `nc -zv mail.skifflakegames.com 587`; check `docker logs tilezilla_auth` |
 | Empty adventure / stats | Run `refresh-system-stats.py`; confirm SQL import succeeded |

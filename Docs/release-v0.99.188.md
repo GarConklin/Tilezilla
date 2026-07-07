@@ -12,6 +12,7 @@
 - **Passport boot** — after login, show logged-in passport first; defer daily/adventure/random until user picks a path
 - **Hamburger icon** — smaller menu button asset for faster open
 - Login screen double-load flash fix (from late 0.99.187 line)
+- **Production health check** — `scripts/health-check-production.sh` + optional systemd boot hook
 
 ## Git branches
 
