@@ -2018,6 +2018,29 @@ function wireBoardHooks(app) {
   board.addEventListener('click', () => setTimeout(() => syncBoardChrome(app), 0));
 }
 
+function wireCheckSolvePreview() {
+  const btn = $('previewCheckSolBtn');
+  if (!btn || btn.dataset.wired === '1') return;
+  btn.dataset.wired = '1';
+  btn.addEventListener('click', () => {
+    void window.__app?.checkSolution?.();
+  });
+}
+
+function wireInvalidSolveDismiss(appRef) {
+  return async () => {
+    const app = appRef;
+    if (!app) return;
+    const removed = await undoLastPlacedTile(app);
+    syncBoardChrome(app);
+    if (removed === 'restored') {
+      showGameMessage('Board restored.', 'info');
+    } else if (removed) {
+      showGameMessage('Last tile removed.', 'info');
+    }
+  };
+}
+
 function formatPuzzleTimer(sec) {
   const m = String(Math.floor(sec / 60)).padStart(2, '0');
   const s = String(sec % 60).padStart(2, '0');
@@ -2525,6 +2548,10 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
       openRandomPuzzlePopup();
     },
   });
+  initInvalidSolve({
+    getApp: () => appRef,
+    onDismiss: wireInvalidSolveDismiss(appRef),
+  });
   if (deferBootPuzzle) {
     void initShellExtendedUiModules(appRef, settings, menuApi);
     return;
@@ -2644,20 +2671,6 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
       if (appRef) syncBoardChrome(appRef);
     },
   });
-  initInvalidSolve({
-    getApp: () => appRef,
-    onDismiss: async () => {
-      const app = appRef;
-      if (!app) return;
-      const removed = await undoLastPlacedTile(app);
-      syncBoardChrome(app);
-      if (removed === 'restored') {
-        showGameMessage('Board restored.', 'info');
-      } else if (removed) {
-        showGameMessage('Last tile removed.', 'info');
-      }
-    },
-  });
   let tilesetPickerApi = null;
   const settingsApi = initSettingsUi({
     menuApi,
@@ -2713,10 +2726,6 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
     void syncPlayerChrome(appRef);
   });
 
-  $('previewCheckSolBtn')?.addEventListener('click', () => {
-    $('checkSolBtn')?.click();
-  });
-
   wirePreviewV2DataClicks();
   wireCheckMessageMirror();
 }
@@ -2763,6 +2772,7 @@ async function init() {
 
   const [authState, app] = await Promise.all([authPromise, waitForApp()]);
   appRef = app;
+  wireCheckSolvePreview();
   if (authState.mode === 'registered' && authState.user) {
     applyRegisteredUserToApp(app, authState.user);
     applyGuestChrome();

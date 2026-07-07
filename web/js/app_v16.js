@@ -2397,6 +2397,112 @@ function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
   }
 }
 
+async function runCheckSolution() {
+  const lv = state.currentLevel;
+  if (!lv || !progress) {
+    setCheckMessage('No level selected.', 'checkWarn');
+    return;
+  }
+  const knownSolutions = await loadKnownSolutionsForLevel(lv);
+  const placements = currentPortablePlacements();
+  const invMismatch = getInventoryMismatch(state.levelTileCounts, state.tiles);
+  if (invMismatch) {
+    setCheckMessage(
+      `Place every tile for this puzzle (${invMismatch.id}: placed ${invMismatch.got}, expected ${invMismatch.need}).`,
+      'checkWarn',
+    );
+    return;
+  }
+
+  // Catalog match is authoritative — compare to solutions on file before geometry rules
+  // that can reject layouts the solver stored (e.g. multi-path SH/ET adjacency).
+  const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
+  if (catalogRes.duplicate) {
+    window.__invalidSolve?.hide?.();
+    playSfx('solveOk');
+    if (isGuestSession()) {
+      const outcome = await processSolutionFound(lv, catalogRes, placements);
+      showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
+      return;
+    }
+    renderFoundList(lv.id, knownSolutions);
+    const found = progress.getFoundForLevel(lv.id) || [];
+    const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+    const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+    window.__discoveryRecord?.show?.(
+      window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown),
+    );
+    return;
+  }
+  if (Number.isFinite(catalogRes.index)) {
+    window.__invalidSolve?.hide?.();
+    playSfx('levelSuccess');
+    const outcome = await processSolutionFound(lv, catalogRes, placements);
+    if (isGuestSession()) {
+      showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
+      return;
+    }
+    setCheckMessage(outcome.msg, 'checkSuccess');
+    renderFoundList(lv.id, knownSolutions);
+    refreshLevelSelectOptionTexts();
+
+    const found = progress.getFoundForLevel(lv.id) || [];
+    const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+    const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+    const challengePopup = window.__challengeBeginPopup;
+    if (challengePopup?.shouldShowProgress?.(lv.id)) {
+      const progressState = challengePopup.getProgressState(lv.id, progress);
+      await challengePopup.showProgressAfterSolve({
+        found: progressState.found,
+        total: progressState.required,
+      });
+      return;
+    }
+
+    window.__discoveryRecord?.show?.(
+      window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
+    );
+    return;
+  }
+
+  const v = validateBoard();
+  if (!v.ok) {
+    window.__invalidSolve?.show?.();
+    playSfx('tileInvalid');
+    setCheckMessage(v.msg || 'Board is not valid yet.', 'checkError');
+    return;
+  }
+
+  const outcome = await processSolutionFound(lv, catalogRes, placements);
+  if (isGuestSession()) {
+    showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
+    return;
+  }
+  if (catalogRes.bonus) setCheckMessage(outcome.msg, 'checkBonus');
+  else setCheckMessage(outcome.msg, 'checkSuccess');
+  renderFoundList(lv.id, knownSolutions);
+  refreshLevelSelectOptionTexts();
+
+  const found = progress.getFoundForLevel(lv.id) || [];
+  const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+  const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
+
+  const challengePopup = window.__challengeBeginPopup;
+  if (challengePopup?.shouldShowProgress?.(lv.id)) {
+    const progressState = challengePopup.getProgressState(lv.id, progress);
+    await challengePopup.showProgressAfterSolve({
+      found: progressState.found,
+      total: progressState.required,
+    });
+    return;
+  }
+
+  window.__discoveryRecord?.show?.(
+    window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
+  );
+}
+
 async function processSolutionFound(lv, res, placements) {
   const guestSession = window.__tilezillaGuest?.isGuestUser?.();
   const timer = window.__puzzleTimer;
@@ -4453,110 +4559,8 @@ async function init(){
   }
 
   if (checkSolBtn) {
-    checkSolBtn.addEventListener('click', async () => {
-      const lv = state.currentLevel;
-      if(!lv || !progress){
-        setCheckMessage('No level selected.', 'checkWarn');
-        return;
-      }
-      const knownSolutions = await loadKnownSolutionsForLevel(lv);
-      const placements = currentPortablePlacements();
-      const invMismatch = getInventoryMismatch(state.levelTileCounts, state.tiles);
-      if(invMismatch){
-        setCheckMessage(
-          `Place every tile for this puzzle (${invMismatch.id}: placed ${invMismatch.got}, expected ${invMismatch.need}).`,
-          'checkWarn'
-        );
-        return;
-      }
-
-      // Catalog match is authoritative — compare to solutions on file before geometry rules
-      // that can reject layouts the solver stored (e.g. multi-path SH/ET adjacency).
-      const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
-      if(catalogRes.duplicate){
-        window.__invalidSolve?.hide?.();
-        playSfx('solveOk');
-        if (isGuestSession()) {
-          const outcome = await processSolutionFound(lv, catalogRes, placements);
-          showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
-          return;
-        }
-        renderFoundList(lv.id, knownSolutions);
-        const found = progress.getFoundForLevel(lv.id) || [];
-        const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
-        const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
-        window.__discoveryRecord?.show?.(
-          window.__discoveryRecord.buildDuplicatePayload(lv, catalogRes, solutionsFoundTotal, totalKnown),
-        );
-        return;
-      }
-      if(Number.isFinite(catalogRes.index)){
-        window.__invalidSolve?.hide?.();
-        playSfx('levelSuccess');
-        const outcome = await processSolutionFound(lv, catalogRes, placements);
-        if (isGuestSession()) {
-          showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
-          return;
-        }
-        setCheckMessage(outcome.msg, 'checkSuccess');
-        renderFoundList(lv.id, knownSolutions);
-        refreshLevelSelectOptionTexts();
-
-        const found = progress.getFoundForLevel(lv.id) || [];
-        const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
-        const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
-
-        const challengePopup = window.__challengeBeginPopup;
-        if (challengePopup?.shouldShowProgress?.(lv.id)) {
-          const state = challengePopup.getProgressState(lv.id, progress);
-          await challengePopup.showProgressAfterSolve({
-            found: state.found,
-            total: state.required,
-          });
-          return;
-        }
-
-        window.__discoveryRecord?.show?.(
-          window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-        );
-        return;
-      }
-
-      const v = validateBoard();
-      if(!v.ok){
-        window.__invalidSolve?.show?.();
-        playSfx('tileInvalid');
-        setCheckMessage(v.msg || 'Board is not valid yet.', 'checkError');
-        return;
-      }
-
-      const outcome = await processSolutionFound(lv, catalogRes, placements);
-      if (isGuestSession()) {
-        showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
-        return;
-      }
-      if(catalogRes.bonus) setCheckMessage(outcome.msg, 'checkBonus');
-      else setCheckMessage(outcome.msg, 'checkSuccess');
-      renderFoundList(lv.id, knownSolutions);
-      refreshLevelSelectOptionTexts();
-
-      const found = progress.getFoundForLevel(lv.id) || [];
-      const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
-      const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
-
-      const challengePopup = window.__challengeBeginPopup;
-      if (challengePopup?.shouldShowProgress?.(lv.id)) {
-        const state = challengePopup.getProgressState(lv.id, progress);
-        await challengePopup.showProgressAfterSolve({
-          found: state.found,
-          total: state.required,
-        });
-        return;
-      }
-
-      window.__discoveryRecord?.show?.(
-        window.__discoveryRecord.buildPayload(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown),
-      );
+    checkSolBtn.addEventListener('click', () => {
+      void runCheckSolution();
     });
   }
 
@@ -4843,6 +4847,7 @@ async function init(){
 
   progress = new Progress(window.__app);
   window.__app.progress = progress;
+  window.__app.checkSolution = runCheckSolution;
   const savedUser = localStorage.getItem('snake_active_user_v1');
   const authMode = localStorage.getItem('tilezilla_auth_mode');
   const guestCode = localStorage.getItem('guest_code');

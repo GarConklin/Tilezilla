@@ -3347,6 +3347,26 @@ body.tz-modal-open .tz-shell-boot-loader {
 
 .tz-app[data-validation="ready"] .tz-preview-check-solve {
   display: block;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.tz-app[data-validation="invalid"] .tz-preview-check-solve {
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.tz-app[data-validation="ready"] .tz-preview-hint-slot,
+.tz-app[data-validation="ready"] .tz-preview-hint-use-slot,
+.tz-app[data-validation="invalid"] .tz-preview-hint-slot,
+.tz-app[data-validation="invalid"] .tz-preview-hint-use-slot {
+  pointer-events: none;
+}
+
+.tz-preview-check-solve__btn,
+.tz-preview-invalid-solve__btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tz-app[data-validation="ready"] .tz-preview-renderer.activePad,
