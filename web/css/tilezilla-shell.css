@@ -3001,6 +3001,10 @@ button {
   display: flex;
 }
 
+body.tz-modal-open .tz-shell-boot-loader {
+  display: none !important;
+}
+
 .tz-app.is-shell-booting .tz-board-frame,
 .tz-app.is-shell-booting .tz-preview-section,
 .tz-app.is-shell-booting .tz-tilebag-container,

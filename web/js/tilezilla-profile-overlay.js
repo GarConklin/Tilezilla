@@ -123,9 +123,9 @@ async function ensureProfileOverlayLayout(root = document) {
 
 export async function openProfileOverlay() {
   const overlayRoot = document.getElementById('profileOverlayRoot');
-  await ensureProfileOverlayLayout(document);
   refreshProfileFields();
   openProfileOverlayPopup();
+  void ensureProfileOverlayLayout(document);
   void refreshProfileOverlayStats(overlayRoot || document).then(() => {
     void ensureProfileOverlayLayout(document);
   });

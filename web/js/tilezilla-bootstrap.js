@@ -225,10 +225,36 @@ function usesViewportLock(settings) {
 }
 
 async function waitForApp() {
+  const deadline = Date.now() + 60000;
   while (!window.__app?.ready) {
+    if (Date.now() > deadline) {
+      throw new Error('Game engine did not finish loading.');
+    }
     await new Promise((r) => setTimeout(r, 40));
   }
   return window.__app;
+}
+
+function finishShellBoot() {
+  const appRoot = document.querySelector('.tz-app');
+  appRoot?.classList.remove('is-shell-booting');
+  const bootLoading = $('loadingHud');
+  if (bootLoading) bootLoading.hidden = true;
+}
+
+async function awaitWithTimeout(promise, ms, label) {
+  if (!promise) return null;
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out`)), ms);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function waitForCatalogReady(maxMs = 12000) {
@@ -2457,12 +2483,57 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
 }
 
 async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false } = {}) {
-  const app = appRef;
   const menuApi = initMenuUi({
     getApp: () => appRef,
     openStuckFlow,
   });
   shellMenuApi = menuApi;
+  initProfileOverlay({
+    menuApi,
+    deferBootPuzzle,
+    onDeferredBootFallback: async () => {
+      const app = appRef;
+      dismissDiscoveryForBoardEdit();
+      applyInitialBootScreen('daily-challenge');
+      persistNavScreen('daily-challenge');
+      if (app && !app.state?.currentLevel) {
+        await loadDailyPuzzle(app);
+      }
+    },
+    onDaily: async () => {
+      const app = appRef;
+      const appRoot = document.querySelector('.tz-app');
+      dismissDiscoveryForBoardEdit();
+      appRoot?.setAttribute('data-screen', 'daily-challenge');
+      setActiveBottomNav('daily-challenge');
+      persistNavScreen('daily-challenge');
+      guestUser.syncGuestBanner();
+      if (app) await loadDailyPuzzle(app);
+    },
+    onAdventure: async () => {
+      const app = appRef;
+      const appRoot = document.querySelector('.tz-app');
+      dismissDiscoveryForBoardEdit();
+      appRoot?.setAttribute('data-screen', 'adventure');
+      setActiveBottomNav('adventure');
+      persistNavScreen('adventure');
+      guestUser.syncGuestBanner();
+      if (app) await loadAdventurePuzzle(app);
+    },
+    onRandom: () => {
+      dismissDiscoveryForBoardEdit();
+      openRandomPuzzlePopup();
+    },
+  });
+  if (deferBootPuzzle) {
+    void initShellExtendedUiModules(appRef, settings, menuApi);
+    return;
+  }
+  await initShellExtendedUiModules(appRef, settings, menuApi);
+}
+
+async function initShellExtendedUiModules(appRef, settings, menuApi) {
+  const app = appRef;
   void initStuckPopup({
     getApp: () => appRef,
     menuApi,
@@ -2512,43 +2583,6 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
   window.__journalApi = journalApi;
 
   initPuzzleInfoPopup({ getApp: () => appRef, menuApi, journalApi });
-  initProfileOverlay({
-    menuApi,
-    deferBootPuzzle,
-    onDeferredBootFallback: async () => {
-      const app = appRef;
-      dismissDiscoveryForBoardEdit();
-      applyInitialBootScreen('daily-challenge');
-      persistNavScreen('daily-challenge');
-      if (app && !app.state?.currentLevel) {
-        await loadDailyPuzzle(app);
-      }
-    },
-    onDaily: async () => {
-      const app = appRef;
-      const appRoot = document.querySelector('.tz-app');
-      dismissDiscoveryForBoardEdit();
-      appRoot?.setAttribute('data-screen', 'daily-challenge');
-      setActiveBottomNav('daily-challenge');
-      persistNavScreen('daily-challenge');
-      guestUser.syncGuestBanner();
-      if (app) await loadDailyPuzzle(app);
-    },
-    onAdventure: async () => {
-      const app = appRef;
-      const appRoot = document.querySelector('.tz-app');
-      dismissDiscoveryForBoardEdit();
-      appRoot?.setAttribute('data-screen', 'adventure');
-      setActiveBottomNav('adventure');
-      persistNavScreen('adventure');
-      guestUser.syncGuestBanner();
-      if (app) await loadAdventurePuzzle(app);
-    },
-    onRandom: () => {
-      dismissDiscoveryForBoardEdit();
-      openRandomPuzzlePopup();
-    },
-  });
 
   initHintRules({ menuApi });
   initCartographersJournal({ menuApi });
@@ -2784,6 +2818,7 @@ async function init() {
 
   if (deferBootPuzzle) {
     appRoot?.setAttribute('data-screen', 'profile-picker');
+    finishShellBoot();
   } else {
     applyInitialBootScreen(initialScreen);
   }
@@ -2806,20 +2841,36 @@ async function init() {
     await loadInitialScreenPuzzle(app, initialScreen);
   }
 
-  await initShellExtendedUi(appRef, settings, { deferBootPuzzle });
+  try {
+    await initShellExtendedUi(appRef, settings, { deferBootPuzzle });
 
-  if (shouldOpenProfile) {
-    if (profileLayoutWarm) await profileLayoutWarm;
-    await openProfileOverlay();
-    appRoot?.classList.remove('is-shell-booting');
-    if (bootLoading) bootLoading.hidden = true;
-    urlParams.delete('profile');
-    const qs = urlParams.toString();
-    window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
+    if (shouldOpenProfile) {
+      try {
+        if (profileLayoutWarm) {
+          await awaitWithTimeout(profileLayoutWarm, 4000, 'Profile layout warm').catch((err) => {
+            console.warn('Profile layout warm:', err);
+          });
+        }
+        await openProfileOverlay();
+      } catch (err) {
+        console.warn('Profile overlay boot:', err);
+        dismissDiscoveryForBoardEdit();
+        applyInitialBootScreen('daily-challenge');
+        persistNavScreen('daily-challenge');
+        if (appRef && !appRef.state?.currentLevel) {
+          await loadDailyPuzzle(appRef);
+        }
+      }
+      urlParams.delete('profile');
+      const qs = urlParams.toString();
+      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
+    }
+
+    applyGuestChrome(appRef);
+    void deferredShellWarmup(appRef, authState, { progressHydrated });
+  } finally {
+    finishShellBoot();
   }
-
-  applyGuestChrome(appRef);
-  void deferredShellWarmup(appRef, authState, { progressHydrated });
 }
 
 async function refreshBottomNavLayoutFromDisk() {
@@ -3241,5 +3292,6 @@ window.__tilezillaDev = {
 
 init().catch((err) => {
   console.error(err);
+  finishShellBoot();
   showGameMessage(err.message, 'error');
 });
