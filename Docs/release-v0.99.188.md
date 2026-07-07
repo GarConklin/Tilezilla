@@ -44,7 +44,8 @@ After pulling `release/v0.99.188` and rebuilding containers:
 
 ```bash
 docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
-  mysql -uroot -p"$MYSQL_ROOT_PASSWORD" tilegame < scripts/sql/bump-version-0.99.188.sql
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < scripts/sql/bump-version-0.99.188.sql
 ```
 
 ## Verify
