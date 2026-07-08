@@ -2441,7 +2441,7 @@ async function runCheckSolution() {
     const found = progress.getFoundForLevel(lv.id) || [];
     const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
     const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
-    showDiscoveryPopup(lv, catalogRes, outcome, solutionsFoundTotal, totalKnown);
+    showDiscoveryPopup(lv, catalogRes, null, solutionsFoundTotal, totalKnown);
     return;
   }
   if (Number.isFinite(catalogRes.index)) {

@@ -1220,6 +1220,10 @@ function updateValidationState(app) {
   const checkPanel = $('previewCheckSolve');
   if (!root || !app.state.currentLevel) return;
 
+  if (root.classList.contains('is-discovery-record')) {
+    return;
+  }
+
   if (isInvalidSolveShowing()) {
     root.dataset.validation = 'invalid';
     if (checkPanel) checkPanel.setAttribute('aria-hidden', 'false');
