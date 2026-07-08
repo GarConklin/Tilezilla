@@ -692,6 +692,7 @@ function getRemainingBagTileCount(app) {
 }
 
 let syncTileBagExpandAvailability = () => {};
+let syncBagScrollRef = null;
 let tileBagExpanded = false;
 
 function updateTileBagCount(app) {
@@ -1777,6 +1778,13 @@ function applyGuestChrome(app) {
   guestUser.syncGuestBanner();
 }
 
+function collapseTileBagIfExpanded() {
+  const container = $('tileBagContainer');
+  if (!container) return;
+  if (!tileBagExpanded && !container.classList.contains('is-expanded')) return;
+  setTileBagExpanded(container, false, syncBagScrollRef);
+}
+
 function closeBottomMenuV2() {
   const drawer = $('bottomMenuDrawer');
   const open = $('bottomMenuOpenBtn');
@@ -1790,6 +1798,7 @@ function closeBottomMenuV2() {
 }
 
 function openBottomMenuV2() {
+  collapseTileBagIfExpanded();
   if (tileBagExpanded) return;
   const drawer = $('bottomMenuDrawer');
   const open = $('bottomMenuOpenBtn');
@@ -2791,6 +2800,7 @@ async function init() {
     })
     : null;
   const syncBagScroll = wireBagScroll();
+  syncBagScrollRef = syncBagScroll;
   let appRef = null;
   wireTileBagExpand(syncBagScroll, () => appRef);
   resetPuzzleTimer();
