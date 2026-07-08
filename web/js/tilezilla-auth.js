@@ -17,7 +17,7 @@ import { applyAdminFromSessionUser } from './tilezilla-admin.js';
 import { applySessionHintBalance, cacheHintBalance } from './tilezilla-hints-sync.js';
 
 export const AUTH_API = '/auth/api';
-const SESSION_TIMEOUT_MS = 2500;
+const SESSION_TIMEOUT_MS = 5000;
 
 export { clearRegisteredLocalState } from './tilezilla-guest.js';
 
@@ -102,13 +102,20 @@ export async function syncAuthFromServer(options = {}) {
   }
 
   const session = await fetchServerSession();
-  if (session.ok) {
-    applyServerSession(session.user);
-    return { mode: 'registered', user: session.user };
+  const postLoginProfileBoot = /(?:^|[?&])profile=(?:1|true)(?:&|$)/.test(window.location.search);
+  let resolvedSession = session;
+  if (!resolvedSession.ok && postLoginProfileBoot && resolvedSession.offline) {
+    await new Promise((r) => setTimeout(r, 500));
+    resolvedSession = await fetchServerSession({ force: true });
+  }
+  if (resolvedSession.ok) {
+    applyServerSession(resolvedSession.user);
+    return { mode: 'registered', user: resolvedSession.user };
   }
 
   const hadRegisteredLocal = localStorage.getItem(AUTH_MODE_KEY) === 'registered';
-  if (hadRegisteredLocal) {
+  // Keep local registered flags on network/timeout errors — common on mobile right after login redirect.
+  if (hadRegisteredLocal && !resolvedSession.offline) {
     clearRegisteredLocalState();
   }
 

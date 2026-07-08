@@ -97,7 +97,9 @@ function openProfileOverlayPopup() {
   const pinfo = $('puzzleInfoRoot');
   if (pinfo) pinfo.hidden = true;
   menuApi?.closeAll?.();
+  root.removeAttribute('hidden');
   root.hidden = false;
+  root.setAttribute('aria-hidden', 'false');
   document.body.classList.add('tz-modal-open');
 }
 

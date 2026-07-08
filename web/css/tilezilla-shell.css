@@ -3046,6 +3046,13 @@ body.tz-modal-open .tz-shell-boot-loader {
   pointer-events: none;
 }
 
+.tz-app[data-screen="profile-picker"] .tz-game-message:not(:empty) {
+  visibility: visible;
+  pointer-events: none;
+  z-index: 120;
+  position: relative;
+}
+
 /* Hide tile bag + preview until puzzle is laid out at 55px cell size */
 .tz-app.is-loading-puzzle .tz-preview-section,
 .tz-app.is-loading-puzzle .tz-tilebag-container {

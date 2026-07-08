@@ -2599,15 +2599,29 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
       openRandomPuzzlePopup();
     },
   });
+  if (deferBootPuzzle) {
+    try {
+      await openProfileOverlay();
+    } catch (err) {
+      console.warn('Profile overlay (deferred boot):', err);
+    }
+    void initShellExtendedUiModules(appRef, settings, menuApi);
+    try {
+      initInvalidSolve({
+        getApp: () => appRef,
+        onDismiss: wireInvalidSolveDismiss(appRef),
+      });
+      initDiscoveryRecordShell(appRef, menuApi);
+    } catch (err) {
+      console.warn('Deferred shell popup init:', err);
+    }
+    return;
+  }
   initInvalidSolve({
     getApp: () => appRef,
     onDismiss: wireInvalidSolveDismiss(appRef),
   });
   initDiscoveryRecordShell(appRef, menuApi);
-  if (deferBootPuzzle) {
-    void initShellExtendedUiModules(appRef, settings, menuApi);
-    return;
-  }
   await initShellExtendedUiModules(appRef, settings, menuApi);
 }
 
@@ -2827,8 +2841,9 @@ async function init() {
   });
 
   const urlParams = new URLSearchParams(window.location.search);
-  const shouldOpenProfile = (urlParams.get('profile') === '1' || urlParams.get('profile') === 'true')
-    && guestUser.isRegisteredUser();
+  const wantsProfileBoot = urlParams.get('profile') === '1' || urlParams.get('profile') === 'true';
+  const shouldOpenProfile = wantsProfileBoot
+    && (authState.mode === 'registered' || guestUser.isRegisteredUser());
   const deferBootPuzzle = shouldOpenProfile;
   const initialScreen = resolveInitialBootScreen(urlParams);
 
@@ -2862,12 +2877,15 @@ async function init() {
 
     if (shouldOpenProfile) {
       try {
-        if (profileLayoutWarm) {
-          await awaitWithTimeout(profileLayoutWarm, 4000, 'Profile layout warm').catch((err) => {
-            console.warn('Profile layout warm:', err);
-          });
+        const profileRoot = $('profileOverlayRoot');
+        if (profileRoot?.hidden) {
+          if (profileLayoutWarm) {
+            await awaitWithTimeout(profileLayoutWarm, 4000, 'Profile layout warm').catch((err) => {
+              console.warn('Profile layout warm:', err);
+            });
+          }
+          await openProfileOverlay();
         }
-        await openProfileOverlay();
       } catch (err) {
         console.warn('Profile overlay boot:', err);
         dismissDiscoveryForBoardEdit();
@@ -3306,8 +3324,29 @@ window.__tilezillaDev = {
   },
 };
 
-init().catch((err) => {
+async function recoverProfilePickerBoot(err) {
   console.error(err);
   finishShellBoot();
-  showGameMessage(err.message, 'error');
+  const appRoot = document.querySelector('.tz-app');
+  if (appRoot?.dataset?.screen !== 'profile-picker') {
+    showGameMessage(err.message, 'error');
+    return;
+  }
+  try {
+    if ($('profileOverlayRoot')?.hidden) {
+      await openProfileOverlay();
+    }
+  } catch (openErr) {
+    console.warn('Profile picker recovery:', openErr);
+    applyInitialBootScreen('daily-challenge');
+    const app = window.__app;
+    if (app && !app.state?.currentLevel) {
+      void loadDailyPuzzle(app);
+    }
+    showGameMessage('Could not open passport. Starting daily challenge.', 'info');
+  }
+}
+
+init().catch((err) => {
+  void recoverProfilePickerBoot(err);
 });
