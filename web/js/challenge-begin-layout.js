@@ -30,13 +30,13 @@ export const DEFAULT_CHALLENGE_BEGIN_LAYOUT = {
   dialog: {
     artW: 1397,
     artH: 1126,
-    displayPad: 32,
-    maxDesignWidth: 390,
-    widthScale: 0.92,
+    displayPad: 24,
+    maxDesignWidth: 520,
+    widthScale: 1.15,
   },
   items: {
-    begin: { x: 12, y: 86.5, w: 76, h: 9 },
-    continue: { x: 12, y: 86.5, w: 76, h: 9 },
+    begin: { x: 10, y: 84.5, w: 80, h: 12.5 },
+    continue: { x: 10, y: 84.5, w: 80, h: 12.5 },
   },
 };
 

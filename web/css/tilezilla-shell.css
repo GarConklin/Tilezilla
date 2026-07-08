@@ -566,17 +566,17 @@
   /* Challenge begin gate — ChallengeBeginBase.png 1397×1126 */
   --tz-challenge-begin-art-w: 1397;
   --tz-challenge-begin-art-h: 1126;
-  --tz-challenge-begin-display-pad: 32px;
-  --tz-challenge-begin-max-design-width: 390px;
-  --tz-challenge-begin-width-scale: 0.92;
-  --tz-challenge-begin-begin-x: 12%;
-  --tz-challenge-begin-begin-y: 86.5%;
-  --tz-challenge-begin-begin-w: 76%;
-  --tz-challenge-begin-begin-h: 9%;
-  --tz-challenge-begin-continue-x: 12%;
-  --tz-challenge-begin-continue-y: 86.5%;
-  --tz-challenge-begin-continue-w: 76%;
-  --tz-challenge-begin-continue-h: 9%;
+  --tz-challenge-begin-display-pad: 24px;
+  --tz-challenge-begin-max-design-width: 520px;
+  --tz-challenge-begin-width-scale: 1.15;
+  --tz-challenge-begin-begin-x: 10%;
+  --tz-challenge-begin-begin-y: 84.5%;
+  --tz-challenge-begin-begin-w: 80%;
+  --tz-challenge-begin-begin-h: 12.5%;
+  --tz-challenge-begin-continue-x: 10%;
+  --tz-challenge-begin-continue-y: 84.5%;
+  --tz-challenge-begin-continue-w: 80%;
+  --tz-challenge-begin-continue-h: 12.5%;
 
   /* Explorer profile overlay — Logged-in.png 1418×2200 */
   --tz-profile-art-w: 1418;
@@ -5019,16 +5019,24 @@ html.tz-phone-preview .tz-random-dialog {
   box-sizing: border-box;
   width: min(
     100vw,
-    calc(var(--tz-challenge-begin-max-design-width, var(--tz-design-width)) * var(--tz-challenge-begin-width-scale, 1)),
-    calc(var(--tz-challenge-begin-art-w) * 1px),
+    calc(
+      var(--tz-challenge-begin-max-design-width, var(--tz-design-width))
+      * var(--tz-challenge-begin-width-scale, 1)
+      * var(--tz-ui-scale, 1)
+    ),
+    calc(var(--tz-challenge-begin-art-w) * 1px * var(--tz-ui-scale, 1)),
     calc((100svh - var(--tz-challenge-begin-display-pad)) * var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h))
   );
   aspect-ratio: calc(var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
 }
 
 html.tz-phone-preview .tz-challenge-begin-dialog {
   width: min(
-    calc(var(--tz-challenge-begin-max-design-width, var(--tz-design-width)) * var(--tz-challenge-begin-width-scale, 1)),
+    calc(
+      var(--tz-challenge-begin-max-design-width, var(--tz-design-width))
+      * var(--tz-challenge-begin-width-scale, 1)
+    ),
     calc(var(--tz-challenge-begin-art-w) * 1px),
     calc((100svh - var(--tz-challenge-begin-display-pad)) * var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h))
   );
