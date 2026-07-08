@@ -372,6 +372,10 @@
   --tz-menu-journal-y: 75%;
   --tz-menu-journal-w: 74%;
   --tz-menu-journal-h: 6.8%;
+  --tz-menu-bottom-menu-x: 50%;
+  --tz-menu-bottom-menu-y: 82%;
+  --tz-menu-bottom-menu-w: 74%;
+  --tz-menu-bottom-menu-h: 6.8%;
   /* Dev menu row centers (Menu-devtools.png — 8 items) */
   --tz-menu-dev-puzzle-x: 50%;
   --tz-menu-dev-puzzle-y: 19%;
@@ -397,8 +401,12 @@
   --tz-menu-dev-journal-y: 63%;
   --tz-menu-dev-journal-w: 74%;
   --tz-menu-dev-journal-h: 6.8%;
+  --tz-menu-dev-bottom-menu-x: 50%;
+  --tz-menu-dev-bottom-menu-y: 71%;
+  --tz-menu-dev-bottom-menu-w: 74%;
+  --tz-menu-dev-bottom-menu-h: 6.8%;
   --tz-menu-dev-development-x: 50%;
-  --tz-menu-dev-development-y: 75%;
+  --tz-menu-dev-development-y: 79%;
   --tz-menu-dev-development-w: 74%;
   --tz-menu-dev-development-h: 6.8%;
   --tz-menu-offset-y: -50px;
@@ -7975,6 +7983,13 @@ body.tz-is-dev-user .tz-menu-plaque__bg--devtools {
   height: var(--tz-menu-journal-h);
 }
 
+.tz-menu-plaque__hit--bottom-menu {
+  left: var(--tz-menu-bottom-menu-x);
+  top: var(--tz-menu-bottom-menu-y);
+  width: var(--tz-menu-bottom-menu-w);
+  height: var(--tz-menu-bottom-menu-h);
+}
+
 .tz-menu-plaque__hit--development {
   left: var(--tz-menu-dev-development-x);
   top: var(--tz-menu-dev-development-y);
@@ -8036,6 +8051,13 @@ body.tz-is-dev-user .tz-menu-plaque__hit--cartographers-journal {
   top: var(--tz-menu-dev-journal-y);
   width: var(--tz-menu-dev-journal-w);
   height: var(--tz-menu-dev-journal-h);
+}
+
+body.tz-is-dev-user .tz-menu-plaque__hit--bottom-menu {
+  left: var(--tz-menu-dev-bottom-menu-x);
+  top: var(--tz-menu-dev-bottom-menu-y);
+  width: var(--tz-menu-dev-bottom-menu-w);
+  height: var(--tz-menu-dev-bottom-menu-h);
 }
 
 /* ── Development submenu (scroll popup) ── */

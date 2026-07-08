@@ -1804,6 +1804,7 @@ function openBottomMenuV2() {
 
 function wireBottomMenuV2() {
   if (!MAIN_V2_SHELL) return;
+  window.__openBottomMenuV2 = openBottomMenuV2;
   $('bottomMenuOpenBtn')?.addEventListener('click', openBottomMenuV2);
   $('bottomMenuCloseBtn')?.addEventListener('click', closeBottomMenuV2);
 }

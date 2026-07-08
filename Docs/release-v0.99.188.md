@@ -1,7 +1,7 @@
 # Release v0.99.188 — branch switch for testers
 
 **Previous stable:** `v0.99.187` → branch `release/v0.99.187`  
-**New development / deploy:** `v0.99.188` → branch `release/v0.99.188`
+**New development / deploy:** `v0.99.189` → branch `release/v0.99.189` (see `Docs/release-v0.99.189.md`)
 
 ## What changed in 0.99.188 (vs 0.99.187)
 
@@ -19,8 +19,9 @@
 | Branch | Version | Use |
 |--------|---------|-----|
 | `release/v0.99.187` | 0.99.187 | Frozen — previous deploy line |
-| `release/v0.99.188` | 0.99.188 | **Active** development and deploy |
-| `main` | — | Merge `release/v0.99.188` when ready |
+| `release/v0.99.188` | 0.99.188 | Frozen — superseded by 0.99.189 |
+| `release/v0.99.189` | 0.99.189 | Active development and next deploy |
+| `main` | — | Merge `release/v0.99.189` when ready to make 0.99.189 the default line |
 
 ### Deploy 0.99.188
 

@@ -241,6 +241,11 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     });
   });
 
+  $('menuBottomMenuBtn')?.addEventListener('click', () => {
+    closeMenu();
+    window.__openBottomMenuV2?.();
+  });
+
   $('menuPanelBackBtn')?.addEventListener('click', backFromPanel);
   $('menuPanelCloseBtn')?.addEventListener('click', closeAll);
   menuPanelRoot.querySelector('.tz-sheet-backdrop')?.addEventListener('click', closeAll);

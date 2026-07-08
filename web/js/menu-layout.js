@@ -13,6 +13,7 @@ export const MENU_ITEM_DEFS = {
   settings: { label: 'Settings', kind: 'row', modes: ['standard', 'dev'] },
   leaderboard: { label: 'Leaderboard', kind: 'row', modes: ['standard', 'dev'] },
   journal: { label: "The Cartographer's Journal", kind: 'row', modes: ['standard', 'dev'] },
+  bottomMenu: { label: 'Main Navigation', kind: 'row', modes: ['standard', 'dev'] },
   development: { label: 'Development', kind: 'row', modes: ['dev'] },
 };
 
@@ -24,13 +25,14 @@ const ROW_CSS_SUFFIX = {
   settings: 'settings',
   leaderboard: 'leaderboard',
   journal: 'journal',
+  bottomMenu: 'bottom-menu',
   development: 'development',
 };
 
 const DEFAULT_ROW = { x: 50, y: 50 };
 
 /** First five links appear on both Menu.png and Menu-devtools.png. */
-const SHARED_MENU_ITEMS = new Set(['puzzle', 'found', 'stuck', 'hint', 'settings', 'leaderboard', 'journal']);
+const SHARED_MENU_ITEMS = new Set(['puzzle', 'found', 'stuck', 'hint', 'settings', 'leaderboard', 'journal', 'bottomMenu']);
 
 export const DEFAULT_MENU_LAYOUT = {
   plaque: { offsetY: -50, displayW: 340, wScale: 1.3 },
@@ -44,6 +46,7 @@ export const DEFAULT_MENU_LAYOUT = {
     settings: { x: 50, y: 63 },
     leaderboard: { x: 50, y: 69 },
     journal: { x: 50, y: 75 },
+    bottomMenu: { x: 50, y: 82 },
   },
   dev: {
     puzzle: { x: 50, y: 19 },
@@ -53,7 +56,8 @@ export const DEFAULT_MENU_LAYOUT = {
     settings: { x: 50, y: 51 },
     leaderboard: { x: 50, y: 57 },
     journal: { x: 50, y: 63 },
-    development: { x: 50, y: 75 },
+    bottomMenu: { x: 50, y: 71 },
+    development: { x: 50, y: 79 },
   },
 };
 
