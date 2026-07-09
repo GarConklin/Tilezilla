@@ -2056,10 +2056,23 @@ function wireInvalidSolveDismiss(appRef) {
   };
 }
 
+function wireInvalidSolveResumeBoardEdit(appRef) {
+  return () => {
+    const app = appRef;
+    if (app) syncBoardChrome(app);
+  };
+}
+
 function formatPuzzleTimer(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, '0');
-  const s = String(sec % 60).padStart(2, '0');
-  return `${m}:${s}`;
+  const total = Math.max(0, Math.floor(Number(sec) || 0));
+  const s = total % 60;
+  if (total >= 3600) {
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  const m = Math.floor(total / 60);
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 let puzzleTimerInterval = null;
@@ -2624,6 +2637,7 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
       initInvalidSolve({
         getApp: () => appRef,
         onDismiss: wireInvalidSolveDismiss(appRef),
+        onResumeBoardEdit: wireInvalidSolveResumeBoardEdit(appRef),
       });
       initDiscoveryRecordShell(appRef, menuApi);
     } catch (err) {
@@ -2634,6 +2648,7 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
   initInvalidSolve({
     getApp: () => appRef,
     onDismiss: wireInvalidSolveDismiss(appRef),
+    onResumeBoardEdit: wireInvalidSolveResumeBoardEdit(appRef),
   });
   initDiscoveryRecordShell(appRef, menuApi);
   await initShellExtendedUiModules(appRef, settings, menuApi);

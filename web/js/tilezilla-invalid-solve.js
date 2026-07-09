@@ -8,6 +8,7 @@ function $(id) {
 
 let getApp = () => null;
 let onDismiss = async () => {};
+let onResumeBoardEdit = () => {};
 
 export function showInvalidSolve() {
   const root = document.querySelector('.tz-app');
@@ -45,9 +46,18 @@ async function handleOkay() {
   await onDismiss();
 }
 
+/** Player edits the board while invalid plaque is open — dismiss without undoing again. */
+export function dismissInvalidSolveForBoardEdit() {
+  if (!isInvalidSolveShowing()) return false;
+  hideInvalidSolve();
+  onResumeBoardEdit();
+  return true;
+}
+
 export function initInvalidSolve(options = {}) {
   getApp = options.getApp || getApp;
   onDismiss = options.onDismiss || onDismiss;
+  onResumeBoardEdit = options.onResumeBoardEdit || onResumeBoardEdit;
 
   $('previewInvalidOkayBtn')?.addEventListener('click', () => {
     void handleOkay();
@@ -57,6 +67,7 @@ export function initInvalidSolve(options = {}) {
     show: showInvalidSolve,
     hide: hideInvalidSolve,
     isShowing: isInvalidSolveShowing,
+    dismissForBoardEdit: dismissInvalidSolveForBoardEdit,
     getApp,
   };
 }

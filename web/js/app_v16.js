@@ -1369,6 +1369,7 @@ async function renderTiles(){
       if(!removed) return;
       playSfx('tilePickup');
       window.__discoveryRecord?.resumeForBoardEdit?.();
+      window.__invalidSolve?.dismissForBoardEdit?.();
       state.selectedTileId = null;
       syncActionButtons();
       state.selectedPal = removed.instanceId || null;
@@ -3097,6 +3098,7 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
 
   // place from palette
   if(state.selectedPal){
+    window.__invalidSolve?.dismissForBoardEdit?.();
     const placed = await placeSelectedPaletteTileAt(r, c);
     if (!placed) playSfx('tileInvalid');
     return;
@@ -3104,6 +3106,7 @@ if (boardEl) boardEl.addEventListener('click', async (e) => {
 
   // move selected tile
   if(state.selectedTileId){
+    window.__invalidSolve?.dismissForBoardEdit?.();
     const t = state.tiles.find(x=>x.id===state.selectedTileId);
     if(!t) return;
     if(isHintTile(t)) {
@@ -3187,6 +3190,7 @@ if (deleteBtn) deleteBtn.addEventListener('click', async () => {
   state.selectedTileId = null;
   syncActionButtons();
   if (!removed) { status('Nothing deleted'); return; }
+  window.__invalidSolve?.dismissForBoardEdit?.();
   rotHud.textContent = state.deg + '';
   rebuildOccFromTiles();
   await renderTiles();
