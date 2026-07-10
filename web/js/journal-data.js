@@ -24,10 +24,32 @@ function boardSizeLabel(level) {
 function boardSizeKey(level) {
   const rows = Number(level?.board?.rows);
   const cols = Number(level?.board?.cols);
-  if (!Number.isFinite(rows) || !Number.isFinite(cols)) return null;
+  if (!Number.isFinite(rows) || !Number.isFinite(cols)) return boardSizeKeyFromLevelId(level?.id);
   const a = Math.min(rows, cols);
   const b = Math.max(rows, cols);
   return `${a}x${b}`;
+}
+
+function boardSizeKeyFromLevelId(levelId) {
+  const m = /^(\d+)[x×](\d+)/i.exec(String(levelId || '').trim());
+  if (!m) return null;
+  const a = Math.min(Number(m[1]), Number(m[2]));
+  const b = Math.max(Number(m[1]), Number(m[2]));
+  return `${a}x${b}`;
+}
+
+function totalKnownForJournalLevel(app, level, levelId, dailyCsvRows) {
+  if (level && app?.totalKnownForLevel) {
+    const fromLevel = app.totalKnownForLevel(level);
+    if (fromLevel > 0) return fromLevel;
+  }
+  const key = normalizeCatalogLevelId(levelId);
+  let best = 0;
+  for (const row of dailyCsvRows || []) {
+    if (normalizeCatalogLevelId(row.levelId) !== key) continue;
+    best = Math.max(best, Number(row.totalSolutions) || 0);
+  }
+  return best;
 }
 
 function formatDate(iso) {
@@ -214,6 +236,46 @@ function dedupeFoundByIndex(found) {
   return [...byIndex.values()].sort((a, b) => a.index - b.index);
 }
 
+function repairMalformedFoundEntries(progress, levelId, known) {
+  if (!known?.length) return false;
+  const found = progress.getFoundForLevel(levelId);
+  let changed = false;
+  for (const entry of found) {
+    if (Number.isFinite(Number(entry?.index))) continue;
+    const placements = entry?.placements;
+    if (!Array.isArray(placements) || !placements.length) continue;
+    const check = progress.checkSolution(levelId, placements, known);
+    if (!Number.isFinite(check?.index)) continue;
+    entry.index = check.index;
+    entry.bonus = !!check.bonus;
+    changed = true;
+  }
+  if (changed) progress.save();
+  return changed;
+}
+
+function collectCatalogFoundEntries(progress, levelId, known, found) {
+  repairMalformedFoundEntries(progress, levelId, known);
+  const refreshed = progress.getFoundForLevel(levelId) || [];
+  const uniqueFound = dedupeFoundByIndex(refreshed);
+  if (uniqueFound.length) return uniqueFound;
+
+  const recovered = [];
+  for (const entry of refreshed) {
+    if (Number.isFinite(Number(entry?.index))) continue;
+    const placements = entry?.placements;
+    if (!Array.isArray(placements) || !placements.length) continue;
+    const check = progress.checkSolution(levelId, placements, known);
+    if (!Number.isFinite(check?.index)) continue;
+    recovered.push({
+      ...entry,
+      index: check.index,
+      bonus: !!check.bonus,
+    });
+  }
+  return dedupeFoundByIndex(recovered);
+}
+
 function backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback) {
   if (!progress || !dailyFallback || !Number.isFinite(dailyFallback.index)) return false;
   const index = dailyFallback.index;
@@ -253,7 +315,7 @@ function buildFallbackJournalEntry(dailyFallback, known) {
   };
 }
 
-export async function getJournalRecord(app, levelId) {
+export async function getJournalRecord(app, levelId, { challengeDate = null } = {}) {
   const progress = app?.progress;
   const state = app?.state;
   if (!levelId || !progress || !state) return null;
@@ -268,19 +330,18 @@ export async function getJournalRecord(app, levelId) {
   if (!level) return null;
 
   const known = await app.loadKnownSolutionsForLevel?.(level) || [];
-  let found = progress.getFoundForLevel(levelId) || [];
-  let progressFoundCount = countCatalogSolutionsFound(found);
+  let uniqueFound = collectCatalogFoundEntries(progress, levelId, known, progress.getFoundForLevel(levelId));
+  let progressFoundCount = uniqueFound.length;
   let dailyFallback = null;
   if (!progressFoundCount) {
-    dailyFallback = await resolveDailyCompletionFallback(app, levelId);
+    dailyFallback = await resolveDailyCompletionFallback(app, levelId, challengeDate);
     if (backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback)) {
-      found = progress.getFoundForLevel(levelId) || [];
-      progressFoundCount = countCatalogSolutionsFound(found);
+      uniqueFound = collectCatalogFoundEntries(progress, levelId, known, progress.getFoundForLevel(levelId));
+      progressFoundCount = uniqueFound.length;
       dailyFallback = progressFoundCount ? null : dailyFallback;
     }
   }
-  let uniqueFound = dedupeFoundByIndex(found);
-  let foundCount = uniqueFound.length || dailyFallback?.foundCount || 0;
+  let foundCount = progressFoundCount || dailyFallback?.foundCount || 0;
   const total = known.length || app.totalKnownForLevel?.(level) || 0;
   const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
 
@@ -384,13 +445,12 @@ function isDailyChallengePuzzle(levelId, progress, dailyByLevelId, dailyDatesByL
   return false;
 }
 
-function levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDatesByLevel) {
+function levelMatchesFilters(levelId, progress, filters, dailyByLevelId, dailyDatesByLevel) {
   const { boardSize, puzzleType } = filters || {};
-  const levelId = level?.id;
   if (!levelId || !progress?.hasJournalEntry?.(levelId)) return false;
 
   if (boardSize) {
-    if (boardSizeKey(level) !== boardSize) return false;
+    if (boardSizeKeyFromLevelId(levelId) !== boardSize) return false;
   }
 
   if (puzzleType) {
@@ -406,40 +466,38 @@ function levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDate
   return true;
 }
 
-async function buildDailyChallengeLibraryEntry(app, row, levelById, progress) {
+function buildDailyChallengeLibraryEntry(app, row, progress, dailyCsvRows) {
   const levelId = normalizeCatalogLevelId(row.levelId);
-  const level = levelById.get(levelId);
-  if (!level) return null;
+  if (!levelId) return null;
 
   const challengeDateIso = parseChallengeDateIso(row.dateIso || row.date);
   if (!challengeDateIso) return null;
 
   const found = countUniqueFoundSolutions(progress?.getFoundForLevel(levelId) || []);
-  const known = await app.loadKnownSolutionsForLevel?.(level) || [];
-  const total = row.totalSolutions || known.length || app.totalKnownForLevel?.(level) || 0;
+  const total = Number(row.totalSolutions) || totalKnownForJournalLevel(app, null, levelId, dailyCsvRows);
   const progressState = getPuzzleProgressState(found, total);
   const pct = total > 0 ? Math.round((found / total) * 100) : 0;
   const formatted = formatChallengeDate(challengeDateIso);
 
   return {
-    levelId: level.id,
-    label: level.id || level.name,
+    levelId,
+    label: levelId,
     journalSource: 'daily-challenge',
     challengeDateIso,
     detailLabel: formatted ? `· ${formatted}` : null,
-    boardSize: boardSizeLabel(level),
-    boardSizeKey: boardSizeKey(level),
+    boardSize: boardSizeKeyFromLevelId(levelId) || '—',
+    boardSizeKey: boardSizeKeyFromLevelId(levelId),
     found,
     total,
     progressState,
     progressPct: pct,
     progressLabel: total > 0 ? `${found} / ${total}` : String(found),
-    level,
+    level: null,
     dailyRowKey: `${challengeDateIso}|${levelId}`,
   };
 }
 
-async function getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, progress) {
+function getDailyChallengeLibrary(app, filters, dailyCsvRows, progress) {
   const puzzles = [];
   const seenDailyKeys = new Set();
 
@@ -447,7 +505,7 @@ async function getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, p
     const dateRaw = row.dateIso || row.date;
     if (!isWithinDailyLookback(dateRaw)) continue;
 
-    const entry = await buildDailyChallengeLibraryEntry(app, row, levelById, progress);
+    const entry = buildDailyChallengeLibraryEntry(app, row, progress, dailyCsvRows);
     if (!entry) continue;
     if (filters?.boardSize && entry.boardSizeKey !== filters.boardSize) continue;
     if (seenDailyKeys.has(entry.dailyRowKey)) continue;
@@ -485,16 +543,6 @@ export async function getJournalLibraryIndex(app, filters = {}) {
     return { sizeCounts: [], puzzles: [], filters };
   }
 
-  const journalLevelIds = Object.keys(progress.data || {}).filter(
-    (levelId) => levelId && !levelId.startsWith('_') && progress.hasJournalEntry(levelId),
-  );
-  if (app?.ensureLevels && journalLevelIds.length) {
-    await app.ensureLevels(journalLevelIds);
-  }
-
-  const levels = app?.state?.allLevels || [];
-  const levelById = new Map(levels.map((level) => [level.id, level]));
-
   const {
     dailyReleaseByLevelId: dailyByLevelId,
     dailyDatesByLevelId,
@@ -503,27 +551,30 @@ export async function getJournalLibraryIndex(app, filters = {}) {
   } = await loadLibraryLookups();
 
   if (filters?.puzzleType === 'daily-challenge') {
-    return getDailyChallengeLibrary(app, filters, levelById, dailyCsvRows, progress);
+    return getDailyChallengeLibrary(app, filters, dailyCsvRows, progress);
   }
 
+  const levelById = new Map((app?.state?.allLevels || []).map((level) => [level.id, level]));
   const sizeCountsMap = new Map();
   const puzzles = [];
   const seenLevelIds = new Set();
 
   for (const levelId of Object.keys(progress.data || {})) {
+    if (!levelId || levelId.startsWith('_') || !progress.hasJournalEntry(levelId)) continue;
+    const key = boardSizeKeyFromLevelId(levelId);
+    if (key) sizeCountsMap.set(key, (sizeCountsMap.get(key) || 0) + 1);
+  }
+
+  for (const levelId of Object.keys(progress.data || {})) {
     if (!progress.hasJournalEntry(levelId) || seenLevelIds.has(levelId)) continue;
     seenLevelIds.add(levelId);
 
-    const level = levelById.get(levelId);
-    if (!level) continue;
+    const key = boardSizeKeyFromLevelId(levelId);
+    if (!levelMatchesFilters(levelId, progress, filters, dailyByLevelId, dailyDatesByLevelId)) continue;
 
-    const key = boardSizeKey(level);
-    if (key) sizeCountsMap.set(key, (sizeCountsMap.get(key) || 0) + 1);
-    if (!levelMatchesFilters(level, progress, filters, dailyByLevelId, dailyDatesByLevelId)) continue;
-
-    const known = await app.loadKnownSolutionsForLevel?.(level) || [];
+    const level = levelById.get(levelId) || null;
     const found = countUniqueFoundSolutions(progress.getFoundForLevel(levelId));
-    const total = known.length || app.totalKnownForLevel?.(level) || 0;
+    const total = totalKnownForJournalLevel(app, level, levelId, dailyCsvRows);
     const progressState = getPuzzleProgressState(found, total);
     const pct = total > 0 ? Math.round((found / total) * 100) : 0;
 
@@ -535,8 +586,8 @@ export async function getJournalLibraryIndex(app, filters = {}) {
       dailyDatesByLevelId,
     );
     puzzles.push({
-      levelId: level.id,
-      label: level.id || level.name,
+      levelId,
+      label: levelId,
       journalSource: meta?.journalSource || null,
       challengeDateIso,
       detailLabel: puzzleListDetailLabel(
@@ -546,13 +597,13 @@ export async function getJournalLibraryIndex(app, filters = {}) {
         dailyByLevelId,
         dailyDatesByLevelId,
       ),
-      boardSize: boardSizeLabel(level),
+      boardSize: key || '—',
       boardSizeKey: key,
       found,
       total,
       progressState,
       progressPct: pct,
-      progressLabel: total > 0 ? `${found} / ${total}` : `${found}`,
+      progressLabel: total > 0 ? `${found} / ${total}` : String(found),
       level,
     });
   }

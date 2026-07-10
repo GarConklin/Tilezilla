@@ -2360,7 +2360,10 @@ function appProgressShim() {
 }
 
 async function resolveDailyCompletionFallbackForLevel(lv) {
-  return resolveDailyCompletionFallback(appProgressShim(), lv?.id);
+  const challengeDate = window.__dailyChallengeMeta?.date
+    || progress?.getLevelMeta?.(lv?.id)?.challengeDate
+    || null;
+  return resolveDailyCompletionFallback(appProgressShim(), lv?.id, challengeDate);
 }
 
 function isDailyLeaderboardEligible() {

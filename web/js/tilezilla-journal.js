@@ -42,8 +42,17 @@ let state = {
   postDailyLeaderboard: false,
 };
 
-function $(id) {
-  return document.getElementById(id);
+function setJournalLoading(loading) {
+  const root = $('journalRoot');
+  const loadingEl = $('journalLoading');
+  const frame = root?.querySelector('.tz-journal-dialog__frame');
+  if (loadingEl) loadingEl.hidden = !loading;
+  if (frame) frame.classList.toggle('is-loading', !!loading);
+  if (root) root.setAttribute('aria-busy', loading ? 'true' : 'false');
+}
+
+function journalRecordOptions() {
+  return { challengeDate: state.challengeDate || window.__dailyChallengeMeta?.date || null };
 }
 
 function effectiveJournalLayout() {
@@ -198,7 +207,7 @@ async function showLoadConfirm(show) {
   let solved = '—';
 
   if (app && state.levelId) {
-    const record = await getJournalRecord(app, state.levelId);
+    const record = await getJournalRecord(app, state.levelId, journalRecordOptions());
     if (record) {
       puzzleId = record.puzzleId || record.levelId || puzzleId;
       solutions = record.totalKnown > 0
@@ -612,7 +621,7 @@ async function selectSolution(entry, { pulse = false } = {}) {
   const app = getApp();
   if (!app || !state.levelId) return;
   state.selectedSolutionIndex = entry.index;
-  const record = await getJournalRecord(app, state.levelId);
+  const record = await getJournalRecord(app, state.levelId, journalRecordOptions());
   const list = $('journalList');
   const hasSolutionRows = list?.querySelector('[data-solution-index]');
   if (!hasSolutionRows) {
@@ -627,7 +636,7 @@ async function selectSolution(entry, { pulse = false } = {}) {
 async function navigateRecordSolution(delta) {
   const app = getApp();
   if (!app || !state.levelId || state.mode !== 'record') return;
-  const record = await getJournalRecord(app, state.levelId);
+  const record = await getJournalRecord(app, state.levelId, journalRecordOptions());
   const entries = record?.entries || [];
   if (!entries.length) return;
 
@@ -684,7 +693,7 @@ async function loadBeginSearchToBoard() {
 async function refreshRecordView() {
   const app = getApp();
   if (!app || !state.levelId) return;
-  const record = await getJournalRecord(app, state.levelId);
+  const record = await getJournalRecord(app, state.levelId, journalRecordOptions());
   if (!record) return;
 
   renderRecordFields(record);
@@ -770,7 +779,7 @@ async function loadSelectedSolutionToBoard() {
   const app = getApp();
   if (!app || !state.levelId) return;
 
-  const record = await getJournalRecord(app, state.levelId);
+  const record = await getJournalRecord(app, state.levelId, journalRecordOptions());
   const entries = record?.entries || [];
   const entry = Number.isFinite(state.selectedSolutionIndex)
     ? entries.find((e) => e.index === state.selectedSolutionIndex)
@@ -809,8 +818,6 @@ export async function openJournal({
   const app = getApp();
   if (!root || !app) return;
 
-  await applyLayoutFromDisk({ force: true });
-
   menuApi?.closeMenu?.();
   menuApi?.closePanel?.();
   closePuzzleInfoPopup();
@@ -840,21 +847,28 @@ export async function openJournal({
   setModeUi(mode);
   root.hidden = false;
   setModalOpen(true);
+  setJournalLoading(true);
   syncJournalDialogTop();
 
   const scroll = $('journalListScroll');
   if (scroll) scroll.scrollTop = 0;
 
-  if (mode === 'library') {
-    await refreshLibraryView();
-  } else if (state.activeTab !== 'records') {
-    await refreshRecordView();
-    if (Number.isFinite(state.selectedSolutionIndex)) {
-      scrollActiveListRowIntoView();
+  try {
+    await applyLayoutFromDisk({ force: !journalLayoutCache });
+
+    if (mode === 'library') {
+      await refreshLibraryView();
+    } else if (state.activeTab !== 'records') {
+      await refreshRecordView();
+      if (Number.isFinite(state.selectedSolutionIndex)) {
+        scrollActiveListRowIntoView();
+      }
+    } else {
+      recordsApi?.setRecordsSubTab?.('leaderboard');
+      await recordsApi?.refreshRecordsView?.();
     }
-  } else {
-    recordsApi?.setRecordsSubTab?.('leaderboard');
-    await recordsApi?.refreshRecordsView?.();
+  } finally {
+    setJournalLoading(false);
   }
 
   listScroller?.sync?.();

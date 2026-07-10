@@ -6123,6 +6123,36 @@ html.tz-phone-preview .tz-pinfo-dialog {
   inset: 0;
 }
 
+.tz-journal-dialog__frame.is-loading > :not(.tz-journal-loading):not(.tz-journal-dialog__bg) {
+  visibility: hidden;
+}
+
+.tz-journal-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(244, 228, 188, 0.82);
+}
+
+.tz-journal-loading[hidden] {
+  display: none !important;
+}
+
+.tz-journal-loading__text {
+  margin: 0;
+  max-width: 16rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1rem, 4.2vw, 1.2rem);
+  line-height: 1.45;
+  color: #3a2b16;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
 .tz-journal-dialog__bg {
   position: absolute;
   inset: 0;

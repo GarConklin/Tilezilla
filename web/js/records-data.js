@@ -228,6 +228,82 @@ export function isLeaderboardRowForCurrentUser(row, userId, username) {
   return !!rowName && !!currentName && rowName === currentName;
 }
 
+const leaderboardRowsCache = new Map();
+
+function datesToTryForDailyFallback(progress, levelId, challengeDate) {
+  const dates = [];
+  const add = (raw) => {
+    const key = String(raw || '').slice(0, 10);
+    if (key && !dates.includes(key)) dates.push(key);
+  };
+  add(challengeDate);
+  add(challengeDateForLevel(progress, levelId));
+  add(todayChallengeDateIso());
+  return dates;
+}
+
+function rowToDailyFallback(row) {
+  if (!row) return null;
+  const idx = Number(row.solutionIndex);
+  const index = Number.isFinite(idx) ? idx : null;
+  return {
+    foundCount: 1,
+    index: index != null && index >= 0 ? index : null,
+    completedAt: row.completedAt || null,
+    completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
+  };
+}
+
+function resolveDailyCompletionFromLocal(progress, levelId, dateKey, userId, username) {
+  const levelKey = normalizeLevelId(levelId);
+  const store = progress.loadDailyResults?.() || {};
+  let best = null;
+  for (const row of Object.values(store)) {
+    if (!isLeaderboardRowForCurrentUser(row, userId, username)) continue;
+    if (normalizeLevelId(row.levelId) !== levelKey) continue;
+    if (String(row.challengeDate || '').slice(0, 10) !== dateKey) continue;
+    const sec = Math.max(0, Number(row.completionTimeSeconds) || 0);
+    if (!best || sec < best.completionTimeSeconds) {
+      const idx = Number(row.solutionIndex ?? row.solutionId);
+      best = {
+        userId: row.userId,
+        username: row.username,
+        levelId: row.levelId,
+        challengeDate: dateKey,
+        completionTimeSeconds: sec,
+        solutionIndex: Number.isFinite(idx) ? idx : null,
+        completedAt: row.completedAt || null,
+      };
+    }
+  }
+  return rowToDailyFallback(best);
+}
+
+async function fetchLeaderboardRowsCached(progress, dateKey) {
+  if (!leaderboardRowsCache.has(dateKey)) {
+    leaderboardRowsCache.set(
+      dateKey,
+      fetchLeaderboardRows(progress, dateKey).catch(() => []),
+    );
+  }
+  return leaderboardRowsCache.get(dateKey);
+}
+
+async function resolveDailyCompletionFromApi(progress, levelId, dateKey, userId, username) {
+  const levelKey = normalizeLevelId(levelId);
+  let rows = [];
+  try {
+    rows = await fetchLeaderboardRowsCached(progress, dateKey);
+  } catch {
+    rows = progress.getLeaderboardResultsForDate?.(dateKey) || [];
+  }
+  const row = (rows || [])
+    .filter((r) => normalizeLevelId(r.levelId) === levelKey)
+    .filter((r) => isLeaderboardRowForCurrentUser(r, userId, username))
+    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0))[0];
+  return rowToDailyFallback(row);
+}
+
 /**
  * When progress.found[] is empty but the player has a timed daily result,
  * recover count / index / completion time for Puzzle Info and Journal.
@@ -236,34 +312,21 @@ export async function resolveDailyCompletionFallback(app, levelId, challengeDate
   const progress = app?.progress;
   if (!levelId || !progress) return null;
 
-  const dateKey = String(challengeDate || challengeDateForLevel(progress, levelId)).slice(0, 10);
-  const levelKey = normalizeLevelId(levelId);
   const userId = app?.state?.userId;
   const username = getActiveUsername();
+  const dates = datesToTryForDailyFallback(progress, levelId, challengeDate);
 
-  let rows = [];
-  try {
-    rows = await fetchLeaderboardRows(progress, dateKey);
-  } catch {
-    rows = progress.getLeaderboardResultsForDate?.(dateKey) || [];
+  for (const dateKey of dates) {
+    const local = resolveDailyCompletionFromLocal(progress, levelId, dateKey, userId, username);
+    if (local) return local;
   }
 
-  const row = (rows || [])
-    .filter((r) => normalizeLevelId(r.levelId) === levelKey)
-    .filter((r) => isLeaderboardRowForCurrentUser(r, userId, username))
-    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0))[0];
+  for (const dateKey of dates) {
+    const remote = await resolveDailyCompletionFromApi(progress, levelId, dateKey, userId, username);
+    if (remote) return remote;
+  }
 
-  if (!row) return null;
-
-  const idx = Number(row.solutionIndex);
-  const index = Number.isFinite(idx) ? idx : null;
-
-  return {
-    foundCount: 1,
-    index: index != null && index >= 0 ? index : null,
-    completedAt: row.completedAt || null,
-    completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
-  };
+  return null;
 }
 
 /** Guest daily solve — session-only preview (not saved to MySQL). */
