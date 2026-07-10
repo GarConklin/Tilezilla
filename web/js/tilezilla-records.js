@@ -22,6 +22,7 @@ import {
   setGuestPlacementBanner,
   setRecordsHeaderFields,
   syncRecordsHeaderVisibility,
+  todayChallengeDateIso,
 } from './records-data.js';
 
 const $ = (id) => document.getElementById(id);
@@ -37,7 +38,8 @@ let getPostDailyLeaderboard = () => false;
 
 function recordsChallengeDateIso() {
   const fromJournal = typeof getChallengeDate === 'function' ? getChallengeDate() : null;
-  return String(fromJournal || '').trim().slice(0, 10) || null;
+  const iso = String(fromJournal || '').trim().slice(0, 10);
+  return iso || todayChallengeDateIso();
 }
 
 function syncSubTabViews() {

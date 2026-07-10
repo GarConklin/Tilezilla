@@ -1,7 +1,7 @@
 import { Solver } from './solver.js';
 import { playSfx } from './tilezilla-sfx.js';
 import { Solutions } from './solutions.js';
-import { Progress } from './progress.js';
+import { Progress, countCatalogSolutionsFound } from './progress.js';
 import { readEncounteredTilesLocal } from './tilezilla-encountered-tiles.js';
 import { isDevUser, syncDevUserUi } from './tilezilla-dev-user.js';
 import { syncAdminUi, isAdminUser } from './tilezilla-admin.js';
@@ -25,6 +25,7 @@ import {
   buildNewPayload as buildDiscoveryPayload,
   buildDuplicatePayload as buildDiscoveryDuplicatePayload,
 } from './tilezilla-discovery-record.js';
+import { todayChallengeDateIso } from './records-data.js';
 
 const CONFIG = {
   rows: 6,
@@ -2350,7 +2351,8 @@ function puzzleAttemptUsedHints() {
 
 function todayChallengeDate() {
   return window.__dailyChallengeMeta?.date
-    || new Date().toISOString().slice(0, 10);
+    ? String(window.__dailyChallengeMeta.date).slice(0, 10)
+    : todayChallengeDateIso();
 }
 
 function isDailyLeaderboardEligible() {
@@ -2360,7 +2362,16 @@ function isDailyLeaderboardEligible() {
   if (screen !== 'daily-challenge') return false;
   const dateIso = meta.date ? String(meta.date).slice(0, 10) : '';
   if (!dateIso) return false;
-  return dateIso === new Date().toISOString().slice(0, 10);
+  return dateIso === todayChallengeDateIso();
+}
+
+function solutionsFoundTotalForLevel(levelId, catalogRes = null) {
+  const found = progress?.getFoundForLevel?.(levelId) || [];
+  let total = countCatalogSolutionsFound(found);
+  if (total === 0 && catalogRes?.duplicate && Number.isFinite(Number(catalogRes.index))) {
+    total = 1;
+  }
+  return total;
 }
 
 function isGuestSession() {
@@ -2439,8 +2450,7 @@ async function runCheckSolution() {
       return;
     }
     renderFoundList(lv.id, knownSolutions);
-    const found = progress.getFoundForLevel(lv.id) || [];
-    const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+    const solutionsFoundTotal = solutionsFoundTotalForLevel(lv.id, catalogRes);
     const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
     showDiscoveryPopup(lv, catalogRes, null, solutionsFoundTotal, totalKnown);
     return;
@@ -2457,8 +2467,7 @@ async function runCheckSolution() {
     renderFoundList(lv.id, knownSolutions);
     refreshLevelSelectOptionTexts();
 
-    const found = progress.getFoundForLevel(lv.id) || [];
-    const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+    const solutionsFoundTotal = solutionsFoundTotalForLevel(lv.id, catalogRes);
     const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
 
     const challengePopup = window.__challengeBeginPopup;
@@ -2493,8 +2502,7 @@ async function runCheckSolution() {
   renderFoundList(lv.id, knownSolutions);
   refreshLevelSelectOptionTexts();
 
-  const found = progress.getFoundForLevel(lv.id) || [];
-  const solutionsFoundTotal = found.filter((f) => Number.isFinite(f.index)).length;
+  const solutionsFoundTotal = solutionsFoundTotalForLevel(lv.id, catalogRes);
   const totalKnown = knownSolutions.length || totalKnownForLevel(lv);
 
   const challengePopup = window.__challengeBeginPopup;

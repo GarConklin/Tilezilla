@@ -271,6 +271,35 @@ export function fetchLocalLeaderboardRows(progress, challengeDate = todayChallen
   }));
 }
 
+function mergeLeaderboardRowSets(serverRows, localRows) {
+  const byUser = new Map();
+  const remember = (row) => {
+    const userKey = String(row?.userId ?? row?.username ?? '').trim();
+    if (!userKey) return;
+    const prev = byUser.get(userKey);
+    const sec = Math.max(0, Number(row?.completionTimeSeconds) || 0);
+    const prevSec = Math.max(0, Number(prev?.completionTimeSeconds) || 0);
+    if (!prev || (sec > 0 && (prevSec <= 0 || sec < prevSec))) {
+      byUser.set(userKey, {
+        ...prev,
+        ...row,
+        userId: row.userId ?? prev?.userId ?? userKey,
+        username: String(row.username || prev?.username || userKey).trim(),
+        completionTimeSeconds: sec > 0 ? sec : prevSec,
+        hintsUsedCount: Math.max(
+          0,
+          Number(row?.hintsUsedCount ?? prev?.hintsUsedCount) || 0,
+        ),
+      });
+    }
+  };
+  for (const row of serverRows || []) remember(row);
+  for (const row of localRows || []) remember(row);
+  return [...byUser.values()].sort(
+    (a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0),
+  );
+}
+
 /**
  * Today's cross-user leaderboard — prefers MySQL via /api/daily-leaderboard.
  * Falls back to localStorage for offline / guest dev.
@@ -300,9 +329,8 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
   } catch {
     /* offline — use local rows */
   }
-  if (!rows.length) {
-    rows = fetchLocalLeaderboardRows(progress, dateKey);
-  }
+  const localRows = fetchLocalLeaderboardRows(progress, dateKey);
+  rows = mergeLeaderboardRowSets(rows, localRows);
   const preview = getGuestLeaderboardPreview();
   if (preview) {
     rows = mergeGuestPreviewIntoRows(rows, preview, dateKey);

@@ -13,6 +13,7 @@
   <p class="lead">
     Size, move, and align <strong>current time</strong> and <strong>best time</strong> inside the Timer_data box on the preview plaque.
     Saves to <code>data/timer_data_v2_layout.json</code>.
+    Use <strong>Hours preview</strong> to tune against <code>h:mm:ss</code> (e.g. <code>4:00:00</code>) — times over 60 minutes need a wider hit box or smaller fontScale.
     Zone position: <a href="/preview-v2-tuner.html">preview-v2-tuner</a> ·
     <a href="/tilezilla-v2.html">tilezilla-v2</a>
   </p>
@@ -55,6 +56,7 @@
         <li>Arrow keys — nudge position</li>
       </ul>
       <div class="btn-row">
+        <button type="button" class="btn" id="hoursPreviewBtn" aria-pressed="true">Hours preview (4:00:00)</button>
         <button type="button" class="btn" id="reloadBtn">Reload file</button>
         <button type="button" class="btn" id="clearDraftBtn">Clear browser draft</button>
         <button type="button" class="btn" id="saveBtn">Save now</button>
@@ -82,8 +84,8 @@
               <span class="tz-preview-v2-info-data__solutions tz-preview-v2-info-data__item tz-preview-v2-info-data__item--solutions">Solutions</span>
             </div>
             <div class="tz-preview-v2-data tz-preview-v2-timer-data is-tuner-focus" aria-label="Timer data preview">
-              <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--current tuner-box" data-item="timerCurrent">04:32</span>
-              <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__time--best tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--best tuner-box" data-item="timerBest">03:10</span>
+              <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--current tuner-box" data-item="timerCurrent" id="mockTimerCurrent">4:00:00</span>
+              <span class="tz-preview-v2-timer-data__time tz-preview-v2-timer-data__time--best tz-preview-v2-timer-data__item tz-preview-v2-timer-data__item--best tuner-box" data-item="timerBest" id="mockTimerBest">12:30:45</span>
             </div>
           </div>
         </div>
@@ -94,6 +96,31 @@
   <script type="module">
     import { initPreviewDataV2ZoneTuner } from './js/preview-data-v2-zone-tuner.js';
     initPreviewDataV2ZoneTuner('timerData');
+
+    const TIMER_SAMPLES = {
+      hours: { current: '4:00:00', best: '12:30:45', label: 'Hours preview (4:00:00)' },
+      minutes: { current: '04:32', best: '03:10', label: 'Minutes preview (04:32)' },
+    };
+    let hoursMode = true;
+    const hoursBtn = document.getElementById('hoursPreviewBtn');
+    const mockCurrent = document.getElementById('mockTimerCurrent');
+    const mockBest = document.getElementById('mockTimerBest');
+
+    function applyTimerSamples() {
+      const sample = hoursMode ? TIMER_SAMPLES.hours : TIMER_SAMPLES.minutes;
+      if (mockCurrent) mockCurrent.textContent = sample.current;
+      if (mockBest) mockBest.textContent = sample.best;
+      if (hoursBtn) {
+        hoursBtn.textContent = sample.label;
+        hoursBtn.setAttribute('aria-pressed', hoursMode ? 'true' : 'false');
+      }
+    }
+
+    hoursBtn?.addEventListener('click', () => {
+      hoursMode = !hoursMode;
+      applyTimerSamples();
+    });
+    applyTimerSamples();
   </script>
 </body>
 </html>

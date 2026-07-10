@@ -3,6 +3,7 @@
  */
 
 import { loadAdventurePath, normalizeCatalogLevelId } from './adventure-path.js';
+import { countCatalogSolutionsFound } from './progress.js';
 
 const CHALLENGE_LABELS = {
   'daily-challenge': 'Daily Challenge',
@@ -189,17 +190,13 @@ export function getPuzzleProgressState(foundCount, totalKnown) {
 }
 
 function isCatalogFoundEntry(entry) {
-  return !entry?.bonus && Number.isFinite(entry?.index);
+  if (entry?.bonus) return false;
+  return Number.isFinite(Number(entry?.index));
 }
 
 /** Unique catalog solutions found — re-solves of the same index count once. */
 function countUniqueFoundSolutions(found) {
-  const indices = new Set();
-  for (const entry of found || []) {
-    if (!isCatalogFoundEntry(entry)) continue;
-    indices.add(entry.index);
-  }
-  return indices.size;
+  return countCatalogSolutionsFound(found);
 }
 
 /** Keep one journal row per solution index (most recent solve wins). */
@@ -207,9 +204,10 @@ function dedupeFoundByIndex(found) {
   const byIndex = new Map();
   for (const entry of found || []) {
     if (!isCatalogFoundEntry(entry)) continue;
-    const prev = byIndex.get(entry.index);
+    const index = Number(entry.index);
+    const prev = byIndex.get(index);
     if (!prev || String(entry.foundAt || '') > String(prev.foundAt || '')) {
-      byIndex.set(entry.index, entry);
+      byIndex.set(index, { ...entry, index });
     }
   }
   return [...byIndex.values()].sort((a, b) => a.index - b.index);

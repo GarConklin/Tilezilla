@@ -31,7 +31,12 @@ export class Progress {
   // -- Per-level accessors --
 
   getFoundForLevel(levelId) {
-    return this.data[levelId]?.found || [];
+    const found = this.data[levelId]?.found || [];
+    return found.map((entry) => {
+      if (entry?.index == null || entry?.index === '') return entry;
+      const index = Number(entry.index);
+      return Number.isFinite(index) ? { ...entry, index } : entry;
+    });
   }
 
   hasViewedExampleRoute(levelId) {
@@ -535,4 +540,15 @@ export class Progress {
     this.save();
     return true;
   }
+}
+
+/** Unique catalog solution indices found — re-solves of the same index count once. */
+export function countCatalogSolutionsFound(found) {
+  const indices = new Set();
+  for (const entry of found || []) {
+    if (entry?.bonus) continue;
+    const index = Number(entry?.index);
+    if (Number.isFinite(index)) indices.add(index);
+  }
+  return indices.size;
 }
