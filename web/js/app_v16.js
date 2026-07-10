@@ -3506,7 +3506,7 @@ async function getMenuPuzzleInfo() {
   if (!lv?.id) return null;
   const known = await loadKnownSolutionsForLevel(lv);
   const found = progress?.getFoundForLevel(lv.id) || [];
-  const foundCount = found.filter((f) => !f.bonus && Number.isFinite(f.index)).length;
+  const foundCount = countCatalogSolutionsFound(found);
   const total = known.length || totalKnownForLevel(lv);
   const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
   const rows = lv.board?.rows;
@@ -3540,14 +3540,15 @@ async function getMenuFoundSolutions() {
   const known = await loadKnownSolutionsForLevel(lv);
   const found = progress?.getFoundForLevel(lv.id) || [];
   const entries = found
-    .filter((f) => !f.bonus && Number.isFinite(f.index))
+    .filter((f) => !f.bonus && Number.isFinite(Number(f.index)))
     .map((f) => {
+      const index = Number(f.index);
       const placements = Array.isArray(f.placements) && f.placements.length
         ? f.placements
-        : (known[f.index]?.placements || []);
+        : (known[index]?.placements || []);
       return {
-        index: f.index,
-        label: `Solution #${f.index + 1}`,
+        index,
+        label: `Solution #${index + 1}`,
         placements,
       };
     })
@@ -3556,7 +3557,7 @@ async function getMenuFoundSolutions() {
   return {
     entries,
     total,
-    foundCount: entries.length,
+    foundCount: countCatalogSolutionsFound(found),
     hasKnownTotal: levelHasKnownTotal(lv),
     level: lv,
   };
