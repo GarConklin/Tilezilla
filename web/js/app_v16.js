@@ -25,7 +25,7 @@ import {
   buildNewPayload as buildDiscoveryPayload,
   buildDuplicatePayload as buildDiscoveryDuplicatePayload,
 } from './tilezilla-discovery-record.js';
-import { fetchLeaderboardRows, todayChallengeDateIso } from './records-data.js';
+import { resolveDailyCompletionFallback, todayChallengeDateIso } from './records-data.js';
 
 const CONFIG = {
   rows: 6,
@@ -2355,41 +2355,12 @@ function todayChallengeDate() {
     : todayChallengeDateIso();
 }
 
-function sameLevelId(a, b) {
-  return String(a || '').replace(/\.json$/i, '') === String(b || '').replace(/\.json$/i, '');
-}
-
-function isCurrentUserLeaderboardRow(row) {
-  const rowUserId = String(row?.userId ?? '').trim();
-  const currentUserId = String(state.userId ?? '').trim();
-  if (rowUserId && currentUserId && rowUserId === currentUserId) return true;
-  const rowName = String(row?.username ?? '').trim().toLowerCase();
-  const currentName = String(getActiveUsername() || '').trim().toLowerCase();
-  return !!rowName && !!currentName && rowName === currentName;
+function appProgressShim() {
+  return { progress, state };
 }
 
 async function resolveDailyCompletionFallbackForLevel(lv) {
-  if (!lv?.id) return null;
-  const dateKey = todayChallengeDate();
-  let rows = [];
-  try {
-    rows = await fetchLeaderboardRows(progress, dateKey);
-  } catch {
-    rows = progress?.getLeaderboardResultsForDate?.(dateKey) || [];
-  }
-  const candidates = (rows || [])
-    .filter((row) => sameLevelId(row?.levelId, lv.id))
-    .filter(isCurrentUserLeaderboardRow)
-    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0));
-  const row = candidates[0];
-  if (!row) return null;
-  const solutionIndex = Number(row.solutionIndex ?? row.solutionId);
-  return {
-    foundCount: 1,
-    index: Number.isFinite(solutionIndex) && solutionIndex >= 0 ? solutionIndex : null,
-    completedAt: row.completedAt || null,
-    completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
-  };
+  return resolveDailyCompletionFallback(appProgressShim(), lv?.id);
 }
 
 function isDailyLeaderboardEligible() {

@@ -4,6 +4,7 @@
 
 import { loadAdventurePath, normalizeCatalogLevelId } from './adventure-path.js';
 import { countCatalogSolutionsFound } from './progress.js';
+import { resolveDailyCompletionFallback } from './records-data.js';
 
 const CHALLENGE_LABELS = {
   'daily-challenge': 'Daily Challenge',
@@ -213,6 +214,45 @@ function dedupeFoundByIndex(found) {
   return [...byIndex.values()].sort((a, b) => a.index - b.index);
 }
 
+function backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback) {
+  if (!progress || !dailyFallback || !Number.isFinite(dailyFallback.index)) return false;
+  const index = dailyFallback.index;
+  const found = progress.getFoundForLevel(levelId) || [];
+  if (countCatalogSolutionsFound(found) > 0) return false;
+  if (found.some((f) => Number(f.index) === index)) return false;
+  const placements = known[index]?.placements;
+  if (!Array.isArray(placements) || !placements.length) return false;
+  progress.recordFound(
+    levelId,
+    index,
+    placements,
+    false,
+    dailyFallback.completionTimeSeconds * 1000,
+    {
+      completionTimeSeconds: dailyFallback.completionTimeSeconds,
+      leaderboardSubmitted: true,
+    },
+  );
+  return true;
+}
+
+function buildFallbackJournalEntry(dailyFallback, known) {
+  if (!dailyFallback || !Number.isFinite(dailyFallback.index)) return null;
+  const index = dailyFallback.index;
+  const placements = known[index]?.placements || [];
+  if (!placements.length) return null;
+  return {
+    index,
+    label: `Solution #${index + 1}`,
+    placements,
+    foundAt: dailyFallback.completedAt || null,
+    foundDate: formatDate(dailyFallback.completedAt),
+    solveTime: dailyFallback.completionTimeSeconds > 0
+      ? formatTime(dailyFallback.completionTimeSeconds)
+      : '—',
+  };
+}
+
 export async function getJournalRecord(app, levelId) {
   const progress = app?.progress;
   const state = app?.state;
@@ -228,13 +268,23 @@ export async function getJournalRecord(app, levelId) {
   if (!level) return null;
 
   const known = await app.loadKnownSolutionsForLevel?.(level) || [];
-  const found = progress.getFoundForLevel(levelId) || [];
-  const uniqueFound = dedupeFoundByIndex(found);
-  const foundCount = uniqueFound.length;
+  let found = progress.getFoundForLevel(levelId) || [];
+  let progressFoundCount = countCatalogSolutionsFound(found);
+  let dailyFallback = null;
+  if (!progressFoundCount) {
+    dailyFallback = await resolveDailyCompletionFallback(app, levelId);
+    if (backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback)) {
+      found = progress.getFoundForLevel(levelId) || [];
+      progressFoundCount = countCatalogSolutionsFound(found);
+      dailyFallback = progressFoundCount ? null : dailyFallback;
+    }
+  }
+  let uniqueFound = dedupeFoundByIndex(found);
+  let foundCount = uniqueFound.length || dailyFallback?.foundCount || 0;
   const total = known.length || app.totalKnownForLevel?.(level) || 0;
   const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
 
-  const entries = uniqueFound
+  let entries = uniqueFound
     .map((f) => {
       const placements = Array.isArray(f.placements) && f.placements.length
         ? f.placements
@@ -252,6 +302,13 @@ export async function getJournalRecord(app, levelId) {
     })
     .sort((a, b) => a.index - b.index);
 
+  if (!entries.length && dailyFallback) {
+    const fallbackEntry = buildFallbackJournalEntry(dailyFallback, known);
+    if (fallbackEntry) entries = [fallbackEntry];
+  }
+
+  const firstSolvedAt = progress.getFirstSolvedAt(levelId) || dailyFallback?.completedAt || null;
+
   const progressState = getPuzzleProgressState(foundCount, total);
   const pct = total > 0 ? Math.round((foundCount / total) * 100) : 0;
 
@@ -263,8 +320,8 @@ export async function getJournalRecord(app, levelId) {
     boardSize: boardSizeLabel(level),
     totalKnown: total,
     solutionsFound: foundCount,
-    firstSolvedAt: progress.getFirstSolvedAt(levelId),
-    firstSolvedDate: formatDate(progress.getFirstSolvedAt(levelId)),
+    firstSolvedAt,
+    firstSolvedDate: formatDate(firstSolvedAt),
     lastPlayedAt: progress.getLastPlayedAt(levelId),
     lastPlayedDate: formatDate(progress.getLastPlayedAt(levelId)),
     progressState,

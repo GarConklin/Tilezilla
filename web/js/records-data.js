@@ -1,6 +1,11 @@
 /** Daily leaderboard rows for the Records screen. */
 
 import { fetchChallengeLevelIdForDate, fetchTodaysChallengeLevelId } from './passport-journal-stats.js';
+import { getActiveUsername } from './tilezilla-guest.js';
+
+function normalizeLevelId(id) {
+  return String(id || '').replace(/\.json$/i, '');
+}
 
 export function formatLeaderboardTime(totalSeconds) {
   const total = Math.max(0, Number(totalSeconds) || 0);
@@ -197,6 +202,68 @@ export function todayChallengeDateIso() {
   }
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Best challenge date to use when looking up a daily completion for this level. */
+export function challengeDateForLevel(progress, levelId) {
+  const meta = progress?.getLevelMeta?.(levelId);
+  if (meta?.challengeDate) return String(meta.challengeDate).slice(0, 10);
+  const dailyMeta = window.__dailyChallengeMeta;
+  if (
+    dailyMeta?.date
+    && dailyMeta?.levelId
+    && normalizeLevelId(dailyMeta.levelId) === normalizeLevelId(levelId)
+  ) {
+    return String(dailyMeta.date).slice(0, 10);
+  }
+  return todayChallengeDateIso();
+}
+
+export function isLeaderboardRowForCurrentUser(row, userId, username) {
+  const rowUserId = String(row?.userId ?? '').trim();
+  const currentUserId = String(userId ?? '').trim();
+  if (rowUserId && currentUserId && rowUserId === currentUserId) return true;
+  const rowName = String(row?.username ?? '').trim().toLowerCase();
+  const currentName = String(username ?? '').trim().toLowerCase();
+  return !!rowName && !!currentName && rowName === currentName;
+}
+
+/**
+ * When progress.found[] is empty but the player has a timed daily result,
+ * recover count / index / completion time for Puzzle Info and Journal.
+ */
+export async function resolveDailyCompletionFallback(app, levelId, challengeDate = null) {
+  const progress = app?.progress;
+  if (!levelId || !progress) return null;
+
+  const dateKey = String(challengeDate || challengeDateForLevel(progress, levelId)).slice(0, 10);
+  const levelKey = normalizeLevelId(levelId);
+  const userId = app?.state?.userId;
+  const username = getActiveUsername();
+
+  let rows = [];
+  try {
+    rows = await fetchLeaderboardRows(progress, dateKey);
+  } catch {
+    rows = progress.getLeaderboardResultsForDate?.(dateKey) || [];
+  }
+
+  const row = (rows || [])
+    .filter((r) => normalizeLevelId(r.levelId) === levelKey)
+    .filter((r) => isLeaderboardRowForCurrentUser(r, userId, username))
+    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0))[0];
+
+  if (!row) return null;
+
+  const idx = Number(row.solutionIndex);
+  const index = Number.isFinite(idx) ? idx : null;
+
+  return {
+    foundCount: 1,
+    index: index != null && index >= 0 ? index : null,
+    completedAt: row.completedAt || null,
+    completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
+  };
 }
 
 /** Guest daily solve — session-only preview (not saved to MySQL). */
