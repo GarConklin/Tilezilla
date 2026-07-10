@@ -199647,7 +199647,7 @@
       "solvesFile": "5x6-0B-DNX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DNY",
@@ -199671,7 +199671,7 @@
       "solvesFile": "5x6-0B-DNY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DNZ",
@@ -199695,7 +199695,7 @@
       "solvesFile": "5x6-0B-DNZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DOA",
@@ -199720,7 +199720,7 @@
       "solvesFile": "5x6-0B-DOA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 29
     },
     {
       "id": "5x6-0B-DOB",
@@ -199745,7 +199745,7 @@
       "solvesFile": "5x6-0B-DOB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 87
     },
     {
       "id": "5x6-0B-DOC",
@@ -199770,7 +199770,7 @@
       "solvesFile": "5x6-0B-DOC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 24
     },
     {
       "id": "5x6-0B-DOD",
@@ -199817,7 +199817,7 @@
       "solvesFile": "5x6-0B-DOE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DOF",
@@ -199840,7 +199840,7 @@
       "solvesFile": "5x6-0B-DOF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DOG",
@@ -199864,7 +199864,7 @@
       "solvesFile": "5x6-0B-DOG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-DOH",
@@ -199912,7 +199912,7 @@
       "solvesFile": "5x6-0B-DOI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 42
     },
     {
       "id": "5x6-0B-DOJ",
@@ -199936,7 +199936,7 @@
       "solvesFile": "5x6-0B-DOJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 75
     },
     {
       "id": "5x6-0B-DOK",
@@ -199960,7 +199960,7 @@
       "solvesFile": "5x6-0B-DOK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-DOL",
@@ -199985,7 +199985,7 @@
       "solvesFile": "5x6-0B-DOL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 216
     },
     {
       "id": "5x6-0B-DOM",
@@ -200010,7 +200010,7 @@
       "solvesFile": "5x6-0B-DOM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 105
     },
     {
       "id": "5x6-0B-DON",
@@ -200035,7 +200035,7 @@
       "solvesFile": "5x6-0B-DON.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-DOO",
@@ -200060,7 +200060,7 @@
       "solvesFile": "5x6-0B-DOO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 38
     },
     {
       "id": "5x6-0B-DOP",
@@ -200084,7 +200084,7 @@
       "solvesFile": "5x6-0B-DOP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 3
     },
     {
       "id": "5x6-0B-DOQ",
@@ -200108,7 +200108,7 @@
       "solvesFile": "5x6-0B-DOQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 54
     },
     {
       "id": "5x6-0B-DOR",
@@ -200133,7 +200133,7 @@
       "solvesFile": "5x6-0B-DOR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 57
     },
     {
       "id": "5x6-0B-DOS",
@@ -200648,7 +200648,7 @@
       "solvesFile": "5x6-0B-DPM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 34
     },
     {
       "id": "5x6-0B-DPN",
@@ -200672,7 +200672,7 @@
       "solvesFile": "5x6-0B-DPN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 104
     },
     {
       "id": "5x6-0B-DPO",
@@ -200696,7 +200696,7 @@
       "solvesFile": "5x6-0B-DPO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 11
     },
     {
       "id": "5x6-0B-DPP",
@@ -200720,7 +200720,7 @@
       "solvesFile": "5x6-0B-DPP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 24
     },
     {
       "id": "5x6-0B-DPQ",
@@ -200745,7 +200745,7 @@
       "solvesFile": "5x6-0B-DPQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 63
     },
     {
       "id": "5x6-0B-DPR",
@@ -200769,7 +200769,7 @@
       "solvesFile": "5x6-0B-DPR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DPS",
@@ -200817,7 +200817,7 @@
       "solvesFile": "5x6-0B-DPT.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-DPU",
@@ -200841,7 +200841,7 @@
       "solvesFile": "5x6-0B-DPU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 14
     },
     {
       "id": "5x6-0B-DPV",
@@ -200866,7 +200866,7 @@
       "solvesFile": "5x6-0B-DPV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 52
     },
     {
       "id": "5x6-0B-DPW",
@@ -200890,7 +200890,7 @@
       "solvesFile": "5x6-0B-DPW.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 7
     },
     {
       "id": "5x6-0B-DPX",
@@ -200914,7 +200914,7 @@
       "solvesFile": "5x6-0B-DPX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 13
     },
     {
       "id": "5x6-0B-DPY",
@@ -200937,7 +200937,7 @@
       "solvesFile": "5x6-0B-DPY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 5
     },
     {
       "id": "5x6-0B-DPZ",
@@ -200961,7 +200961,7 @@
       "solvesFile": "5x6-0B-DPZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 14
     },
     {
       "id": "5x6-0B-DQA",
@@ -200985,7 +200985,7 @@
       "solvesFile": "5x6-0B-DQA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DQB",
@@ -201009,7 +201009,7 @@
       "solvesFile": "5x6-0B-DQB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 13
     },
     {
       "id": "5x6-0B-DQC",
@@ -201034,7 +201034,7 @@
       "solvesFile": "5x6-0B-DQC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-DQD",
@@ -201083,7 +201083,7 @@
       "solvesFile": "5x6-0B-DQE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 80
     },
     {
       "id": "5x6-0B-DQF",
@@ -201107,7 +201107,7 @@
       "solvesFile": "5x6-0B-DQF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 39
     },
     {
       "id": "5x6-0B-DQG",
@@ -201131,7 +201131,7 @@
       "solvesFile": "5x6-0B-DQG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 5
     },
     {
       "id": "5x6-0B-DQH",
@@ -201156,7 +201156,7 @@
       "solvesFile": "5x6-0B-DQH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 41
     },
     {
       "id": "5x6-0B-DQI",
@@ -201674,7 +201674,7 @@
       "solvesFile": "5x6-0B-DRC.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-DRD",
@@ -201699,7 +201699,7 @@
       "solvesFile": "5x6-0B-DRD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-DRE",
@@ -201724,7 +201724,7 @@
       "solvesFile": "5x6-0B-DRE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-DRF",
@@ -201750,7 +201750,7 @@
       "solvesFile": "5x6-0B-DRF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 15
     },
     {
       "id": "5x6-0B-DRG",
@@ -201776,7 +201776,7 @@
       "solvesFile": "5x6-0B-DRG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-DRH",
@@ -201801,7 +201801,7 @@
       "solvesFile": "5x6-0B-DRH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 8
     },
     {
       "id": "5x6-0B-DRI",
@@ -201825,7 +201825,7 @@
       "solvesFile": "5x6-0B-DRI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DRJ",
@@ -201849,7 +201849,7 @@
       "solvesFile": "5x6-0B-DRJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DRK",
@@ -201874,7 +201874,7 @@
       "solvesFile": "5x6-0B-DRK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 17
     },
     {
       "id": "5x6-0B-DRL",
@@ -201925,7 +201925,7 @@
       "solvesFile": "5x6-0B-DRM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-DRN",
@@ -201951,7 +201951,7 @@
       "solvesFile": "5x6-0B-DRN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DRO",
@@ -201977,7 +201977,7 @@
       "solvesFile": "5x6-0B-DRO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 4
     },
     {
       "id": "5x6-0B-DRP",
@@ -202001,7 +202001,7 @@
       "solvesFile": "5x6-0B-DRP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 14
     },
     {
       "id": "5x6-0B-DRQ",
@@ -202026,7 +202026,7 @@
       "solvesFile": "5x6-0B-DRQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 5
     },
     {
       "id": "5x6-0B-DRR",
@@ -202051,7 +202051,7 @@
       "solvesFile": "5x6-0B-DRR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-DRS",
@@ -202075,7 +202075,7 @@
       "solvesFile": "5x6-0B-DRS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 9
     },
     {
       "id": "5x6-0B-DRT",
@@ -202725,7 +202725,7 @@
       "solvesFile": "5x6-0B-DSS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 35
     },
     {
       "id": "5x6-0B-DST",
@@ -202774,7 +202774,7 @@
       "solvesFile": "5x6-0B-DSU.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 45
     },
     {
       "id": "5x6-0B-DSV",
@@ -202798,7 +202798,7 @@
       "solvesFile": "5x6-0B-DSV.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 3
     },
     {
       "id": "5x6-0B-DSW",
@@ -202844,7 +202844,7 @@
       "solvesFile": "5x6-0B-DSX.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 9
     },
     {
       "id": "5x6-0B-DSY",
@@ -202867,7 +202867,7 @@
       "solvesFile": "5x6-0B-DSY.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 3
     },
     {
       "id": "5x6-0B-DSZ",
@@ -202891,7 +202891,7 @@
       "solvesFile": "5x6-0B-DSZ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 48
     },
     {
       "id": "5x6-0B-DTA",
@@ -202915,7 +202915,7 @@
       "solvesFile": "5x6-0B-DTA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-DTB",
@@ -202940,7 +202940,7 @@
       "solvesFile": "5x6-0B-DTB.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 72
     },
     {
       "id": "5x6-0B-DTC",
@@ -202989,7 +202989,7 @@
       "solvesFile": "5x6-0B-DTD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DTE",
@@ -203013,7 +203013,7 @@
       "solvesFile": "5x6-0B-DTE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DTF",
@@ -203037,7 +203037,7 @@
       "solvesFile": "5x6-0B-DTF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 31
     },
     {
       "id": "5x6-0B-DTG",
@@ -203061,7 +203061,7 @@
       "solvesFile": "5x6-0B-DTG.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DTH",
@@ -203086,7 +203086,7 @@
       "solvesFile": "5x6-0B-DTH.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 20
     },
     {
       "id": "5x6-0B-DTI",
@@ -203111,7 +203111,7 @@
       "solvesFile": "5x6-0B-DTI.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 130
     },
     {
       "id": "5x6-0B-DTJ",
@@ -203136,7 +203136,7 @@
       "solvesFile": "5x6-0B-DTJ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 21
     },
     {
       "id": "5x6-0B-DTK",
@@ -203160,7 +203160,7 @@
       "solvesFile": "5x6-0B-DTK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 5
     },
     {
       "id": "5x6-0B-DTL",
@@ -203185,7 +203185,7 @@
       "solvesFile": "5x6-0B-DTL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 46
     },
     {
       "id": "5x6-0B-DTM",
@@ -203209,7 +203209,7 @@
       "solvesFile": "5x6-0B-DTM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 25
     },
     {
       "id": "5x6-0B-DTN",
@@ -203232,7 +203232,7 @@
       "solvesFile": "5x6-0B-DTN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 3
     },
     {
       "id": "5x6-0B-DTO",
@@ -203256,7 +203256,7 @@
       "solvesFile": "5x6-0B-DTO.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 96
     },
     {
       "id": "5x6-0B-DTP",
@@ -203280,7 +203280,7 @@
       "solvesFile": "5x6-0B-DTP.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0B-DTQ",
@@ -203304,7 +203304,7 @@
       "solvesFile": "5x6-0B-DTQ.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 6
     },
     {
       "id": "5x6-0B-DTR",
@@ -203329,7 +203329,7 @@
       "solvesFile": "5x6-0B-DTR.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 3
     },
     {
       "id": "5x6-0B-DTS",
@@ -203354,7 +203354,7 @@
       "solvesFile": "5x6-0B-DTS.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "5x6-0B-DTT",

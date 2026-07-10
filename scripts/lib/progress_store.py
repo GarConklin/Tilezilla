@@ -266,29 +266,10 @@ def sync_mysql_after_solve(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO daily_results (
+                INSERT IGNORE INTO daily_results (
                     challenge_date, user_id, completion_time_seconds,
                     solution_id, completed_at, hints_used_count
                 ) VALUES (%s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE
-                    completion_time_seconds = LEAST(
-                        completion_time_seconds, VALUES(completion_time_seconds)
-                    ),
-                    solution_id = IF(
-                        VALUES(completion_time_seconds) < completion_time_seconds,
-                        VALUES(solution_id),
-                        solution_id
-                    ),
-                    completed_at = IF(
-                        VALUES(completion_time_seconds) < completion_time_seconds,
-                        VALUES(completed_at),
-                        completed_at
-                    ),
-                    hints_used_count = IF(
-                        VALUES(completion_time_seconds) < completion_time_seconds,
-                        VALUES(hints_used_count),
-                        hints_used_count
-                    )
                 """,
                 (
                     challenge_date,

@@ -9590,29 +9590,32 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   display: none !important;
 }
 
-/* Records tab — hide journal side tabs until Back returns to profile/stats */
+/* Records tab — hide journal side tabs; bottom bar stays interactive */
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-puzzle,
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-stats,
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-filter,
-.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-records,
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--tab-records {
+  display: none !important;
+}
+
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-filter,
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-stats,
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-prev,
 .tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-next,
-.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-exit {
-  display: none !important;
+.tz-journal-root[data-active-tab="records"] .tz-journal-field--btn-exit,
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-filter,
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-stats,
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-prev,
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-next,
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-exit {
+  z-index: 5;
 }
 
 /* Daily post-solve leaderboard — records-only journal overlay */
 .tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--tab-puzzle,
 .tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--tab-stats,
 .tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--tab-filter,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--tab-records,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-filter,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-stats,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-prev,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-next,
-.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--btn-exit {
+.tz-journal-root[data-post-daily-leaderboard="true"] .tz-journal-field--tab-records {
   display: none !important;
 }
 

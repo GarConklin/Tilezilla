@@ -2561,9 +2561,12 @@ async function processSolutionFound(lv, res, placements) {
   const hintRewardEligible = !hasHintCompletionRewardForfeit(lv.id);
 
   let leaderboardSubmitted = false;
-  if (leaderboardEligible) {
+  const challengeDate = todayChallengeDate();
+  const dailyAlreadyRecorded = challengeDate
+    && progress?.hasLeaderboardResult?.(challengeDate, state.userId || 'gar');
+  if (leaderboardEligible && !dailyAlreadyRecorded) {
     const lb = progress?.recordLeaderboardResult?.({
-      challengeDate: todayChallengeDate(),
+      challengeDate,
       userId: state.userId || 'gar',
       username: getActiveUsername() || null,
       levelId: lv.id,
@@ -2603,7 +2606,7 @@ async function processSolutionFound(lv, res, placements) {
       hintsUsedCount,
       exampleRouteViewed,
       leaderboardSubmitted,
-      challengeDate: leaderboardEligible ? todayChallengeDate() : null,
+      challengeDate: leaderboardEligible && !dailyAlreadyRecorded ? challengeDate : null,
     },
   }));
 

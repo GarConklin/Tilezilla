@@ -345,9 +345,15 @@ export class Progress {
     } catch { /* quota */ }
   }
 
+  hasLeaderboardResult(challengeDate, userId) {
+    if (!challengeDate || !userId) return false;
+    const store = this.loadDailyResults();
+    return !!store[`${challengeDate}:${userId}`];
+  }
+
   /**
    * Record a daily leaderboard entry (local stand-in for daily_results table).
-   * Keeps the fastest eligible time per user per challenge date.
+   * Daily challenge: first eligible solve wins — later faster solutions do not replace it.
    */
   recordLeaderboardResult(entry) {
     const {
@@ -376,8 +382,8 @@ export class Progress {
     const rowKey = `${challengeDate}:${userId}`;
     const existing = store[rowKey];
 
-    if (existing && Number(existing.completionTimeSeconds) <= sec) {
-      return { saved: false, reason: 'slower-or-equal', existing };
+    if (existing) {
+      return { saved: false, reason: 'already-recorded', existing };
     }
 
     store[rowKey] = {

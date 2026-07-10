@@ -239,6 +239,24 @@ function isJournalRecordsTab() {
   return state.activeTab === 'records';
 }
 
+function isJournalRecordsContext() {
+  return isJournalRecordsTab() || state.postDailyLeaderboard;
+}
+
+function clearPostDailyLeaderboardFlag() {
+  state.postDailyLeaderboard = false;
+  $('journalRoot')?.removeAttribute('data-post-daily-leaderboard');
+}
+
+function journalResumeCloseOpts() {
+  if (!state.resumeGameOnClose) return {};
+  return {
+    resumeGameOnClose: true,
+    resumeLevelId: state.resumeLevelId,
+    resumeScreen: state.resumeScreen,
+  };
+}
+
 function syncJournalTabContent() {
   const artTab = isJournalArtTab();
   const frame = $('journalRoot')?.querySelector('.tz-journal-dialog__frame');
@@ -258,12 +276,12 @@ function syncJournalTabContent() {
     void recordsApi?.applyRecordsLayoutFromDisk?.({ force: true });
   }
 
-  const hideJournalChrome = isJournalRecordsTab();
-  for (const id of ['journalBtnFilter', 'journalBtnStats', 'journalBtnPrev', 'journalBtnNext', 'journalBtnExit']) {
-    $(id)?.toggleAttribute('hidden', hideJournalChrome || state.postDailyLeaderboard);
-  }
+  const hideJournalSideTabs = isJournalRecordsContext();
   for (const id of ['journalTabPuzzle', 'journalTabStats', 'journalTabFilter', 'journalTabRecords']) {
-    $(id)?.toggleAttribute('hidden', hideJournalChrome || state.postDailyLeaderboard);
+    $(id)?.toggleAttribute('hidden', hideJournalSideTabs);
+  }
+  for (const id of ['journalBtnFilter', 'journalBtnStats', 'journalBtnPrev', 'journalBtnNext', 'journalBtnExit']) {
+    $(id)?.removeAttribute('hidden');
   }
 
   if (artTab) {
@@ -964,19 +982,37 @@ export function initJournalUi({
   }
 
   $('journalBtnFilter')?.addEventListener('click', () => {
+    if (isJournalRecordsContext()) {
+      clearPostDailyLeaderboardFlag();
+      void openJournal({ mode: 'library', ...journalResumeCloseOpts() });
+      return;
+    }
     void openJournal({ mode: 'library' });
   });
 
   $('journalBtnStats')?.addEventListener('click', () => {
+    if (isJournalRecordsContext()) {
+      clearPostDailyLeaderboardFlag();
+      void activateJournalTab('stats');
+      return;
+    }
     void activateJournalTab('stats');
   });
 
   $('journalBtnPrev')?.addEventListener('click', () => {
+    if (isJournalRecordsContext()) {
+      closeJournal();
+      return;
+    }
     if (state.mode === 'library') navigateLibraryPuzzle(-1);
     else void navigateRecordSolution(-1);
   });
 
   $('journalBtnNext')?.addEventListener('click', () => {
+    if (isJournalRecordsContext()) {
+      closeJournal();
+      return;
+    }
     if (state.mode === 'library') navigateLibraryPuzzle(1);
     else void navigateRecordSolution(1);
   });
