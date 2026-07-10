@@ -265,10 +265,14 @@ export function setGuestPlacementBanner(root = document, summary = null) {
  */
 export function fetchLocalLeaderboardRows(progress, challengeDate = todayChallengeDateIso()) {
   if (!progress?.getLeaderboardResultsForDate) return [];
-  return (progress.getLeaderboardResultsForDate(challengeDate) || []).map((row) => ({
-    ...row,
-    username: row.username || '',
-  }));
+  return (progress.getLeaderboardResultsForDate(challengeDate) || []).map((row) => {
+    const solutionIndex = Number(row.solutionIndex ?? row.solutionId);
+    return {
+      ...row,
+      solutionIndex: Number.isFinite(solutionIndex) ? solutionIndex : null,
+      username: row.username || '',
+    };
+  });
 }
 
 function mergeLeaderboardRowSets(serverRows, localRows) {
@@ -286,6 +290,10 @@ function mergeLeaderboardRowSets(serverRows, localRows) {
         userId: row.userId ?? prev?.userId ?? userKey,
         username: String(row.username || prev?.username || userKey).trim(),
         completionTimeSeconds: sec > 0 ? sec : prevSec,
+        solutionIndex: Number.isFinite(Number(row?.solutionIndex))
+          ? Number(row.solutionIndex)
+          : (prev?.solutionIndex ?? null),
+        solutionId: row?.solutionId ?? prev?.solutionId ?? null,
         hintsUsedCount: Math.max(
           0,
           Number(row?.hintsUsedCount ?? prev?.hintsUsedCount) || 0,
@@ -319,6 +327,8 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
           userId: row.userId ?? row.user_id ?? '',
           username: String(row.username || '').trim(),
           completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
+          solutionId: Number(row.solutionId) || null,
+          solutionIndex: Number(row.solutionId) > 0 ? Number(row.solutionId) - 1 : null,
           hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
           levelId: row.levelId || json.levelId || '',
           challengeDate: row.challengeDate || json.date || dateKey,

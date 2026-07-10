@@ -25,7 +25,7 @@ import {
   buildNewPayload as buildDiscoveryPayload,
   buildDuplicatePayload as buildDiscoveryDuplicatePayload,
 } from './tilezilla-discovery-record.js';
-import { todayChallengeDateIso } from './records-data.js';
+import { fetchLeaderboardRows, todayChallengeDateIso } from './records-data.js';
 
 const CONFIG = {
   rows: 6,
@@ -2355,6 +2355,43 @@ function todayChallengeDate() {
     : todayChallengeDateIso();
 }
 
+function sameLevelId(a, b) {
+  return String(a || '').replace(/\.json$/i, '') === String(b || '').replace(/\.json$/i, '');
+}
+
+function isCurrentUserLeaderboardRow(row) {
+  const rowUserId = String(row?.userId ?? '').trim();
+  const currentUserId = String(state.userId ?? '').trim();
+  if (rowUserId && currentUserId && rowUserId === currentUserId) return true;
+  const rowName = String(row?.username ?? '').trim().toLowerCase();
+  const currentName = String(getActiveUsername() || '').trim().toLowerCase();
+  return !!rowName && !!currentName && rowName === currentName;
+}
+
+async function resolveDailyCompletionFallbackForLevel(lv) {
+  if (!lv?.id) return null;
+  const dateKey = todayChallengeDate();
+  let rows = [];
+  try {
+    rows = await fetchLeaderboardRows(progress, dateKey);
+  } catch {
+    rows = progress?.getLeaderboardResultsForDate?.(dateKey) || [];
+  }
+  const candidates = (rows || [])
+    .filter((row) => sameLevelId(row?.levelId, lv.id))
+    .filter(isCurrentUserLeaderboardRow)
+    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0));
+  const row = candidates[0];
+  if (!row) return null;
+  const solutionIndex = Number(row.solutionIndex ?? row.solutionId);
+  return {
+    foundCount: 1,
+    index: Number.isFinite(solutionIndex) && solutionIndex >= 0 ? solutionIndex : null,
+    completedAt: row.completedAt || null,
+    completionTimeSeconds: Math.max(0, Number(row.completionTimeSeconds) || 0),
+  };
+}
+
 function isDailyLeaderboardEligible() {
   const meta = window.__dailyChallengeMeta;
   if (!meta || meta.leaderboardEligible === false) return false;
@@ -3506,7 +3543,9 @@ async function getMenuPuzzleInfo() {
   if (!lv?.id) return null;
   const known = await loadKnownSolutionsForLevel(lv);
   const found = progress?.getFoundForLevel(lv.id) || [];
-  const foundCount = countCatalogSolutionsFound(found);
+  const progressFoundCount = countCatalogSolutionsFound(found);
+  const dailyFallback = progressFoundCount ? null : await resolveDailyCompletionFallbackForLevel(lv);
+  const foundCount = progressFoundCount || dailyFallback?.foundCount || 0;
   const total = known.length || totalKnownForLevel(lv);
   const screen = document.querySelector('.tz-app')?.dataset?.screen || 'daily-challenge';
   const rows = lv.board?.rows;
@@ -3516,8 +3555,10 @@ async function getMenuPuzzleInfo() {
     : '—';
   const hintsMax = Number(CONFIG.hintsPerPuzzle) || 2;
   const hintsUsed = Math.min(hintsMax, Number(state.hintsUsedThisPuzzle) || 0);
-  const bestTimeSeconds = window.__puzzleTimer?.loadBest?.(lv.id, state.userId) ?? null;
-  const firstSolvedAt = progress?.getFirstSolvedAt?.(lv.id) || null;
+  const bestTimeSeconds = window.__puzzleTimer?.loadBest?.(lv.id, state.userId)
+    ?? dailyFallback?.completionTimeSeconds
+    ?? null;
+  const firstSolvedAt = progress?.getFirstSolvedAt?.(lv.id) || dailyFallback?.completedAt || null;
   return {
     id: lv.id,
     name: lv.name || lv.id,
@@ -3539,7 +3580,7 @@ async function getMenuFoundSolutions() {
   if (!lv?.id) return { entries: [], total: 0, foundCount: 0, hasKnownTotal: false };
   const known = await loadKnownSolutionsForLevel(lv);
   const found = progress?.getFoundForLevel(lv.id) || [];
-  const entries = found
+  let entries = found
     .filter((f) => !f.bonus && Number.isFinite(Number(f.index)))
     .map((f) => {
       const index = Number(f.index);
@@ -3553,11 +3594,23 @@ async function getMenuFoundSolutions() {
       };
     })
     .sort((a, b) => a.index - b.index);
+  const dailyFallback = entries.length ? null : await resolveDailyCompletionFallbackForLevel(lv);
+  if (!entries.length && Number.isFinite(Number(dailyFallback?.index))) {
+    const index = Number(dailyFallback.index);
+    const placements = known[index]?.placements || [];
+    if (placements.length) {
+      entries = [{
+        index,
+        label: `Solution #${index + 1}`,
+        placements,
+      }];
+    }
+  }
   const total = known.length || totalKnownForLevel(lv);
   return {
     entries,
     total,
-    foundCount: countCatalogSolutionsFound(found),
+    foundCount: countCatalogSolutionsFound(found) || dailyFallback?.foundCount || 0,
     hasKnownTotal: levelHasKnownTotal(lv),
     level: lv,
   };

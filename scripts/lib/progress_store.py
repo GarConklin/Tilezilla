@@ -512,6 +512,7 @@ def daily_leaderboard_for_date(
                     u.username                 AS username,
                     u.player_name              AS player_name,
                     dr.completion_time_seconds AS time_seconds,
+                    dr.solution_id             AS solution_id,
                     dr.hints_used_count        AS hints_used_count,
                     dr.completed_at            AS completed_at
                 FROM daily_results dr
@@ -532,6 +533,7 @@ def daily_leaderboard_for_date(
                         "userId": user_id,
                         "username": display_name,
                         "completionTimeSeconds": int(row.get("time_seconds") or 0),
+                        "solutionId": int(row.get("solution_id") or 0) or None,
                         "hintsUsedCount": max(0, int(row.get("hints_used_count") or 0)),
                         "levelId": level_id,
                         "challengeDate": date_key,

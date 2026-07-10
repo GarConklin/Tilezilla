@@ -1,0 +1,45 @@
+# July 10 2026 — batch 4/4 (41 levels)
+# Source: data/5x6 tilepz solves 10 July  2026.txt (catalog DNW … DUG)
+# Terminal 4: .\scripts\run-enumerate-levels.ps1 -LevelListFile data/july10-5x6-batch-4.txt -SyncCatalog -ContinueOnError
+
+5x6-0B-DSS
+5x6-0B-DST
+5x6-0B-DSU
+5x6-0B-DSV
+5x6-0B-DSW
+5x6-0B-DSX
+5x6-0B-DSY
+5x6-0B-DSZ
+5x6-0B-DTA
+5x6-0B-DTB
+5x6-0B-DTC
+5x6-0B-DTD
+5x6-0B-DTE
+5x6-0B-DTF
+5x6-0B-DTG
+5x6-0B-DTH
+5x6-0B-DTI
+5x6-0B-DTJ
+5x6-0B-DTK
+5x6-0B-DTL
+5x6-0B-DTM
+5x6-0B-DTN
+5x6-0B-DTO
+5x6-0B-DTP
+5x6-0B-DTQ
+5x6-0B-DTR
+5x6-0B-DTS
+5x6-0B-DTT
+5x6-0B-DTU
+5x6-0B-DTV
+5x6-0B-DTW
+5x6-0B-DTX
+5x6-0B-DTY
+5x6-0B-DTZ
+5x6-0B-DUA
+5x6-0B-DUB
+5x6-0B-DUC
+5x6-0B-DUD
+5x6-0B-DUE
+5x6-0B-DUF
+5x6-0B-DUG
