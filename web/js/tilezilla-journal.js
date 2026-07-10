@@ -16,6 +16,8 @@ import { initJournalListScroller } from './journal-scroller.js';
 import { closePuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 import { initRecordsPanel } from './tilezilla-records.js';
 
+const $ = (id) => document.getElementById(id);
+
 let getApp = () => null;
 let menuApi = null;
 let loadPuzzleLevel = async () => false;
