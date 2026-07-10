@@ -317,13 +317,13 @@ export async function resolveDailyCompletionFallback(app, levelId, challengeDate
   const dates = datesToTryForDailyFallback(progress, levelId, challengeDate);
 
   for (const dateKey of dates) {
-    const local = resolveDailyCompletionFromLocal(progress, levelId, dateKey, userId, username);
-    if (local) return local;
+    const remote = await resolveDailyCompletionFromApi(progress, levelId, dateKey, userId, username);
+    if (remote) return remote;
   }
 
   for (const dateKey of dates) {
-    const remote = await resolveDailyCompletionFromApi(progress, levelId, dateKey, userId, username);
-    if (remote) return remote;
+    const local = resolveDailyCompletionFromLocal(progress, levelId, dateKey, userId, username);
+    if (local) return local;
   }
 
   return null;
@@ -407,32 +407,41 @@ export function fetchLocalLeaderboardRows(progress, challengeDate = todayChallen
 
 function mergeLeaderboardRowSets(serverRows, localRows) {
   const byUser = new Map();
+  const userKeyFor = (row) => String(row?.userId ?? row?.username ?? '').trim();
+
   const remember = (row) => {
-    const userKey = String(row?.userId ?? row?.username ?? '').trim();
+    const userKey = userKeyFor(row);
     if (!userKey) return;
-    const prev = byUser.get(userKey);
-    const sec = Math.max(0, Number(row?.completionTimeSeconds) || 0);
-    const prevSec = Math.max(0, Number(prev?.completionTimeSeconds) || 0);
-    if (!prev || (sec > 0 && (prevSec <= 0 || sec < prevSec))) {
-      byUser.set(userKey, {
-        ...prev,
-        ...row,
-        userId: row.userId ?? prev?.userId ?? userKey,
-        username: String(row.username || prev?.username || userKey).trim(),
-        completionTimeSeconds: sec > 0 ? sec : prevSec,
-        solutionIndex: Number.isFinite(Number(row?.solutionIndex))
-          ? Number(row.solutionIndex)
-          : (prev?.solutionIndex ?? null),
-        solutionId: row?.solutionId ?? prev?.solutionId ?? null,
-        hintsUsedCount: Math.max(
-          0,
-          Number(row?.hintsUsedCount ?? prev?.hintsUsedCount) || 0,
-        ),
-      });
-    }
+    byUser.set(userKey, {
+      userId: row.userId ?? userKey,
+      username: String(row.username || userKey).trim(),
+      completionTimeSeconds: Math.max(0, Number(row?.completionTimeSeconds) || 0),
+      solutionIndex: Number.isFinite(Number(row?.solutionIndex))
+        ? Number(row.solutionIndex)
+        : (Number(row?.solutionId) > 0 ? Number(row.solutionId) - 1 : null),
+      solutionId: row?.solutionId ?? null,
+      hintsUsedCount: Math.max(0, Number(row?.hintsUsedCount) || 0),
+      levelId: row.levelId || '',
+      challengeDate: row.challengeDate || '',
+      completedAt: row.completedAt || null,
+      isGuestPreview: !!row.isGuestPreview,
+    });
   };
+
+  // MySQL / API rows are authoritative — local only fills users missing from server.
   for (const row of serverRows || []) remember(row);
-  for (const row of localRows || []) remember(row);
+  for (const row of localRows || []) {
+    const userKey = userKeyFor(row);
+    if (!userKey) continue;
+    if (byUser.has(userKey)) continue;
+    const duplicatePlayer = (serverRows || []).some(
+      (serverRow) => isLeaderboardRowForCurrentUser(serverRow, row.userId, row.username)
+        || isLeaderboardRowForCurrentUser(row, serverRow.userId, serverRow.username),
+    );
+    if (duplicatePlayer) continue;
+    remember(row);
+  }
+
   return [...byUser.values()].sort(
     (a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0),
   );
