@@ -9,7 +9,7 @@
 param(
   [string]$RepoRoot = "",
   [switch]$ContinueOnError,
-  [string]$LogDir = "data/solver-runs"
+  [string]$LogDir = "tools/data/solver-runs"
 )
 
 Set-StrictMode -Version Latest

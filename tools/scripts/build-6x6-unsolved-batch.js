@@ -7,7 +7,7 @@
  *
  * Usage:
  *   node tools/scripts/build-6x6-unsolved-batch.js
- *   node tools/scripts/build-6x6-unsolved-batch.js --out "data/tilepz solves 6x6 need-enumeration.txt"
+ *   node tools/scripts/build-6x6-unsolved-batch.js --out "tools/data/batches/tilepz solves 6x6 need-enumeration.txt"
  *   node tools/scripts/build-6x6-unsolved-batch.js --include-jun13-batch
  */
 
@@ -20,18 +20,18 @@ const { splitJsonDocs } = require('./lib/split-json-docs');
 const ROOT = path.join(__dirname, '../..');
 const LEVELS_PATH = path.join(ROOT, 'data', 'levels', 'levels.json');
 const SOLVES_DIR = path.join(ROOT, 'solves');
-const JUN13_BATCH = path.join(ROOT, 'data', 'tilepz solves 6x6 13 jun 2026.txt');
+const JUN13_BATCH = path.join(ROOT, 'tools', 'data', 'batches', 'tilepz solves 6x6 13 jun 2026.txt');
 
 const outIdx = process.argv.indexOf('--out');
 const manifestIdx = process.argv.indexOf('--manifest');
 const outPath =
   outIdx >= 0 && process.argv[outIdx + 1]
     ? path.resolve(ROOT, process.argv[outIdx + 1])
-    : path.join(ROOT, 'data', 'tilepz solves 6x6 need-enumeration.txt');
+    : path.join(ROOT, 'tools', 'data', 'batches', 'tilepz solves 6x6 need-enumeration.txt');
 const manifestPath =
   manifestIdx >= 0 && process.argv[manifestIdx + 1]
     ? path.resolve(ROOT, process.argv[manifestIdx + 1])
-    : path.join(ROOT, 'data', 'solver-runs', '6x6-need-enumeration-manifest.json');
+    : path.join(ROOT, 'tools', 'data', 'solver-runs', '6x6-need-enumeration-manifest.json');
 const includeJun13 = process.argv.includes('--include-jun13-batch');
 
 function isFullyEnumerated(doc) {

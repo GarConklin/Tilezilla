@@ -126,7 +126,7 @@ function main() {
 
   const out = path.join(
     ROOT,
-    'data/solver-runs',
+    'tools/data/solver-runs',
     `catalog-tiles-sync-${Date.now()}.json`
   );
   fs.writeFileSync(

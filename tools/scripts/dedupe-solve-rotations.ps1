@@ -36,7 +36,7 @@ if (-not (Test-DockerCompose -RepoRoot $RepoRoot)) {
   throw "Docker Compose not available."
 }
 
-$runsDir = Join-Path $RepoRoot "data\solver-runs"
+$runsDir = Join-Path $RepoRoot "tools\data\solver-runs"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $logPath = Join-Path $runsDir "dedupe-rotations-$stamp.log"
 $logWriter = New-Object System.IO.StreamWriter($logPath, $false, [System.Text.UTF8Encoding]::new($false))
@@ -59,7 +59,7 @@ if ($OpenTail) {
   Start-Process powershell -ArgumentList @('-NoExit', '-Command', "Get-Content -LiteralPath '$logPath' -Wait -Tail 40") | Out-Null
 }
 
-$reportPath = "data/solver-runs/rotation-dedup-audit-$stamp.json"
+$reportPath = "tools/data/solver-runs/rotation-dedup-audit-$stamp.json"
 $dedupeArgs = @("--summary", "--report-out", $reportPath)
 if (-not $AuditOnly) { $dedupeArgs += "--fix" }
 
@@ -98,7 +98,7 @@ if (-not $SkipCsv) {
   try {
     $prev = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    $out = & docker compose run --rm web python tools/scripts/export_levels_csv.py --out data/solver-runs/levels-solution-counts.csv 2>&1
+    $out = & docker compose run --rm web python tools/scripts/export_levels_csv.py --out tools/data/solver-runs/levels-solution-counts.csv 2>&1
     $ErrorActionPreference = $prev
     foreach ($line in $out) {
       Write-RunLog "$line"

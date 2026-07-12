@@ -10,7 +10,7 @@
  * Safety:
  *   Default: --dry-run (no writes)
  *   --apply: write changes
- *   --backup: before each changed file, copy to data/solver-runs/solve-label-backup-<ts>/
+ *   --backup: before each changed file, copy to tools/data/solver-runs/solve-label-backup-<ts>/
  *   --file <path>: only one file
  *   --limit N: cap files changed per run
  *

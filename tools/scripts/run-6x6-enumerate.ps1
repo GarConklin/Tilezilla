@@ -6,7 +6,7 @@
   1. Build batch (if missing):
        docker compose run --rm web node tools/scripts/build-6x6-unsolved-batch.js --include-jun13-batch
   2. Ingest seeds once:
-       .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "data\tilepz solves 6x6 need-enumeration.txt"
+       .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "tools\data\batches\tilepz solves 6x6 need-enumeration.txt"
   3. Enumerate:
        .\tools\scripts\run-6x6-enumerate.ps1 -NoTty -ContinueOnError
   4. After all finish:
@@ -21,14 +21,14 @@
 #>
 param(
   [string]$RepoRoot = "",
-  [string]$IdListFile = "data/solver-runs/6x6-need-enumeration-ids.txt",
+  [string]$IdListFile = "tools/data/solver-runs/6x6-need-enumeration-ids.txt",
   [int]$MaxSol = 500000,
   [switch]$DryRun,
   [switch]$ContinueOnError,
   [switch]$SyncCatalogOnly,
   [string]$ResumeFrom = "",
   [string]$EndAt = "",
-  [string]$LogDir = "data/solver-runs",
+  [string]$LogDir = "tools/data/solver-runs",
   [int]$ProgressEvery = 500,
   [int]$PruneDockerEvery = 5,
   [switch]$NoTty
@@ -97,7 +97,7 @@ if ($SyncCatalogOnly) {
   Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-path-count-from-solves.js" -ExtraArgs @("--apply", "--ids", $syncIds)
   Push-Location $RepoRoot
   try {
-    & docker compose run --rm web python tools/scripts/export_levels_csv.py --out data/solver-runs/levels-solution-counts.csv 2>&1 | ForEach-Object { Write-Host $_ }
+    & docker compose run --rm web python tools/scripts/export_levels_csv.py --out tools/data/solver-runs/levels-solution-counts.csv 2>&1 | ForEach-Object { Write-Host $_ }
   }
   finally { Pop-Location }
   exit 0
@@ -122,7 +122,7 @@ $solverBase = @(
   "--progress-every", "$ProgressEvery",
   "--progress-on-json",
   "--max-sol", "$MaxSol",
-  "--stream-solves-dir", "data/solver-runs/streams"
+  "--stream-solves-dir", "tools/data/solver-runs/streams"
 )
 
 $failed = @()

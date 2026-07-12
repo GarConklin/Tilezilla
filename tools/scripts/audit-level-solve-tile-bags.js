@@ -5,7 +5,7 @@
  *
  * Usage:
  *   node tools/scripts/audit-level-solve-tile-bags.js
- *   node tools/scripts/audit-level-solve-tile-bags.js --out data/solver-runs/level-solve-bag-match.json
+ *   node tools/scripts/audit-level-solve-tile-bags.js --out tools/data/solver-runs/level-solve-bag-match.json
  */
 
 'use strict';

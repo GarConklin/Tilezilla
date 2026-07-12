@@ -1,5 +1,5 @@
 auth/public/api
-data/solver-runs/
+tools/data/solver-runs/
 *.zip
 *.log
 __pycache__/

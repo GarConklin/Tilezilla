@@ -17,7 +17,7 @@
   .\tools\scripts\run-enumerate-levels.ps1 -LevelIds "5x6-0B-AUY" -DryRun
 
 .EXAMPLE
-  .\tools\scripts\run-enumerate-levels.ps1 -LevelListFile "data/june30-enumerate-queue.txt" -SyncCatalog -ContinueOnError
+  .\tools\scripts\run-enumerate-levels.ps1 -LevelListFile "tools/data/batches/june30-enumerate-queue.txt" -SyncCatalog -ContinueOnError
 
   Stop: .\tools\scripts\stop-solve-docker-runs.ps1 (2nd terminal), then Ctrl+C here.
 #>
@@ -36,7 +36,7 @@ param(
 
   [switch]$SyncCatalog,
 
-  [string]$LogDir = "data/solver-runs",
+  [string]$LogDir = "tools/data/solver-runs",
 
   [int]$ProgressEvery = 500,
 
@@ -53,6 +53,7 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
 }
 
 . (Join-Path $PSScriptRoot "lib\Docker-Web.ps1")
+. (Join-Path $PSScriptRoot "_repo-data.ps1")
 
 if (-not (Test-DockerCompose -RepoRoot $RepoRoot)) {
   throw "docker compose not available from $RepoRoot"
@@ -63,7 +64,7 @@ if ($LevelListFile) {
   $listPath = if ([System.IO.Path]::IsPathRooted($LevelListFile)) {
     $LevelListFile
   } else {
-    Join-Path $RepoRoot ($LevelListFile -replace '/', '\')
+    Resolve-TilezillaDevDataPath -RepoRoot $RepoRoot -RelativePath $LevelListFile
   }
   if (-not (Test-Path $listPath)) {
     throw "Level list file not found: $listPath"
@@ -133,7 +134,7 @@ $solverBase = @(
   "--progress-every", "$ProgressEvery",
   "--progress-on-json",
   "--max-sol", "$MaxSol",
-  "--stream-solves-dir", "data/solver-runs/streams"
+  "--stream-solves-dir", "tools/data/solver-runs/streams"
 )
 
 $failed = @()
@@ -233,7 +234,7 @@ if (-not $DryRun -and $SyncCatalog) {
   Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-path-count-from-solves.js" -ExtraArgs @("--apply", "--ids", $syncIds)
   Push-Location $RepoRoot
   try {
-    & docker compose run --rm web python tools/scripts/export_levels_csv.py --out data/solver-runs/levels-solution-counts.csv 2>&1 | ForEach-Object { Write-Host $_ }
+    & docker compose run --rm web python tools/scripts/export_levels_csv.py --out tools/data/solver-runs/levels-solution-counts.csv 2>&1 | ForEach-Object { Write-Host $_ }
   }
   finally { Pop-Location }
 }

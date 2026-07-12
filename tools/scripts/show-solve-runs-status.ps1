@@ -91,7 +91,7 @@ function Show-BatchProgress {
     Select-Object -First 8
 
   if (-not $ndjson -or $ndjson.Count -eq 0) {
-    Write-Host "  (no *-enumerate-*.ndjson under data/solver-runs)" -ForegroundColor DarkGray
+    Write-Host "  (no *-enumerate-*.ndjson under tools/data/solver-runs)" -ForegroundColor DarkGray
     return
   }
 
@@ -174,8 +174,8 @@ function Show-Status {
   }
 
   Write-Host ""
-  Write-Host "Recent batch logs (data/solver-runs/*-enumerate-*.ndjson)" -ForegroundColor Yellow
-  $runsDir = Join-Path $RepoRoot "data\solver-runs"
+  Write-Host "Recent batch logs (tools/data/solver-runs/*-enumerate-*.ndjson)" -ForegroundColor Yellow
+  $runsDir = Join-Path $RepoRoot "tools\data\solver-runs"
   Show-BatchProgress -RunsDir $runsDir
 
   Write-Host ""

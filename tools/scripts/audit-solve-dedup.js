@@ -11,7 +11,7 @@
  *   node tools/scripts/audit-solve-dedup.js                     # all solve files
  *   node tools/scripts/audit-solve-dedup.js solves/4x5-0B-AAB.json
  *   node tools/scripts/audit-solve-dedup.js --summary           # one line per affected file
- *   node tools/scripts/audit-solve-dedup.js --report-out data/solver-runs/rotation-dedup-audit.json
+ *   node tools/scripts/audit-solve-dedup.js --report-out tools/data/solver-runs/rotation-dedup-audit.json
  *   node tools/scripts/audit-solve-dedup.js --fix               # remove duplicates in-place
  *   node tools/scripts/audit-solve-dedup.js --sizes 2x4,3x3,4x4 # limit by board size prefix
  */

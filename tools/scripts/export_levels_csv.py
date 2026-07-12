@@ -2,8 +2,12 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _repo_paths import SOLVER_RUNS  # noqa: E402
 
 
 def read_json(path: Path):
@@ -60,8 +64,8 @@ def main() -> None:
     )
     ap.add_argument(
         "--out",
-        default="data/solver-runs/levels-solution-counts.csv",
-        help="Output CSV path (default: data/solver-runs/levels-solution-counts.csv)",
+        default=str(SOLVER_RUNS / "levels-solution-counts.csv"),
+        help="Output CSV path (default: tools/data/solver-runs/levels-solution-counts.csv)",
     )
     args = ap.parse_args()
 

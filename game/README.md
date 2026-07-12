@@ -21,7 +21,7 @@ Output: `deploy-export\<timestamp>\game\` — copy **that folder** to `/opt/tile
 ## What stays on your dev PC (not in bundle)
 
 - Solver / enumerate / ingest scripts (`tools/scripts/` — wrappers in `scripts/` still work)
-- `data/solver-runs/`, batch queue `.txt` files
+- `tools/data/solver-runs/`, batch queue `.txt` files
 - Layout tuner HTML (`web/*-tuner.html`)
 - Dev compose files (`docker-compose.yml`, remote-test)
 

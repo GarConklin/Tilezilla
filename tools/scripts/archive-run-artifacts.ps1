@@ -3,7 +3,7 @@
   Archive one-off solver run artifacts after ingest + catalog sync are done.
 
 .DESCRIPTION
-  Moves transient files from data/solver-runs to unused_old/.
+  Moves transient files from tools/data/solver-runs to unused_old/.
 
   Safety gate: requires ingest-report-*.json and catalog-sync-*.json to exist
   (proves merge + sync ran) unless -SkipSafetyGate.
@@ -11,7 +11,7 @@
   Once the gate passes, ALL proof receipts are archived (ingest reports, catalog
   sync JSON, bag-match audit) — the real data is already in data/levels and solves/.
 
-  Keeps in data/solver-runs: README.txt, .gitkeep, levels-solution-counts.csv
+  Keeps in tools/data/solver-runs: README.txt, .gitkeep, levels-solution-counts.csv
 
 .EXAMPLE
   .\tools\scripts\archive-run-artifacts.ps1 -DryRun
@@ -38,7 +38,7 @@ if ($KeepLatestRunLogs -lt 0) {
   throw "-KeepLatestRunLogs must be >= 0"
 }
 
-$runsDir = Join-Path $RepoRoot "data\solver-runs"
+$runsDir = Join-Path $RepoRoot "tools\data\solver-runs"
 if (-not (Test-Path $runsDir)) {
   throw "Missing directory: $runsDir"
 }
@@ -64,10 +64,10 @@ $latestCatalogSync = LatestByPattern "catalog-sync-*.json"
 
 if (-not $SkipSafetyGate) {
   if ($null -eq $latestIngestReport) {
-    throw "Safety gate: no ingest-report-*.json in data/solver-runs. Run ingest + sync first, or use -SkipSafetyGate."
+    throw "Safety gate: no ingest-report-*.json in tools/data/solver-runs. Run ingest + sync first, or use -SkipSafetyGate."
   }
   if ($null -eq $latestCatalogSync) {
-    throw "Safety gate: no catalog-sync-*.json in data/solver-runs. Run sync first, or use -SkipSafetyGate."
+    throw "Safety gate: no catalog-sync-*.json in tools/data/solver-runs. Run sync first, or use -SkipSafetyGate."
   }
 }
 
@@ -131,7 +131,7 @@ Write-Host "  latest catalog sync:  $(if($latestCatalogSync){$latestCatalogSync.
 Write-Host ""
 Write-Host "Archive dir: $archiveDir"
 Write-Host "Files selected: $($toMove.Count)"
-Write-Host "Stays in data/solver-runs: $($keepInRuns -join ', ')"
+Write-Host "Stays in tools/data/solver-runs: $($keepInRuns -join ', ')"
 
 if ($toMove.Count -eq 0) {
   Write-Host "Nothing to move."

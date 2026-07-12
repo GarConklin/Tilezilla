@@ -34,7 +34,7 @@ param(
 
   [switch]$ContinueOnError,
 
-  [string]$LogDir = "data/solver-runs"
+  [string]$LogDir = "tools/data/solver-runs"
 )
 
 Set-StrictMode -Version Latest
@@ -172,7 +172,7 @@ if (-not $DryRun) {
   $syncArgs = @("--apply")
   if ($LevelIds) { $syncArgs += @("--ids", $LevelIds) }
   Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-path-count-from-solves.js" -ExtraArgs $syncArgs
-  Write-Host "Re-export CSV: docker compose run --rm web python tools/scripts/export_levels_csv.py --out data/solver-runs/levels-solution-counts.csv"
+  Write-Host "Re-export CSV: docker compose run --rm web python tools/scripts/export_levels_csv.py --out tools/data/solver-runs/levels-solution-counts.csv"
 }
 
 Write-Host "All $($ids.Count) level(s) finished." -ForegroundColor Green

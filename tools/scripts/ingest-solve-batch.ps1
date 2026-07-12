@@ -13,13 +13,13 @@
   script assigns the next free code in the correct bucket; do not rename files by hand.
 
 .EXAMPLE
-  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "data\tilepz solves newset21.txt"
+  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "tools\data\batches\tilepz solves newset21.txt"
 
 .EXAMPLE
-  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "data\my-batch.txt" -DryRun
+  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "tools\data\batches\my-batch.txt" -DryRun
 
 .EXAMPLE
-  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "data\my-batch.txt" -RepackGit -CommitMessage "Ingest my-batch solve levels."
+  .\tools\scripts\ingest-solve-batch.ps1 -BatchFile "tools\data\batches\my-batch.txt" -RepackGit -CommitMessage "Ingest my-batch solve levels."
 #>
 param(
   [Parameter(Mandatory = $true)]
@@ -44,6 +44,7 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
 }
 
 . (Join-Path $PSScriptRoot "lib\Docker-Web.ps1")
+. (Join-Path $PSScriptRoot "_repo-data.ps1")
 
 function Write-Step([string]$Message) {
   Write-Host ""
@@ -117,10 +118,10 @@ function Commit-Ingest {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
 
-    $latestReport = Get-ChildItem -Path (Join-Path $Root "data/solver-runs") -Filter "ingest-report-*.md" -File |
+    $latestReport = Get-ChildItem -Path (Join-Path $Root "tools/data/solver-runs") -Filter "ingest-report-*.md" -File |
       Sort-Object LastWriteTime -Descending |
       Select-Object -First 1
-    $latestLog = Get-ChildItem -Path (Join-Path $Root "data/solver-runs") -Filter "ingest-batch-*.log" -File |
+    $latestLog = Get-ChildItem -Path (Join-Path $Root "tools/data/solver-runs") -Filter "ingest-batch-*.log" -File |
       Sort-Object LastWriteTime -Descending |
       Select-Object -First 1
 
@@ -132,7 +133,7 @@ function Commit-Ingest {
       "solves.zip",
       "tools/scripts/ingest-solve-batch.ps1"
     )
-    $summary = Join-Path $Root "data/solver-runs/ingest-newset21-summary.md"
+    $summary = Join-Path $Root "tools/data/solver-runs/ingest-newset21-summary.md"
     if (Test-Path $summary) { $toStage += $summary }
     if ($latestReport) {
       $toStage += $latestReport.FullName
@@ -181,9 +182,10 @@ if (-not (Test-DockerCompose -RepoRoot $RepoRoot)) {
   throw "Docker Compose not available. Start Docker Desktop, then run from repo root."
 }
 
-$batchAbs = $BatchFile
-if (-not [System.IO.Path]::IsPathRooted($batchAbs)) {
-  $batchAbs = Join-Path $RepoRoot ($BatchFile -replace '/', '\')
+$batchAbs = if ([System.IO.Path]::IsPathRooted($BatchFile)) {
+  $BatchFile
+} else {
+  Resolve-TilezillaDevDataPath -RepoRoot $RepoRoot -RelativePath $BatchFile
 }
 if (-not (Test-Path $batchAbs)) {
   throw "Batch file not found: $batchAbs"
@@ -191,7 +193,7 @@ if (-not (Test-Path $batchAbs)) {
 
 $batchRel = ($batchAbs.Substring($RepoRoot.Length).TrimStart('\', '/') -replace '\\', '/')
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$logPath = Join-Path $RepoRoot "data/solver-runs/ingest-batch-$stamp.log"
+$logPath = Join-Path $RepoRoot "tools/data/solver-runs/ingest-batch-$stamp.log"
 
 Write-Host "Repo:  $RepoRoot"
 Write-Host "Batch: $batchRel"
@@ -229,7 +231,7 @@ try {
   }
 }
 finally {
-  $runsDir = Join-Path $RepoRoot "data/solver-runs"
+  $runsDir = Join-Path $RepoRoot "tools/data/solver-runs"
   if (-not (Test-Path $runsDir)) {
     New-Item -ItemType Directory -Path $runsDir -Force | Out-Null
   }
@@ -248,10 +250,10 @@ Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-path-count-from-so
 
 Write-Step "Tile bag audit + fix misfiled duplicate solve files"
 Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "audit-level-solve-tile-bags.js" -ExtraArgs @(
-  "--out", "data/solver-runs/level-solve-bag-match-latest.json"
+  "--out", "tools/data/solver-runs/level-solve-bag-match-latest.json"
 )
 Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "fix-misfiled-duplicate-solves.js" -ExtraArgs @(
-  "--apply", "--report", "data/solver-runs/level-solve-bag-match-latest.json"
+  "--apply", "--report", "tools/data/solver-runs/level-solve-bag-match-latest.json"
 )
 Invoke-DockerWeb -RepoRoot $RepoRoot -ScriptRel "sync-catalog-tiles-from-solves.js" -ExtraArgs @("--apply")
 

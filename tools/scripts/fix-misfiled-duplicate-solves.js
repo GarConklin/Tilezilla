@@ -5,7 +5,7 @@
  *
  *   node tools/scripts/fix-misfiled-duplicate-solves.js --dry-run
  *   node tools/scripts/fix-misfiled-duplicate-solves.js --apply
- *   node tools/scripts/fix-misfiled-duplicate-solves.js --apply --report data/solver-runs/level-solve-bag-match-latest.json
+ *   node tools/scripts/fix-misfiled-duplicate-solves.js --apply --report tools/data/solver-runs/level-solve-bag-match-latest.json
  */
 
 'use strict';

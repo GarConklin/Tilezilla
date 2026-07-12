@@ -19,10 +19,10 @@ unused/
 solves/
 !solves.zip
 
-# Solver enumeration output (logs, streams, audits) — see data/solver-runs/README.txt
-data/solver-runs/*
-!data/solver-runs/.gitkeep
-!data/solver-runs/README.txt
+# Solver enumeration output — see tools/data/solver-runs/README.txt
+tools/data/solver-runs/*
+!tools/data/solver-runs/.gitkeep
+!tools/data/solver-runs/README.txt
 
 # Production game bundles (built by scripts/build-game-bundle.ps1)
 deploy-export/

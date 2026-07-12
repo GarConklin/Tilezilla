@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuild data/levels/solve-queue.json:
+ * Rebuild tools/data/solve-queue.json:
  * - Default: levels in bucket files touched within the last N hours (default 24)
  * - With --all-buckets: every tier bucket JSON is scanned (use after adding many levels
  *   spread across files, so missing solves/ files are not tied to recent mtime)
@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '../..');
-const QUEUE_PATH = path.join(ROOT, 'data', 'levels', 'solve-queue.json');
+const QUEUE_PATH = path.join(ROOT, 'tools', 'data', 'solve-queue.json');
 const LEVELS_DIR = path.join(ROOT, 'data', 'levels');
 
 function parseArgs(argv) {

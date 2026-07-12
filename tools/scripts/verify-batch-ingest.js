@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Verify a concatenated solve batch vs catalog + solves on disk.
- * Usage: node tools/scripts/verify-batch-ingest.js "data/tilepz solves newset26.txt"
+ * Usage: node tools/scripts/verify-batch-ingest.js "tools/data/batches/tilepz solves newset26.txt"
  */
 
 'use strict';

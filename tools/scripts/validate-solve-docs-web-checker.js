@@ -12,7 +12,7 @@
  *   docker compose run --rm web node tools/scripts/validate-solve-docs-web-checker.js
  *   docker compose run --rm web node tools/scripts/validate-solve-docs-web-checker.js --level=6x6-0A-AAB
  *   docker compose run --rm web node tools/scripts/validate-solve-docs-web-checker.js --bucket=6x6-0A.json
- *   docker compose run --rm web node tools/scripts/validate-solve-docs-web-checker.js --out=data/solver-runs/my-audit.json
+ *   docker compose run --rm web node tools/scripts/validate-solve-docs-web-checker.js --out=tools/data/solver-runs/my-audit.json
  *
  * Local:
  *   node tools/scripts/validate-solve-docs-web-checker.js [--level=id] [--bucket=file] [--out=path] [--quiet]

@@ -3,8 +3,8 @@
  * Split a concatenated TilePz solve export into N chunk files (JSON docs preserved in order).
  *
  * Usage:
- *   node tools/scripts/split-solve-batch-file.js "data/tilepz solves 5x6 13 jun 2026.txt" --chunks 4
- *   node tools/scripts/split-solve-batch-file.js input.txt --chunks 4 --out "data/tilepz solves 5x6 13 jun 2026 - batch"
+ *   node tools/scripts/split-solve-batch-file.js "tools/data/batches/tilepz solves 5x6 13 jun 2026.txt" --chunks 4
+ *   node tools/scripts/split-solve-batch-file.js input.txt --chunks 4 --out "tools/data/batches/tilepz solves 5x6 13 jun 2026 - batch"
  */
 
 'use strict';

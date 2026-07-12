@@ -5,7 +5,7 @@
  * free 3-letter code in --bucket order (file order preserved).
  *
  *   node tools/scripts/recode-batch-fresh-ids.js --size 5x6 --bucket 5x6-0B.json \
- *     "data/new solves May 25.txt" data/solver-runs/may25-prepared.txt
+ *     "data/new solves May 25.txt" tools/data/solver-runs/may25-prepared.txt
  */
 
 'use strict';

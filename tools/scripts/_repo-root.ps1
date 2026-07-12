@@ -8,3 +8,5 @@ function Get-TilezillaRepoRoot {
 function Get-TilezillaGameScriptsDir {
   return Join-Path (Get-TilezillaRepoRoot) "scripts"
 }
+
+. (Join-Path $PSScriptRoot "_repo-data.ps1")

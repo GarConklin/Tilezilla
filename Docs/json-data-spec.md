@@ -17,7 +17,7 @@ Reference for every JSON artifact the game, catalog, and solver use. Use this wh
 | `solves.zip` | Archive of `solves/*.json` | Yes |
 | `data/tiles/tiles-live-edges.json` | Tile geometry + live edges + optional `paths` | Yes |
 | `data/tiles/tilesets.json` | PNG filename map per visual theme | Yes |
-| `data/tilepz solves *.txt` | **Import only:** concatenated solve docs from TilePz paste | No |
+| `tools/data/batches/tilepz solves *.txt` | **Import only:** concatenated solve docs from TilePz paste | No |
 
 Runtime (Docker web server) serves `/data/*` and `/solves/*` from repo root.
 
@@ -281,7 +281,7 @@ Maps **tile id → PNG** under `web/img/`. Does not affect solver logic.
 
 ## 9. TilePz export batch (import format)
 
-External paste files (e.g. `data/tilepz solves 05 June  2026.txt`) are **multiple JSON objects concatenated**, one per level:
+External paste files (e.g. `tools/data/batches/tilepz solves 05 June  2026.txt`) are **multiple JSON objects concatenated**, one per level:
 
 ```json
 {
@@ -309,7 +309,7 @@ External paste files (e.g. `data/tilepz solves 05 June  2026.txt`) are **multipl
 Ingest command:
 
 ```powershell
-.\scripts\ingest-solve-batch.ps1 -BatchFile "data\tilepz solves 05 June  2026.txt"
+.\scripts\ingest-solve-batch.ps1 -BatchFile "tools\data\batches\tilepz solves 05 June  2026.txt"
 ```
 
 ---
@@ -319,8 +319,8 @@ Ingest command:
 During heavy enumeration, layouts may be written incrementally:
 
 ```
-data/solver-runs/streams/<levelId>/solve-00000001.json
-data/solver-runs/streams/<levelId>/_meta.json
+tools/data/solver-runs/streams/<levelId>/solve-00000001.json
+tools/data/solver-runs/streams/<levelId>/_meta.json
 ```
 
 Each stream file:

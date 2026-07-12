@@ -12,7 +12,7 @@ auth/public/api
 /img/Stuff/**
 /invalid solutions/**
 invalid solutions/**
-data/solver-runs/
+tools/data/solver-runs/
 Docs/New Plans/
 *.log
 Thumbs.db

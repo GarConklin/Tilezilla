@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Zip stale data/solver-runs artifacts into data/unused/ and remove them from the active folder.
+  Zip stale tools/data/solver-runs artifacts into data/unused/ and remove them from the active folder.
 
 .DESCRIPTION
   Keeps only files still referenced by ingest/audit scripts. Everything else is copied
@@ -35,7 +35,7 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
   $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
 }
 
-$runsDir = Join-Path $RepoRoot "data\solver-runs"
+$runsDir = Join-Path $RepoRoot "tools\data\solver-runs"
 if (-not (Test-Path $runsDir)) {
   throw "Missing: $runsDir"
 }
@@ -76,7 +76,7 @@ if ([string]::IsNullOrWhiteSpace($ArchiveDir)) {
 }
 New-Item -ItemType Directory -Force -Path $ArchiveDir | Out-Null
 
-# Exact filenames always kept in data/solver-runs/
+# Exact filenames always kept in tools/data/solver-runs/
 $keepFiles = @(
   ".gitkeep",
   "README.txt",
@@ -277,5 +277,5 @@ if ($IncludeLevelReports) {
 Remove-Item -LiteralPath $stageRoot -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host ""
-Write-Host "Done. Active data/solver-runs/ now contains only:" -ForegroundColor Green
+Write-Host "Done. Active tools/data/solver-runs/ now contains only:" -ForegroundColor Green
 Get-ChildItem -Path $runsDir -Force | ForEach-Object { Write-Host "  $($_.Name)" }

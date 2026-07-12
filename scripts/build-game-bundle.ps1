@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Copies a filtered subset of the repo into deploy-export/<stamp>/game/ suitable for VPS.
-  Excludes solver scripts, ingest batches, tuner HTML, data/solver-runs/, and dev compose.
+  Excludes solver scripts, ingest batches, tuner HTML, tools/data/solver-runs/, and dev compose.
 
   The bundle includes slim production Docker files from game/ (no Node.js in web image;
   no bind-mount of the full repo on the VPS).

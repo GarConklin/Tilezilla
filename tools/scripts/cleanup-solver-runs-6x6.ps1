@@ -1,13 +1,13 @@
 <#
 .SYNOPSIS
-  Archive 6x6 enumeration artifacts from data/solver-runs (streams, logs).
+  Archive 6x6 enumeration artifacts from tools/data/solver-runs (streams, logs).
 
 .DESCRIPTION
   After 5x6 enumeration is done and you have built the 6x6 need-enumeration batch,
-  use this to shrink data/solver-runs before copying the repo to a remote server.
+  use this to shrink tools/data/solver-runs before copying the repo to a remote server.
 
   Moves to unused_old/solver-runs-6x6-archive-<date>/:
-  - data/solver-runs/streams/6x6-*
+  - tools/data/solver-runs/streams/6x6-*
   - jun05-enumerate-6x6-* logs/ndjson
   - jun13-enumerate-* logs that mention 6x6 levels (optional broad jun13 logs with -IncludeJun135x6Logs)
 
@@ -34,7 +34,7 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
   $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
 }
 
-$runsDir = Join-Path $RepoRoot "data\solver-runs"
+$runsDir = Join-Path $RepoRoot "tools\data\solver-runs"
 $streamsDir = Join-Path $runsDir "streams"
 if (-not (Test-Path $runsDir)) {
   throw "Missing: $runsDir"

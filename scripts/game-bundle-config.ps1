@@ -20,7 +20,6 @@ $script:GameBundleExcludeDirs = @(
   'tools',
   'node_modules',
   'game',
-  'data/solver-runs',
   'data/levels/specs',
   'data/levels/reports',
   'data/levels/generated',
@@ -101,7 +100,7 @@ function Test-GameBundleExcludedDataFile {
     if ($name -like $pat) { return $true }
   }
   if ($RelativePath -replace '\\', '/' -eq 'data/levels/levels.json') { return $true }
-  if ($RelativePath -replace '\\', '/' -eq 'data/levels/solve-queue.json') { return $true }
+  if ($RelativePath -replace '\\', '/' -eq 'tools/data/solve-queue.json') { return $true }
   return $false
 }
 
