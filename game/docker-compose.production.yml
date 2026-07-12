@@ -1,0 +1,125 @@
+# Tilezilla production stack — deploy from a game bundle (not the full dev repo).
+#
+# Build bundle on dev machine:
+#   .\scripts\build-game-bundle.ps1
+#
+# On VPS (contents of deploy-export/<stamp>/game/ copied to /opt/tilezilla):
+#   docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
+#
+# Writable data: progress JSON + guest event log (named volume + bind file).
+
+name: tilezilla
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: tilezilla_prod_gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_BIND:-127.0.0.1:3000}:80"
+    volumes:
+      - ./docker/nginx/production.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./img:/app/img:ro
+      - ./web:/app/web:ro
+      - ./audio:/app/audio:ro
+    depends_on:
+      web:
+        condition: service_started
+      php-auth:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build: .
+    container_name: tilezilla_prod_web
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - game_progress:/app/data/progress
+      - ./data/guest_events.jsonl:/app/data/guest_events.jsonl
+    environment:
+      PORT: "8080"
+      PYTHONUNBUFFERED: "1"
+      AUTH_UPSTREAM: "http://php-auth"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
+      MYSQL_USER: ${MYSQL_USER:-tilegame}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  php-auth:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: tilezilla_auth
+    restart: unless-stopped
+    expose:
+      - "80"
+    ports:
+      - "${AUTH_BIND:-127.0.0.1:3001}:80"
+    volumes:
+      - ./auth/config:/var/www/html/config
+      - ./auth/api:/var/www/html/api
+      - ./auth/src:/var/www/html/src
+      - ./auth/public:/var/www/html/public
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${MYSQL_USER:-tilegame}
+      DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      DB_NAME: ${MYSQL_DATABASE:-tilegame}
+      GAME_DB_HOST: mysql
+      GAME_DB_USER: ${MYSQL_USER:-tilegame}
+      GAME_DB_PASS: ${MYSQL_PASSWORD:-tilegame_dev}
+      GAME_DB_NAME: ${MYSQL_DATABASE:-tilegame}
+      APP_BASE_URL: ${APP_BASE_URL:-https://tile.skifflakegames.com}
+      APP_NAME: ${APP_NAME:-Tilezilla}
+      APP_FROM_EMAIL: ${APP_FROM_EMAIL:-words@skifflakegames.com}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-gar@hotmail.ca}
+      SMTP_ENABLED: ${SMTP_ENABLED:-true}
+      SMTP_HOST: ${SMTP_HOST:-mail.skifflakegames.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-none}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    container_name: garz-puzzle-mysql
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3306:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_change_me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tilegame}
+      MYSQL_USER: ${MYSQL_USER:-tilegame}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tilegame_dev}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+volumes:
+  mysql_data:
+    name: tilezilla_shared_mysql_data
+    external: true
+  game_progress:
+    name: tilezilla_game_progress

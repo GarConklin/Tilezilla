@@ -24,5 +24,8 @@ data/solver-runs/*
 !data/solver-runs/.gitkeep
 !data/solver-runs/README.txt
 
+# Production game bundles (built by scripts/build-game-bundle.ps1)
+deploy-export/
+
 # Per-user progress JSON (server-side saves)
 data/progress/users/

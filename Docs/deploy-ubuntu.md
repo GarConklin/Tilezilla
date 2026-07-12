@@ -42,23 +42,26 @@ Step-by-step for moving your **Windows dev stack** (code + MySQL + users) to a l
    docker compose up -d mysql
    ```
 
-3. Run the export script:
+3. Run the export script (database SQL):
 
    ```powershell
    .\scripts\export-for-deploy.ps1 -IncludeSolves
    ```
 
-   Output: `deploy-export\YYYYMMDD-HHMMSS\` containing:
-   - `tilegame.sql` — full database
-   - `manifest.json` — git commit + file list
-   - `.env.production.example`
-   - `solves.zip` (if `-IncludeSolves` and file exists)
-
-   Optional: `-IncludeEnv` copies your local `.env` (secrets — handle carefully).
-
-4. Copy the export folder to the server:
+4. **Build the production game bundle** (runtime only — no solver/ingest on VPS):
 
    ```powershell
+   .\scripts\build-game-bundle.ps1
+   ```
+
+   Output: `deploy-export\YYYYMMDD-HHMMSS\game\` — copy **this folder** to the server as `/opt/tilezilla/` (see `game/README.md`).
+
+   Optional: `-IncludeSolvesZip` if `solves/` is not on the server yet.
+
+5. Copy to the server:
+
+   ```powershell
+   scp -r deploy-export\20260629-120000\game user@YOUR_SERVER_IP:/opt/tilezilla/
    scp -r deploy-export\20260629-120000 user@YOUR_SERVER_IP:/opt/tilezilla/deploy-import/
    ```
 
