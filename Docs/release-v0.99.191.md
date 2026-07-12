@@ -1,7 +1,7 @@
 # Release v0.99.191 — branch switch for testers
 
 **Previous stable:** `v0.99.190` → branch `release/v0.99.190`  
-**New development / deploy:** `v0.99.191` → branch `release/v0.99.191`
+**New development / deploy:** `v0.99.193` → branch `release/v0.99.193` (see `Docs/release-v0.99.193.md`)
 
 ## What changed in 0.99.191 (vs 0.99.190)
 
