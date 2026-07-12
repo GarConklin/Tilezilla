@@ -1,0 +1,55 @@
+# Production web image build context (game/Dockerfile or bundle ./Dockerfile).
+# Dev-only paths — never ship inside tilezilla_prod_web.
+
+.git
+.gitignore
+.vscode
+.cursor
+deploy-export
+Docs
+unused
+unused_old
+invalid solutions
+tools
+game
+node_modules
+
+*.ps1
+*.bat
+*.md
+*.log
+Thumbs.db
+.DS_Store
+DockerHowToo.txt
+docker-compose*.yml
+Dockerfile
+
+auth/public/api
+
+# Solver / generator artifacts
+tools/data
+data/solver-runs
+data/levels/specs
+data/levels/reports
+data/levels/generated
+data/cards
+data/levels/levels.json
+data/levels/solve-queue.json
+*tilepz*solves*.txt
+*enumerate*.txt
+*-batch*.txt
+*-queue.txt
+handmade-*
+solution-loop-audit*.json
+
+# Dev web pages (tuners live under tools/web — excluded via tools/)
+web/*-tuner.html
+web/tuners.html
+web/dev-*.html
+web/adventure-solution-audit.html
+web/main-screen-v2.html
+web/rank-badge-preview.html
+web/live-edges-viewer.html
+
+img/Stuff
+img/Tile Ideas

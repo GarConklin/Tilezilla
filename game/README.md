@@ -1,46 +1,60 @@
-# Game production bundle (Phase 1)
+# Game production bundle (Phases 1 + 5)
 
-This folder holds **production-only** Docker definitions used when deploying to the VPS.
+This folder holds **production-only** Docker definitions. The VPS runs **only** the game runtime — no solver tooling, no full-repo bind mount, no Node.js in the web image.
 
-The live game bundle is built by:
+## Build & deploy
 
 ```powershell
 .\scripts\build-game-bundle.ps1
 ```
 
-Output: `deploy-export\<timestamp>\game\` — copy **that folder** to `/opt/tilezilla` on the server.
-
-## What the bundle includes
-
-- `web/` (player UI — no tuner pages)
-- `auth/`, `audio/`, `img/`, `solves/`
-- `data/` catalog, layouts, daily CSV (no `solver-runs/`, batch txt, generator specs)
-- `scripts/server.py` + runtime Python libs only
-- `docker/` nginx, PHP, MySQL init
-
-## What stays on your dev PC (not in bundle)
-
-- Solver / enumerate / ingest scripts (`tools/scripts/` — wrappers in `scripts/` still work)
-- `tools/data/solver-runs/`, batch queue `.txt` files
-- Layout tuner HTML (`tools/web/*-tuner.html`)
-- Dev compose files (`docker-compose.yml`, remote-test)
-
-## VPS deploy
+Output: `deploy-export\<timestamp>\game\` — copy **that entire folder** to `/opt/tilezilla` on the server.
 
 ```bash
 cd /opt/tilezilla
-cp .env.production.example .env.production   # first time only
-nano .env.production
+cp .env.production.example .env.production   # first time; edit passwords
 docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
 ```
 
-Progress JSON uses Docker volume `tilezilla_game_progress`. Guest events append to `data/guest_events.jsonl`.
+The bundle ships `Dockerfile`, `.dockerignore`, and `docker-compose.production.yml` at the deploy root. Do **not** set `PROD_WEB_DOCKERFILE` in `.env.production` for bundle deploys.
 
-## Updating content after ingest (dev workflow)
+## Production stack (Phase 5)
 
-1. Run ingest/solver locally in the full repo
+| Service | Role |
+|---------|------|
+| `gateway` | nginx — `/img`, `/web`, `/audio` read-only mounts only |
+| `web` | Python `scripts/server.py` — code baked into image (rebuild to update) |
+| `php-auth` | Register / login |
+| `mysql` | Persistent volume `tilezilla_shared_mysql_data` |
+
+Progress JSON: Docker volume `tilezilla_game_progress`. Guest events: bind `data/guest_events.jsonl`.
+
+**Not** mounted: `tools/`, solver scripts, tuner HTML, batch `.txt` files.
+
+## Full git clone on VPS (optional)
+
+If you deploy via `git pull` instead of the bundle, uncomment in `.env.production`:
+
+```
+PROD_WEB_DOCKERFILE=game/Dockerfile
+```
+
+Or test locally: `.\scripts\start-production-stack.ps1`
+
+## Dev machine (not on VPS)
+
+| Path | Contents |
+|------|----------|
+| `tools/scripts/` | Solver, ingest, enumerate |
+| `tools/data/` | Batch files, solver-runs logs |
+| `tools/web/` | Layout tuners (`/tools/tuners.html`) |
+| `docker-compose.yml` | Dev stack (bind-mounts repo, includes Node in web image) |
+
+## After ingest (dev workflow)
+
+1. Run ingest/solver in the full repo
 2. `.\scripts\build-game-bundle.ps1 -Force`
-3. Rsync/scp the new `game/` folder to VPS
-4. Rebuild: `docker compose ... up -d --build`
+3. Rsync/scp `deploy-export/<stamp>/game/` to VPS
+4. `docker compose ... up -d --build`
 
-Optional DB export: `.\scripts\export-for-deploy.ps1` (SQL only — separate from game bundle).
+Optional DB-only export: `.\scripts\export-for-deploy.ps1`

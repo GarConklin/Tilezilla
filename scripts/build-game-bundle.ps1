@@ -132,6 +132,7 @@ Write-Host "  Removed $scriptsRemoved dev script files"
 Write-Step "Installing production Docker files..."
 Copy-Item (Join-Path $RepoRoot "game/Dockerfile") (Join-Path $BundleRoot "Dockerfile") -Force
 Copy-Item (Join-Path $RepoRoot "game/docker-compose.production.yml") (Join-Path $BundleRoot "docker-compose.production.yml") -Force
+Copy-Item (Join-Path $RepoRoot "game/.dockerignore") (Join-Path $BundleRoot ".dockerignore") -Force
 Copy-Item (Join-Path $RepoRoot ".env.production.example") (Join-Path $BundleRoot ".env.production.example") -Force
 
 $progressDir = Join-Path $BundleRoot "data/progress/users"
@@ -165,7 +166,7 @@ try {
 
 $manifest = [ordered]@{
   bundleType = "game-runtime"
-  phase = 1
+  phase = 5
   builtAt = (Get-Date).ToUniversalTime().ToString("o")
   gitCommit = $gitCommit
   gitBranch = $gitBranch
@@ -186,6 +187,10 @@ $manifest = [ordered]@{
 }
 $manifestPath = Join-Path $BundleRoot "game-bundle-manifest.json"
 $manifest | ConvertTo-Json -Depth 6 | Set-Content $manifestPath -Encoding UTF8
+
+Write-Step "Validating bundle..."
+& (Join-Path $RepoRoot "scripts/validate-game-bundle.ps1") -BundleRoot $BundleRoot
+if ($LASTEXITCODE -ne 0) { throw "Bundle validation failed" }
 
 Write-Host ""
 Write-Host "Game bundle ready." -ForegroundColor Green

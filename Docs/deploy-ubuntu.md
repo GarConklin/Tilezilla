@@ -380,11 +380,30 @@ cd /opt/tilezilla
 
 ## Updating later (code only)
 
+**Recommended — game bundle** (no solver/tuner files on VPS):
+
+```powershell
+# Windows dev machine
+.\scripts\build-game-bundle.ps1
+scp -r deploy-export\YYYYMMDD-HHMMSS\game user@SERVER:/opt/tilezilla/
+```
+
+```bash
+# VPS
+cd /opt/tilezilla
+docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
+```
+
+**Alternative — git pull** (full repo on server; requires runtime Dockerfile override):
+
 ```bash
 cd /opt/tilezilla
 git pull
+# .env.production must include: PROD_WEB_DOCKERFILE=game/Dockerfile
 docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
 ```
+
+Production compose no longer bind-mounts the whole repo — the `web` service runs from a baked image (`game/Dockerfile`, no Node.js). Progress uses volume `tilezilla_game_progress`.
 
 Database is preserved in `tilezilla_shared_mysql_data`.
 
@@ -403,7 +422,10 @@ docker compose -f docker-compose.production.yml exec -T mysql \
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.production.yml` | Production stack |
+| `docker-compose.production.yml` | Production stack (same as `game/docker-compose.production.yml`) |
+| `game/Dockerfile` | Production web image (Python only; used when `PROD_WEB_DOCKERFILE=game/Dockerfile`) |
+| `scripts/build-game-bundle.ps1` | Build VPS deploy folder |
+| `scripts/validate-game-bundle.ps1` | Verify bundle before upload |
 | `.env.production.example` | Env template |
 | `docker/nginx/host-reverse-proxy.example.conf` | Host nginx site (HTTPS → :3000) |
 | `docker/nginx/production.conf` | Internal Docker gateway |

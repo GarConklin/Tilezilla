@@ -1,12 +1,16 @@
 # Tilezilla production stack — deploy from a game bundle (not the full dev repo).
 #
+# Canonical copy: also at repo-root docker-compose.production.yml (Phase 5 — keep in sync).
+#
 # Build bundle on dev machine:
 #   .\scripts\build-game-bundle.ps1
 #
 # On VPS (contents of deploy-export/<stamp>/game/ copied to /opt/tilezilla):
 #   docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
 #
-# Writable data: progress JSON + guest event log (named volume + bind file).
+# Full git clone on VPS: set PROD_WEB_DOCKERFILE=game/Dockerfile in .env.production
+#
+# Writable data: progress JSON (volume) + guest event log (bind file). No full-repo bind mount.
 
 name: tilezilla
 
@@ -35,7 +39,9 @@ services:
       start_period: 15s
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ${PROD_WEB_DOCKERFILE:-Dockerfile}
     container_name: tilezilla_prod_web
     restart: unless-stopped
     expose:

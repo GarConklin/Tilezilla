@@ -1,4 +1,5 @@
 FROM python:3.12-alpine
+# Dev web container only (docker-compose.yml). Production uses game/Dockerfile.
 WORKDIR /app
 COPY . .
 EXPOSE 8080

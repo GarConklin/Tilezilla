@@ -45,4 +45,4 @@ Dev server serves tuners at `/tools/` (e.g. `/tools/tuners.html`). Legacy `/tune
 .\scripts\build-game-bundle.ps1
 ```
 
-The `tools/` folder is excluded from the VPS bundle automatically.
+The `tools/` folder is excluded from the VPS bundle automatically. Production uses `game/docker-compose.production.yml` (no full-repo bind mount).
