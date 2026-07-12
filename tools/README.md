@@ -1,4 +1,4 @@
-# Tilezilla dev tools (Phase 2–3)
+# Tilezilla dev tools (Phase 2–4)
 
 Solver, ingest, catalog import, and enumeration live here — **not** on the production VPS.
 
@@ -11,6 +11,7 @@ tools/
   data/
     batches/         TilePz paste files, enumerate queues, batch splits
     solver-runs/     Enumeration logs, streams, ingest reports, CSV exports
+  web/               Layout tuners and dev HTML pages
   scripts/           Solver, ingest, import, audit, dev stack helpers
   scripts/lib/       Docker helpers, path-mode JS, dev Python libs
   README.md          This file
@@ -33,6 +34,10 @@ Runtime game server code stays in repo-root `scripts/` (`server.py`, progress li
 Legacy `data/...` batch paths still resolve when the file was moved to `tools/data/batches/`.
 
 Docker helpers run scripts inside the `web` container at `/app/tools/scripts/...`.
+
+## Layout tuners
+
+Dev server serves tuners at `/tools/` (e.g. `/tools/tuners.html`). Legacy `/tuners.html` URLs still resolve.
 
 ## Production bundle
 

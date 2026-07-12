@@ -21,6 +21,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
+TOOLS_WEB = ROOT / "tools" / "web"
 SCRIPTS = ROOT / "scripts"
 # Default 8081 avoids Docker Desktop binding host port 3000 (docker-compose web service).
 PORT = int(os.environ.get("PORT", "8081"))
@@ -184,9 +185,15 @@ class Handler(SimpleHTTPRequestHandler):
                 target = WEB / "img" / rel
         elif req.startswith("/audio/"):
             target = ROOT / "audio" / req[len("/audio/") :]
+        elif req.startswith("/tools/"):
+            target = TOOLS_WEB / req[len("/tools/") :]
         # Frontend assets as if /web were web root
         else:
-            target = WEB / req.lstrip("/")
+            rel = req.lstrip("/")
+            target = WEB / rel
+            # Dev tuners moved to tools/web/ (Phase 4) — keep legacy URLs working
+            if not target.exists() and rel and (TOOLS_WEB / rel).exists():
+                target = TOOLS_WEB / rel
 
         # Fall back to web index for unknown app paths only (never for assets or APIs).
         if (
@@ -195,6 +202,7 @@ class Handler(SimpleHTTPRequestHandler):
             and not req.startswith("/solves/")
             and not req.startswith("/img/")
             and not req.startswith("/audio/")
+            and not req.startswith("/tools/")
             and not req.startswith("/api/")
         ):
             target = WEB / "index.html"

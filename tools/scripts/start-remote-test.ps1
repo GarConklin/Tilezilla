@@ -230,8 +230,8 @@ try {
 
   $localUrl = "http://localhost:$Port"
   $lanUrl = "http://${LanIp}:$Port"
-  $autoLoginUrl = "$localUrl/dev-auto-login.html"
-  $lanAutoLoginUrl = "$lanUrl/dev-auto-login.html"
+  $autoLoginUrl = "$localUrl/tools/dev-auto-login.html"
+  $lanAutoLoginUrl = "$lanUrl/tools/dev-auto-login.html"
 
   Write-Step "Tilezilla remote test is running"
   Write-Host @"

@@ -22,7 +22,7 @@ Output: `deploy-export\<timestamp>\game\` — copy **that folder** to `/opt/tile
 
 - Solver / enumerate / ingest scripts (`tools/scripts/` — wrappers in `scripts/` still work)
 - `tools/data/solver-runs/`, batch queue `.txt` files
-- Layout tuner HTML (`web/*-tuner.html`)
+- Layout tuner HTML (`tools/web/*-tuner.html`)
 - Dev compose files (`docker-compose.yml`, remote-test)
 
 ## VPS deploy

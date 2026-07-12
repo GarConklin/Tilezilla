@@ -50,7 +50,7 @@ const LS_PENDING_KEY = 'tilezilla:layouts:cartographers-journal:pending';
 let layoutCache = null;
 
 export function isCartographersJournalTunerPage() {
-  return /cartographers-journal-tuner(?:\.html)?$/i.test(window.location.pathname);
+  return /(?:^|\/)cartographers-journal-tuner(?:\.html)?$/i.test(window.location.pathname);
 }
 
 export function clearCartographersJournalLayoutCache() {
