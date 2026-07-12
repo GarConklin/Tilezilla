@@ -15,6 +15,11 @@ import { applyRevisitLayout, loadRevisitLayout, reloadRevisitLayout } from './re
 import { initJournalListScroller } from './journal-scroller.js';
 import { closePuzzleInfoPopup } from './tilezilla-puzzle-info.js';
 import { initRecordsPanel } from './tilezilla-records.js';
+import {
+  calendarTodayIso,
+  clearLeaderboardRowsCache,
+  shiftDailyLeaderboardDate,
+} from './records-data.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -245,6 +250,22 @@ function isJournalRecordsContext() {
   return isJournalRecordsTab() || state.postDailyLeaderboard;
 }
 
+function isLeaderboardRecordsView() {
+  if (!isJournalRecordsContext()) return false;
+  const panel = $('journalRecordsPanel');
+  return panel?.dataset?.recordsMode !== 'personal';
+}
+
+async function navigateLeaderboardDay(direction) {
+  if (!isLeaderboardRecordsView()) return;
+  const current = state.challengeDate || calendarTodayIso();
+  const next = await shiftDailyLeaderboardDate(current, direction);
+  if (!next || next === current) return;
+  state.challengeDate = next;
+  clearLeaderboardRowsCache();
+  await recordsApi?.refreshRecordsView?.();
+}
+
 function clearPostDailyLeaderboardFlag() {
   state.postDailyLeaderboard = false;
   $('journalRoot')?.removeAttribute('data-post-daily-leaderboard');
@@ -356,6 +377,9 @@ async function activateJournalTab(tab) {
 
   if (tab === 'stats') return;
   if (tab === 'records') {
+    if (!state.challengeDate) {
+      state.challengeDate = calendarTodayIso();
+    }
     recordsApi?.refreshRecordsView?.();
     return;
   }
@@ -1002,8 +1026,8 @@ export function initJournalUi({
   });
 
   $('journalBtnPrev')?.addEventListener('click', () => {
-    if (isJournalRecordsContext()) {
-      closeJournal();
+    if (isLeaderboardRecordsView()) {
+      void navigateLeaderboardDay(-1);
       return;
     }
     if (state.mode === 'library') navigateLibraryPuzzle(-1);
@@ -1011,8 +1035,8 @@ export function initJournalUi({
   });
 
   $('journalBtnNext')?.addEventListener('click', () => {
-    if (isJournalRecordsContext()) {
-      closeJournal();
+    if (isLeaderboardRecordsView()) {
+      void navigateLeaderboardDay(1);
       return;
     }
     if (state.mode === 'library') navigateLibraryPuzzle(1);

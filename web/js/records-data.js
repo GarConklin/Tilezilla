@@ -200,8 +200,83 @@ export function todayChallengeDateIso() {
   if (window.__dailyChallengeMeta?.date) {
     return String(window.__dailyChallengeMeta.date).slice(0, 10);
   }
+  return calendarTodayIso();
+}
+
+export function calendarTodayIso() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function parseDailyScheduleCsvDate(raw) {
+  const s = String(raw || '').trim();
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (slash) {
+    return `${slash[3]}-${slash[1].padStart(2, '0')}-${slash[2].padStart(2, '0')}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return null;
+}
+
+let dailyScheduleDatesPromise = null;
+
+/** Sorted ISO dates from daily_challenges_import.csv (cached). */
+export async function loadDailyScheduleDates() {
+  if (!dailyScheduleDatesPromise) {
+    dailyScheduleDatesPromise = (async () => {
+      try {
+        const csv = await fetch(`/data/daily_challenges_import.csv?t=${calendarTodayIso()}`, {
+          cache: 'no-store',
+        }).then((r) => (r.ok ? r.text() : ''));
+        if (!csv) return [];
+        const dates = [];
+        for (const line of csv.trim().split(/\r?\n/).slice(1)) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          const iso = parseDailyScheduleCsvDate(trimmed.split(',')[0]);
+          if (iso) dates.push(iso);
+        }
+        dates.sort();
+        return dates;
+      } catch {
+        return [];
+      }
+    })();
+  }
+  return dailyScheduleDatesPromise;
+}
+
+/**
+ * Move the leaderboard view one scheduled daily earlier (-1) or later (+1).
+ * Clamped to first schedule date .. calendar today.
+ */
+export async function shiftDailyLeaderboardDate(currentIso, direction) {
+  const delta = direction < 0 ? -1 : direction > 0 ? 1 : 0;
+  if (!delta) return null;
+
+  const today = calendarTodayIso();
+  const current = String(currentIso || today).trim().slice(0, 10) || today;
+  const dates = await loadDailyScheduleDates();
+  const playable = dates.filter((d) => d <= today);
+
+  if (playable.length) {
+    let idx = playable.indexOf(current);
+    if (idx < 0) {
+      idx = playable.findIndex((d) => d >= current);
+      if (idx < 0) idx = playable.length - 1;
+    }
+    const nextIdx = idx + delta;
+    if (nextIdx < 0 || nextIdx >= playable.length) return null;
+    return playable[nextIdx];
+  }
+
+  const [y, m, d] = current.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + delta);
+  const next = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  const min = '2026-06-22';
+  if (next < min || next > today) return null;
+  return next;
 }
 
 /** Best challenge date to use when looking up a daily completion for this level. */
@@ -229,6 +304,10 @@ export function isLeaderboardRowForCurrentUser(row, userId, username) {
 }
 
 const leaderboardRowsCache = new Map();
+
+export function clearLeaderboardRowsCache() {
+  leaderboardRowsCache.clear();
+}
 
 function datesToTryForDailyFallback(progress, levelId, challengeDate) {
   const dates = [];
