@@ -1,9 +1,9 @@
 # Tilezilla — default dev stack (game + auth + shared MySQL).
-# Prefer .\scripts\start-remote-test.ps1 for LAN testing with nginx gateway on 3000.
+# Prefer .\tools\scripts\start-remote-test.ps1 for LAN testing with nginx gateway on 3000.
 #
 # Host ports: web 3000, auth 3001 (internal containers still use 8080 / 80).
 # MySQL data persists in Docker volume tilezilla_shared_mysql_data (survives restarts).
-# Run .\scripts\ensure-shared-mysql-volume.ps1 before first boot if upgrading from older volumes.
+# Run .\tools\scripts\ensure-shared-mysql-volume.ps1 before first boot if upgrading from older volumes.
 
 name: tilezilla
 
