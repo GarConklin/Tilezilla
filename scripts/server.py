@@ -107,9 +107,11 @@ from lib.level_catalog import lookup_level  # noqa: E402
 from lib.progress_store import (  # noqa: E402
     all_time_best_daily,
     daily_leaderboard_for_date,
+    merge_progress,
     migrate_progress,
     progress_response,
     record_solve,
+    start_daily_attempt,
 )
 from lib.session_auth import verify_session_cookie  # noqa: E402
 from lib.system_info import (  # noqa: E402
@@ -348,6 +350,19 @@ class Handler(SimpleHTTPRequestHandler):
         status = 200 if result.get("ok") else 400
         self._send_json(status, result)
 
+    def _handle_post_daily_attempt_start(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        challenge_date = str(payload.get("challengeDate") or "").strip()
+        level_id = str(payload.get("levelId") or "").strip()
+        result = start_daily_attempt(user["id"], challenge_date, level_id)
+        status = 200 if result.get("ok") else 400
+        self._send_json(status, result)
+
     def _handle_post_progress_migrate(self) -> None:
         user = self._require_auth_user()
         if not user:
@@ -360,6 +375,23 @@ class Handler(SimpleHTTPRequestHandler):
             data = payload
         result = migrate_progress(ROOT, user["id"], data)
         status = 200 if result.get("ok") else 409 if result.get("skipped") else 400
+        self._send_json(status, result)
+
+    def _handle_post_progress_merge(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        data = payload.get("data")
+        if data is None:
+            data = payload
+        if not isinstance(data, dict):
+            self._send_json(400, {"ok": False, "error": "data must be an object"})
+            return
+        result = merge_progress(ROOT, user["id"], data)
+        status = 200 if result.get("ok") else 400
         self._send_json(status, result)
 
     def do_GET(self) -> None:
@@ -753,8 +785,14 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/progress/solve":
             self._handle_post_progress_solve()
             return
+        if parsed.path == "/api/daily-attempt/start":
+            self._handle_post_daily_attempt_start()
+            return
         if parsed.path == "/api/progress/migrate":
             self._handle_post_progress_migrate()
+            return
+        if parsed.path == "/api/progress/merge":
+            self._handle_post_progress_merge()
             return
         if parsed.path == "/api/dev/save-sublevel-layout":
             self._save_json_layout(parsed, SUBLEVEL_LAYOUT_PATH, validate_sublevel_layout)
@@ -1862,6 +1900,7 @@ def main() -> None:
     print("Daily leaderboard API: GET /api/daily-leaderboard/best")
     print("Player progress API: POST /api/progress/solve")
     print("Player progress API: POST /api/progress/migrate")
+    print("Player progress API: POST /api/progress/merge")
     print("Sublevel tuner save API: POST /api/dev/save-sublevel-layout")
     print("Discovery tuner save API: POST /api/dev/save-discovery-layout")
     print("Menu tuner save API: POST /api/dev/save-menu-layout")

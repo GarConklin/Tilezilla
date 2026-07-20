@@ -483,7 +483,7 @@ async function undoLastPlacedTile(app) {
   app.rebuildOccFromTiles();
   await app.renderTiles();
   await app.renderActivePreview?.();
-  if (!(app.state.tiles || []).length) resetPuzzleTimer();
+  if (!(app.state.tiles || []).length) resetPuzzleTimerUnlessDailyAttempt();
   dismissDiscoveryForBoardEdit();
   return true;
 }
@@ -1941,7 +1941,7 @@ function wireActions(app) {
     } else {
       await app.clearBoard();
     }
-    resetPuzzleTimer();
+    resetPuzzleTimerUnlessDailyAttempt();
     dismissDiscoveryForBoardEdit();
     syncBoardChrome(app);
     showGameMessage(
@@ -2164,6 +2164,38 @@ function displayPuzzleTimerBest(levelId, userId = 'gar') {
   }
 }
 
+function isTodayDailyLeaderboardAttempt() {
+  const meta = window.__dailyChallengeMeta;
+  if (!meta?.date || meta.leaderboardEligible === false) return false;
+  const dateIso = parseDailyCsvDate(meta.date) || meta.date;
+  return dateIso === todayIso();
+}
+
+/**
+ * Today's daily leaderboard attempt: board reset / clear must NOT zero the
+ * stopwatch — otherwise a player can nearly finish, reset, and submit a fake
+ * few-second time. Keep the attempt clock running until solve or leave daily.
+ */
+function shouldPreserveDailyAttemptTimer() {
+  const onDaily = document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+  if (!onDaily || !isTodayDailyLeaderboardAttempt()) return false;
+  const meta = window.__dailyChallengeMeta;
+  const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const progress = window.__app?.progress;
+  const userId = window.__app?.state?.userId || 'gar';
+  // After the first eligible solve is recorded, later hunt attempts may restart.
+  if (challengeDate && progress?.hasLeaderboardResult?.(challengeDate, userId)) {
+    return false;
+  }
+  return puzzleTimerRunning || puzzleTimerStopped || puzzleTimerElapsedSec > 0 || !!puzzleTimerStartedAt;
+}
+
+function resetPuzzleTimerUnlessDailyAttempt() {
+  if (shouldPreserveDailyAttemptTimer()) return false;
+  resetPuzzleTimer();
+  return true;
+}
+
 function resetPuzzleTimer() {
   puzzleTimerRunning = false;
   puzzleTimerStopped = false;
@@ -2176,9 +2208,31 @@ function resetPuzzleTimer() {
   updatePuzzleTimerDisplay(0);
 }
 
+/** Reset timer when the page is frozen/restored (bfcache) so elapsed time cannot carry over. */
+function resetDailyTimerOnSessionBoundary() {
+  const onDaily = document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
+  if (!onDaily || !isTodayDailyLeaderboardAttempt()) return;
+  resetPuzzleTimer();
+}
+
+let dailyTimerSessionListenersBound = false;
+
+function bindDailyTimerSessionListeners() {
+  if (dailyTimerSessionListenersBound) return;
+  dailyTimerSessionListenersBound = true;
+  window.addEventListener('pagehide', (event) => {
+    if (event.persisted) resetDailyTimerOnSessionBoundary();
+  });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) resetDailyTimerOnSessionBoundary();
+  });
+}
+
 /** Starts on first manual placement from preview/bag — not on load or hints. */
 function startPuzzleTimerOnFirstPlacement() {
   if (puzzleTimerRunning) return;
+  puzzleTimerStopped = false;
+  puzzleTimerElapsedSec = 0;
   puzzleTimerRunning = true;
   puzzleTimerStartedAt = Date.now();
   const tick = () => {
@@ -2187,10 +2241,26 @@ function startPuzzleTimerOnFirstPlacement() {
   };
   tick();
   puzzleTimerInterval = setInterval(tick, 1000);
+
+  if (guestUser.isRegisteredUser?.() && isTodayDailyLeaderboardAttempt()) {
+    const meta = window.__dailyChallengeMeta;
+    const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+    const levelId = meta?.levelId;
+    const progress = window.__app?.progress;
+    const userId = window.__app?.state?.userId || 'gar';
+    const alreadyOnBoard = challengeDate
+      && progress?.hasLeaderboardResult?.(challengeDate, userId);
+    if (challengeDate && levelId && !alreadyOnBoard) {
+      void import('./tilezilla-progress-sync.js').then(({ startDailyAttemptOnServer }) => (
+        startDailyAttemptOnServer({ challengeDate, levelId })
+      ));
+    }
+  }
 }
 
 function wirePuzzleTimer(app) {
   resetPuzzleTimer();
+  bindDailyTimerSessionListeners();
   app.onManualTilePlaced = (tile) => {
     if (tile?.fromHint) return;
     clearBoardResetSnapshot();

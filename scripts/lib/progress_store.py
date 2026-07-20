@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -235,6 +235,145 @@ def rebuild_mysql_from_progress(
         conn.close()
 
 
+def _daily_challenge_level_id(challenge_date: str) -> Optional[str]:
+    date_key = str(challenge_date or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return None
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return None
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT level_id FROM daily_challenges WHERE challenge_date = %s LIMIT 1",
+                (date_key,),
+            )
+            row = cur.fetchone()
+            if not row:
+                return None
+            level_id = str(row.get("level_id") or "").strip()
+            return level_id or None
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def start_daily_attempt(
+    user_id: int | str,
+    challenge_date: str,
+    level_id: str,
+) -> dict[str, Any]:
+    """Record first tile placement for today's daily (INSERT IGNORE — one start per user/day).
+
+    started_at must not move when the board is reset: the client keeps the same
+    stopwatch running for today's leaderboard attempt, and a rebinding start time
+    would let a near-finished board reset into a fake short time.
+    """
+    date_key = str(challenge_date or "").strip()
+    level_key = str(level_id or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return {"ok": False, "error": "invalid-date"}
+    if not level_key:
+        return {"ok": False, "error": "levelId required"}
+    if date_key != date.today().isoformat():
+        return {"ok": False, "error": "not-today"}
+
+    expected_level = _daily_challenge_level_id(date_key)
+    if not expected_level:
+        return {"ok": False, "error": "unknown-challenge-date"}
+    if expected_level != level_key:
+        return {"ok": False, "error": "level-mismatch"}
+
+    now = datetime.now().replace(microsecond=0)
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"ok": False, "error": "db-unavailable"}
+
+    created = False
+    started_at = now
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT IGNORE INTO daily_attempts (
+                    challenge_date, user_id, level_id, started_at
+                ) VALUES (%s, %s, %s, %s)
+                """,
+                (date_key, int(user_id), level_key, now),
+            )
+            created = cur.rowcount > 0
+            cur.execute(
+                """
+                SELECT started_at FROM daily_attempts
+                WHERE challenge_date = %s AND user_id = %s
+                LIMIT 1
+                """,
+                (date_key, int(user_id)),
+            )
+            row = cur.fetchone()
+            if row and row.get("started_at"):
+                started_at = row["started_at"]
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        return {"ok": False, "error": "insert-failed"}
+    finally:
+        conn.close()
+
+    if isinstance(started_at, datetime):
+        started_iso = started_at.replace(microsecond=0).isoformat(sep=" ")
+    else:
+        started_iso = str(started_at)
+
+    return {
+        "ok": True,
+        "created": created,
+        "challengeDate": date_key,
+        "levelId": level_key,
+        "startedAt": started_iso,
+    }
+
+
+def daily_attempt_elapsed_seconds(
+    user_id: int | str,
+    challenge_date: str,
+) -> Optional[int]:
+    """Seconds since server-recorded daily attempt start, or None if no row."""
+    date_key = str(challenge_date or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return None
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return None
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT started_at FROM daily_attempts
+                WHERE challenge_date = %s AND user_id = %s
+                LIMIT 1
+                """,
+                (date_key, int(user_id)),
+            )
+            row = cur.fetchone()
+            if not row or not row.get("started_at"):
+                return None
+            started_at = row["started_at"]
+            if not isinstance(started_at, datetime):
+                return None
+            elapsed = int((datetime.now() - started_at).total_seconds())
+            return max(0, elapsed)
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
 def sync_mysql_after_solve(
     repo_root: Path,
     user_id: int,
@@ -287,6 +426,45 @@ def sync_mysql_after_solve(
         conn.close()
 
 
+def _resolve_leaderboard_time(
+    user_id: int | str,
+    meta: dict[str, Any],
+) -> tuple[Optional[str], bool, int, Optional[int]]:
+    """Return (challenge_date, leaderboard_saved, completion_time, server_elapsed)."""
+    client_completion_time_seconds = max(
+        0, int(meta.get("completionTimeSeconds") or meta.get("elapsedSec") or 0)
+    )
+    challenge_date = str(meta.get("challengeDate") or "").strip() or None
+    leaderboard_saved = bool(meta.get("leaderboardSubmitted"))
+    completion_time_seconds = client_completion_time_seconds
+    server_completion_time_seconds: Optional[int] = None
+    if challenge_date and leaderboard_saved:
+        # Leaderboard time is the puzzle stopwatch (client). Server attempt start is
+        # rebound to each new timing window until daily_results exists, and is kept
+        # for auditing — but must NOT replace the stopwatch with wall-clock that
+        # spans continued multi-solve play after the first eligible finish.
+        server_completion_time_seconds = daily_attempt_elapsed_seconds(
+            user_id, challenge_date
+        )
+        if completion_time_seconds <= 0:
+            if server_completion_time_seconds is not None:
+                completion_time_seconds = server_completion_time_seconds
+            else:
+                leaderboard_saved = False
+        elif (
+            server_completion_time_seconds is not None
+            and completion_time_seconds > server_completion_time_seconds + 5
+        ):
+            # Stopwatch cannot exceed attempt wall-clock (+skew); clamp obvious edits.
+            completion_time_seconds = server_completion_time_seconds
+    return (
+        challenge_date,
+        leaderboard_saved,
+        completion_time_seconds,
+        server_completion_time_seconds,
+    )
+
+
 def record_solve(
     repo_root: Path,
     user_id: int | str,
@@ -308,16 +486,49 @@ def record_solve(
     level_entry = data.setdefault(level_id, {"found": []})
     found_list: list[dict] = level_entry.setdefault("found", [])
 
+    (
+        challenge_date,
+        leaderboard_saved,
+        completion_time_seconds,
+        server_completion_time_seconds,
+    ) = _resolve_leaderboard_time(user_id, meta)
+    hints_used_count = meta.get("hintsUsedCount")
+    if hints_used_count is None:
+        hints_used_count = 1 if meta.get("hintsUsed") else 0
+    hints_used_count = max(0, int(hints_used_count or 0))
+
     for existing in found_list:
         key_existing = equivalence_key(existing.get("placements") or [], rows, cols)
         if key_existing == key_new:
-            return {
+            # Still allow a pending daily leaderboard insert (first-solve sync retry).
+            if leaderboard_saved and challenge_date:
+                idx = existing.get("index")
+                sync_mysql_after_solve(
+                    repo_root,
+                    int(user_id),
+                    data,
+                    level_id=level_id,
+                    index=int(idx) if idx is not None else None,
+                    bonus=bool(existing.get("bonus")),
+                    completion_time_seconds=completion_time_seconds,
+                    challenge_date=challenge_date,
+                    leaderboard_saved=leaderboard_saved,
+                    hints_used_count=hints_used_count,
+                )
+            result: dict[str, Any] = {
                 "ok": True,
                 "duplicate": True,
                 "index": existing.get("index"),
                 "bonus": bool(existing.get("bonus")),
                 "foundAt": existing.get("foundAt"),
+                "completionTimeSeconds": completion_time_seconds,
+                "leaderboardSubmitted": bool(
+                    leaderboard_saved and challenge_date
+                ),
             }
+            if server_completion_time_seconds is not None:
+                result["serverCompletionTimeSeconds"] = server_completion_time_seconds
+            return result
 
     known = load_solves_file(repo_root, level_id)
     client_check = meta.get("check") if isinstance(meta.get("check"), dict) else {}
@@ -337,13 +548,6 @@ def record_solve(
     else:
         index, bonus = None, True
 
-    completion_time_seconds = max(
-        0, int(meta.get("completionTimeSeconds") or meta.get("elapsedSec") or 0)
-    )
-    hints_used_count = meta.get("hintsUsedCount")
-    if hints_used_count is None:
-        hints_used_count = 1 if meta.get("hintsUsed") else 0
-    hints_used_count = max(0, int(hints_used_count or 0))
     found_at = _now_iso()
     entry = {
         "index": index,
@@ -362,7 +566,7 @@ def record_solve(
         "hintsUsed": hints_used_count > 0,
         "hintsUsedCount": hints_used_count,
         "exampleRouteViewed": bool(meta.get("exampleRouteViewed")),
-        "leaderboardSubmitted": bool(meta.get("leaderboardSubmitted")),
+        "leaderboardSubmitted": leaderboard_saved,
         "foundAt": found_at,
     }
     found_list.append(entry)
@@ -376,18 +580,28 @@ def record_solve(
         index=index,
         bonus=bonus,
         completion_time_seconds=completion_time_seconds,
-        challenge_date=str(meta.get("challengeDate") or "").strip() or None,
-        leaderboard_saved=bool(meta.get("leaderboardSubmitted")),
+        challenge_date=challenge_date,
+        leaderboard_saved=leaderboard_saved,
         hints_used_count=hints_used_count,
     )
 
-    return {
+    result = {
         "ok": True,
         "duplicate": False,
         "index": index,
         "bonus": bonus,
         "foundAt": found_at,
+        "completionTimeSeconds": completion_time_seconds,
+        "leaderboardSubmitted": leaderboard_saved,
     }
+    if server_completion_time_seconds is not None:
+        result["serverCompletionTimeSeconds"] = server_completion_time_seconds
+    client_completion_time_seconds = max(
+        0, int(meta.get("completionTimeSeconds") or meta.get("elapsedSec") or 0)
+    )
+    if client_completion_time_seconds != completion_time_seconds:
+        result["clientCompletionTimeSeconds"] = client_completion_time_seconds
+    return result
 
 
 def migrate_progress(
@@ -403,6 +617,98 @@ def migrate_progress(
     save_progress(repo_root, user_id, incoming)
     rebuild_mysql_from_progress(repo_root, int(user_id), incoming)
     return {"ok": True, "migrated": True}
+
+
+def _found_entry_key(level_id: str, entry: dict[str, Any]) -> str:
+    placements = entry.get("placements") or []
+    playable = playable_placements(placements if isinstance(placements, list) else [])
+    rows, cols = parse_board_size(level_id)
+    if rows and cols and playable:
+        return equivalence_key(playable, rows, cols)
+    index = entry.get("index")
+    bonus = bool(entry.get("bonus"))
+    return f"idx:{index}|bonus:{bonus}|n:{len(playable)}"
+
+
+def merge_progress_blobs(
+    base: dict[str, Any] | None,
+    incoming: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Union progress blobs — keep every unique found solution from either side."""
+    out: dict[str, Any] = {}
+    if isinstance(base, dict):
+        out = json.loads(json.dumps(base))  # deep copy via JSON
+
+    if not isinstance(incoming, dict):
+        return out
+
+    for level_id, entry in incoming.items():
+        if not isinstance(level_id, str):
+            continue
+        if level_id.startswith("_"):
+            if level_id not in out:
+                out[level_id] = entry
+            elif isinstance(out[level_id], dict) and isinstance(entry, dict):
+                merged_meta = {**out[level_id], **entry}
+                # Prefer richer encountered tile lists when present.
+                for key in ("encounteredTiles", "seenTiles"):
+                    a = out[level_id].get(key) if isinstance(out[level_id], dict) else None
+                    b = entry.get(key)
+                    if isinstance(a, list) or isinstance(b, list):
+                        merged_meta[key] = sorted(
+                            set([*(a or []), *(b or [])]),
+                            key=str,
+                        )
+                out[level_id] = merged_meta
+            continue
+        if not isinstance(entry, dict):
+            continue
+
+        base_entry = out.get(level_id)
+        if not isinstance(base_entry, dict):
+            out[level_id] = json.loads(json.dumps(entry))
+            continue
+
+        merged_entry = {**base_entry, **{k: v for k, v in entry.items() if k != "found"}}
+        found_out: list[dict] = list(base_entry.get("found") or [])
+        seen = {_found_entry_key(level_id, f) for f in found_out if isinstance(f, dict)}
+        for f in entry.get("found") or []:
+            if not isinstance(f, dict):
+                continue
+            key = _found_entry_key(level_id, f)
+            if key in seen:
+                continue
+            found_out.append(f)
+            seen.add(key)
+        merged_entry["found"] = found_out
+        out[level_id] = merged_entry
+
+    return out
+
+
+def merge_progress(
+    repo_root: Path,
+    user_id: int | str,
+    incoming: dict[str, Any],
+) -> dict[str, Any]:
+    """Merge client progress into server JSON (additive union of found solutions)."""
+    if not isinstance(incoming, dict):
+        return {"ok": False, "error": "data must be an object"}
+    existing = load_progress(repo_root, user_id)
+    merged = merge_progress_blobs(existing, incoming)
+    save_progress(repo_root, user_id, merged)
+    rebuild_mysql_from_progress(repo_root, int(user_id), merged)
+    return {
+        "ok": True,
+        "merged": True,
+        "data": merged,
+        "levels": len([k for k in merged if not str(k).startswith("_")]),
+        "solves": sum(
+            len((v or {}).get("found") or [])
+            for k, v in merged.items()
+            if not str(k).startswith("_") and isinstance(v, dict)
+        ),
+    }
 
 
 def all_time_best_daily(repo_root: Path) -> dict[str, Any]:  # noqa: ARG001

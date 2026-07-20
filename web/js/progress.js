@@ -351,9 +351,22 @@ export class Progress {
     return !!store[`${challengeDate}:${userId}`];
   }
 
+  getLeaderboardResult(challengeDate, userId) {
+    if (!challengeDate || !userId) return null;
+    const store = this.loadDailyResults();
+    return store[`${challengeDate}:${userId}`] || null;
+  }
+
+  needsLeaderboardServerSync(challengeDate, userId) {
+    const row = this.getLeaderboardResult(challengeDate, userId);
+    return !!row && row.serverSyncPending === true;
+  }
+
   /**
    * Record a daily leaderboard entry (local stand-in for daily_results table).
    * Daily challenge: first eligible solve wins — later faster solutions do not replace it.
+   * Call this as soon as the first eligible solve happens (even before server sync)
+   * so continued multi-solve play cannot submit a second, inflated session time.
    */
   recordLeaderboardResult(entry) {
     const {
@@ -368,6 +381,7 @@ export class Progress {
       hintsUsedCount,
       exampleRouteViewed = false,
       completedAt,
+      serverSyncPending = true,
     } = entry || {};
 
     if (!challengeDate || !userId || !levelId) {
@@ -398,9 +412,32 @@ export class Progress {
       hintsUsedCount: hintCount,
       exampleRouteViewed: !!exampleRouteViewed,
       completedAt: completedAt || new Date().toISOString(),
+      serverSyncPending: !!serverSyncPending,
     };
     this.saveDailyResults(store);
     return { saved: true, entry: store[rowKey] };
+  }
+
+  /**
+   * Mark local daily result as confirmed by MySQL (and optionally tighten time
+   * if the server returned a strictly faster authoritative value).
+   */
+  confirmLeaderboardResult(challengeDate, userId, completionTimeSeconds = null) {
+    if (!challengeDate || !userId) return { updated: false, reason: 'missing-fields' };
+    const store = this.loadDailyResults();
+    const rowKey = `${challengeDate}:${userId}`;
+    const existing = store[rowKey];
+    if (!existing) return { updated: false, reason: 'missing' };
+
+    const next = { ...existing, serverSyncPending: false };
+    const sec = Math.max(0, Number(completionTimeSeconds) || 0);
+    const prev = Math.max(0, Number(existing.completionTimeSeconds) || 0);
+    if (sec > 0 && (prev <= 0 || sec < prev)) {
+      next.completionTimeSeconds = sec;
+    }
+    store[rowKey] = next;
+    this.saveDailyResults(store);
+    return { updated: true, entry: next };
   }
 
   getLeaderboardResultsForDate(challengeDate) {

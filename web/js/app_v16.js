@@ -2562,12 +2562,46 @@ async function processSolutionFound(lv, res, placements) {
 
   let leaderboardSubmitted = false;
   const challengeDate = todayChallengeDate();
-  const dailyAlreadyRecorded = challengeDate
-    && progress?.hasLeaderboardResult?.(challengeDate, state.userId || 'gar');
-  if (leaderboardEligible && !dailyAlreadyRecorded) {
-    const lb = progress?.recordLeaderboardResult?.({
+  const dailyUserId = state.userId || 'gar';
+  const localDaily = challengeDate
+    ? progress?.getLeaderboardResult?.(challengeDate, dailyUserId)
+    : null;
+  const dailyAlreadyRecorded = !!localDaily;
+  const wantsDailyLeaderboard = leaderboardEligible && !dailyAlreadyRecorded;
+  const pendingDailySync = leaderboardEligible
+    && !!localDaily?.serverSyncPending
+    && Number(localDaily?.completionTimeSeconds) > 0;
+
+  let authoritativeElapsed = elapsedSec;
+  const leaderboardTimeSec = wantsDailyLeaderboard
+    ? elapsedSec
+    : (pendingDailySync ? Math.max(0, Number(localDaily.completionTimeSeconds) || 0) : elapsedSec);
+  const submitDailyLeaderboard = wantsDailyLeaderboard || pendingDailySync;
+
+  const syncPayload = {
+    levelId: lv.id,
+    placements,
+    check: {
+      index: res.index,
+      bonus: !!res.bonus,
+      duplicate: !!res.duplicate,
+    },
+    meta: {
+      completionTimeSeconds: submitDailyLeaderboard ? leaderboardTimeSec : elapsedSec,
+      hintsUsed,
+      hintsUsedCount,
+      exampleRouteViewed,
+      leaderboardSubmitted: submitDailyLeaderboard,
+      challengeDate: submitDailyLeaderboard ? challengeDate : null,
+    },
+  };
+
+  // Freeze local daily time immediately on first eligible solve so continued
+  // multi-solve play cannot later submit wall-clock from the original attempt start.
+  if (wantsDailyLeaderboard) {
+    progress?.recordLeaderboardResult?.({
       challengeDate,
-      userId: state.userId || 'gar',
+      userId: dailyUserId,
       username: getActiveUsername() || null,
       levelId: lv.id,
       solutionIndex: res.index,
@@ -2577,38 +2611,56 @@ async function processSolutionFound(lv, res, placements) {
       hintsUsedCount,
       exampleRouteViewed,
       completedAt: new Date().toISOString(),
+      serverSyncPending: true,
     });
-    leaderboardSubmitted = !!lb?.saved;
-    if (leaderboardSubmitted && elapsedSec > 0) {
+    if (elapsedSec > 0) {
       timer?.updateBest?.(elapsedSec, lv.id);
     }
   }
 
-  progress.recordFound(lv.id, res.index, placements, !!res.bonus, elapsedSec * 1000, {
-    completionTimeSeconds: elapsedSec,
+  if (submitDailyLeaderboard) {
+    const { syncSolveToServer } = await import('./tilezilla-progress-sync.js');
+    const syncResult = await syncSolveToServer(syncPayload);
+    if (syncResult?.ok) {
+      leaderboardSubmitted = !!syncResult.leaderboardSubmitted;
+      if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
+        authoritativeElapsed = Math.max(0, Number(syncResult.completionTimeSeconds));
+      }
+      if (leaderboardSubmitted) {
+        const confirmedSec = wantsDailyLeaderboard
+          ? authoritativeElapsed
+          : Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
+        progress?.confirmLeaderboardResult?.(
+          challengeDate,
+          dailyUserId,
+          confirmedSec || null,
+        );
+        if (wantsDailyLeaderboard && authoritativeElapsed > 0) {
+          timer?.updateBest?.(authoritativeElapsed, lv.id);
+        }
+      }
+    } else if (wantsDailyLeaderboard) {
+      // Keep frozen local time; pending flag retries with that same time later.
+      leaderboardSubmitted = true;
+      authoritativeElapsed = elapsedSec;
+    }
+  } else {
+    // Always await sync so multi-device progress does not silently drop solves.
+    try {
+      const { syncSolveToServer } = await import('./tilezilla-progress-sync.js');
+      await syncSolveToServer(syncPayload);
+    } catch (err) {
+      console.warn('Progress solve sync failed:', err);
+    }
+  }
+
+  progress.recordFound(lv.id, res.index, placements, !!res.bonus, authoritativeElapsed * 1000, {
+    completionTimeSeconds: authoritativeElapsed,
     hintsUsed,
     hintsUsedCount,
     exampleRouteViewed,
-    leaderboardSubmitted,
+    leaderboardSubmitted: leaderboardSubmitted || !!dailyAlreadyRecorded,
   });
-
-  void import('./tilezilla-progress-sync.js').then(({ syncSolveToServer }) => syncSolveToServer({
-    levelId: lv.id,
-    placements,
-    check: {
-      index: res.index,
-      bonus: !!res.bonus,
-      duplicate: !!res.duplicate,
-    },
-    meta: {
-      completionTimeSeconds: elapsedSec,
-      hintsUsed,
-      hintsUsedCount,
-      exampleRouteViewed,
-      leaderboardSubmitted,
-      challengeDate: leaderboardEligible && !dailyAlreadyRecorded ? challengeDate : null,
-    },
-  }));
 
   const bonusNotes = [];
   let tokensEarned = 0;
@@ -2617,7 +2669,7 @@ async function processSolutionFound(lv, res, placements) {
     const granted = await grantHintTokens(1, HINT_REASON.puzzleCompletion, levelRef);
     tokensEarned += granted;
     if (granted) bonusNotes.push('+1 hint (no hints used)');
-    if (granted && elapsedSec > 0 && elapsedSec <= PUZZLE_TIME_BONUS_SECONDS) {
+    if (granted && authoritativeElapsed > 0 && authoritativeElapsed <= PUZZLE_TIME_BONUS_SECONDS) {
       const bonus = await grantHintTokens(1, HINT_REASON.timeBonus, levelRef);
       tokensEarned += bonus;
       if (bonus) bonusNotes.push('+1 hint (under 30 min)');
@@ -2625,10 +2677,10 @@ async function processSolutionFound(lv, res, placements) {
   }
 
   let msg = res.msg || 'Solution found!';
-  if (elapsedSec > 0) {
-    msg += ` Time: ${formatCompletionTime(elapsedSec)}.`;
+  if (authoritativeElapsed > 0) {
+    msg += ` Time: ${formatCompletionTime(authoritativeElapsed)}.`;
   }
-  if (leaderboardSubmitted) {
+  if (wantsDailyLeaderboard || leaderboardSubmitted) {
     msg += ' Recorded for leaderboard.';
   } else if (!leaderboardEligible && exampleRouteViewed) {
     msg += ' Leaderboard ineligible (example route viewed).';
@@ -2649,7 +2701,7 @@ async function processSolutionFound(lv, res, placements) {
     msg += ` ${bonusNotes.join(' · ')}.`;
   }
 
-  return { msg, elapsedSec, hintsUsed, leaderboardSubmitted, bonusNotes, tokensEarned };
+  return { msg, elapsedSec: authoritativeElapsed, hintsUsed, leaderboardSubmitted, bonusNotes, tokensEarned };
 }
 
 function getHintCost(hintType) {
