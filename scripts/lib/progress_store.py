@@ -160,8 +160,9 @@ def _row_to_found_entry(row: dict[str, Any]) -> dict[str, Any]:
             index = None
     sec = max(0, int(row.get("completion_time_seconds") or 0))
     hints = max(0, int(row.get("hints_used_count") or 0))
-    # Indexed catalog matches are never bonuses, even if the flag was wrongly set.
-    is_bonus = bool(row.get("is_bonus")) and index is None
+    # Null-index rows with placements are pending rematch — never expose as bonus
+    # or the client under-counts "N of total".
+    is_bonus = bool(row.get("is_bonus")) and index is None and not placements
     return {
         "index": index,
         "placements": _normalize_placements(placements),

@@ -378,7 +378,18 @@ export function adventureSolveCount(progress, levelId, { isChallenge = false } =
 
   if (!isChallenge) return found.length;
 
-  return found.filter((f) => !f.bonus).length;
+  // Challenge slots need catalog progress; count pending-rematch (bonus) layouts too.
+  const indices = new Set();
+  let unindexed = 0;
+  for (const entry of found) {
+    const index = Number(entry?.index);
+    if (Number.isFinite(index) && !entry?.bonus) {
+      indices.add(index);
+      continue;
+    }
+    if (Array.isArray(entry?.placements) && entry.placements.length) unindexed += 1;
+  }
+  return indices.size + unindexed;
 
 }
 

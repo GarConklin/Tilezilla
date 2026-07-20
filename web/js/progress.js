@@ -252,13 +252,19 @@ export class Progress {
       const exact = this.canonicalize(foundPlayable) === currentCanon;
       let index = f.index;
       let bonus = f.bonus;
-      if (bonus) {
+      if (bonus || index == null || index === '') {
         for (let i = 0; i < knownSolutions.length; i++) {
           const sol = this.playablePlacements(knownSolutions[i].placements);
           const keySol = rows && cols ? this.equivalenceKey(sol, rows, cols) : this.canonicalize(sol);
           if (keyCur === keySol) {
             index = i;
             bonus = false;
+            // Persist rematch so "N of total" counts catalog finds, not leftover bonus flags.
+            if (f.index !== i || f.bonus) {
+              f.index = i;
+              f.bonus = false;
+              this.save();
+            }
             break;
           }
         }
@@ -295,6 +301,45 @@ export class Progress {
     }
 
     return { matched: true, index: null, bonus: true, duplicate: false, msg: 'Bonus solution discovered!' };
+  }
+
+  /**
+   * Fill missing catalog indexes on stored finds using known solutions + board size.
+   * Clears bogus bonus flags left by server rematch with wrong 5x6 dimensions.
+   */
+  rematchFoundCatalogIndices(levelId, knownSolutions, board = null) {
+    if (!levelId || !Array.isArray(knownSolutions) || !knownSolutions.length) return 0;
+    const entry = this.data[levelId];
+    const found = entry?.found;
+    if (!Array.isArray(found) || !found.length) return 0;
+    const b = board
+      || (this.app?.state?.currentLevel?.id === levelId ? this.app.state.currentLevel.board : null);
+    const rows = b?.rows;
+    const cols = b?.cols;
+    let fixed = 0;
+    for (const f of found) {
+      if (!f || typeof f !== 'object') continue;
+      const hasIndex = Number.isFinite(Number(f.index)) && !f.bonus;
+      if (hasIndex) continue;
+      const playable = this.playablePlacements(f.placements || []);
+      if (!playable.length) continue;
+      const keyCur = rows && cols
+        ? this.equivalenceKey(playable, rows, cols)
+        : this.canonicalize(playable);
+      for (let i = 0; i < knownSolutions.length; i++) {
+        const sol = this.playablePlacements(knownSolutions[i].placements);
+        const keySol = rows && cols
+          ? this.equivalenceKey(sol, rows, cols)
+          : this.canonicalize(sol);
+        if (keyCur !== keySol) continue;
+        f.index = i;
+        f.bonus = false;
+        fixed += 1;
+        break;
+      }
+    }
+    if (fixed) this.save();
+    return fixed;
   }
 
   // -- Recording --
@@ -586,7 +631,8 @@ export class Progress {
 }
 
 /** Unique catalog solution indices found — re-solves of the same index count once.
- * Unindexed layouts (pending rematch) still count so multi-solve progress is visible.
+ * Unindexed / wrongly flagged "bonus" layouts still count so multi-solve progress is visible
+ * until catalog rematch writes a real index.
  */
 export function countCatalogSolutionsFound(found) {
   const indices = new Set();
@@ -597,7 +643,6 @@ export function countCatalogSolutionsFound(found) {
       indices.add(index);
       continue;
     }
-    if (entry?.bonus) continue;
     if (Array.isArray(entry?.placements) && entry.placements.length) {
       unindexed += 1;
     }

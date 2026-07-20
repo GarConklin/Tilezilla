@@ -2439,6 +2439,9 @@ async function runCheckSolution() {
     return;
   }
   const knownSolutions = await loadKnownSolutionsForLevel(lv);
+  if (progress?.rematchFoundCatalogIndices) {
+    progress.rematchFoundCatalogIndices(lv.id, knownSolutions, lv.board);
+  }
   const placements = currentPortablePlacements();
   const invMismatch = getInventoryMismatch(state.levelTileCounts, state.tiles);
   if (invMismatch) {
@@ -3530,6 +3533,9 @@ async function loadKnownSolutionsForLevel(level){
   if(solveDocCache.has(file)){
     const sols = dedupeKnownSolutionsForLevel(solveDocCache.get(file), level);
     if(level?.id) state.solutionCountByLevelId[level.id] = Array.isArray(sols) ? sols.length : 0;
+    if (level?.id && progress?.rematchFoundCatalogIndices) {
+      progress.rematchFoundCatalogIndices(level.id, sols, level.board);
+    }
     return sols;
   }
   try{
@@ -3537,7 +3543,10 @@ async function loadKnownSolutionsForLevel(level){
     const raw = Array.isArray(doc?.solutions) ? doc.solutions : [];
     const sols = dedupeKnownSolutionsForLevel(raw, level);
     solveDocCache.set(file, sols);
-    if(level?.id) state.solutionCountByLevelId[level.id] = sols.length;
+    if (level?.id) state.solutionCountByLevelId[level.id] = sols.length;
+    if (level?.id && progress?.rematchFoundCatalogIndices) {
+      progress.rematchFoundCatalogIndices(level.id, sols, level.board);
+    }
     return sols;
   }catch(e){
     console.warn('solve file unavailable', file, e);
