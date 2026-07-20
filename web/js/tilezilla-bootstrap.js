@@ -2533,7 +2533,19 @@ async function applyDeferredMenuLayouts() {
     applyDiscoveryRecordLayout(discoveryLayout);
     setDiscoveryRecordLayout(discoveryLayout);
     setDiscoveryRecordTexts(getDiscoveryTexts(discoveryLayout));
-    applyDiscoveryButtonArt(discoveryLayout, document.getElementById('discoveryRecord'), 'new');
+    const root = document.getElementById('discoveryRecord');
+    const open = document.querySelector('.tz-app')?.classList.contains('is-discovery-record');
+    if (root && open) {
+      const mode = root.classList.contains('tz-discovery-record--duplicate') ? 'duplicate' : 'new';
+      const showAdvance = root.classList.contains('tz-discovery-record--with-advance');
+      applyDiscoveryPopupLayout(
+        discoveryLayout,
+        getDiscoveryVariantKey(mode, showAdvance),
+        root,
+      );
+    } else {
+      applyDiscoveryButtonArt(discoveryLayout, root, 'new');
+    }
   } catch (err) {
     console.warn('Discovery record layout:', err);
   }

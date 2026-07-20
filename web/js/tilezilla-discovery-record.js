@@ -3,10 +3,13 @@
  */
 
 import {
+  DEFAULT_DISCOVERY_LAYOUT,
   DEFAULT_DISCOVERY_TEXTS,
+  applyDiscoveryPlaqueLayout,
   applyDiscoveryPopupLayout,
   applyDiscoveryVariantClasses,
   getDiscoveryVariantKey,
+  loadDiscoveryRecordLayout,
   resolveShowAdvance,
 } from './discovery-record-layout.js';
 import {
@@ -121,9 +124,42 @@ function setFieldText(id, text, ids) {
 }
 
 let discoveryLayout = null;
+let discoveryLayoutPromise = null;
 
 export function setDiscoveryRecordLayout(layout) {
   discoveryLayout = layout;
+}
+
+/** Defaults immediately so first open never paints without positions. */
+export function ensureDefaultDiscoveryRecordLayout() {
+  if (discoveryLayout) return discoveryLayout;
+  discoveryLayout = { ...DEFAULT_DISCOVERY_LAYOUT };
+  applyDiscoveryPlaqueLayout(discoveryLayout);
+  return discoveryLayout;
+}
+
+/** Resolve disk layout (or defaults) before showing the plaque. */
+export async function ensureDiscoveryRecordLayout() {
+  ensureDefaultDiscoveryRecordLayout();
+  if (discoveryLayoutPromise) return discoveryLayoutPromise;
+  discoveryLayoutPromise = (async () => {
+    try {
+      const layout = await loadDiscoveryRecordLayout();
+      discoveryLayout = layout;
+      applyDiscoveryPlaqueLayout(layout);
+      return layout;
+    } catch (err) {
+      console.warn('Discovery record layout:', err);
+      return discoveryLayout;
+    } finally {
+      discoveryLayoutPromise = null;
+    }
+  })();
+  return discoveryLayoutPromise;
+}
+
+export function getDiscoveryRecordLayout() {
+  return discoveryLayout;
 }
 
 export function applyRecordMode(root, mode, ids = DISCOVERY_RECORD_IDS, showAdvance = false, options = {}) {
@@ -263,20 +299,23 @@ async function showDiscoveryRecordAsync(payload) {
   const root = $('discoveryRecord');
   if (!root) return;
 
+  // Layout JSON is deferred at boot — wait (or use defaults) so fields/buttons align.
+  await ensureDiscoveryRecordLayout();
+
   const appRoot = document.querySelector('.tz-app');
   appRoot?.classList.add('is-discovery-record');
   if (appRoot) appRoot.dataset.validation = '';
   $('previewCheckSolve')?.setAttribute('aria-hidden', 'true');
   window.__invalidSolve?.hide?.();
 
-  root.hidden = false;
-  root.setAttribute('aria-hidden', 'false');
-  await new Promise((resolve) => requestAnimationFrame(resolve));
-
+  // Apply content + positions before unhiding to avoid a misaligned first paint.
   applyDiscoveryRecordContent(payload);
   pendingRecordMode = payload?.mode === 'duplicate' ? 'duplicate' : 'new';
   pendingDailyLeaderboardFlow = !!payload?.dailyLeaderboardFlow;
   pendingViewFoundIndex = Number.isFinite(payload.solutionIndex) ? payload.solutionIndex : null;
+
+  root.hidden = false;
+  root.setAttribute('aria-hidden', 'false');
 
   void onAdventureProgress();
 
@@ -456,6 +495,9 @@ export function initDiscoveryRecord(options = {}) {
   $('discoveryAdvanceBtn')?.addEventListener('click', () => { void handleAdvancePath(); });
   $('discoveryViewFoundBtn')?.addEventListener('click', () => { void handleViewFoundSolve(); });
   $('discoveryFoundBookBtn')?.addEventListener('click', () => { void handleOpenFoundSolutions(); });
+
+  ensureDefaultDiscoveryRecordLayout();
+  void ensureDiscoveryRecordLayout();
 
   window.__discoveryRecord = {
     show: showDiscoveryRecord,
