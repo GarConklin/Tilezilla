@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from lib.solve_match import (
+    board_size_from_solves,
     equivalence_key,
     load_solves_file,
     match_catalog,
@@ -860,7 +861,7 @@ def record_solve(
         return {"ok": False, "error": "placements required"}
 
     uid = int(user_id)
-    rows, cols = parse_board_size(level_id)
+    rows, cols = board_size_from_solves(repo_root, level_id)
     playable = playable_placements(placements)
     key_new = equivalence_key(playable, rows, cols)
     equiv_h = _equiv_hash(key_new)
@@ -1129,7 +1130,7 @@ def repair_found_catalog_indices(
         found = entry.get("found")
         if not isinstance(found, list) or not found:
             continue
-        rows, cols = parse_board_size(level_id)
+        rows, cols = board_size_from_solves(repo_root, level_id)
         if not rows or not cols:
             continue
         known = load_solves_file(repo_root, level_id)

@@ -11,6 +11,7 @@
 - **Solve sync** — every solution awaits `/api/progress/solve` (no silent fire-and-forget drops)
 - **Daily attempts** — `daily_attempts.started_at` locks on first placement (`INSERT IGNORE`)
 - **Progress storage** — found solutions live in MySQL (`user_found_solutions`); JSON files are import-only backups
+- **Catalog rematch** — `5x6` levels use board `rows=6, cols=5` (not 5×6 from the id prefix); run `scripts/repair-found-solution-indexes.py` after deploy to reindex/rehash
 
 ## Git branches
 
@@ -62,6 +63,10 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
 # One-time: import progress JSON volume into SQL (idempotent)
 docker compose -f docker-compose.production.yml --env-file .env.production exec -T web \
   python scripts/migrate-progress-json-to-sql.py
+
+# Rematch null indexes + rehash 5x6 equivalence keys (safe to re-run)
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T web \
+  sh -c 'cd /app && PYTHONPATH=/app/scripts python scripts/repair-found-solution-indexes.py --user 900004 -v'
 ```
 
 ## Verify
@@ -70,6 +75,7 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
 2. `GET /api/system-info` shows `0.99.200`
 3. `SELECT version FROM tilegame.system_info WHERE id = 1;` → `0.99.200`
 4. `SELECT COUNT(*) FROM user_found_solutions WHERE user_id = 900004;` matches prior JSON solve count
+5. BZT check: `SELECT COUNT(*) AS c, SUM(solution_index IS NOT NULL) AS indexed_n FROM user_found_solutions WHERE user_id=900004 AND level_id='5x6-0B-BZT';` → indexed ≈ found count
 
 ## Rollback
 

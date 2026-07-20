@@ -9,10 +9,56 @@ from typing import Any, Optional
 
 
 def parse_board_size(level_id: str) -> tuple[int, int]:
+    """Return (rows, cols) for a level id.
+
+    Most ids encode rows×cols in the prefix. The readable ``5x6`` family is the
+    exception: data uses rows=6, cols=5 (client ``rowsColsFromSizeKey``).
+    """
     m = re.match(r"^(\d+)x(\d+)", str(level_id or ""))
     if not m:
         return 0, 0
-    return int(m.group(1)), int(m.group(2))
+    a, b = int(m.group(1)), int(m.group(2))
+    if {a, b} == {5, 6}:
+        return 6, 5
+    return a, b
+
+
+def board_size_from_solves(repo_root: Path, level_id: str) -> tuple[int, int]:
+    """Prefer board.rows/cols from the solves doc when present."""
+    solves_dir = repo_root / "solves"
+    candidates = [solves_dir / f"{level_id}.json"]
+    for bucket in (repo_root / "data" / "levels").glob("*.json"):
+        try:
+            doc = json.loads(bucket.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for lev in doc.get("levels") or []:
+            if lev.get("id") != level_id:
+                continue
+            solves_file = str(lev.get("solvesFile") or "").strip()
+            if solves_file:
+                candidates.insert(0, solves_dir / solves_file)
+            board = lev.get("board") if isinstance(lev.get("board"), dict) else None
+            if board:
+                rows = int(board.get("rows") or 0)
+                cols = int(board.get("cols") or 0)
+                if rows and cols:
+                    return rows, cols
+            break
+    for path in candidates:
+        if not path.is_file():
+            continue
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        board = doc.get("board") if isinstance(doc, dict) else None
+        if isinstance(board, dict):
+            rows = int(board.get("rows") or 0)
+            cols = int(board.get("cols") or 0)
+            if rows and cols:
+                return rows, cols
+    return parse_board_size(level_id)
 
 
 def playable_placements(placements: list[dict]) -> list[dict]:
