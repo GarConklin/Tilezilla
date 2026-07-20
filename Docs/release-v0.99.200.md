@@ -10,6 +10,7 @@
 - **Progress sync** — login hydrates with a **merge** of local + server solves (no longer wipes richer phone progress)
 - **Solve sync** — every solution awaits `/api/progress/solve` (no silent fire-and-forget drops)
 - **Daily attempts** — `daily_attempts.started_at` locks on first placement (`INSERT IGNORE`)
+- **Progress storage** — found solutions live in MySQL (`user_found_solutions`); JSON files are import-only backups
 
 ## Git branches
 
@@ -36,6 +37,7 @@ docker compose -f docker-compose.production.yml --env-file .env.production up -d
 | `docker/mysql/init/09-system-info.sql` | Fresh MySQL volume seed |
 | `scripts/sql/bump-version-0.99.200.sql` | **Upgrade existing** production DB |
 | `scripts/sql/daily-attempts.sql` | Create `daily_attempts` if missing |
+| `scripts/sql/user-found-solutions.sql` | Found-solutions + progress meta tables |
 
 ## Database upgrade (existing server)
 
@@ -51,6 +53,15 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
 docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
   sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
   < scripts/sql/daily-attempts.sql
+
+# Found solutions in MySQL (safe to re-run)
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < scripts/sql/user-found-solutions.sql
+
+# One-time: import progress JSON volume into SQL (idempotent)
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T web \
+  python scripts/migrate-progress-json-to-sql.py
 ```
 
 ## Verify
@@ -58,7 +69,9 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
 1. Cartographer's Journal shows **v0.99.200**
 2. `GET /api/system-info` shows `0.99.200`
 3. `SELECT version FROM tilegame.system_info WHERE id = 1;` → `0.99.200`
+4. `SELECT COUNT(*) FROM user_found_solutions WHERE user_id = 900004;` matches prior JSON solve count
 
 ## Rollback
 
 Point prod back to `release/v0.99.193` and redeploy. Gameplay data is compatible.
+JSON backups remain as `data/progress/users/{id}.migrated.json` after migration.

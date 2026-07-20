@@ -1,7 +1,8 @@
-"""Server-side player progress — JSON files + MySQL summary tables."""
+"""Server-side player progress — MySQL found-solutions + JSON import fallback."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import date, datetime, timezone
@@ -26,45 +27,60 @@ def progress_path(repo_root: Path, user_id: int | str) -> Path:
     return progress_dir(repo_root) / f"{safe}.json"
 
 
+def progress_migrated_path(repo_root: Path, user_id: int | str) -> Path:
+    safe = str(int(user_id))
+    return progress_dir(repo_root) / f"{safe}.migrated.json"
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-def load_progress(repo_root: Path, user_id: int | str) -> dict[str, Any]:
-    path = progress_path(repo_root, user_id)
-    if not path.is_file():
-        return {}
+def _equiv_hash(equiv_key: str) -> str:
+    return hashlib.sha256(str(equiv_key).encode("utf-8")).hexdigest()
+
+
+def _normalize_placements(placements: list[dict] | None) -> list[dict]:
+    out = []
+    for p in placements or []:
+        if not isinstance(p, dict):
+            continue
+        tile = p.get("tile")
+        if isinstance(tile, dict):
+            tile = tile.get("id") or tile.get("tile") or ""
+        out.append(
+            {
+                "tile": str(tile or ""),
+                "r": int(p.get("r") or 0),
+                "c": int(p.get("c") or 0),
+                "deg": int(p.get("deg") or 0),
+            }
+        )
+    return out
+
+
+def _parse_found_at(value: Any) -> datetime:
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=None) if value.tzinfo else value
+    raw = str(value or "").strip()
+    if not raw:
+        return datetime.utcnow().replace(microsecond=0)
     try:
-        doc = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
-    data = doc.get("data") if isinstance(doc, dict) else None
-    return data if isinstance(data, dict) else {}
+        if raw.endswith("Z"):
+            raw = raw[:-1] + "+00:00"
+        dt = datetime.fromisoformat(raw)
+        if dt.tzinfo:
+            dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt
+    except ValueError:
+        return datetime.utcnow().replace(microsecond=0)
 
 
-def save_progress(repo_root: Path, user_id: int | str, data: dict[str, Any]) -> None:
-    path = progress_path(repo_root, user_id)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    doc = {
-        "schema": "tilezilla-progress-v1",
-        "userId": int(user_id),
-        "updatedAt": _now_iso(),
-        "data": data,
-    }
-    path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
-
-
-def _count_catalog_solutions(found: list[dict]) -> int:
-    return sum(1 for f in found if not f.get("bonus") and f.get("index") is not None)
-
-
-def _best_time_seconds(found: list[dict]) -> Optional[int]:
-    times = [
-        int(f.get("completionTimeSeconds") or 0)
-        for f in found
-        if int(f.get("completionTimeSeconds") or 0) > 0
-    ]
-    return min(times) if times else None
+def _found_at_iso(value: Any) -> str:
+    if isinstance(value, datetime):
+        return value.replace(microsecond=0).isoformat() + "+00:00"
+    raw = str(value or "").strip()
+    return raw or _now_iso()
 
 
 def _mysql_connect():
@@ -82,6 +98,367 @@ def _mysql_connect():
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=False,
     )
+
+
+def _load_json_file_data(repo_root: Path, user_id: int | str) -> dict[str, Any]:
+    path = progress_path(repo_root, user_id)
+    if not path.is_file():
+        migrated = progress_migrated_path(repo_root, user_id)
+        if migrated.is_file():
+            path = migrated
+        else:
+            return {}
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    data = doc.get("data") if isinstance(doc, dict) else None
+    return data if isinstance(data, dict) else {}
+
+
+def _sql_progress_counts(user_id: int) -> tuple[int, bool]:
+    """Return (found_row_count, has_meta)."""
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return 0, False
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COUNT(*) AS n FROM user_found_solutions WHERE user_id = %s",
+                (user_id,),
+            )
+            row = cur.fetchone() or {}
+            n = int(row.get("n") or 0)
+            cur.execute(
+                "SELECT 1 AS ok FROM user_progress_meta WHERE user_id = %s LIMIT 1",
+                (user_id,),
+            )
+            has_meta = bool(cur.fetchone())
+            return n, has_meta
+    except Exception:
+        return 0, False
+    finally:
+        conn.close()
+
+
+def _row_to_found_entry(row: dict[str, Any]) -> dict[str, Any]:
+    placements = row.get("placements_json")
+    if isinstance(placements, str):
+        try:
+            placements = json.loads(placements)
+        except json.JSONDecodeError:
+            placements = []
+    if not isinstance(placements, list):
+        placements = []
+    index = row.get("solution_index")
+    if index is not None:
+        try:
+            index = int(index)
+        except (TypeError, ValueError):
+            index = None
+    sec = max(0, int(row.get("completion_time_seconds") or 0))
+    hints = max(0, int(row.get("hints_used_count") or 0))
+    return {
+        "index": index,
+        "placements": _normalize_placements(placements),
+        "bonus": bool(row.get("is_bonus")),
+        "elapsedMs": sec * 1000,
+        "completionTimeSeconds": sec,
+        "hintsUsed": hints > 0,
+        "hintsUsedCount": hints,
+        "exampleRouteViewed": bool(row.get("example_route_viewed")),
+        "leaderboardSubmitted": bool(row.get("leaderboard_submitted")),
+        "foundAt": _found_at_iso(row.get("found_at")),
+    }
+
+
+def _assemble_progress_from_sql(user_id: int) -> dict[str, Any]:
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {}
+    data: dict[str, Any] = {}
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT level_id, solution_index, is_bonus, placements_json,
+                       completion_time_seconds, hints_used_count,
+                       example_route_viewed, leaderboard_submitted, found_at
+                FROM user_found_solutions
+                WHERE user_id = %s
+                ORDER BY found_at ASC, found_id ASC
+                """,
+                (user_id,),
+            )
+            for row in cur.fetchall() or []:
+                level_id = str(row.get("level_id") or "").strip()
+                if not level_id:
+                    continue
+                entry = data.setdefault(level_id, {"found": []})
+                entry.setdefault("found", []).append(_row_to_found_entry(row))
+
+            cur.execute(
+                "SELECT meta_json FROM user_progress_meta WHERE user_id = %s LIMIT 1",
+                (user_id,),
+            )
+            meta_row = cur.fetchone()
+            if meta_row and meta_row.get("meta_json") is not None:
+                meta = meta_row["meta_json"]
+                if isinstance(meta, str):
+                    try:
+                        meta = json.loads(meta)
+                    except json.JSONDecodeError:
+                        meta = {}
+                if isinstance(meta, dict):
+                    for key, value in meta.items():
+                        if key == "levels" and isinstance(value, dict):
+                            for level_id, level_meta in value.items():
+                                if not isinstance(level_meta, dict):
+                                    continue
+                                entry = data.setdefault(str(level_id), {"found": []})
+                                for mk, mv in level_meta.items():
+                                    if mk == "found":
+                                        continue
+                                    entry[mk] = mv
+                        elif str(key).startswith("_"):
+                            data[str(key)] = value
+    except Exception:
+        return {}
+    finally:
+        conn.close()
+    return data
+
+
+def _extract_meta_blob(progress_data: dict[str, Any]) -> dict[str, Any]:
+    meta: dict[str, Any] = {"levels": {}}
+    for key, value in (progress_data or {}).items():
+        if str(key).startswith("_"):
+            meta[str(key)] = value
+            continue
+        if not isinstance(value, dict):
+            continue
+        level_meta = {k: v for k, v in value.items() if k != "found"}
+        if level_meta:
+            meta["levels"][str(key)] = level_meta
+    if not meta["levels"]:
+        meta.pop("levels", None)
+    return meta
+
+
+def _upsert_found_entry_sql(
+    cur,
+    user_id: int,
+    level_id: str,
+    entry: dict[str, Any],
+) -> bool:
+    """Insert found row if new. Returns True when a row was inserted."""
+    placements = _normalize_placements(entry.get("placements") or [])
+    rows, cols = parse_board_size(level_id)
+    equiv = equivalence_key(placements, rows, cols) if placements else _found_entry_key(level_id, entry)
+    equiv_h = _equiv_hash(equiv)
+    index = entry.get("index")
+    try:
+        index_i = int(index) if index is not None else None
+    except (TypeError, ValueError):
+        index_i = None
+    is_bonus = bool(entry.get("bonus")) or index_i is None
+    sec = max(0, int(entry.get("completionTimeSeconds") or 0))
+    hints = entry.get("hintsUsedCount")
+    if hints is None:
+        hints = 1 if entry.get("hintsUsed") else 0
+    hints = max(0, int(hints or 0))
+    found_at = _parse_found_at(entry.get("foundAt"))
+    cur.execute(
+        """
+        INSERT IGNORE INTO user_found_solutions (
+            user_id, level_id, solution_index, is_bonus, equiv_hash,
+            placements_json, completion_time_seconds, hints_used_count,
+            example_route_viewed, leaderboard_submitted, found_at
+        ) VALUES (%s, %s, %s, %s, %s, CAST(%s AS JSON), %s, %s, %s, %s, %s)
+        """,
+        (
+            user_id,
+            level_id,
+            index_i,
+            1 if is_bonus else 0,
+            equiv_h,
+            json.dumps(placements, separators=(",", ":")),
+            sec,
+            hints,
+            1 if entry.get("exampleRouteViewed") else 0,
+            1 if entry.get("leaderboardSubmitted") else 0,
+            found_at,
+        ),
+    )
+    return cur.rowcount > 0
+
+
+def _update_found_index_sql(
+    cur,
+    user_id: int,
+    level_id: str,
+    entry: dict[str, Any],
+) -> None:
+    placements = _normalize_placements(entry.get("placements") or [])
+    rows, cols = parse_board_size(level_id)
+    if not placements:
+        return
+    equiv_h = _equiv_hash(equivalence_key(placements, rows, cols))
+    index = entry.get("index")
+    try:
+        index_i = int(index) if index is not None else None
+    except (TypeError, ValueError):
+        index_i = None
+    cur.execute(
+        """
+        UPDATE user_found_solutions
+        SET solution_index = %s, is_bonus = %s
+        WHERE user_id = %s AND level_id = %s AND equiv_hash = %s
+        """,
+        (
+            index_i,
+            1 if (entry.get("bonus") or index_i is None) else 0,
+            user_id,
+            level_id,
+            equiv_h,
+        ),
+    )
+
+
+def _write_progress_meta_sql(cur, user_id: int, progress_data: dict[str, Any]) -> None:
+    meta = _extract_meta_blob(progress_data)
+    cur.execute(
+        """
+        INSERT INTO user_progress_meta (user_id, meta_json)
+        VALUES (%s, CAST(%s AS JSON))
+        ON DUPLICATE KEY UPDATE meta_json = VALUES(meta_json)
+        """,
+        (user_id, json.dumps(meta, separators=(",", ":"))),
+    )
+
+
+def import_progress_blob_to_sql(
+    repo_root: Path,  # noqa: ARG001
+    user_id: int | str,
+    progress_data: dict[str, Any],
+) -> dict[str, Any]:
+    """Upsert a progress blob into MySQL. Idempotent on equivalence hash."""
+    if not isinstance(progress_data, dict):
+        return {"ok": False, "error": "data must be an object", "inserted": 0}
+    uid = int(user_id)
+    inserted = 0
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"ok": False, "error": "db-unavailable", "inserted": 0}
+    try:
+        with conn.cursor() as cur:
+            for level_id, entry in progress_data.items():
+                if str(level_id).startswith("_") or not isinstance(entry, dict):
+                    continue
+                for f in entry.get("found") or []:
+                    if not isinstance(f, dict):
+                        continue
+                    if _upsert_found_entry_sql(cur, uid, str(level_id), f):
+                        inserted += 1
+            _write_progress_meta_sql(cur, uid, progress_data)
+        conn.commit()
+    except Exception as err:
+        conn.rollback()
+        return {"ok": False, "error": str(err), "inserted": 0}
+    finally:
+        conn.close()
+    return {"ok": True, "inserted": inserted}
+
+
+def _rename_json_to_migrated(repo_root: Path, user_id: int | str) -> None:
+    src = progress_path(repo_root, user_id)
+    if not src.is_file():
+        return
+    dest = progress_migrated_path(repo_root, user_id)
+    try:
+        if dest.is_file():
+            dest.unlink()
+        src.rename(dest)
+    except OSError:
+        pass
+
+
+def load_progress(repo_root: Path, user_id: int | str) -> dict[str, Any]:
+    """Load progress assembled from MySQL; import JSON once if SQL empty."""
+    uid = int(user_id)
+    n, has_meta = _sql_progress_counts(uid)
+    if n > 0 or has_meta:
+        return _assemble_progress_from_sql(uid)
+
+    file_data = _load_json_file_data(repo_root, user_id)
+    if not file_data:
+        return {}
+
+    imported = import_progress_blob_to_sql(repo_root, uid, file_data)
+    if imported.get("ok"):
+        repaired = repair_found_catalog_indices(repo_root, file_data)
+        # Persist any index repairs discovered during import.
+        try:
+            conn = _mysql_connect()
+            with conn.cursor() as cur:
+                for level_id, entry in repaired.items():
+                    if str(level_id).startswith("_") or not isinstance(entry, dict):
+                        continue
+                    for f in entry.get("found") or []:
+                        if isinstance(f, dict) and f.get("index") is not None:
+                            _update_found_index_sql(cur, uid, str(level_id), f)
+            conn.commit()
+            conn.close()
+        except Exception:
+            pass
+        if progress_path(repo_root, uid).is_file():
+            _rename_json_to_migrated(repo_root, uid)
+        data = _assemble_progress_from_sql(uid)
+        if data:
+            rebuild_mysql_from_progress(repo_root, uid, data)
+        return data
+
+    # DB tables missing / unavailable — fall back to file for this request.
+    return file_data
+
+
+def save_progress(repo_root: Path, user_id: int | str, data: dict[str, Any]) -> None:
+    """Persist progress blob to MySQL (authoritative). Does not write JSON."""
+    if not isinstance(data, dict):
+        return
+    uid = int(user_id)
+    import_progress_blob_to_sql(repo_root, uid, data)
+    # Apply index fields that may have been repaired in-memory.
+    try:
+        conn = _mysql_connect()
+        with conn.cursor() as cur:
+            for level_id, entry in data.items():
+                if str(level_id).startswith("_") or not isinstance(entry, dict):
+                    continue
+                for f in entry.get("found") or []:
+                    if isinstance(f, dict):
+                        _update_found_index_sql(cur, uid, str(level_id), f)
+            _write_progress_meta_sql(cur, uid, data)
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
+def _count_catalog_solutions(found: list[dict]) -> int:
+    return sum(1 for f in found if not f.get("bonus") and f.get("index") is not None)
+
+
+def _best_time_seconds(found: list[dict]) -> Optional[int]:
+    times = [
+        int(f.get("completionTimeSeconds") or 0)
+        for f in found
+        if int(f.get("completionTimeSeconds") or 0) > 0
+    ]
+    return min(times) if times else None
 
 
 def _solutions_found_count(found: list[dict]) -> int:
@@ -390,10 +767,11 @@ def sync_mysql_after_solve(
     """Best-effort MySQL summary; JSON file remains authoritative for full history."""
     rebuild_mysql_from_progress(repo_root, user_id, progress_data)
 
-    if not leaderboard_saved or not challenge_date or bonus or index is None:
+    if not leaderboard_saved or not challenge_date or bonus:
         return
 
     hint_count = max(0, int(hints_used_count or 0))
+    solution_id = (int(index) + 1) if index is not None else 1
 
     try:
         conn = _mysql_connect()
@@ -414,7 +792,7 @@ def sync_mysql_after_solve(
                     challenge_date,
                     user_id,
                     max(0, int(completion_time_seconds)),
-                    int(index) + 1,
+                    solution_id,
                     now,
                     hint_count,
                 ),
@@ -478,13 +856,11 @@ def record_solve(
     if not isinstance(placements, list) or not placements:
         return {"ok": False, "error": "placements required"}
 
+    uid = int(user_id)
     rows, cols = parse_board_size(level_id)
     playable = playable_placements(placements)
     key_new = equivalence_key(playable, rows, cols)
-
-    data = load_progress(repo_root, user_id)
-    level_entry = data.setdefault(level_id, {"found": []})
-    found_list: list[dict] = level_entry.setdefault("found", [])
+    equiv_h = _equiv_hash(key_new)
 
     (
         challenge_date,
@@ -497,44 +873,62 @@ def record_solve(
         hints_used_count = 1 if meta.get("hintsUsed") else 0
     hints_used_count = max(0, int(hints_used_count or 0))
 
-    for existing in found_list:
-        key_existing = equivalence_key(existing.get("placements") or [], rows, cols)
-        if key_existing == key_new:
-            # Still allow a pending daily leaderboard insert (first-solve sync retry).
-            if leaderboard_saved and challenge_date:
-                idx = existing.get("index")
-                sync_mysql_after_solve(
-                    repo_root,
-                    int(user_id),
-                    data,
-                    level_id=level_id,
-                    index=int(idx) if idx is not None else None,
-                    bonus=bool(existing.get("bonus")),
-                    completion_time_seconds=completion_time_seconds,
-                    challenge_date=challenge_date,
-                    leaderboard_saved=leaderboard_saved,
-                    hints_used_count=hints_used_count,
-                )
-            result: dict[str, Any] = {
-                "ok": True,
-                "duplicate": True,
-                "index": existing.get("index"),
-                "bonus": bool(existing.get("bonus")),
-                "foundAt": existing.get("foundAt"),
-                "completionTimeSeconds": completion_time_seconds,
-                "leaderboardSubmitted": bool(
-                    leaderboard_saved and challenge_date
-                ),
-            }
-            if server_completion_time_seconds is not None:
-                result["serverCompletionTimeSeconds"] = server_completion_time_seconds
-            return result
+    # Ensure JSON→SQL import happened before write.
+    data = load_progress(repo_root, uid)
+
+    # Duplicate check against SQL (and assembled blob).
+    try:
+        conn = _mysql_connect()
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT found_id, solution_index, is_bonus, found_at
+                FROM user_found_solutions
+                WHERE user_id = %s AND level_id = %s AND equiv_hash = %s
+                LIMIT 1
+                """,
+                (uid, level_id, equiv_h),
+            )
+            existing_row = cur.fetchone()
+        conn.close()
+    except Exception:
+        existing_row = None
+
+    if existing_row:
+        idx = existing_row.get("solution_index")
+        if leaderboard_saved and challenge_date:
+            sync_mysql_after_solve(
+                repo_root,
+                uid,
+                data,
+                level_id=level_id,
+                index=int(idx) if idx is not None else None,
+                bonus=bool(existing_row.get("is_bonus")),
+                completion_time_seconds=completion_time_seconds,
+                challenge_date=challenge_date,
+                leaderboard_saved=leaderboard_saved,
+                hints_used_count=hints_used_count,
+            )
+        result: dict[str, Any] = {
+            "ok": True,
+            "duplicate": True,
+            "index": idx,
+            "bonus": bool(existing_row.get("is_bonus")),
+            "foundAt": _found_at_iso(existing_row.get("found_at")),
+            "completionTimeSeconds": completion_time_seconds,
+            "leaderboardSubmitted": bool(leaderboard_saved and challenge_date),
+        }
+        if server_completion_time_seconds is not None:
+            result["serverCompletionTimeSeconds"] = server_completion_time_seconds
+        return result
 
     known = load_solves_file(repo_root, level_id)
     client_check = meta.get("check") if isinstance(meta.get("check"), dict) else {}
+    index: Optional[int] = None
+    bonus = True
     if known:
         index, bonus = match_catalog(playable, known, rows, cols)
-    elif isinstance(client_check, dict):
+    if index is None and isinstance(client_check, dict):
         if client_check.get("bonus") is True:
             index, bonus = None, True
         elif client_check.get("index") is not None:
@@ -543,23 +937,13 @@ def record_solve(
                 bonus = False
             except (TypeError, ValueError):
                 index, bonus = None, True
-        else:
-            index, bonus = None, True
-    else:
+    if index is None and not known and not client_check:
         index, bonus = None, True
 
     found_at = _now_iso()
     entry = {
         "index": index,
-        "placements": [
-            {
-                "tile": p.get("tile"),
-                "r": int(p.get("r") or 0),
-                "c": int(p.get("c") or 0),
-                "deg": int(p.get("deg") or 0),
-            }
-            for p in placements
-        ],
+        "placements": _normalize_placements(placements),
         "bonus": bool(bonus),
         "elapsedMs": completion_time_seconds * 1000,
         "completionTimeSeconds": completion_time_seconds,
@@ -569,12 +953,25 @@ def record_solve(
         "leaderboardSubmitted": leaderboard_saved,
         "foundAt": found_at,
     }
-    found_list.append(entry)
-    save_progress(repo_root, user_id, data)
 
+    try:
+        conn = _mysql_connect()
+        with conn.cursor() as cur:
+            _upsert_found_entry_sql(cur, uid, level_id, entry)
+            # Keep level meta keys if present.
+            level_entry = data.get(level_id) if isinstance(data.get(level_id), dict) else {}
+            merged_level = {**level_entry, "found": (level_entry.get("found") or []) + [entry]}
+            data[level_id] = merged_level
+            _write_progress_meta_sql(cur, uid, data)
+        conn.commit()
+        conn.close()
+    except Exception as err:
+        return {"ok": False, "error": f"sql-write-failed: {err}"}
+
+    data = load_progress(repo_root, uid)
     sync_mysql_after_solve(
         repo_root,
-        int(user_id),
+        uid,
         data,
         level_id=level_id,
         index=index,
@@ -592,7 +989,7 @@ def record_solve(
         "bonus": bonus,
         "foundAt": found_at,
         "completionTimeSeconds": completion_time_seconds,
-        "leaderboardSubmitted": leaderboard_saved,
+        "leaderboardSubmitted": bool(leaderboard_saved),
     }
     if server_completion_time_seconds is not None:
         result["serverCompletionTimeSeconds"] = server_completion_time_seconds
@@ -614,8 +1011,11 @@ def migrate_progress(
     existing = load_progress(repo_root, user_id)
     if existing:
         return {"ok": False, "error": "progress already exists", "skipped": True}
-    save_progress(repo_root, user_id, incoming)
-    rebuild_mysql_from_progress(repo_root, int(user_id), incoming)
+    imported = import_progress_blob_to_sql(repo_root, user_id, incoming)
+    if not imported.get("ok"):
+        return {"ok": False, "error": imported.get("error") or "import-failed"}
+    data = load_progress(repo_root, user_id)
+    rebuild_mysql_from_progress(repo_root, int(user_id), data)
     return {"ok": True, "migrated": True}
 
 
@@ -691,24 +1091,175 @@ def merge_progress(
     user_id: int | str,
     incoming: dict[str, Any],
 ) -> dict[str, Any]:
-    """Merge client progress into server JSON (additive union of found solutions)."""
+    """Merge client progress into MySQL (additive union of found solutions)."""
     if not isinstance(incoming, dict):
         return {"ok": False, "error": "data must be an object"}
     existing = load_progress(repo_root, user_id)
     merged = merge_progress_blobs(existing, incoming)
-    save_progress(repo_root, user_id, merged)
-    rebuild_mysql_from_progress(repo_root, int(user_id), merged)
+    repaired = repair_found_catalog_indices(repo_root, merged)
+    save_progress(repo_root, user_id, repaired)
+    data = load_progress(repo_root, user_id)
+    rebuild_mysql_from_progress(repo_root, int(user_id), data)
     return {
         "ok": True,
         "merged": True,
-        "data": merged,
-        "levels": len([k for k in merged if not str(k).startswith("_")]),
+        "data": data,
+        "levels": len([k for k in data if not str(k).startswith("_")]),
         "solves": sum(
             len((v or {}).get("found") or [])
-            for k, v in merged.items()
+            for k, v in data.items()
             if not str(k).startswith("_") and isinstance(v, dict)
         ),
     }
+
+
+def repair_found_catalog_indices(
+    repo_root: Path,
+    progress_data: dict[str, Any],
+) -> dict[str, Any]:
+    """Fill missing found[].index from catalog solves when placements match."""
+    if not isinstance(progress_data, dict):
+        return progress_data
+    for level_id, entry in progress_data.items():
+        if str(level_id).startswith("_") or not isinstance(entry, dict):
+            continue
+        found = entry.get("found")
+        if not isinstance(found, list) or not found:
+            continue
+        rows, cols = parse_board_size(level_id)
+        if not rows or not cols:
+            continue
+        known = load_solves_file(repo_root, level_id)
+        if not known:
+            continue
+        for f in found:
+            if not isinstance(f, dict):
+                continue
+            if f.get("index") is not None and not f.get("bonus"):
+                try:
+                    int(f["index"])
+                    continue
+                except (TypeError, ValueError):
+                    pass
+            placements = f.get("placements") or []
+            if not isinstance(placements, list) or not placements:
+                continue
+            playable = playable_placements(placements)
+            index, bonus = match_catalog(playable, known, rows, cols)
+            if index is None:
+                continue
+            f["index"] = index
+            f["bonus"] = bool(bonus)
+    return progress_data
+
+
+def repair_user_progress_indices(
+    repo_root: Path,
+    user_id: int | str,
+) -> dict[str, Any]:
+    data = load_progress(repo_root, user_id)
+    if not data:
+        return {"ok": False, "error": "no-progress"}
+    before = sum(
+        1
+        for k, v in data.items()
+        if not str(k).startswith("_") and isinstance(v, dict)
+        for f in (v.get("found") or [])
+        if isinstance(f, dict) and f.get("index") is None
+    )
+    repaired = repair_found_catalog_indices(repo_root, data)
+    after = sum(
+        1
+        for k, v in repaired.items()
+        if not str(k).startswith("_") and isinstance(v, dict)
+        for f in (v.get("found") or [])
+        if isinstance(f, dict) and f.get("index") is None
+    )
+    save_progress(repo_root, user_id, repaired)
+    data = load_progress(repo_root, user_id)
+    rebuild_mysql_from_progress(repo_root, int(user_id), data)
+    return {
+        "ok": True,
+        "repairedNullIndex": max(0, before - after),
+        "remainingNullIndex": after,
+        "data": data,
+    }
+
+
+def migrate_user_json_file(
+    repo_root: Path,
+    user_id: int | str,
+    *,
+    rename_file: bool = True,
+) -> dict[str, Any]:
+    """Import one user JSON (or .migrated.json) into SQL."""
+    uid = int(user_id)
+    file_data = _load_json_file_data(repo_root, uid)
+    if not file_data:
+        n, has_meta = _sql_progress_counts(uid)
+        if n or has_meta:
+            return {"ok": True, "skipped": True, "reason": "already-in-sql", "userId": uid}
+        return {"ok": False, "error": "no-json", "userId": uid}
+    repaired = repair_found_catalog_indices(repo_root, file_data)
+    imported = import_progress_blob_to_sql(repo_root, uid, repaired)
+    if not imported.get("ok"):
+        return {"ok": False, "error": imported.get("error"), "userId": uid}
+    # Persist repaired indexes.
+    save_progress(repo_root, uid, repaired)
+    data = load_progress(repo_root, uid)
+    rebuild_mysql_from_progress(repo_root, uid, data)
+    if rename_file and progress_path(repo_root, uid).is_file():
+        _rename_json_to_migrated(repo_root, uid)
+    return {
+        "ok": True,
+        "userId": uid,
+        "inserted": imported.get("inserted", 0),
+        "levels": len([k for k in data if not str(k).startswith("_")]),
+        "solves": sum(
+            len((v or {}).get("found") or [])
+            for k, v in data.items()
+            if not str(k).startswith("_") and isinstance(v, dict)
+        ),
+    }
+
+
+def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
+    data = load_progress(repo_root, user_id)
+    updated_at = _now_iso()
+    if data:
+        before_null = sum(
+            1
+            for k, v in data.items()
+            if not str(k).startswith("_") and isinstance(v, dict)
+            for f in (v.get("found") or [])
+            if isinstance(f, dict) and f.get("index") is None
+        )
+        repaired = repair_found_catalog_indices(repo_root, data)
+        after_null = sum(
+            1
+            for k, v in repaired.items()
+            if not str(k).startswith("_") and isinstance(v, dict)
+            for f in (v.get("found") or [])
+            if isinstance(f, dict) and f.get("index") is None
+        )
+        if after_null < before_null:
+            save_progress(repo_root, user_id, repaired)
+            data = load_progress(repo_root, user_id)
+        rebuild_mysql_from_progress(repo_root, int(user_id), data)
+    try:
+        conn = _mysql_connect()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT updated_at FROM user_progress_meta WHERE user_id = %s LIMIT 1",
+                (int(user_id),),
+            )
+            row = cur.fetchone()
+            if row and row.get("updated_at"):
+                updated_at = _found_at_iso(row["updated_at"])
+        conn.close()
+    except Exception:
+        pass
+    return {"ok": True, "data": data, "updatedAt": updated_at}
 
 
 def all_time_best_daily(repo_root: Path) -> dict[str, Any]:  # noqa: ARG001
@@ -838,18 +1389,3 @@ def daily_leaderboard_for_date(
         "levelId": level_id,
         "rows": rows,
     }
-
-
-def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
-    path = progress_path(repo_root, user_id)
-    data = load_progress(repo_root, user_id)
-    updated_at = None
-    if path.is_file():
-        try:
-            doc = json.loads(path.read_text(encoding="utf-8"))
-            updated_at = doc.get("updatedAt")
-        except (OSError, json.JSONDecodeError):
-            pass
-    if data:
-        rebuild_mysql_from_progress(repo_root, int(user_id), data)
-    return {"ok": True, "data": data, "updatedAt": updated_at}
