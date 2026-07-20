@@ -81,7 +81,7 @@ export class Progress {
   getStats(levelId, totalKnown) {
     const found = this.getFoundForLevel(levelId);
     const bonuses = found.filter(f => f.bonus).length;
-    const knownFound = found.filter(f => !f.bonus).length;
+    const knownFound = countCatalogSolutionsFound(found);
     return { found: knownFound, total: totalKnown, bonuses };
   }
 
@@ -585,13 +585,22 @@ export class Progress {
   }
 }
 
-/** Unique catalog solution indices found — re-solves of the same index count once. */
+/** Unique catalog solution indices found — re-solves of the same index count once.
+ * Unindexed layouts (pending rematch) still count so multi-solve progress is visible.
+ */
 export function countCatalogSolutionsFound(found) {
   const indices = new Set();
+  let unindexed = 0;
   for (const entry of found || []) {
-    if (entry?.bonus) continue;
     const index = Number(entry?.index);
-    if (Number.isFinite(index)) indices.add(index);
+    if (Number.isFinite(index) && !entry?.bonus) {
+      indices.add(index);
+      continue;
+    }
+    if (entry?.bonus) continue;
+    if (Array.isArray(entry?.placements) && entry.placements.length) {
+      unindexed += 1;
+    }
   }
-  return indices.size;
+  return indices.size + unindexed;
 }

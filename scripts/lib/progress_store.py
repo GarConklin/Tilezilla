@@ -159,10 +159,12 @@ def _row_to_found_entry(row: dict[str, Any]) -> dict[str, Any]:
             index = None
     sec = max(0, int(row.get("completion_time_seconds") or 0))
     hints = max(0, int(row.get("hints_used_count") or 0))
+    # Indexed catalog matches are never bonuses, even if the flag was wrongly set.
+    is_bonus = bool(row.get("is_bonus")) and index is None
     return {
         "index": index,
         "placements": _normalize_placements(placements),
-        "bonus": bool(row.get("is_bonus")),
+        "bonus": is_bonus,
         "elapsedMs": sec * 1000,
         "completionTimeSeconds": sec,
         "hintsUsed": hints > 0,
@@ -263,7 +265,8 @@ def _upsert_found_entry_sql(
         index_i = int(index) if index is not None else None
     except (TypeError, ValueError):
         index_i = None
-    is_bonus = bool(entry.get("bonus")) or index_i is None
+    # Do not force bonus just because index is missing — those are pending rematch.
+    is_bonus = bool(entry.get("bonus"))
     sec = max(0, int(entry.get("completionTimeSeconds") or 0))
     hints = entry.get("hintsUsedCount")
     if hints is None:
