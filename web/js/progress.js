@@ -365,6 +365,7 @@ export class Progress {
         : (meta.hintsUsed ? 1 : 0),
       exampleRouteViewed: !!meta.exampleRouteViewed,
       leaderboardSubmitted: !!meta.leaderboardSubmitted,
+      serverSynced: meta.serverSynced !== false,
       foundAt: new Date().toISOString(),
     });
     this.save();

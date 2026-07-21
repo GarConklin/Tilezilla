@@ -2602,7 +2602,8 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
   }
   if (!progressHydrated && authState?.mode === 'registered' && authState?.user) {
     try {
-      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+      const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
+      bindPendingSolveFlush();
       await hydrateProgressFromServer(app.progress);
     } catch (err) {
       console.warn('Server progress hydrate (deferred):', err);
@@ -2969,7 +2970,8 @@ async function init() {
   let progressHydrated = false;
   if (!deferBootPuzzle && authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
     try {
-      const { hydrateProgressFromServer } = await import('./tilezilla-progress-sync.js');
+      const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
+      bindPendingSolveFlush();
       await hydrateProgressFromServer(app.progress);
       progressHydrated = true;
     } catch (err) {

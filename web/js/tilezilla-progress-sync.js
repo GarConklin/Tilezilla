@@ -120,6 +120,7 @@ export async function hydrateProgressFromServer(progress) {
       if (res.ok && payload?.ok) {
         window.__passportServerProgressHydrated = true;
         window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'migrated-local' } }));
+        void flushPendingSolves();
         return { ok: true, source: 'migrated-local', levels: localLevels, solves: localSolves };
       }
       if (payload?.skipped) {
@@ -129,6 +130,7 @@ export async function hydrateProgressFromServer(progress) {
           progress.save();
           window.__passportServerProgressHydrated = true;
           window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'merged-after-race' } }));
+          void flushPendingSolves();
           return { ok: true, source: 'merged-after-race', levels: countProgressLevels(merged.data), solves: countFoundSolutions(merged.data) };
         }
       }
@@ -146,6 +148,7 @@ export async function hydrateProgressFromServer(progress) {
       progress.save();
       window.__passportServerProgressHydrated = true;
       window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'merged' } }));
+      void flushPendingSolves();
       return {
         ok: true,
         source: 'merged',
@@ -160,6 +163,7 @@ export async function hydrateProgressFromServer(progress) {
     console.warn('Progress merge failed; using local union:', merged.error);
     window.__passportServerProgressHydrated = true;
     window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'local-union' } }));
+    void flushPendingSolves();
     return {
       ok: true,
       source: 'local-union',
@@ -172,6 +176,7 @@ export async function hydrateProgressFromServer(progress) {
   progress.save();
   window.__passportServerProgressHydrated = true;
   window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', { detail: { source: 'server' } }));
+  void flushPendingSolves();
   return { ok: true, source: 'server', levels: serverLevels, solves: serverSolves };
 }
 
@@ -207,7 +212,73 @@ export async function startDailyAttemptOnServer({
 
 /**
  * Persist a newly found solution (registered users only).
+ * On failure, queues the payload and retries later so SQL stays the source of truth.
  */
+const PENDING_SOLVES_KEY = 'tilezilla_pending_solves_v1';
+
+function readPendingSolves() {
+  try {
+    const raw = localStorage.getItem(PENDING_SOLVES_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePendingSolves(list) {
+  try {
+    if (!list.length) localStorage.removeItem(PENDING_SOLVES_KEY);
+    else localStorage.setItem(PENDING_SOLVES_KEY, JSON.stringify(list.slice(-50)));
+  } catch {
+    /* quota */
+  }
+}
+
+function pendingSolveKey(payload) {
+  const levelId = payload?.levelId || '';
+  const placements = JSON.stringify(payload?.placements || []);
+  return `${levelId}|${placements}`;
+}
+
+function enqueuePendingSolve(payload) {
+  const list = readPendingSolves();
+  const key = pendingSolveKey(payload);
+  if (list.some((p) => pendingSolveKey(p) === key)) return;
+  list.push({
+    levelId: payload.levelId,
+    placements: payload.placements,
+    check: payload.check || {},
+    meta: payload.meta || {},
+    queuedAt: new Date().toISOString(),
+  });
+  writePendingSolves(list);
+}
+
+function dequeuePendingSolve(payload) {
+  const key = pendingSolveKey(payload);
+  writePendingSolves(readPendingSolves().filter((p) => pendingSolveKey(p) !== key));
+}
+
+async function postSolveToServer(payload) {
+  const res = await fetch('/api/progress/solve', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      levelId: payload.levelId,
+      placements: payload.placements,
+      check: payload.check || {},
+      meta: payload.meta || {},
+    }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok || body?.ok === false) {
+    return { ok: false, error: body?.error || `HTTP ${res.status}`, ...body };
+  }
+  return { ok: true, ...body };
+}
+
 export async function syncSolveToServer({
   levelId,
   placements,
@@ -218,26 +289,51 @@ export async function syncSolveToServer({
     return { ok: false, reason: 'missing-fields' };
   }
 
+  const payload = { levelId, placements, check: check || {}, meta };
   try {
-    const res = await fetch('/api/progress/solve', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        levelId,
-        placements,
-        check: check || {},
-        meta,
-      }),
-    });
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok || payload?.ok === false) {
-      console.warn('Progress solve sync:', payload?.error || res.status);
-      return { ok: false, ...payload };
+    const result = await postSolveToServer(payload);
+    if (result.ok) {
+      dequeuePendingSolve(payload);
+      return result;
     }
-    return { ok: true, ...payload };
+    console.warn('Progress solve sync:', result.error || result);
+    enqueuePendingSolve(payload);
+    return result;
   } catch (err) {
     console.warn('Progress solve sync failed:', err);
+    enqueuePendingSolve(payload);
     return { ok: false, error: String(err) };
   }
+}
+
+/** Retry any solves that failed to reach SQL (network / auth blip). */
+export async function flushPendingSolves() {
+  const pending = readPendingSolves();
+  if (!pending.length) return { ok: true, flushed: 0, remaining: 0 };
+  let flushed = 0;
+  const still = [];
+  for (const payload of pending) {
+    try {
+      const result = await postSolveToServer(payload);
+      if (result.ok) flushed += 1;
+      else still.push(payload);
+    } catch {
+      still.push(payload);
+    }
+  }
+  writePendingSolves(still);
+  return { ok: still.length === 0, flushed, remaining: still.length };
+}
+
+let pendingFlushBound = false;
+
+/** Bind online / visibility retries once per page load. */
+export function bindPendingSolveFlush() {
+  if (pendingFlushBound || typeof window === 'undefined') return;
+  pendingFlushBound = true;
+  const run = () => { void flushPendingSolves(); };
+  window.addEventListener('online', run);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') run();
+  });
 }

@@ -2599,70 +2599,79 @@ async function processSolutionFound(lv, res, placements) {
     },
   };
 
-  // Freeze local daily time immediately on first eligible solve so continued
-  // multi-solve play cannot later submit wall-clock from the original attempt start.
-  if (wantsDailyLeaderboard) {
-    progress?.recordLeaderboardResult?.({
-      challengeDate,
-      userId: dailyUserId,
-      username: getActiveUsername() || null,
-      levelId: lv.id,
-      solutionIndex: res.index,
-      solutionBonus: !!res.bonus,
-      completionTimeSeconds: elapsedSec,
-      hintsUsed,
-      hintsUsedCount,
-      exampleRouteViewed,
-      completedAt: new Date().toISOString(),
-      serverSyncPending: true,
-    });
-    if (elapsedSec > 0) {
-      timer?.updateBest?.(elapsedSec, lv.id);
-    }
-  }
-
   if (submitDailyLeaderboard) {
-    const { syncSolveToServer } = await import('./tilezilla-progress-sync.js');
-    const syncResult = await syncSolveToServer(syncPayload);
-    if (syncResult?.ok) {
-      leaderboardSubmitted = !!syncResult.leaderboardSubmitted;
-      if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
-        authoritativeElapsed = Math.max(0, Number(syncResult.completionTimeSeconds));
+    // Freeze local daily time immediately on first eligible solve so continued
+    // multi-solve play cannot later submit wall-clock from the original attempt start.
+    if (wantsDailyLeaderboard) {
+      progress?.recordLeaderboardResult?.({
+        challengeDate,
+        userId: dailyUserId,
+        username: getActiveUsername() || null,
+        levelId: lv.id,
+        solutionIndex: res.index,
+        solutionBonus: !!res.bonus,
+        completionTimeSeconds: elapsedSec,
+        hintsUsed,
+        hintsUsedCount,
+        exampleRouteViewed,
+        completedAt: new Date().toISOString(),
+        serverSyncPending: true,
+      });
+      if (elapsedSec > 0) {
+        timer?.updateBest?.(elapsedSec, lv.id);
       }
-      if (leaderboardSubmitted) {
-        const confirmedSec = wantsDailyLeaderboard
-          ? authoritativeElapsed
-          : Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
-        progress?.confirmLeaderboardResult?.(
-          challengeDate,
-          dailyUserId,
-          confirmedSec || null,
-        );
-        if (wantsDailyLeaderboard && authoritativeElapsed > 0) {
-          timer?.updateBest?.(authoritativeElapsed, lv.id);
-        }
-      }
-    } else if (wantsDailyLeaderboard) {
-      // Keep frozen local time; pending flag retries with that same time later.
-      leaderboardSubmitted = true;
-      authoritativeElapsed = elapsedSec;
-    }
-  } else {
-    // Always await sync so multi-device progress does not silently drop solves.
-    try {
-      const { syncSolveToServer } = await import('./tilezilla-progress-sync.js');
-      await syncSolveToServer(syncPayload);
-    } catch (err) {
-      console.warn('Progress solve sync failed:', err);
     }
   }
 
-  progress.recordFound(lv.id, res.index, placements, !!res.bonus, authoritativeElapsed * 1000, {
+  // Every new find must hit SQL (leaderboard meta is optional on the same request).
+  const { syncSolveToServer, flushPendingSolves } = await import('./tilezilla-progress-sync.js');
+  let syncResult = null;
+  try {
+    syncResult = await syncSolveToServer(syncPayload);
+    void flushPendingSolves();
+  } catch (err) {
+    console.warn('Progress solve sync failed:', err);
+  }
+
+  if (submitDailyLeaderboard && syncResult?.ok) {
+    leaderboardSubmitted = !!syncResult.leaderboardSubmitted;
+    if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
+      authoritativeElapsed = Math.max(0, Number(syncResult.completionTimeSeconds));
+    }
+    if (leaderboardSubmitted) {
+      const confirmedSec = wantsDailyLeaderboard
+        ? authoritativeElapsed
+        : Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
+      progress?.confirmLeaderboardResult?.(
+        challengeDate,
+        dailyUserId,
+        confirmedSec || null,
+      );
+      if (wantsDailyLeaderboard && authoritativeElapsed > 0) {
+        timer?.updateBest?.(authoritativeElapsed, lv.id);
+      }
+    }
+  } else if (wantsDailyLeaderboard && !syncResult?.ok) {
+    // Keep frozen local time; pending flag retries with that same time later.
+    leaderboardSubmitted = true;
+    authoritativeElapsed = elapsedSec;
+  }
+
+  // Prefer server catalog index when the POST succeeded.
+  const recordedIndex = Number.isFinite(Number(syncResult?.index))
+    ? Number(syncResult.index)
+    : res.index;
+  const recordedBonus = syncResult?.ok
+    ? !!syncResult.bonus
+    : !!res.bonus;
+
+  progress.recordFound(lv.id, recordedIndex, placements, recordedBonus, authoritativeElapsed * 1000, {
     completionTimeSeconds: authoritativeElapsed,
     hintsUsed,
     hintsUsedCount,
     exampleRouteViewed,
     leaderboardSubmitted: leaderboardSubmitted || !!dailyAlreadyRecorded,
+    serverSynced: !!syncResult?.ok,
   });
 
   const bonusNotes = [];
