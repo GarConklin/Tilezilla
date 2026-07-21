@@ -43,6 +43,8 @@ def repair_sql_indexes(user_id: int | None = None, verbose: bool = False) -> dic
     scanned = 0
     rematch_candidates = 0
     no_match = 0
+    no_solves = 0
+    bonus_cleared = 0
     try:
         with conn.cursor() as cur:
             if user_id is None:
@@ -131,14 +133,42 @@ def repair_sql_indexes(user_id: int | None = None, verbose: bool = False) -> dic
                 if not known:
                     if verbose:
                         print(f"no_solves {level_id} {row['found_id']}")
-                    no_match += 1
+                    no_solves += 1
+                    # Still clear bogus bonus so client counts the layout.
+                    if row.get("is_bonus"):
+                        cur.execute(
+                            """
+                            UPDATE user_found_solutions
+                            SET is_bonus = 0, equiv_hash = %s
+                            WHERE found_id = %s
+                            """,
+                            (equiv_h, row["found_id"]),
+                        )
+                        bonus_cleared += 1
                     continue
 
                 index, bonus = match_catalog(playable, known, rows_n, cols_n)
                 if index is None:
+                    # Retry swapped dims in case an older row used id-prefix order.
+                    index, bonus = match_catalog(playable, known, cols_n, rows_n)
+                if index is None:
                     if verbose:
-                        print(f"no_match {level_id} {row['found_id']}")
+                        print(
+                            f"no_match {level_id} {row['found_id']} "
+                            f"tiles={len(playable)} board={rows_n}x{cols_n} "
+                            f"catalog={len(known)}"
+                        )
                     no_match += 1
+                    if row.get("is_bonus"):
+                        cur.execute(
+                            """
+                            UPDATE user_found_solutions
+                            SET is_bonus = 0, equiv_hash = %s
+                            WHERE found_id = %s
+                            """,
+                            (equiv_h, row["found_id"]),
+                        )
+                        bonus_cleared += 1
                     continue
 
                 cur.execute(
@@ -192,6 +222,8 @@ def repair_sql_indexes(user_id: int | None = None, verbose: bool = False) -> dic
         "rehashed": rehashed,
         "duplicates_removed": duplicates_removed,
         "no_match": no_match,
+        "no_solves": no_solves,
+        "bonus_cleared": bonus_cleared,
     }
 
 

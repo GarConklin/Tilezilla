@@ -2,7 +2,7 @@
   "schema": "levels-bucket-v1",
   "size": "5x6",
   "tier": "0C",
-  "count": 18,
+  "count": 400,
   "levels": [
     {
       "id": "5x6-0C-AAA",
@@ -33,8 +33,8 @@
       "id": "5x6-0C-AAB",
       "name": "AAB",
       "board": {
-        "rows": 5,
-        "cols": 6
+        "rows": 6,
+        "cols": 5
       },
       "tiles": {
         "SH": 1,
@@ -286,7 +286,7 @@
       "solvesFile": "5x6-0C-AAK.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 56
     },
     {
       "id": "5x6-0C-AAL",
@@ -310,7 +310,7 @@
       "solvesFile": "5x6-0C-AAL.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 10
     },
     {
       "id": "5x6-0C-AAM",
@@ -336,7 +336,7 @@
       "solvesFile": "5x6-0C-AAM.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 27
     },
     {
       "id": "5x6-0C-AAN",
@@ -361,7 +361,7 @@
       "solvesFile": "5x6-0C-AAN.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 13
     },
     {
       "id": "5x6-0C-AAO",
@@ -419,8 +419,8 @@
       "id": "5x6-0C-AAQ",
       "name": "AAQ",
       "board": {
-        "rows": 5,
-        "cols": 6
+        "rows": 6,
+        "cols": 5
       },
       "tiles": {
         "SH": 1,
@@ -442,6 +442,9773 @@
       "pathMode": "single",
       "pathCount": 1,
       "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAR",
+      "name": "AAR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "SH": 1,
+        "CR": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 3,
+        "ET": 1,
+        "SZ": 1,
+        "VL": 2,
+        "UT": 1,
+        "DB": 1,
+        "LR": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAS",
+      "name": "AAS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "RC": 1,
+        "LL": 2,
+        "CQ": 1,
+        "HL": 2,
+        "SH": 1,
+        "SZ": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 1,
+        "VL": 1,
+        "UT": 1,
+        "DB": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAT",
+      "name": "AAT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "RC": 1,
+        "LC": 2,
+        "LL": 1,
+        "VL": 1,
+        "UT": 2,
+        "DB": 1,
+        "SH": 1,
+        "ET": 1,
+        "QC": 1,
+        "CR": 1,
+        "DC": 1,
+        "SZ": 1,
+        "SS": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAU",
+      "name": "AAU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "RC": 2,
+        "LL": 1,
+        "VL": 2,
+        "UT": 1,
+        "DB": 1,
+        "SH": 1,
+        "ET": 1,
+        "QC": 1,
+        "CR": 1,
+        "DC": 1,
+        "DS": 1,
+        "SS": 2
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAV",
+      "name": "AAV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "RC": 2,
+        "LL": 1,
+        "VL": 2,
+        "UT": 1,
+        "SH": 1,
+        "ET": 1,
+        "QC": 1,
+        "CR": 1,
+        "DS": 1,
+        "SS": 1,
+        "DC": 2,
+        "LR": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAW",
+      "name": "AAW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "LL": 2,
+        "VL": 1,
+        "UT": 3,
+        "DB": 1,
+        "DC": 1,
+        "LC": 2,
+        "SH": 1,
+        "ET": 1,
+        "CR": 1,
+        "HL": 1,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAX",
+      "name": "AAX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "UT": 6,
+        "DB": 1,
+        "SH": 1,
+        "ET": 1,
+        "CR": 1,
+        "SZ": 1,
+        "LC": 1,
+        "LL": 2,
+        "HL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAY",
+      "name": "AAY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "UT": 3,
+        "DB": 2,
+        "SH": 1,
+        "ET": 1,
+        "SZ": 1,
+        "LC": 1,
+        "LL": 3,
+        "HL": 1,
+        "CR": 1,
+        "LR": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AAZ",
+      "name": "AAZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "UT": 2,
+        "SZ": 1,
+        "LC": 1,
+        "LL": 3,
+        "CR": 1,
+        "DB": 1,
+        "LR": 1,
+        "SS": 1,
+        "RC": 2,
+        "SH": 1,
+        "ET": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-AAZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABA",
+      "name": "ABA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "SZ": 3,
+        "LC": 1,
+        "LL": 3,
+        "UT": 1,
+        "LR": 2,
+        "SH": 1,
+        "ET": 1,
+        "CR": 1,
+        "DS": 1,
+        "SS": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABB",
+      "name": "ABB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "SZ": 3,
+        "LC": 2,
+        "LL": 3,
+        "LR": 2,
+        "CR": 1,
+        "DS": 1,
+        "SS": 1,
+        "ET": 1,
+        "SH": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABC",
+      "name": "ABC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "LL": 2,
+        "DS": 1,
+        "LR": 1,
+        "SS": 1,
+        "CQ": 1,
+        "ET": 1,
+        "UT": 3,
+        "HL": 1,
+        "VL": 2,
+        "SH": 1,
+        "LC": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABD",
+      "name": "ABD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "SS": 2,
+        "CQ": 1,
+        "UT": 1,
+        "VL": 4,
+        "QC": 1,
+        "ET": 1,
+        "SH": 1,
+        "LR": 1,
+        "LL": 2,
+        "RC": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABE",
+      "name": "ABE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "SS": 2,
+        "CQ": 1,
+        "UT": 1,
+        "VL": 3,
+        "QC": 1,
+        "ET": 1,
+        "SH": 1,
+        "LR": 1,
+        "LL": 3,
+        "SZ": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ABF",
+      "name": "ABF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DC": 3,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ABF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-ABG",
+      "name": "ABG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ABG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 37
+    },
+    {
+      "id": "5x6-0C-ABH",
+      "name": "ABH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 3,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 67
+    },
+    {
+      "id": "5x6-0C-ABI",
+      "name": "ABI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DB": 3,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2
+      },
+      "solvesFile": "5x6-0C-ABI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ABJ",
+      "name": "ABJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 2,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ABK",
+      "name": "ABK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 3,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ABK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-ABL",
+      "name": "ABL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ABL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 64
+    },
+    {
+      "id": "5x6-0C-ABM",
+      "name": "ABM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ABM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 63
+    },
+    {
+      "id": "5x6-0C-ABN",
+      "name": "ABN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-ABO",
+      "name": "ABO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-ABP",
+      "name": "ABP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 2,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-ABP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    },
+    {
+      "id": "5x6-0C-ABQ",
+      "name": "ABQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ABR",
+      "name": "ABR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 2,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 43
+    },
+    {
+      "id": "5x6-0C-ABS",
+      "name": "ABS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 108
+    },
+    {
+      "id": "5x6-0C-ABT",
+      "name": "ABT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 2,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ABU",
+      "name": "ABU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 3,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 2
+      },
+      "solvesFile": "5x6-0C-ABU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-ABV",
+      "name": "ABV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 3,
+        "LL": 1,
+        "QC": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ABV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ABW",
+      "name": "ABW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-ABW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 208
+    },
+    {
+      "id": "5x6-0C-ABX",
+      "name": "ABX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1
+      },
+      "solvesFile": "5x6-0C-ABX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 12
+    },
+    {
+      "id": "5x6-0C-ABY",
+      "name": "ABY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ABY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 64
+    },
+    {
+      "id": "5x6-0C-ABZ",
+      "name": "ABZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ABZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-ACA",
+      "name": "ACA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-ACB",
+      "name": "ACB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 2,
+        "ET": 1,
+        "LC": 2,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ACB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-ACC",
+      "name": "ACC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ACC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-ACD",
+      "name": "ACD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 3,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-ACE",
+      "name": "ACE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 2,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ACE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 18
+    },
+    {
+      "id": "5x6-0C-ACF",
+      "name": "ACF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-ACG",
+      "name": "ACG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 2,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ACG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 56
+    },
+    {
+      "id": "5x6-0C-ACH",
+      "name": "ACH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DB": 2,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ACI",
+      "name": "ACI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 65
+    },
+    {
+      "id": "5x6-0C-ACJ",
+      "name": "ACJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ACJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-ACK",
+      "name": "ACK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 2,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ACK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-ACL",
+      "name": "ACL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ACM",
+      "name": "ACM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "blockers": [],
+      "solvesFile": "5x6-0C-ACM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 67
+    },
+    {
+      "id": "5x6-0C-ACN",
+      "name": "ACN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1
+      },
+      "solvesFile": "5x6-0C-ACN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 19
+    },
+    {
+      "id": "5x6-0C-ACO",
+      "name": "ACO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "VL": 4
+      },
+      "solvesFile": "5x6-0C-ACO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ACP",
+      "name": "ACP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 2,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 87
+    },
+    {
+      "id": "5x6-0C-ACQ",
+      "name": "ACQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-ACQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 66
+    },
+    {
+      "id": "5x6-0C-ACR",
+      "name": "ACR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-ACS",
+      "name": "ACS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-ACS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ACT",
+      "name": "ACT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 208
+    },
+    {
+      "id": "5x6-0C-ACU",
+      "name": "ACU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 63
+    },
+    {
+      "id": "5x6-0C-ACV",
+      "name": "ACV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ACV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-ACW",
+      "name": "ACW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 210
+    },
+    {
+      "id": "5x6-0C-ACX",
+      "name": "ACX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ACX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-ACY",
+      "name": "ACY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ACY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ACZ",
+      "name": "ACZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 3,
+        "LR": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 2,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ACZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-ADA",
+      "name": "ADA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ADA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 145
+    },
+    {
+      "id": "5x6-0C-ADB",
+      "name": "ADB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ADB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ADC",
+      "name": "ADC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-ADD",
+      "name": "ADD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ADD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-ADE",
+      "name": "ADE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 2,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ADE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-ADF",
+      "name": "ADF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 2,
+        "DB": 2,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-ADG",
+      "name": "ADG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1
+      },
+      "solvesFile": "5x6-0C-ADG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 20
+    },
+    {
+      "id": "5x6-0C-ADH",
+      "name": "ADH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 2,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ADH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 85
+    },
+    {
+      "id": "5x6-0C-ADI",
+      "name": "ADI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-ADJ",
+      "name": "ADJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 3,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2
+      },
+      "solvesFile": "5x6-0C-ADJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 121
+    },
+    {
+      "id": "5x6-0C-ADK",
+      "name": "ADK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 4,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ADK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-ADL",
+      "name": "ADL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2
+      },
+      "solvesFile": "5x6-0C-ADL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 31
+    },
+    {
+      "id": "5x6-0C-ADM",
+      "name": "ADM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 2,
+        "QS": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 18
+    },
+    {
+      "id": "5x6-0C-ADN",
+      "name": "ADN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 2
+      },
+      "solvesFile": "5x6-0C-ADN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 40
+    },
+    {
+      "id": "5x6-0C-ADO",
+      "name": "ADO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ADO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 12
+    },
+    {
+      "id": "5x6-0C-ADP",
+      "name": "ADP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 2,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    },
+    {
+      "id": "5x6-0C-ADQ",
+      "name": "ADQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 2,
+        "QS": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ADQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ADR",
+      "name": "ADR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-ADS",
+      "name": "ADS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "DC": 2,
+        "ET": 1,
+        "LC": 2,
+        "LL": 2,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-ADT",
+      "name": "ADT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 19
+    },
+    {
+      "id": "5x6-0C-ADU",
+      "name": "ADU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 4
+      },
+      "solvesFile": "5x6-0C-ADU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-ADV",
+      "name": "ADV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 3,
+        "LL": 2,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ADV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-ADW",
+      "name": "ADW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 2,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1
+      },
+      "solvesFile": "5x6-0C-ADW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    },
+    {
+      "id": "5x6-0C-ADX",
+      "name": "ADX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-ADX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-ADY",
+      "name": "ADY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-ADZ",
+      "name": "ADZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ADZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AEA",
+      "name": "AEA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 3,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-AEA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 11
+    },
+    {
+      "id": "5x6-0C-AEB",
+      "name": "AEB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-AEB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 31
+    },
+    {
+      "id": "5x6-0C-AEC",
+      "name": "AEC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AED",
+      "name": "AED",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-AED.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-AEE",
+      "name": "AEE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 166
+    },
+    {
+      "id": "5x6-0C-AEF",
+      "name": "AEF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 2,
+        "ET": 1,
+        "LC": 3,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AEG",
+      "name": "AEG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "ET": 1,
+        "LC": 3,
+        "LR": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 19
+    },
+    {
+      "id": "5x6-0C-AEH",
+      "name": "AEH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AEI",
+      "name": "AEI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CT": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LL": 3,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1
+      },
+      "solvesFile": "5x6-0C-AEI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AEJ",
+      "name": "AEJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 3,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 23
+    },
+    {
+      "id": "5x6-0C-AEK",
+      "name": "AEK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 2,
+        "LR": 3,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-AEL",
+      "name": "AEL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-AEL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AEM",
+      "name": "AEM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 3,
+        "LL": 2,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 67
+    },
+    {
+      "id": "5x6-0C-AEN",
+      "name": "AEN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CT": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AEN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 98
+    },
+    {
+      "id": "5x6-0C-AEO",
+      "name": "AEO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 3,
+        "QS": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 2,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AEP",
+      "name": "AEP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 3,
+        "RC": 2,
+        "SH": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-AEP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 86
+    },
+    {
+      "id": "5x6-0C-AEQ",
+      "name": "AEQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 1
+      },
+      "solvesFile": "5x6-0C-AEQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AER",
+      "name": "AER",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "DB": 3,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 2
+      },
+      "solvesFile": "5x6-0C-AER.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-AES",
+      "name": "AES",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AES.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 11
+    },
+    {
+      "id": "5x6-0C-AET",
+      "name": "AET",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AET.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AEU",
+      "name": "AEU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AEU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 40
+    },
+    {
+      "id": "5x6-0C-AEV",
+      "name": "AEV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 113
+    },
+    {
+      "id": "5x6-0C-AEW",
+      "name": "AEW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AEW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 86
+    },
+    {
+      "id": "5x6-0C-AEX",
+      "name": "AEX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AEX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AEY",
+      "name": "AEY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AEY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-AEZ",
+      "name": "AEZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AEZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 102
+    },
+    {
+      "id": "5x6-0C-AFA",
+      "name": "AFA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AFB",
+      "name": "AFB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 33
+    },
+    {
+      "id": "5x6-0C-AFC",
+      "name": "AFC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 113
+    },
+    {
+      "id": "5x6-0C-AFD",
+      "name": "AFD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AFE",
+      "name": "AFE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AFF",
+      "name": "AFF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 40
+    },
+    {
+      "id": "5x6-0C-AFG",
+      "name": "AFG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 62
+    },
+    {
+      "id": "5x6-0C-AFH",
+      "name": "AFH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 44
+    },
+    {
+      "id": "5x6-0C-AFI",
+      "name": "AFI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AFJ",
+      "name": "AFJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 82
+    },
+    {
+      "id": "5x6-0C-AFK",
+      "name": "AFK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-AFL",
+      "name": "AFL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 65
+    },
+    {
+      "id": "5x6-0C-AFM",
+      "name": "AFM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 58
+    },
+    {
+      "id": "5x6-0C-AFN",
+      "name": "AFN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-AFO",
+      "name": "AFO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AFO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 119
+    },
+    {
+      "id": "5x6-0C-AFP",
+      "name": "AFP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 45
+    },
+    {
+      "id": "5x6-0C-AFQ",
+      "name": "AFQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 103
+    },
+    {
+      "id": "5x6-0C-AFR",
+      "name": "AFR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 48
+    },
+    {
+      "id": "5x6-0C-AFS",
+      "name": "AFS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 23
+    },
+    {
+      "id": "5x6-0C-AFT",
+      "name": "AFT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 98
+    },
+    {
+      "id": "5x6-0C-AFU",
+      "name": "AFU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 44
+    },
+    {
+      "id": "5x6-0C-AFV",
+      "name": "AFV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AFW",
+      "name": "AFW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AFX",
+      "name": "AFX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-AFY",
+      "name": "AFY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AFY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 47
+    },
+    {
+      "id": "5x6-0C-AFZ",
+      "name": "AFZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LL": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AFZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-AGA",
+      "name": "AGA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 2,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-AGB",
+      "name": "AGB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AGB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 39
+    },
+    {
+      "id": "5x6-0C-AGC",
+      "name": "AGC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-AGD",
+      "name": "AGD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 78
+    },
+    {
+      "id": "5x6-0C-AGE",
+      "name": "AGE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AGF",
+      "name": "AGF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 45
+    },
+    {
+      "id": "5x6-0C-AGG",
+      "name": "AGG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AGH",
+      "name": "AGH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AGI",
+      "name": "AGI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AGI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 46
+    },
+    {
+      "id": "5x6-0C-AGJ",
+      "name": "AGJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 56
+    },
+    {
+      "id": "5x6-0C-AGK",
+      "name": "AGK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AGL",
+      "name": "AGL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AGM",
+      "name": "AGM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LR": 1,
+        "QC": 2,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AGN",
+      "name": "AGN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 171
+    },
+    {
+      "id": "5x6-0C-AGO",
+      "name": "AGO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AGP",
+      "name": "AGP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-AGQ",
+      "name": "AGQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LR": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 28
+    },
+    {
+      "id": "5x6-0C-AGR",
+      "name": "AGR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 56
+    },
+    {
+      "id": "5x6-0C-AGS",
+      "name": "AGS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 45
+    },
+    {
+      "id": "5x6-0C-AGT",
+      "name": "AGT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-AGU",
+      "name": "AGU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AGU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 87
+    },
+    {
+      "id": "5x6-0C-AGV",
+      "name": "AGV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-AGW",
+      "name": "AGW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-AGX",
+      "name": "AGX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AGY",
+      "name": "AGY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AGY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 68
+    },
+    {
+      "id": "5x6-0C-AGZ",
+      "name": "AGZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AGZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 173
+    },
+    {
+      "id": "5x6-0C-AHA",
+      "name": "AHA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 31
+    },
+    {
+      "id": "5x6-0C-AHB",
+      "name": "AHB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-AHC",
+      "name": "AHC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AHD",
+      "name": "AHD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 23
+    },
+    {
+      "id": "5x6-0C-AHE",
+      "name": "AHE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AHF",
+      "name": "AHF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 3,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-AHG",
+      "name": "AHG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-AHH",
+      "name": "AHH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 4,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    },
+    {
+      "id": "5x6-0C-AHI",
+      "name": "AHI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 58
+    },
+    {
+      "id": "5x6-0C-AHJ",
+      "name": "AHJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 44
+    },
+    {
+      "id": "5x6-0C-AHK",
+      "name": "AHK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AHL",
+      "name": "AHL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 105
+    },
+    {
+      "id": "5x6-0C-AHM",
+      "name": "AHM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 39
+    },
+    {
+      "id": "5x6-0C-AHN",
+      "name": "AHN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AHO",
+      "name": "AHO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-AHP",
+      "name": "AHP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AHP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 37
+    },
+    {
+      "id": "5x6-0C-AHQ",
+      "name": "AHQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 3,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AHR",
+      "name": "AHR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AHS",
+      "name": "AHS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 10
+    },
+    {
+      "id": "5x6-0C-AHT",
+      "name": "AHT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AHU",
+      "name": "AHU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 398
+    },
+    {
+      "id": "5x6-0C-AHV",
+      "name": "AHV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 33
+    },
+    {
+      "id": "5x6-0C-AHW",
+      "name": "AHW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 3,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AHW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 130
+    },
+    {
+      "id": "5x6-0C-AHX",
+      "name": "AHX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 76
+    },
+    {
+      "id": "5x6-0C-AHY",
+      "name": "AHY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-AHZ",
+      "name": "AHZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AHZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AIA",
+      "name": "AIA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 89
+    },
+    {
+      "id": "5x6-0C-AIB",
+      "name": "AIB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 86
+    },
+    {
+      "id": "5x6-0C-AIC",
+      "name": "AIC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-AID",
+      "name": "AID",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AID.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 85
+    },
+    {
+      "id": "5x6-0C-AIE",
+      "name": "AIE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 5
+    },
+    {
+      "id": "5x6-0C-AIF",
+      "name": "AIF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 320
+    },
+    {
+      "id": "5x6-0C-AIG",
+      "name": "AIG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 3,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AIH",
+      "name": "AIH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AIH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AII",
+      "name": "AII",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AII.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 74
+    },
+    {
+      "id": "5x6-0C-AIJ",
+      "name": "AIJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 2,
+        "QC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 41
+    },
+    {
+      "id": "5x6-0C-AIK",
+      "name": "AIK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-AIL",
+      "name": "AIL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 4,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-AIM",
+      "name": "AIM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 10
+    },
+    {
+      "id": "5x6-0C-AIN",
+      "name": "AIN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 38
+    },
+    {
+      "id": "5x6-0C-AIO",
+      "name": "AIO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "RC": 3,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AIP",
+      "name": "AIP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 3,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AIQ",
+      "name": "AIQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 99
+    },
+    {
+      "id": "5x6-0C-AIR",
+      "name": "AIR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AIS",
+      "name": "AIS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-AIT",
+      "name": "AIT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AIU",
+      "name": "AIU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AIV",
+      "name": "AIV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 60
+    },
+    {
+      "id": "5x6-0C-AIW",
+      "name": "AIW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AIW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-AIX",
+      "name": "AIX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-AIY",
+      "name": "AIY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AIZ",
+      "name": "AIZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AIZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-AJA",
+      "name": "AJA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 18
+    },
+    {
+      "id": "5x6-0C-AJB",
+      "name": "AJB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 53
+    },
+    {
+      "id": "5x6-0C-AJC",
+      "name": "AJC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AJC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 80
+    },
+    {
+      "id": "5x6-0C-AJD",
+      "name": "AJD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 49
+    },
+    {
+      "id": "5x6-0C-AJE",
+      "name": "AJE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AJF",
+      "name": "AJF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 186
+    },
+    {
+      "id": "5x6-0C-AJG",
+      "name": "AJG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 87
+    },
+    {
+      "id": "5x6-0C-AJH",
+      "name": "AJH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AJI",
+      "name": "AJI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AJI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-AJJ",
+      "name": "AJJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 11
+    },
+    {
+      "id": "5x6-0C-AJK",
+      "name": "AJK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-AJL",
+      "name": "AJL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AJL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 46
+    },
+    {
+      "id": "5x6-0C-AJM",
+      "name": "AJM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AJN",
+      "name": "AJN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 58
+    },
+    {
+      "id": "5x6-0C-AJO",
+      "name": "AJO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AJP",
+      "name": "AJP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AJQ",
+      "name": "AJQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AJQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 143
+    },
+    {
+      "id": "5x6-0C-AJR",
+      "name": "AJR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AJS",
+      "name": "AJS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 76
+    },
+    {
+      "id": "5x6-0C-AJT",
+      "name": "AJT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AJU",
+      "name": "AJU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AJV",
+      "name": "AJV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AJW",
+      "name": "AJW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 76
+    },
+    {
+      "id": "5x6-0C-AJX",
+      "name": "AJX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 63
+    },
+    {
+      "id": "5x6-0C-AJY",
+      "name": "AJY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AJY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 126
+    },
+    {
+      "id": "5x6-0C-AJZ",
+      "name": "AJZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AJZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-AKA",
+      "name": "AKA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 13
+    },
+    {
+      "id": "5x6-0C-AKB",
+      "name": "AKB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 53
+    },
+    {
+      "id": "5x6-0C-AKC",
+      "name": "AKC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AKC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 40
+    },
+    {
+      "id": "5x6-0C-AKD",
+      "name": "AKD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 88
+    },
+    {
+      "id": "5x6-0C-AKE",
+      "name": "AKE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 3,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AKF",
+      "name": "AKF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AKF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 28
+    },
+    {
+      "id": "5x6-0C-AKG",
+      "name": "AKG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AKG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 82
+    },
+    {
+      "id": "5x6-0C-AKH",
+      "name": "AKH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-AKI",
+      "name": "AKI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 18
+    },
+    {
+      "id": "5x6-0C-AKJ",
+      "name": "AKJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 23
+    },
+    {
+      "id": "5x6-0C-AKK",
+      "name": "AKK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AKL",
+      "name": "AKL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 3,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AKM",
+      "name": "AKM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 68
+    },
+    {
+      "id": "5x6-0C-AKN",
+      "name": "AKN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 55
+    },
+    {
+      "id": "5x6-0C-AKO",
+      "name": "AKO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-AKP",
+      "name": "AKP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AKQ",
+      "name": "AKQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 164
+    },
+    {
+      "id": "5x6-0C-AKR",
+      "name": "AKR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 39
+    },
+    {
+      "id": "5x6-0C-AKS",
+      "name": "AKS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 167
+    },
+    {
+      "id": "5x6-0C-AKT",
+      "name": "AKT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 32
+    },
+    {
+      "id": "5x6-0C-AKU",
+      "name": "AKU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 102
+    },
+    {
+      "id": "5x6-0C-AKV",
+      "name": "AKV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 80
+    },
+    {
+      "id": "5x6-0C-AKW",
+      "name": "AKW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AKW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AKX",
+      "name": "AKX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AKY",
+      "name": "AKY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AKY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AKZ",
+      "name": "AKZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-AKZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 20
+    },
+    {
+      "id": "5x6-0C-ALA",
+      "name": "ALA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-ALB",
+      "name": "ALB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-ALC",
+      "name": "ALC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 2,
+        "LR": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 57
+    },
+    {
+      "id": "5x6-0C-ALD",
+      "name": "ALD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-ALE",
+      "name": "ALE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ALE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 47
+    },
+    {
+      "id": "5x6-0C-ALF",
+      "name": "ALF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 57
+    },
+    {
+      "id": "5x6-0C-ALG",
+      "name": "ALG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 28
+    },
+    {
+      "id": "5x6-0C-ALH",
+      "name": "ALH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 3,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-ALI",
+      "name": "ALI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 42
+    },
+    {
+      "id": "5x6-0C-ALJ",
+      "name": "ALJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 110
+    },
+    {
+      "id": "5x6-0C-ALK",
+      "name": "ALK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-ALL",
+      "name": "ALL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 52
+    },
+    {
+      "id": "5x6-0C-ALM",
+      "name": "ALM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-ALN",
+      "name": "ALN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 32
+    },
+    {
+      "id": "5x6-0C-ALO",
+      "name": "ALO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ALO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-ALP",
+      "name": "ALP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 10
+    },
+    {
+      "id": "5x6-0C-ALQ",
+      "name": "ALQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-ALQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 12
+    },
+    {
+      "id": "5x6-0C-ALR",
+      "name": "ALR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 43
+    },
+    {
+      "id": "5x6-0C-ALS",
+      "name": "ALS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 102
+    },
+    {
+      "id": "5x6-0C-ALT",
+      "name": "ALT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 93
+    },
+    {
+      "id": "5x6-0C-ALU",
+      "name": "ALU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-ALV",
+      "name": "ALV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 20
+    },
+    {
+      "id": "5x6-0C-ALW",
+      "name": "ALW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-ALX",
+      "name": "ALX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 10
+    },
+    {
+      "id": "5x6-0C-ALY",
+      "name": "ALY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ALY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 59
+    },
+    {
+      "id": "5x6-0C-ALZ",
+      "name": "ALZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ALZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-AMA",
+      "name": "AMA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AMB",
+      "name": "AMB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AMC",
+      "name": "AMC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 20
+    },
+    {
+      "id": "5x6-0C-AMD",
+      "name": "AMD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AME",
+      "name": "AME",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AME.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-AMF",
+      "name": "AMF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-AMG",
+      "name": "AMG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 139
+    },
+    {
+      "id": "5x6-0C-AMH",
+      "name": "AMH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AMI",
+      "name": "AMI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 3,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 32
+    },
+    {
+      "id": "5x6-0C-AMJ",
+      "name": "AMJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AMK",
+      "name": "AMK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 3,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 41
+    },
+    {
+      "id": "5x6-0C-AML",
+      "name": "AML",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 2,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AML.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 3
+    },
+    {
+      "id": "5x6-0C-AMM",
+      "name": "AMM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-AMN",
+      "name": "AMN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AMO",
+      "name": "AMO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AMO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 27
+    },
+    {
+      "id": "5x6-0C-AMP",
+      "name": "AMP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 3,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 49
+    },
+    {
+      "id": "5x6-0C-AMQ",
+      "name": "AMQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 60
+    },
+    {
+      "id": "5x6-0C-AMR",
+      "name": "AMR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AMR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AMS",
+      "name": "AMS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 174
+    },
+    {
+      "id": "5x6-0C-AMT",
+      "name": "AMT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 2,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 28
+    },
+    {
+      "id": "5x6-0C-AMU",
+      "name": "AMU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 26
+    },
+    {
+      "id": "5x6-0C-AMV",
+      "name": "AMV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-AMW",
+      "name": "AMW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 3,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 105
+    },
+    {
+      "id": "5x6-0C-AMX",
+      "name": "AMX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-AMY",
+      "name": "AMY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AMY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 86
+    },
+    {
+      "id": "5x6-0C-AMZ",
+      "name": "AMZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AMZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 47
+    },
+    {
+      "id": "5x6-0C-ANA",
+      "name": "ANA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 48
+    },
+    {
+      "id": "5x6-0C-ANB",
+      "name": "ANB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 16
+    },
+    {
+      "id": "5x6-0C-ANC",
+      "name": "ANC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 98
+    },
+    {
+      "id": "5x6-0C-AND",
+      "name": "AND",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AND.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-ANE",
+      "name": "ANE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ANF",
+      "name": "ANF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 2,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 34
+    },
+    {
+      "id": "5x6-0C-ANG",
+      "name": "ANG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 82
+    },
+    {
+      "id": "5x6-0C-ANH",
+      "name": "ANH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 2,
+        "QC": 1,
+        "QS": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 9
+    },
+    {
+      "id": "5x6-0C-ANI",
+      "name": "ANI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 38
+    },
+    {
+      "id": "5x6-0C-ANJ",
+      "name": "ANJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 3,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-ANK",
+      "name": "ANK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 50
+    },
+    {
+      "id": "5x6-0C-ANL",
+      "name": "ANL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 175
+    },
+    {
+      "id": "5x6-0C-ANM",
+      "name": "ANM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 64
+    },
+    {
+      "id": "5x6-0C-ANN",
+      "name": "ANN",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANN.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 35
+    },
+    {
+      "id": "5x6-0C-ANO",
+      "name": "ANO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 3,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-ANP",
+      "name": "ANP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 10
+    },
+    {
+      "id": "5x6-0C-ANQ",
+      "name": "ANQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 2,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 142
+    },
+    {
+      "id": "5x6-0C-ANR",
+      "name": "ANR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 1
+    },
+    {
+      "id": "5x6-0C-ANS",
+      "name": "ANS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ANS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 14
+    },
+    {
+      "id": "5x6-0C-ANT",
+      "name": "ANT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 46
+    },
+    {
+      "id": "5x6-0C-ANU",
+      "name": "ANU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 2,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-ANV",
+      "name": "ANV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-ANV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 24
+    },
+    {
+      "id": "5x6-0C-ANW",
+      "name": "ANW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 139
+    },
+    {
+      "id": "5x6-0C-ANY",
+      "name": "ANY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-ANY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 165
+    },
+    {
+      "id": "5x6-0C-ANZ",
+      "name": "ANZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-ANZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AOA",
+      "name": "AOA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 101
+    },
+    {
+      "id": "5x6-0C-AOB",
+      "name": "AOB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AOC",
+      "name": "AOC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-AOD",
+      "name": "AOD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 50
+    },
+    {
+      "id": "5x6-0C-AOE",
+      "name": "AOE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 21
+    },
+    {
+      "id": "5x6-0C-AOF",
+      "name": "AOF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "QC": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AOG",
+      "name": "AOG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 4
+    },
+    {
+      "id": "5x6-0C-AOH",
+      "name": "AOH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AOI",
+      "name": "AOI",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AOI.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 12
+    },
+    {
+      "id": "5x6-0C-AOJ",
+      "name": "AOJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 44
+    },
+    {
+      "id": "5x6-0C-AOK",
+      "name": "AOK",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 2,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOK.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AOL",
+      "name": "AOL",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 2,
+        "LL": 1,
+        "QC": 1,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOL.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AOM",
+      "name": "AOM",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "QC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOM.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 2
+    },
+    {
+      "id": "5x6-0C-AON",
+      "name": "AON",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LL": 2,
+        "LR": 2,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AON.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 15
+    },
+    {
+      "id": "5x6-0C-AOO",
+      "name": "AOO",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 2,
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOO.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AOP",
+      "name": "AOP",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "UT": 3,
+        "VL": 2
+      },
+      "solvesFile": "5x6-0C-AOP.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-AOQ",
+      "name": "AOQ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOQ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 122
+    },
+    {
+      "id": "5x6-0C-AOR",
+      "name": "AOR",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOR.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-AOS",
+      "name": "AOS",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 3,
+        "QC": 1,
+        "QS": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOS.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 33
+    },
+    {
+      "id": "5x6-0C-AOT",
+      "name": "AOT",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOT.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AOU",
+      "name": "AOU",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOU.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 19
+    },
+    {
+      "id": "5x6-0C-AOV",
+      "name": "AOV",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LL": 1,
+        "QC": 1,
+        "RC": 3,
+        "SH": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-AOV.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 7
+    },
+    {
+      "id": "5x6-0C-AOW",
+      "name": "AOW",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LR": 2,
+        "QC": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOW.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 25
+    },
+    {
+      "id": "5x6-0C-AOX",
+      "name": "AOX",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LR": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOX.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 31
+    },
+    {
+      "id": "5x6-0C-AOY",
+      "name": "AOY",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LR": 1,
+        "QC": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOY.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 8
+    },
+    {
+      "id": "5x6-0C-AOZ",
+      "name": "AOZ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-AOZ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-APA",
+      "name": "APA",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "CT": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LL": 2,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APA.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 98
+    },
+    {
+      "id": "5x6-0C-APB",
+      "name": "APB",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 2,
+        "LC": 1,
+        "LL": 2,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APB.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 30
+    },
+    {
+      "id": "5x6-0C-APC",
+      "name": "APC",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 2,
+        "QS": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APC.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 6
+    },
+    {
+      "id": "5x6-0C-APD",
+      "name": "APD",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 2,
+        "ET": 1,
+        "HL": 2,
+        "LL": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-APD.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-APE",
+      "name": "APE",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-APE.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 35
+    },
+    {
+      "id": "5x6-0C-APF",
+      "name": "APF",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "SS": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APF.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 17
+    },
+    {
+      "id": "5x6-0C-APG",
+      "name": "APG",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 2,
+        "LL": 1,
+        "LR": 1,
+        "QS": 1,
+        "RC": 1,
+        "SH": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APG.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 29
+    },
+    {
+      "id": "5x6-0C-APH",
+      "name": "APH",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CQ": 1,
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "LC": 1,
+        "LL": 1,
+        "LR": 1,
+        "QC": 1,
+        "RC": 1,
+        "SH": 1,
+        "SZ": 1,
+        "UT": 3
+      },
+      "solvesFile": "5x6-0C-APH.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 71
+    },
+    {
+      "id": "5x6-0C-API",
+      "name": "API",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "LL": 1,
+        "RC": 2,
+        "SH": 1,
+        "UT": 3,
+        "VL": 3
+      },
+      "solvesFile": "5x6-0C-API.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 22
+    },
+    {
+      "id": "5x6-0C-APJ",
+      "name": "APJ",
+      "board": {
+        "rows": 6,
+        "cols": 5
+      },
+      "tiles": {
+        "CR": 1,
+        "DB": 1,
+        "DC": 1,
+        "ET": 1,
+        "HL": 1,
+        "LC": 1,
+        "RC": 2,
+        "SH": 1,
+        "SS": 2,
+        "UT": 3,
+        "VL": 1
+      },
+      "solvesFile": "5x6-0C-APJ.json",
+      "pathMode": "single",
+      "pathCount": 1,
+      "totalUniqueSolutions": 12
     },
     {
       "id": "5x6-0C-ZZZ",

@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const LEVELS_DIR = path.join(__dirname, '..', 'data', 'levels');
+const LEVELS_DIR = path.join(__dirname, '..', '..', 'data', 'levels');
 const INDEX_PATH = path.join(LEVELS_DIR, 'index.json');
 const OUT_PATH = path.join(LEVELS_DIR, 'stats-index.json');
 
