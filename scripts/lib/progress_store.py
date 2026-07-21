@@ -931,17 +931,22 @@ def record_solve(
     client_check = meta.get("check") if isinstance(meta.get("check"), dict) else {}
     index: Optional[int] = None
     bonus = True
+    client_index: Optional[int] = None
+    if isinstance(client_check, dict) and client_check.get("bonus") is not True:
+        raw_idx = client_check.get("index")
+        if raw_idx is not None and raw_idx != "":
+            try:
+                client_index = int(raw_idx)
+            except (TypeError, ValueError):
+                client_index = None
     if known:
         index, bonus = match_catalog(playable, known, rows, cols)
-    if index is None and isinstance(client_check, dict):
-        if client_check.get("bonus") is True:
-            index, bonus = None, True
-        elif client_check.get("index") is not None:
-            try:
-                index = int(client_check["index"])
-                bonus = False
-            except (TypeError, ValueError):
-                index, bonus = None, True
+    # Prefer the client's catalog match when the server rematch misses (e.g. older
+    # board-size bugs) so multi-device journal counts stay aligned with the phone.
+    if index is None and client_index is not None:
+        index, bonus = client_index, False
+    elif index is None and isinstance(client_check, dict) and client_check.get("bonus") is True:
+        index, bonus = None, True
     if index is None and not known and not client_check:
         index, bonus = None, True
 

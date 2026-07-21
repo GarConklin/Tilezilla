@@ -236,12 +236,13 @@ export class Progress {
    * @param {Array} knownSolutions - from the level's solution file
    * @returns {{matched:boolean, index:number|null, bonus:boolean, duplicate:boolean, msg:string}}
    */
-  checkSolution(levelId, placements, knownSolutions) {
+  checkSolution(levelId, placements, knownSolutions, board = null) {
     const playable = this.playablePlacements(placements);
     const currentCanon = this.canonicalize(playable);
-    const board = this.app?.state?.currentLevel?.board;
-    const rows = board?.rows;
-    const cols = board?.cols;
+    const b = board
+      || (this.app?.state?.currentLevel?.id === levelId ? this.app.state.currentLevel.board : null);
+    const rows = b?.rows;
+    const cols = b?.cols;
     const keyCur = rows && cols ? this.equivalenceKey(playable, rows, cols) : currentCanon;
     const found = this.getFoundForLevel(levelId);
 

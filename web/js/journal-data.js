@@ -236,44 +236,76 @@ function dedupeFoundByIndex(found) {
   return [...byIndex.values()].sort((a, b) => a.index - b.index);
 }
 
-function repairMalformedFoundEntries(progress, levelId, known) {
+function repairMalformedFoundEntries(progress, levelId, known, board = null) {
   if (!known?.length) return false;
   const found = progress.getFoundForLevel(levelId);
   let changed = false;
   for (const entry of found) {
-    if (Number.isFinite(Number(entry?.index))) continue;
+    if (Number.isFinite(Number(entry?.index)) && !entry?.bonus) continue;
     const placements = entry?.placements;
     if (!Array.isArray(placements) || !placements.length) continue;
-    const check = progress.checkSolution(levelId, placements, known);
-    if (!Number.isFinite(check?.index)) continue;
+    const check = progress.checkSolution(levelId, placements, known, board);
+    if (!Number.isFinite(check?.index) || check?.bonus) continue;
     entry.index = check.index;
-    entry.bonus = !!check.bonus;
+    entry.bonus = false;
     changed = true;
   }
   if (changed) progress.save();
   return changed;
 }
 
-function collectCatalogFoundEntries(progress, levelId, known, found) {
-  repairMalformedFoundEntries(progress, levelId, known);
+function collectCatalogFoundEntries(progress, levelId, known, found, board = null) {
+  if (progress?.rematchFoundCatalogIndices) {
+    progress.rematchFoundCatalogIndices(levelId, known, board);
+  }
+  repairMalformedFoundEntries(progress, levelId, known, board);
   const refreshed = progress.getFoundForLevel(levelId) || [];
   const uniqueFound = dedupeFoundByIndex(refreshed);
-  if (uniqueFound.length) return uniqueFound;
+  if (uniqueFound.length) {
+    // Still append rematched-or-pending layouts that lack a catalog index.
+    const indexed = new Set(uniqueFound.map((f) => Number(f.index)));
+    const extras = [];
+    for (const entry of refreshed) {
+      if (isCatalogFoundEntry(entry)) continue;
+      if (!Array.isArray(entry?.placements) || !entry.placements.length) continue;
+      const check = progress.checkSolution(levelId, entry.placements, known, board);
+      if (Number.isFinite(check?.index) && !check?.bonus) {
+        if (indexed.has(check.index)) continue;
+        indexed.add(check.index);
+        extras.push({ ...entry, index: check.index, bonus: false });
+        continue;
+      }
+      extras.push({ ...entry, index: null, bonus: false, _unindexed: true });
+    }
+    return [...uniqueFound, ...extras].sort((a, b) => {
+      const ai = Number.isFinite(Number(a.index)) ? Number(a.index) : 1e9;
+      const bi = Number.isFinite(Number(b.index)) ? Number(b.index) : 1e9;
+      return ai - bi;
+    });
+  }
 
   const recovered = [];
   for (const entry of refreshed) {
-    if (Number.isFinite(Number(entry?.index))) continue;
+    if (Number.isFinite(Number(entry?.index)) && !entry?.bonus) {
+      recovered.push(entry);
+      continue;
+    }
     const placements = entry?.placements;
     if (!Array.isArray(placements) || !placements.length) continue;
-    const check = progress.checkSolution(levelId, placements, known);
-    if (!Number.isFinite(check?.index)) continue;
+    const check = progress.checkSolution(levelId, placements, known, board);
+    if (!Number.isFinite(check?.index) || check?.bonus) {
+      recovered.push({ ...entry, index: null, bonus: false, _unindexed: true });
+      continue;
+    }
     recovered.push({
       ...entry,
       index: check.index,
-      bonus: !!check.bonus,
+      bonus: false,
     });
   }
-  return dedupeFoundByIndex(recovered);
+  return dedupeFoundByIndex(recovered).length
+    ? dedupeFoundByIndex(recovered)
+    : recovered;
 }
 
 function backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback) {
@@ -330,14 +362,34 @@ export async function getJournalRecord(app, levelId, { challengeDate = null } = 
   if (!level) return null;
 
   const known = await app.loadKnownSolutionsForLevel?.(level) || [];
-  let uniqueFound = collectCatalogFoundEntries(progress, levelId, known, progress.getFoundForLevel(levelId));
-  let progressFoundCount = uniqueFound.length;
+  let uniqueFound = collectCatalogFoundEntries(
+    progress,
+    levelId,
+    known,
+    progress.getFoundForLevel(levelId),
+    level.board,
+  );
+  const allFound = progress.getFoundForLevel(levelId) || [];
+  let progressFoundCount = Math.max(
+    uniqueFound.filter((f) => Number.isFinite(Number(f.index))).length
+      + uniqueFound.filter((f) => f._unindexed).length,
+    countCatalogSolutionsFound(allFound),
+  );
   let dailyFallback = null;
   if (!progressFoundCount) {
     dailyFallback = await resolveDailyCompletionFallback(app, levelId, challengeDate);
     if (backfillDailyFoundFromLeaderboard(progress, levelId, known, dailyFallback)) {
-      uniqueFound = collectCatalogFoundEntries(progress, levelId, known, progress.getFoundForLevel(levelId));
-      progressFoundCount = uniqueFound.length;
+      uniqueFound = collectCatalogFoundEntries(
+        progress,
+        levelId,
+        known,
+        progress.getFoundForLevel(levelId),
+        level.board,
+      );
+      progressFoundCount = Math.max(
+        uniqueFound.length,
+        countCatalogSolutionsFound(progress.getFoundForLevel(levelId) || []),
+      );
       dailyFallback = progressFoundCount ? null : dailyFallback;
     }
   }
@@ -349,10 +401,11 @@ export async function getJournalRecord(app, levelId, { challengeDate = null } = 
     .map((f) => {
       const placements = Array.isArray(f.placements) && f.placements.length
         ? f.placements
-        : (known[f.index]?.placements || []);
+        : (Number.isFinite(Number(f.index)) ? (known[f.index]?.placements || []) : []);
+      const indexed = Number.isFinite(Number(f.index));
       return {
-        index: f.index,
-        label: `Solution #${f.index + 1}`,
+        index: indexed ? f.index : null,
+        label: indexed ? `Solution #${f.index + 1}` : 'Found layout',
         placements,
         foundAt: f.foundAt || null,
         foundDate: formatDate(f.foundAt),
@@ -361,7 +414,11 @@ export async function getJournalRecord(app, levelId, { challengeDate = null } = 
           : (f.elapsedMs > 0 ? formatTime(Math.floor(f.elapsedMs / 1000)) : '—'),
       };
     })
-    .sort((a, b) => a.index - b.index);
+    .sort((a, b) => {
+      const ai = Number.isFinite(Number(a.index)) ? Number(a.index) : 1e9;
+      const bi = Number.isFinite(Number(b.index)) ? Number(b.index) : 1e9;
+      return ai - bi;
+    });
 
   if (!entries.length && dailyFallback) {
     const fallbackEntry = buildFallbackJournalEntry(dailyFallback, known);
