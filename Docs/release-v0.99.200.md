@@ -1,8 +1,8 @@
 # Release v0.99.200 — branch switch for testers
 
-**Superseded by:** `v0.99.205` (see `Docs/release-v0.99.205.md`) — same branch  
+**Superseded by:** `v0.99.205` → branch `release/v0.99.205` (see `Docs/release-v0.99.205.md`)  
 **Previous stable:** `v0.99.193` → branch `release/v0.99.193`  
-**New development / deploy:** `v0.99.200` → branch `release/v0.99.200`
+**This branch:** `v0.99.200` → `release/v0.99.200` (frozen previous line)
 
 ## What changed in 0.99.200 (vs 0.99.193)
 
@@ -19,8 +19,9 @@
 | Branch | Version | Use |
 |--------|---------|-----|
 | `release/v0.99.193` | 0.99.193 | Frozen — previous deploy line |
-| `release/v0.99.200` | 0.99.200 | **Active** development and deploy |
-| `main` | — | Merge `release/v0.99.200` when ready |
+| `release/v0.99.200` | 0.99.200 | Frozen — previous deploy line |
+| `release/v0.99.205` | 0.99.205 | **Active** development and deploy |
+| `main` | — | Merge `release/v0.99.205` when ready |
 
 ### Deploy 0.99.200
 

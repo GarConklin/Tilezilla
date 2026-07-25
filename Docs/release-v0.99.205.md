@@ -1,7 +1,7 @@
-# Release v0.99.205 — iPhone shell fix
+# Release v0.99.205 — branch switch for testers
 
-**Previous:** `v0.99.200`
-**Current:** `v0.99.205` — same branch `release/v0.99.200`
+**Previous stable:** `v0.99.200` → branch `release/v0.99.200`  
+**New development / deploy:** `v0.99.205` → branch `release/v0.99.205`
 
 ## What changed in 0.99.205 (vs 0.99.200)
 
@@ -12,6 +12,23 @@
 - **Start mode setting** — new Gameplay setting picks whether Daily Challenge or Adventure loads at launch; changing it switches modes immediately.
 - **Long press** — player level, card stats, and the hint plaque now require a 1 second hold instead of a tap. Rotate stays an instant click.
 
+## Git branches
+
+| Branch | Version | Use |
+|--------|---------|-----|
+| `release/v0.99.200` | 0.99.200 | Frozen — previous deploy line |
+| `release/v0.99.205` | 0.99.205 | **Active** development and deploy |
+| `main` | — | Merge `release/v0.99.205` when ready |
+
+### Deploy 0.99.205
+
+```bash
+git fetch origin
+git checkout release/v0.99.205
+git pull origin release/v0.99.205
+docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
+```
+
 ## Version metadata
 
 | Location | Purpose |
@@ -19,15 +36,6 @@
 | `data/system_info.json` | Dev fallback + menu / Cartographer's Journal badge |
 | `docker/mysql/init/09-system-info.sql` | Fresh MySQL volume seed |
 | `scripts/sql/bump-version-0.99.205.sql` | **Upgrade existing** production DB |
-
-## Deploy
-
-```bash
-git fetch origin
-git checkout release/v0.99.200
-git pull origin release/v0.99.200
-docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
-```
 
 ## Database upgrade (existing server)
 
@@ -50,4 +58,4 @@ No schema changes — the 0.99.200 table upgrades still apply.
 
 ## Rollback
 
-Point prod back to `653e04d` (0.99.200) and redeploy. No data changes.
+Point prod back to `release/v0.99.200` and redeploy. No data changes.
