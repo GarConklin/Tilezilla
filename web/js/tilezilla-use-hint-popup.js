@@ -151,10 +151,10 @@ export function wireUseHintConfirmTriggers(openFn) {
   const wireHold = (el) => {
     if (!el || el.dataset.hintLongPressWired === '1') return;
     el.dataset.hintLongPressWired = '1';
-    el.setAttribute('title', 'Hold for 1 second');
+    el.setAttribute('title', 'Hold for half a second');
     bindLongPress(el, () => {
       void open();
-    }, { ms: 1000, exclude: excludeAdd });
+    }, { ms: 500, exclude: excludeAdd });
   };
 
   wireHold(plaque);

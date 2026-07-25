@@ -1868,10 +1868,10 @@ function wirePreviewV2DataClicks() {
     el.dataset.previewV2ClickWired = '1';
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
-    el.setAttribute('title', 'Hold for 1 second');
+    el.setAttribute('title', 'Hold for half a second');
     bindLongPress(el, () => {
       handler();
-    }, { ms: 1000 });
+    }, { ms: 500 });
   };
 
   activate(userData, () => {

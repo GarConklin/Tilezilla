@@ -1,5 +1,5 @@
 /**
- * Fire a handler only after holding ~1s (short taps do nothing).
+ * Fire a handler only after holding ~0.5s (short taps do nothing).
  * Keyboard Enter/Space still activates immediately for accessibility.
  *
  * iOS Safari often fires pointerleave / pointercancel during a hold
@@ -10,7 +10,7 @@
 const MOVE_CANCEL_PX = 14;
 
 export function bindLongPress(el, handler, {
-  ms = 1000,
+  ms = 500,
   exclude,
 } = {}) {
   if (!el || typeof handler !== 'function') return;
