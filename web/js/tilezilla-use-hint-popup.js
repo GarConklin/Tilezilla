@@ -134,22 +134,29 @@ export function wireUseHintConfirmTriggers(openFn) {
 
   const excludeAdd = (e) => Boolean(e.target.closest('#hintTokenAddBtnCount, .tz-preview-v2-hint-token-add'));
 
-  const openHint = () => {
+  const openHint = (e) => {
+    if (e && excludeAdd(e)) return;
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
     void open();
   };
 
+  // Start-of-game Use Hint bubble (disappears once play starts) — instant tap.
+  usePlaque?.addEventListener('click', openHint);
+  hintBtn?.addEventListener('click', (e) => {
+    openHint(e);
+  }, { capture: true });
+
+  // Token plaque that stays during play — hold 1 second.
   const wireHold = (el) => {
     if (!el || el.dataset.hintLongPressWired === '1') return;
     el.dataset.hintLongPressWired = '1';
     el.setAttribute('title', 'Hold for 1 second');
     bindLongPress(el, () => {
-      openHint();
+      void open();
     }, { ms: 1000, exclude: excludeAdd });
   };
 
   wireHold(plaque);
-  wireHold(usePlaque);
   wireHold(countLabel);
-  // Leaf hits only — parent slots bubble and left orphan timers on iOS.
-  wireHold(hintBtn);
 }
