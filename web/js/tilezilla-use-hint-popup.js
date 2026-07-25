@@ -130,9 +130,7 @@ export function wireUseHintConfirmTriggers(openFn) {
   const plaque = $('hintPlaqueCount');
   const usePlaque = $('hintPlaqueUse');
   const countLabel = $('previewV2HintCountCount');
-  const hintSlot = $('previewHintSlot');
   const hintBtn = $('hintBtn');
-  const useSlot = $('previewHintUseSlot');
 
   const excludeAdd = (e) => Boolean(e.target.closest('#hintTokenAddBtnCount, .tz-preview-v2-hint-token-add'));
 
@@ -140,22 +138,18 @@ export function wireUseHintConfirmTriggers(openFn) {
     void open();
   };
 
-  const wireHold = (el, { check } = {}) => {
+  const wireHold = (el) => {
     if (!el || el.dataset.hintLongPressWired === '1') return;
     el.dataset.hintLongPressWired = '1';
     el.setAttribute('title', 'Hold for 1 second');
-    bindLongPress(el, (e) => {
-      if (check && !check()) return;
-      openHint(e);
+    bindLongPress(el, () => {
+      openHint();
     }, { ms: 1000, exclude: excludeAdd });
   };
 
   wireHold(plaque);
   wireHold(usePlaque);
   wireHold(countLabel);
-  wireHold(hintSlot);
-  wireHold(useSlot, { check: () => !useSlot.hasAttribute('hidden') });
-  wireHold(hintBtn, {
-    check: () => hintBtn?.getAttribute('aria-disabled') !== 'true',
-  });
+  // Leaf hits only — parent slots bubble and left orphan timers on iOS.
+  wireHold(hintBtn);
 }

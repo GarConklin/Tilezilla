@@ -1775,6 +1775,9 @@ button {
 .tz-main-v2-app .tz-preview-v2-game-data {
   pointer-events: auto;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tz-main-v2-app .tz-preview-v2-user-data:focus-visible,
@@ -1830,6 +1833,9 @@ button {
 .tz-preview-hint-slot > .tz-preview-v2-hint-token-count--count,
 .tz-preview-hint-slot > .tz-preview-v2-hint-token-add {
   pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tz-preview-hint-use-slot {
@@ -1847,6 +1853,9 @@ button {
 .tz-preview-hint-use-slot > .tz-preview-v2-hint-plaque--use,
 .tz-preview-hint-use-slot > .tz-preview-v2-hint-use-btn {
   pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tz-preview-hint-use-slot[hidden] {
