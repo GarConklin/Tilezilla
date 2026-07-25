@@ -1,5 +1,6 @@
 # Release v0.99.200 — branch switch for testers
 
+**Superseded by:** `v0.99.205` (see `Docs/release-v0.99.205.md`) — same branch  
 **Previous stable:** `v0.99.193` → branch `release/v0.99.193`  
 **New development / deploy:** `v0.99.200` → branch `release/v0.99.200`
 
