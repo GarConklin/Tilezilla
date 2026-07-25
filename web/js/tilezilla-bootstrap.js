@@ -7,6 +7,7 @@ import {
   centerBoardInFrame,
 } from './board-frame.js';
 import { loadGameplaySettings, initSettingsUi, applyPhonePreviewMode } from './tilezilla-settings.js';
+import { bindLongPress } from './tilezilla-long-press.js';
 import { initTilesetPicker } from './tilezilla-tileset-picker.js';
 import { formatTilesetDisplayName } from './tileset-preferences.js';
 import { initMenuUi } from './tilezilla-menu.js';
@@ -1607,13 +1608,18 @@ function resolveInitialBootScreen(urlParams) {
     return urlScreen;
   }
 
-  if (!guestUser.isGuestUser()) {
-    try {
-      const saved = sessionStorage.getItem(LAST_NAV_SCREEN_KEY);
-      if (saved && BOOTABLE_SCREENS.has(saved)) return saved;
-    } catch {
-      /* ignore */
-    }
+  if (guestUser.isGuestUser()) return 'daily-challenge';
+
+  const preferred = loadGameplaySettings().startMode;
+  if (preferred && BOOTABLE_SCREENS.has(preferred)) {
+    if (!guestUser.isRestrictedNav(preferred)) return preferred;
+  }
+
+  try {
+    const saved = sessionStorage.getItem(LAST_NAV_SCREEN_KEY);
+    if (saved && BOOTABLE_SCREENS.has(saved)) return saved;
+  } catch {
+    /* ignore */
   }
 
   return 'daily-challenge';
@@ -1797,6 +1803,17 @@ function closeBottomMenuV2() {
   document.querySelector('.tz-app')?.classList.remove('is-bottom-menu-open');
 }
 
+function syncBottomNavFromAppScreen() {
+  const screen = document.querySelector('.tz-app')?.dataset?.screen;
+  if (screen && BOOTABLE_SCREENS.has(screen)) {
+    setActiveBottomNav(screen);
+    return;
+  }
+  if (screen === 'random' || screen === 'library' || screen === 'profile') {
+    setActiveBottomNav(screen);
+  }
+}
+
 function openBottomMenuV2() {
   collapseTileBagIfExpanded();
   if (tileBagExpanded) return;
@@ -1804,11 +1821,33 @@ function openBottomMenuV2() {
   const open = $('bottomMenuOpenBtn');
   const close = $('bottomMenuCloseBtn');
   if (!drawer || !open) return;
+  syncBottomNavFromAppScreen();
   drawer.hidden = false;
   open.hidden = true;
   if (close) close.hidden = false;
   open.setAttribute('aria-expanded', 'true');
   document.querySelector('.tz-app')?.classList.add('is-bottom-menu-open');
+}
+
+async function activateStartMode(app, screen) {
+  const mode = screen === 'adventure' ? 'adventure' : 'daily-challenge';
+  if (guestUser.isRestrictedNav(mode)) {
+    guestUser.showLoginRequired({ source: mode });
+    return;
+  }
+  const appRoot = document.querySelector('.tz-app');
+  dismissDiscoveryForBoardEdit();
+  closeBottomMenuV2();
+  appRoot?.setAttribute('data-screen', mode);
+  setActiveBottomNav(mode);
+  persistNavScreen(mode);
+  guestUser.syncGuestBanner();
+  if (!app) return;
+  if (mode === 'adventure') {
+    await loadAdventurePuzzle(app);
+  } else {
+    await loadDailyPuzzle(app);
+  }
 }
 
 function wireBottomMenuV2() {
@@ -1829,15 +1868,10 @@ function wirePreviewV2DataClicks() {
     el.dataset.previewV2ClickWired = '1';
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
+    el.setAttribute('title', 'Hold for 1 second');
+    bindLongPress(el, () => {
       handler();
-    });
-    el.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      handler();
-    });
+    }, { ms: 1000 });
   };
 
   activate(userData, () => {
@@ -2672,43 +2706,47 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
     openStuckFlow,
   });
   shellMenuApi = menuApi;
-  initProfileOverlay({
-    menuApi,
-    deferBootPuzzle,
-    onDeferredBootFallback: async () => {
-      const app = appRef;
-      dismissDiscoveryForBoardEdit();
-      applyInitialBootScreen('daily-challenge');
-      persistNavScreen('daily-challenge');
-      if (app && !app.state?.currentLevel) {
-        await loadDailyPuzzle(app);
-      }
-    },
-    onDaily: async () => {
-      const app = appRef;
-      const appRoot = document.querySelector('.tz-app');
-      dismissDiscoveryForBoardEdit();
-      appRoot?.setAttribute('data-screen', 'daily-challenge');
-      setActiveBottomNav('daily-challenge');
-      persistNavScreen('daily-challenge');
-      guestUser.syncGuestBanner();
-      if (app) await loadDailyPuzzle(app);
-    },
-    onAdventure: async () => {
-      const app = appRef;
-      const appRoot = document.querySelector('.tz-app');
-      dismissDiscoveryForBoardEdit();
-      appRoot?.setAttribute('data-screen', 'adventure');
-      setActiveBottomNav('adventure');
-      persistNavScreen('adventure');
-      guestUser.syncGuestBanner();
-      if (app) await loadAdventurePuzzle(app);
-    },
-    onRandom: () => {
-      dismissDiscoveryForBoardEdit();
-      openRandomPuzzlePopup();
-    },
-  });
+  try {
+    initProfileOverlay({
+      menuApi,
+      deferBootPuzzle,
+      onDeferredBootFallback: async () => {
+        const app = appRef;
+        dismissDiscoveryForBoardEdit();
+        applyInitialBootScreen('daily-challenge');
+        persistNavScreen('daily-challenge');
+        if (app && !app.state?.currentLevel) {
+          await loadDailyPuzzle(app);
+        }
+      },
+      onDaily: async () => {
+        const app = appRef;
+        const appRoot = document.querySelector('.tz-app');
+        dismissDiscoveryForBoardEdit();
+        appRoot?.setAttribute('data-screen', 'daily-challenge');
+        setActiveBottomNav('daily-challenge');
+        persistNavScreen('daily-challenge');
+        guestUser.syncGuestBanner();
+        if (app) await loadDailyPuzzle(app);
+      },
+      onAdventure: async () => {
+        const app = appRef;
+        const appRoot = document.querySelector('.tz-app');
+        dismissDiscoveryForBoardEdit();
+        appRoot?.setAttribute('data-screen', 'adventure');
+        setActiveBottomNav('adventure');
+        persistNavScreen('adventure');
+        guestUser.syncGuestBanner();
+        if (app) await loadAdventurePuzzle(app);
+      },
+      onRandom: () => {
+        dismissDiscoveryForBoardEdit();
+        openRandomPuzzlePopup();
+      },
+    });
+  } catch (err) {
+    console.warn('Profile overlay init:', err);
+  }
   if (deferBootPuzzle) {
     try {
       await openProfileOverlay();
@@ -2806,7 +2844,7 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
   let tilesetPickerApi = null;
   const settingsApi = initSettingsUi({
     menuApi,
-    onChange: (next) => {
+    onChange: (next, prev = {}) => {
       setSfxEnabled(next.soundEffects === 'ON');
       applyPhonePreviewMode(next.phonePreview === 'ON');
       applyUiScale();
@@ -2815,6 +2853,9 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
       app.applyGameplaySettings(next);
       app.renderTiles();
       updateTileBagCount(app);
+      if (next.startMode && next.startMode !== prev.startMode) {
+        void activateStartMode(appRef, next.startMode);
+      }
     },
     onViewportFit: () => runViewportFit(true),
     getTilesetLabel: () => formatTilesetDisplayName(appRef?.state?.activeTileset),

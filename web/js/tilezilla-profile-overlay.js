@@ -197,8 +197,17 @@ export function initProfileOverlay({
     closeProfileOverlayPopup();
   });
 
-  void requestIdleCallback?.(() => ensureProfileOverlayLayout(document))
-    ?? setTimeout(() => { void ensureProfileOverlayLayout(document); }, 0);
+  // iOS Safari has no requestIdleCallback — bare identifier throws ReferenceError
+  // (optional chaining does not protect undeclared globals) and aborts shell wiring.
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(() => {
+      void ensureProfileOverlayLayout(document);
+    });
+  } else {
+    setTimeout(() => {
+      void ensureProfileOverlayLayout(document);
+    }, 0);
+  }
 
   window.addEventListener('tilezilla:auth-screen-layout-saved', () => {
     void ensureProfileOverlayLayout(document);

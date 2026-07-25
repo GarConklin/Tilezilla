@@ -228,7 +228,8 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
       return;
     }
     settingsEntry = 'menu';
-    menuRoot.hidden = true;
+    // Always clear tz-modal-open via closeMenu — hiding alone leaves the hamburger dead.
+    closeMenu();
     api.openSettings();
   });
 

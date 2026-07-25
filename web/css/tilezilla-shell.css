@@ -3036,6 +3036,11 @@ body.tz-modal-open .tz-shell-boot-loader {
   pointer-events: none;
 }
 
+/* Menu hit enables pointer-events:auto; keep it dead until boot finishes. */
+.tz-app.is-shell-booting .tz-menu-btn {
+  pointer-events: none !important;
+}
+
 .tz-app.is-shell-booting .tz-board-section {
   pointer-events: none;
 }

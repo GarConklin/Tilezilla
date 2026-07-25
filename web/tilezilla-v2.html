@@ -404,8 +404,8 @@
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--random" src="/img/BMB-3H.png" alt="" width="1678" height="310" aria-hidden="true" />
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--library" src="/img/BMB-4H.png" alt="" width="1678" height="310" aria-hidden="true" />
                 <img class="tz-bottom-nav__hover tz-bottom-nav__hover--profile" src="/img/BMB-5H.png" alt="" width="1678" height="310" aria-hidden="true" />
-                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure tz-bottom-nav__hit--active" data-nav="daily-challenge" aria-current="page" aria-label="Daily Challenge"></button>
-                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge" data-nav="adventure" aria-label="Adventure"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--adventure" data-nav="adventure" aria-label="Adventure"></button>
+                <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--daily-challenge tz-bottom-nav__hit--active" data-nav="daily-challenge" aria-current="page" aria-label="Daily Challenge"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--random" data-nav="random" aria-label="Random Puzzle"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--library" data-nav="library" aria-label="Puzzle Library"></button>
                 <button type="button" class="tz-bottom-nav__hit tz-bottom-nav__hit--profile" data-nav="profile" aria-label="Profile"></button>
@@ -595,6 +595,15 @@
 
           <h3 class="tz-settings-section">Gameplay</h3>
           <p class="tz-settings-note">Display and interaction only — puzzle logic and scoring are unchanged.</p>
+
+          <div class="tz-setting" data-setting="startMode">
+            <div class="tz-setting__label">Start mode</div>
+            <div class="tz-setting__help">Which mode loads when you open the game. Changing this switches to that mode now.</div>
+            <div class="tz-segmented" role="group" aria-label="Start mode">
+              <button type="button" class="tz-segment" data-value="daily-challenge" aria-pressed="true">Daily</button>
+              <button type="button" class="tz-segment" data-value="adventure" aria-pressed="false">Adventure</button>
+            </div>
+          </div>
 
           <div class="tz-setting" data-setting="soundEffects">
             <div class="tz-setting__label">Sound effects</div>
@@ -1439,6 +1448,6 @@
     void guardGameEntry();
   </script>
   <script type="module" src="js/app_v16.js?v=20260712a"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js?v=20260712a"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20260713b"></script>
 </body>
 </html>

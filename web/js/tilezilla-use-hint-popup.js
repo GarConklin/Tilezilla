@@ -3,6 +3,7 @@ import {
   loadUseHintLayout,
   reloadUseHintLayout,
 } from './use-hint-layout.js';
+import { bindLongPress } from './tilezilla-long-press.js';
 let getApp = () => null;
 let menuApi = null;
 let onConfirmHook = null;
@@ -133,27 +134,28 @@ export function wireUseHintConfirmTriggers(openFn) {
   const hintBtn = $('hintBtn');
   const useSlot = $('previewHintUseSlot');
 
-  const handleOpen = (e) => {
-    if (e.target.closest('#hintTokenAddBtnCount, .tz-preview-v2-hint-token-add')) return;
-    e.preventDefault();
-    e.stopPropagation();
-    open();
+  const excludeAdd = (e) => Boolean(e.target.closest('#hintTokenAddBtnCount, .tz-preview-v2-hint-token-add'));
+
+  const openHint = () => {
+    void open();
   };
 
-  plaque?.addEventListener('click', handleOpen);
-  usePlaque?.addEventListener('click', handleOpen);
-  countLabel?.addEventListener('click', handleOpen);
-  hintSlot?.addEventListener('click', handleOpen);
-  useSlot?.addEventListener('click', (e) => {
-    if (e.target.closest('#hintTokenAddBtnCount, .tz-preview-v2-hint-token-add')) return;
-    if (useSlot.hasAttribute('hidden')) return;
-    handleOpen(e);
-  });
+  const wireHold = (el, { check } = {}) => {
+    if (!el || el.dataset.hintLongPressWired === '1') return;
+    el.dataset.hintLongPressWired = '1';
+    el.setAttribute('title', 'Hold for 1 second');
+    bindLongPress(el, (e) => {
+      if (check && !check()) return;
+      openHint(e);
+    }, { ms: 1000, exclude: excludeAdd });
+  };
 
-  hintBtn?.addEventListener('click', (e) => {
-    if (hintBtn?.getAttribute('aria-disabled') === 'true') return;
-    e.preventDefault();
-    e.stopPropagation();
-    void open();
-  }, { capture: true });
+  wireHold(plaque);
+  wireHold(usePlaque);
+  wireHold(countLabel);
+  wireHold(hintSlot);
+  wireHold(useSlot, { check: () => !useSlot.hasAttribute('hidden') });
+  wireHold(hintBtn, {
+    check: () => hintBtn?.getAttribute('aria-disabled') !== 'true',
+  });
 }

@@ -11,9 +11,14 @@ export const GAMEPLAY_DEFAULTS = {
   soundEffects: 'ON',
   previewPlacementAnchor: 'ON',
   previewPlacementAnchorStyle: 'LIGHT',
+  startMode: 'daily-challenge',
 };
 
 const STORAGE_KEY = 'tilezilla-gameplay-settings';
+
+function normalizeStartMode(value) {
+  return value === 'adventure' ? 'adventure' : 'daily-challenge';
+}
 
 export function loadGameplaySettings() {
   try {
@@ -31,6 +36,7 @@ export function loadGameplaySettings() {
       soundEffects: parsed.soundEffects === 'OFF' ? 'OFF' : 'ON',
       previewPlacementAnchor: parsed.previewPlacementAnchor === 'OFF' ? 'OFF' : 'ON',
       previewPlacementAnchorStyle: parsed.previewPlacementAnchorStyle === 'DARK' ? 'DARK' : 'LIGHT',
+      startMode: normalizeStartMode(parsed.startMode),
     };
   } catch {
     return { ...GAMEPLAY_DEFAULTS };
@@ -63,6 +69,7 @@ function readPanel(panel) {
     soundEffects: read('soundEffects') === 'OFF' ? 'OFF' : 'ON',
     previewPlacementAnchor: read('previewPlacementAnchor') === 'OFF' ? 'OFF' : 'ON',
     previewPlacementAnchorStyle: read('previewPlacementAnchorStyle') === 'DARK' ? 'DARK' : 'LIGHT',
+    startMode: normalizeStartMode(read('startMode')),
   };
 }
 
@@ -165,10 +172,11 @@ export function initSettingsUi({ onChange, menuApi, onOpenTileset, getTilesetLab
   };
 
   const apply = (next) => {
+    const prev = { ...current };
     current = { ...current, ...next };
     saveGameplaySettings(current);
     renderPanel(gameplayPanel, current);
-    onChange(current);
+    onChange(current, prev);
   };
 
   bindSegment(gameplayPanel, apply);
