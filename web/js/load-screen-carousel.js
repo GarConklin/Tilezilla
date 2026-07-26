@@ -19,6 +19,10 @@ const SLIDES = [
 ];
 
 const DEMO_VIDEO_SRC = '/img/Demo Play.mp4';
+/** Dwell on slides 1–2 before advancing. */
+const AUTO_ADVANCE_MS = 2000;
+/** Dwell on slide 3 before looping to slide 1. */
+const AUTO_LOOP_MS = 3000;
 
 function encodeAssetPath(path) {
   return String(path || '')
@@ -40,6 +44,33 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
   if (!viewport || !img || !prevBtn || !nextBtn) return;
 
   let index = 0;
+  let autoTimer = 0;
+
+  function isVideoOpen() {
+    return Boolean(videoLayer && !videoLayer.hidden);
+  }
+
+  function clearAutoAdvance() {
+    if (autoTimer) {
+      window.clearTimeout(autoTimer);
+      autoTimer = 0;
+    }
+  }
+
+  function scheduleAutoAdvance() {
+    clearAutoAdvance();
+    if (isVideoOpen() || document.hidden) return;
+    const delay = index >= SLIDES.length - 1 ? AUTO_LOOP_MS : AUTO_ADVANCE_MS;
+    autoTimer = window.setTimeout(() => {
+      autoTimer = 0;
+      if (isVideoOpen() || document.hidden) return;
+      const next = index >= SLIDES.length - 1 ? 0 : index + 1;
+      if (next === index) return;
+      index = next;
+      playSfx('swipeStartScreen');
+      render();
+    }, delay);
+  }
 
   function render() {
     const slide = SLIDES[index];
@@ -50,6 +81,7 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
     if (playBtn) {
       playBtn.hidden = !slide.showPlay;
     }
+    scheduleAutoAdvance();
   }
 
   function go(delta) {
@@ -62,6 +94,7 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
 
   function openVideo() {
     if (!videoLayer || !video) return;
+    clearAutoAdvance();
     video.src = encodeAssetPath(DEMO_VIDEO_SRC);
     videoLayer.hidden = false;
     video.currentTime = 0;
@@ -75,6 +108,7 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
     video.removeAttribute('src');
     video.load();
     videoLayer.hidden = true;
+    scheduleAutoAdvance();
   }
 
   prevBtn.addEventListener('click', () => go(-1));
@@ -92,6 +126,11 @@ export function initLoadScreenCarousel(root = document.getElementById('loadScree
     }
     if (event.key === 'ArrowLeft') go(-1);
     if (event.key === 'ArrowRight') go(1);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearAutoAdvance();
+    else scheduleAutoAdvance();
   });
 
   render();
