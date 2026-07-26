@@ -2495,6 +2495,7 @@ async function applyShellLayouts() {
         bottomNavLayout,
         menuLayout,
         cartographersJournalLayout,
+        hintRulesLayout,
       ] = await Promise.all([
         loadMainScreenV2Layout(),
         loadPreviewV2Layout(),
@@ -2507,6 +2508,10 @@ async function applyShellLayouts() {
         }),
         loadCartographersJournalLayout().catch((err) => {
           console.warn("Cartographer's journal layout:", err);
+          return null;
+        }),
+        loadHintRulesLayout().catch((err) => {
+          console.warn('Hint rules layout:', err);
           return null;
         }),
       ]);
@@ -2524,6 +2529,7 @@ async function applyShellLayouts() {
       if (cartographersJournalLayout) {
         applyCartographersJournalLayout(cartographersJournalLayout);
       }
+      if (hintRulesLayout) applyHintRulesLayout(hintRulesLayout);
       requestAnimationFrame(() => {
         updateMainV2BoardFit();
         syncHintRulesWindowGeometry();

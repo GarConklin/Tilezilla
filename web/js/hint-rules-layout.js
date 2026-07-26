@@ -173,7 +173,18 @@ export function syncHintRulesWindowGeometry(layout) {
   const widthScale = Number(w.widthScale ?? 0.95);
   const width = (Number(w.maxDesignWidth) || 390) * widthScale * uiScale;
   const top = boardRect.top + (Number(w.nudgeY) || 0);
-  const height = Math.max(0, tilebagRect.bottom - top);
+  let height = Math.max(0, tilebagRect.bottom - top);
+
+  // Keep the close button on the art: never taller than the visible rules image,
+  // otherwise bottom:exit sits in empty space below the parchment (tuner mock
+  // does not show that gap because it crops to the stage).
+  const artImg = [...win.querySelectorAll('.tz-hint-rules__img')].find(
+    (el) => window.getComputedStyle(el).display !== 'none',
+  );
+  if (artImg?.naturalWidth > 0) {
+    const artH = width * (artImg.naturalHeight / artImg.naturalWidth);
+    if (artH > 0) height = Math.min(height, artH);
+  }
 
   win.classList.add('is-msv2-synced');
   win.style.removeProperty('--tz-hint-rules-sync-left');

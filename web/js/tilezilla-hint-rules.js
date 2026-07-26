@@ -1,194 +1,106 @@
 /**
-
  * Hint Rules — image overlay (mobile scroll panel + desktop/tablet art).
-
  * Which image shows is CSS-driven: MU below 780px, DT at ≥780px (see tilezilla-shell.css).
-
  * Scrolling uses FancyScrollerBar / FancyScrollerPin (see fancy-scroller.js).
-
  */
-
-
 
 import { initFancyScroller } from './fancy-scroller.js';
 import { syncHintRulesWindowGeometry } from './hint-rules-layout.js';
 
-
-
 let menuApi = null;
-
 let fancyScroller = null;
 
-
-
 function $(id) {
-
   return document.getElementById(id);
-
 }
 
-
+function resyncHintRulesGeometry() {
+  syncHintRulesWindowGeometry();
+  fancyScroller?.sync?.();
+}
 
 function openHintRulesPopup() {
-
   const root = $('hintRulesRoot');
-
   if (!root) return;
-
-
 
   menuApi?.closeMenu?.();
-
   menuApi?.closePanel?.();
 
-
-
   root.hidden = false;
-
   document.body.classList.add('tz-modal-open');
 
-
-
   const scroll = $('hintRulesScroll');
-
   if (scroll) scroll.scrollTop = 0;
-
-  requestAnimationFrame(() => {
-    syncHintRulesWindowGeometry();
-    fancyScroller?.sync?.();
-  });
-
+  requestAnimationFrame(() => resyncHintRulesGeometry());
 }
 
-
-
 function closeHintRulesPopup() {
-
   const root = $('hintRulesRoot');
-
   if (!root) return;
-
-
 
   root.hidden = true;
 
   if (
-
     $('menuRoot')?.hidden !== false
-
     && $('menuPanelRoot')?.hidden !== false
-
     && $('settingsRoot')?.hidden !== false
-
     && $('puzzleInfoRoot')?.hidden !== false
-
     && $('stuckPopupRoot')?.hidden !== false
-
     && $('developmentMenuRoot')?.hidden !== false
-
   ) {
-
     document.body.classList.remove('tz-modal-open');
-
   }
-
 }
-
-
 
 export function openHintRules() {
-
   openHintRulesPopup();
-
 }
 
-
-
 export function initHintRules({ menuApi: menu } = {}) {
-
   menuApi = menu || null;
 
-
-
   const root = $('hintRulesRoot');
-
   if (!root) return null;
 
-
-
   fancyScroller = initFancyScroller({
-
     scrollEl: $('hintRulesScroll'),
-
     scrollerRoot: $('hintRulesScroller'),
-
     trackEl: $('hintRulesScrollerTrack'),
-
     pinEl: $('hintRulesScrollerPin'),
-
   });
 
-
+  // Art height drives panel height (so the X sits on the image). Re-sync when decoded.
+  root.querySelectorAll('.tz-hint-rules__img').forEach((img) => {
+    if (img.complete && img.naturalWidth > 0) return;
+    img.addEventListener('load', () => {
+      if (!root.hidden) resyncHintRulesGeometry();
+    }, { once: true });
+  });
 
   $('menuHintRulesBtn')?.addEventListener('click', () => {
-
     openHintRules();
-
   });
-
-
 
   $('hintRulesExitBottom')?.addEventListener('click', closeHintRulesPopup);
 
-
-
   document.addEventListener('keydown', (e) => {
-
     if (e.key !== 'Escape') return;
-
     if (root.hidden) return;
-
     closeHintRulesPopup();
-
   });
-
-
 
   window.addEventListener('tilezilla:hint-rules-layout-saved', () => {
-
-    requestAnimationFrame(() => {
-
-      syncHintRulesWindowGeometry();
-
-      fancyScroller?.sync?.();
-
-    });
-
+    requestAnimationFrame(() => resyncHintRulesGeometry());
   });
-
-
 
   window.addEventListener('tilezilla:main-screen-v2-layout-saved', () => {
-
     requestAnimationFrame(() => syncHintRulesWindowGeometry());
-
   });
-
-
 
   window.addEventListener('resize', () => {
-
     if (root.hidden) return;
-
     syncHintRulesWindowGeometry();
-
   });
 
-
-
   return { openHintRules, closeHintRulesPopup };
-
 }
-
-
-
