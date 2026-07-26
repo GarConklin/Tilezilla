@@ -3,13 +3,9 @@
  * Version label is loaded from /api/system-info (MySQL cache).
  */
 
-import {
-  applyCartographersJournalLayout,
-  loadCartographersJournalLayout,
-  syncCartographersJournalWindowGeometry,
-} from './cartographers-journal-layout.js';
+import { syncCartographersJournalWindowGeometry } from './cartographers-journal-layout.js';
 import { initFancyScroller } from './fancy-scroller.js';
-import { clearSystemInfoCache, fetchSystemInfo } from './system-info.js';
+import { fetchSystemInfo } from './system-info.js';
 
 let menuApi = null;
 let fancyScroller = null;
@@ -21,7 +17,6 @@ function $(id) {
 async function refreshJournalVersionBadge() {
   const badge = $('cartographersJournalVersion');
   const emailEl = $('cartographersJournalEmail');
-  clearSystemInfoCache();
   const info = await fetchSystemInfo();
   if (badge) {
     const version = String(info?.version || '').trim();
@@ -41,32 +36,28 @@ async function refreshJournalVersionBadge() {
   }
 }
 
-async function refreshJournalLayout() {
-  try {
-    applyCartographersJournalLayout(await loadCartographersJournalLayout({ force: true }));
-  } catch (err) {
-    console.warn("Cartographer's journal layout refresh:", err);
-  }
-}
-
-function openCartographersJournalPopup() {
+async function openCartographersJournalPopup() {
   const root = $('cartographersJournalRoot');
   if (!root) return;
+
+  try {
+    await refreshJournalVersionBadge();
+  } catch (err) {
+    console.warn("Cartographer's journal system info:", err);
+  }
 
   menuApi?.closeMenu?.();
   menuApi?.closePanel?.();
 
-  root.hidden = false;
-  document.body.classList.add('tz-modal-open');
-
   const scroll = $('cartographersJournalScroll');
   if (scroll) scroll.scrollTop = 0;
 
-  void refreshJournalVersionBadge();
-  void refreshJournalLayout().then(() => {
-    syncCartographersJournalWindowGeometry();
-    fancyScroller?.sync?.();
-  });
+  // Geometry before first paint so version/email do not jump from CSS window defaults.
+  syncCartographersJournalWindowGeometry();
+  fancyScroller?.sync?.();
+
+  root.hidden = false;
+  document.body.classList.add('tz-modal-open');
 
   requestAnimationFrame(() => {
     syncCartographersJournalWindowGeometry();
@@ -92,8 +83,8 @@ function closeCartographersJournalPopup() {
   }
 }
 
-export function openCartographersJournal() {
-  openCartographersJournalPopup();
+export async function openCartographersJournal() {
+  await openCartographersJournalPopup();
 }
 
 export function initCartographersJournal({ menuApi: menu } = {}) {
@@ -110,7 +101,7 @@ export function initCartographersJournal({ menuApi: menu } = {}) {
   });
 
   $('menuCartographersJournalBtn')?.addEventListener('click', () => {
-    openCartographersJournal();
+    void openCartographersJournal();
   });
 
   $('cartographersJournalExit')?.addEventListener('click', closeCartographersJournalPopup);

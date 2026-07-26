@@ -12,7 +12,6 @@ import {
   showLoginRequired,
 } from './tilezilla-guest.js';
 import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
-import { clearAdventureCatalogStatsCache } from './passport-catalog-stats.js';
 import { refreshProfilePassportStats } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 
@@ -27,6 +26,7 @@ let onRandom = null;
 let onDeferredBootFallback = null;
 let deferBootPuzzle = false;
 let profilePathChosen = false;
+let profileStatsPromise = null;
 
 async function waitForCatalogReady(maxMs = 12000) {
   const { isCatalogReady } = await import('./level-catalog.js');
@@ -47,18 +47,29 @@ async function reloadAppProgress() {
 }
 
 async function refreshProfileOverlayStats(root) {
-  clearAdventureCatalogStatsCache();
-  await waitForCatalogReady();
-  const app = window.__app;
-  if (app?.state && !app.state.levelStatsById) {
-    const { loadLevelStatsIndex } = await import('./level-catalog.js');
-    const stats = await loadLevelStatsIndex();
-    app.state.levelStatsById = stats?.byId || {};
+  if (profileStatsPromise) return profileStatsPromise;
+
+  profileStatsPromise = (async () => {
+    await waitForCatalogReady();
+    const app = window.__app;
+    if (app?.state && !app.state.levelStatsById) {
+      const { loadLevelStatsIndex } = await import('./level-catalog.js');
+      const stats = await loadLevelStatsIndex();
+      app.state.levelStatsById = stats?.byId || {};
+    }
+    const progress = await reloadAppProgress();
+    // Rank icons and passport slots are independent after progress is local.
+    await Promise.all([
+      refreshProfileRankIcons(progress, root),
+      refreshProfilePassportStats({ root }),
+    ]);
+  })();
+
+  try {
+    await profileStatsPromise;
+  } finally {
+    profileStatsPromise = null;
   }
-  const progress = await reloadAppProgress();
-  await refreshProfileRankIcons(progress, root);
-  await refreshProfilePassportStats({ root });
-  await window.__syncPlayerChrome?.();
 }
 
 function refreshProfileFields() {
@@ -126,10 +137,12 @@ async function ensureProfileOverlayLayout(root = document) {
 export async function openProfileOverlay() {
   const overlayRoot = document.getElementById('profileOverlayRoot');
   refreshProfileFields();
+  // Apply saved tuner layout before the overlay is visible so the badge/slots
+  // do not jump from CSS defaults into place a minute later.
+  await ensureProfileOverlayLayout(document);
   openProfileOverlayPopup();
-  void ensureProfileOverlayLayout(document);
-  void refreshProfileOverlayStats(overlayRoot || document).then(() => {
-    void ensureProfileOverlayLayout(document);
+  void refreshProfileOverlayStats(overlayRoot || document).catch((err) => {
+    console.warn('Profile overlay stats:', err);
   });
 }
 

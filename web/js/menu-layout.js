@@ -36,28 +36,28 @@ const SHARED_MENU_ITEMS = new Set(['puzzle', 'found', 'stuck', 'hint', 'settings
 
 export const DEFAULT_MENU_LAYOUT = {
   plaque: { offsetY: -50, displayW: 340, wScale: 1.3 },
-  hits: { w: 74, h: 6.8 },
-  close: { x: 91, y: 4.8, w: 8.2, h: 5.6 },
+  hits: { w: 74, h: 5.8 },
+  close: { x: 79.4, y: 13.2, w: 10.2, h: 8 },
   standard: {
-    puzzle: { x: 50, y: 23 },
-    found: { x: 50, y: 33 },
-    stuck: { x: 50, y: 43 },
-    hint: { x: 50, y: 53 },
-    settings: { x: 50, y: 63 },
-    leaderboard: { x: 50, y: 69 },
-    journal: { x: 50, y: 75 },
-    bottomMenu: { x: 50, y: 82 },
+    puzzle: { x: 50, y: 23.8, w: 59.5, h: 6.8 },
+    found: { x: 50, y: 30.6, w: 59.5 },
+    stuck: { x: 50, y: 37.4, w: 60.5 },
+    hint: { x: 50, y: 44.2, w: 60.5, h: 6.3 },
+    settings: { x: 49.5, y: 51, w: 60.5, h: 6.3 },
+    leaderboard: { x: 50, y: 60.2, w: 60, h: 6.8 },
+    journal: { x: 50, y: 67.8, w: 61.5, h: 7.3 },
+    bottomMenu: { x: 50, y: 75.2, w: 61, h: 6.3 },
   },
   dev: {
-    puzzle: { x: 50, y: 19 },
-    found: { x: 50, y: 27 },
+    puzzle: { x: 50, y: 23.8, w: 59, h: 7.3 },
+    found: { x: 50, y: 30.6, w: 60, h: 6.3 },
     stuck: { x: 50, y: 35 },
     hint: { x: 50, y: 43 },
     settings: { x: 50, y: 51 },
-    leaderboard: { x: 50, y: 57 },
-    journal: { x: 50, y: 63 },
-    bottomMenu: { x: 50, y: 71 },
-    development: { x: 50, y: 79 },
+    leaderboard: { x: 50, y: 59.8, w: 60, h: 6.3 },
+    journal: { x: 50, y: 67.4, w: 60, h: 6.8 },
+    bottomMenu: { x: 50, y: 71.2, w: 60, h: 6.8 },
+    development: { x: 50, y: 79, w: 59, h: 7.3 },
   },
 };
 
@@ -91,13 +91,14 @@ export function mergeMenuLayout(raw) {
 
 export async function loadMenuLayout() {
   if (layoutCache) return layoutCache;
-  const res = await fetch('/data/menu_layout.json', { cache: 'no-store' });
-  if (!res.ok) {
-    layoutCache = mergeMenuLayout(null);
+  try {
+    const res = await fetch('/data/menu_layout.json', { cache: 'no-store' });
+    if (!res.ok) return null;
+    layoutCache = mergeMenuLayout(await res.json());
     return layoutCache;
+  } catch {
+    return null;
   }
-  layoutCache = mergeMenuLayout(await res.json());
-  return layoutCache;
 }
 
 export function getMenuDisplayWidth(plaque) {
@@ -125,7 +126,7 @@ export function getMenuItemLayout(itemKey, layout, mode = 'standard') {
       x: row.x ?? DEFAULT_ROW.x,
       y: row.y ?? DEFAULT_ROW.y,
       w: row.w ?? merged.hits.w ?? 74,
-      h: row.h ?? merged.hits.h ?? 6.8,
+      h: row.h ?? merged.hits.h ?? 5.8,
     };
   }
 
@@ -135,7 +136,7 @@ export function getMenuItemLayout(itemKey, layout, mode = 'standard') {
     x: row.x ?? DEFAULT_ROW.x,
     y: row.y ?? DEFAULT_ROW.y,
     w: row.w ?? merged.hits.w ?? 74,
-    h: row.h ?? merged.hits.h ?? 6.8,
+    h: row.h ?? merged.hits.h ?? 5.8,
   };
 }
 
@@ -147,7 +148,7 @@ export function applyMenuLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-menu-w-scale', String(plaque.wScale ?? 1));
   target.style.setProperty('--tz-menu-display-w', `${getMenuDisplayWidth(plaque)}px`);
   target.style.setProperty('--tz-menu-hit-w', `${hits.w ?? 74}%`);
-  target.style.setProperty('--tz-menu-hit-h', `${hits.h ?? 6.8}%`);
+  target.style.setProperty('--tz-menu-hit-h', `${hits.h ?? 5.8}%`);
 
   target.style.setProperty('--tz-menu-close-x', `${close.x}%`);
   target.style.setProperty('--tz-menu-close-y', `${close.y}%`);

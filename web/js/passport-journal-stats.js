@@ -61,9 +61,9 @@ function pickStatNumber(systemVal, catalogVal, mockVal) {
 }
 
 /** Best available expedition report numbers (system cache → live catalog → mock). */
-export async function resolveExpeditionReportDisplay(app = window.__app) {
+export async function resolveExpeditionReportDisplay(app = window.__app, { force = false } = {}) {
   const mock = PROFILE_LAYOUT_MOCK;
-  clearSystemInfoCache();
+  if (force) clearSystemInfoCache();
   const [systemStats, catalog] = await Promise.all([
     fetchSystemStats(),
     loadAdventureCatalogStats(app),

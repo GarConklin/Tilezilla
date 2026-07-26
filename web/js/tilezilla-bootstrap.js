@@ -286,7 +286,7 @@ async function resolveCatalogLevel(app, levelId) {
 }
 
 /** Reload progress from storage, then refresh rank badge, hint plaque, and passport slots. */
-async function syncPlayerChrome(app) {
+async function syncPlayerChrome(app, { refreshPassport = true } = {}) {
   if (!app) return;
   if (app.progress?.load) {
     app.progress.data = app.progress.load();
@@ -300,6 +300,7 @@ async function syncPlayerChrome(app) {
   await updateRankPanel(app);
   updateGlobalHintCount(app);
   updateHintButtonState(app);
+  if (!refreshPassport) return;
   try {
     const { refreshProfilePassportStats } = await import('./profile-passport-data.js');
     await refreshProfilePassportStats();
@@ -2492,12 +2493,22 @@ async function applyShellLayouts() {
         hintLayout,
         tilebagLayout,
         bottomNavLayout,
+        menuLayout,
+        cartographersJournalLayout,
       ] = await Promise.all([
         loadMainScreenV2Layout(),
         loadPreviewV2Layout(),
         loadHintV2Layout(),
         loadTilebagV2Layout(),
         loadBottomNavLayout(),
+        loadMenuLayout().catch((err) => {
+          console.warn('Menu layout:', err);
+          return null;
+        }),
+        loadCartographersJournalLayout().catch((err) => {
+          console.warn("Cartographer's journal layout:", err);
+          return null;
+        }),
       ]);
       if (mainLayout) applyMainScreenV2Layout(mainLayout);
       if (previewLayout) {
@@ -2509,6 +2520,10 @@ async function applyShellLayouts() {
       }
       if (tilebagLayout) applyTilebagV2Layout(tilebagLayout);
       if (bottomNavLayout) applyBottomNavLayout(bottomNavLayout);
+      if (menuLayout) applyMenuLayout(menuLayout);
+      if (cartographersJournalLayout) {
+        applyCartographersJournalLayout(cartographersJournalLayout);
+      }
       requestAnimationFrame(() => {
         updateMainV2BoardFit();
         syncHintRulesWindowGeometry();
@@ -2519,14 +2534,26 @@ async function applyShellLayouts() {
     }
   } else {
     try {
-      const [bottomNavLayout, previewLayout, tilebagLayout] = await Promise.all([
+      const [bottomNavLayout, previewLayout, tilebagLayout, menuLayout, cartographersJournalLayout] = await Promise.all([
         loadBottomNavLayout(),
         loadPreviewLayout(),
         loadTilebagLayout(),
+        loadMenuLayout().catch((err) => {
+          console.warn('Menu layout:', err);
+          return null;
+        }),
+        loadCartographersJournalLayout().catch((err) => {
+          console.warn("Cartographer's journal layout:", err);
+          return null;
+        }),
       ]);
       if (bottomNavLayout) applyBottomNavLayout(bottomNavLayout);
       if (previewLayout) applyPreviewLayout(previewLayout);
       if (tilebagLayout) applyTilebagLayout(tilebagLayout);
+      if (menuLayout) applyMenuLayout(menuLayout);
+      if (cartographersJournalLayout) {
+        applyCartographersJournalLayout(cartographersJournalLayout);
+      }
     } catch (err) {
       console.warn('Legacy shell layouts:', err);
     }
@@ -2565,7 +2592,7 @@ async function applyDeferredShellLayouts() {
   }
 }
 
-/** Menu / journal overlays — not needed to play the first puzzle. */
+/** Secondary overlays — not needed to play the first puzzle. */
 async function applyDeferredMenuLayouts() {
   try {
     const discoveryLayout = await loadDiscoveryRecordLayout();
@@ -2590,12 +2617,6 @@ async function applyDeferredMenuLayouts() {
   }
 
   try {
-    applyMenuLayout(await loadMenuLayout());
-  } catch (err) {
-    console.warn('Menu layout:', err);
-  }
-
-  try {
     await initMenuSystemInfo();
   } catch (err) {
     console.warn('System info:', err);
@@ -2611,12 +2632,6 @@ async function applyDeferredMenuLayouts() {
     applyHintRulesLayout(await loadHintRulesLayout());
   } catch (err) {
     console.warn('Hint rules layout:', err);
-  }
-
-  try {
-    applyCartographersJournalLayout(await loadCartographersJournalLayout());
-  } catch (err) {
-    console.warn("Cartographer's journal layout:", err);
   }
 
   try {
@@ -2938,11 +2953,17 @@ async function init() {
   wireUiScaleListeners();
   await applyShellLayouts();
   const earlyUrlParams = new URLSearchParams(window.location.search);
-  const profileLayoutWarm = (earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true')
+  const earlyProfileBoot = earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true';
+  const profileLayoutWarm = earlyProfileBoot
     ? refreshProfileOverlayLayoutFromDisk().catch((err) => {
       console.warn('Profile overlay layout (warm):', err);
     })
     : null;
+  if (earlyProfileBoot) {
+    void import('./profile-passport-data.js')
+      .then(({ ensurePassportDataHydrated }) => ensurePassportDataHydrated())
+      .catch((err) => console.warn('Passport data warm:', err));
+  }
   const syncBagScroll = wireBagScroll();
   syncBagScrollRef = syncBagScroll;
   let appRef = null;
@@ -3266,7 +3287,8 @@ window.addEventListener('storage', (e) => {
 async function refreshMenuLayoutFromDisk() {
   clearMenuLayoutCache();
   try {
-    applyMenuLayout(await loadMenuLayout());
+    const layout = await loadMenuLayout();
+    if (layout) applyMenuLayout(layout);
   } catch (err) {
     console.warn('Menu layout reload:', err);
   }
@@ -3387,6 +3409,10 @@ window.addEventListener('storage', (e) => {
   if (e.key === 'tilezilla:cartographers-journal-layout-version') {
     void refreshCartographersJournalLayoutFromDisk();
   }
+});
+
+window.addEventListener('focus', () => {
+  void refreshCartographersJournalLayoutFromDisk();
 });
 
 window.addEventListener('tilezilla:auth-screen-layout-saved', () => {

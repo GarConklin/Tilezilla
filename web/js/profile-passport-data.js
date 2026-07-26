@@ -9,7 +9,6 @@ import {
   loadAuthScreenLayout,
   PROFILE_LAYOUT_MOCK,
   applyProfileOverlayLayout,
-  syncAuthScreenItemVisibility,
 } from './auth-screen-layout.js';
 import {
   applyCommunityDiscoveryStats,
@@ -20,6 +19,8 @@ import { ACTIVE_USER_KEY, getConvertedGuestCode, isRegisteredUser, REGISTERED_US
 
 let passportHydratePromise = null;
 let progressReadyListenerBound = false;
+let passportStatsPromise = null;
+let passportStatsGen = 0;
 
 function progressUserKey() {
   return window.__app?.state?.userId
@@ -225,73 +226,116 @@ function passportIdForUser(userId) {
 /**
  * @param {Document|HTMLElement} [root]
  */
-export async function refreshProfilePassportStats({ root = document } = {}) {
-  await ensurePassportDataHydrated();
-
-  const userId = localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer';
-  const progress = resolvePassportProgress();
-  const mock = PROFILE_LAYOUT_MOCK;
-
-  let rankState = null;
-  try {
-    const path = await loadAdventurePath();
-    rankState = getRankPanelState(progress, path, adventureLevelContext(window.__app || {}));
-  } catch {
-    /* optional */
-  }
-
-  const adventureProgress = rankState
-    ? formatPct(rankState.stepProgress, rankState.stepTotal)
-    : mock.adventureProgress;
-
-  const routes = countDiscoveredRoutes(progress);
-  const hints = hintTokenCount();
-  const dailyMeta = window.__dailyChallengeMeta;
-  const recent = latestFoundLevelId(progress);
-  const expedition = await resolveExpeditionReportDisplay(window.__app);
-
-  setProfileSlot(root, 'adventureProgress', adventureProgress);
-  setProfileSlot(root, 'profileName', localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer');
-  setProfileSlot(root, 'routesDiscovered', routes != null ? String(routes) : '—');
-  setProfileSlot(root, 'hintTokens', hints != null ? String(hints) : mock.hintTokens);
-  setProfileSlot(root, 'memberSince', formatMemberSince());
-  setProfileSlot(root, 'passportId', passportIdForUser(registeredUserId() || progressUserKey()));
-  setProfileSlot(root, 'explorersRegistered', expedition.explorersRegistered);
-  setProfileSlot(root, 'totalAdventurePuzzles', expedition.totalAdventurePuzzles);
-  setProfileSlot(root, 'totalKnownRoutes', expedition.totalKnownRoutes);
-  setProfileSlot(root, 'largestSolution', expedition.largestSolution);
-
-  const systemStats = expedition.systemStats;
-
-  try {
-    const docRoot = root.ownerDocument || document;
-    const layout = await loadAuthScreenLayout({ force: true, preferFile: true, screenKey: 'profile' });
-    if (docRoot.querySelector('#profileOverlayRoot')) {
-      applyProfileOverlayLayout(layout, docRoot);
-    } else {
-      syncAuthScreenItemVisibility(layout, 'profile', root);
+export async function refreshProfilePassportStats({ root = document, skipHydrate = false } = {}) {
+  const gen = ++passportStatsGen;
+  if (passportStatsPromise) {
+    try {
+      await passportStatsPromise;
+    } catch {
+      /* continue with a fresh pass */
     }
-  } catch {
-    /* optional */
+    if (gen !== passportStatsGen) return;
   }
 
-  setProfileSlot(
-    root,
-    'todaysChallenge',
-    dailyMeta?.levelId || (await fetchTodaysChallengeLevelId()) || mock.todaysChallenge,
-  );
-  setProfileSlot(root, 'recentPuzzleSolved', recent || mock.recentPuzzleSolved);
-  setProfileSlot(root, 'recentDailyCompleted', recent || mock.recentDailyCompleted);
-  setProfileSlot(root, 'mostSolvedPuzzle', mostSolvedLevelId(progress) || mock.mostSolvedPuzzle);
-  setProfileSlot(root, 'latestDiscovery', recent || mock.latestDiscovery);
-  applyCommunityDiscoveryStats(root, {
-    recentPuzzleSolved: recent || mock.recentPuzzleSolved,
-    recentDailyCompleted: recent || mock.recentDailyCompleted,
-    mostSolvedPuzzle: mostSolvedLevelId(progress) || mock.mostSolvedPuzzle,
-    latestDiscovery: recent || mock.latestDiscovery,
-    totalPlaySeconds: systemStats?.totalPlaySeconds,
-  });
-  syncGuestNoteSlot(root);
+  passportStatsPromise = (async () => {
+    const progress = resolvePassportProgress();
+    const mock = PROFILE_LAYOUT_MOCK;
+    const dailyMeta = window.__dailyChallengeMeta;
+    const recent = latestFoundLevelId(progress);
+    const mostSolved = mostSolvedLevelId(progress);
+    const routes = countDiscoveredRoutes(progress);
+    const hints = hintTokenCount();
+
+    // Immediate local paint — do not wait on network hydrate for these slots.
+    setProfileSlot(root, 'profileName', localStorage.getItem(ACTIVE_USER_KEY) || 'Explorer');
+    setProfileSlot(root, 'routesDiscovered', routes != null ? String(routes) : '—');
+    setProfileSlot(root, 'hintTokens', hints != null ? String(hints) : mock.hintTokens);
+    setProfileSlot(root, 'memberSince', formatMemberSince());
+    setProfileSlot(root, 'passportId', passportIdForUser(registeredUserId() || progressUserKey()));
+    setProfileSlot(root, 'todaysChallenge', dailyMeta?.levelId || mock.todaysChallenge);
+    setProfileSlot(root, 'recentPuzzleSolved', recent || mock.recentPuzzleSolved);
+    setProfileSlot(root, 'recentDailyCompleted', recent || mock.recentDailyCompleted);
+    setProfileSlot(root, 'mostSolvedPuzzle', mostSolved || mock.mostSolvedPuzzle);
+    setProfileSlot(root, 'latestDiscovery', recent || mock.latestDiscovery);
+    syncGuestNoteSlot(root);
+
+    if (!skipHydrate) await ensurePassportDataHydrated();
+    if (gen !== passportStatsGen) return;
+
+    const hydratedProgress = resolvePassportProgress() || progress;
+
+    let rankState = null;
+    try {
+      const path = await loadAdventurePath();
+      if (gen !== passportStatsGen) return;
+      rankState = getRankPanelState(
+        hydratedProgress,
+        path,
+        adventureLevelContext(window.__app || {}),
+      );
+    } catch {
+      /* optional */
+    }
+
+    const adventureProgress = rankState
+      ? formatPct(rankState.stepProgress, rankState.stepTotal)
+      : mock.adventureProgress;
+    const hydratedRoutes = countDiscoveredRoutes(hydratedProgress);
+    const hydratedHints = hintTokenCount();
+    const hydratedRecent = latestFoundLevelId(hydratedProgress);
+    const hydratedMostSolved = mostSolvedLevelId(hydratedProgress);
+
+    setProfileSlot(root, 'adventureProgress', adventureProgress);
+    setProfileSlot(root, 'routesDiscovered', hydratedRoutes != null ? String(hydratedRoutes) : '—');
+    setProfileSlot(root, 'hintTokens', hydratedHints != null ? String(hydratedHints) : mock.hintTokens);
+    setProfileSlot(root, 'recentPuzzleSolved', hydratedRecent || mock.recentPuzzleSolved);
+    setProfileSlot(root, 'recentDailyCompleted', hydratedRecent || mock.recentDailyCompleted);
+    setProfileSlot(root, 'mostSolvedPuzzle', hydratedMostSolved || mock.mostSolvedPuzzle);
+    setProfileSlot(root, 'latestDiscovery', hydratedRecent || mock.latestDiscovery);
+
+    const expedition = await resolveExpeditionReportDisplay(window.__app);
+    if (gen !== passportStatsGen) return;
+
+    setProfileSlot(root, 'explorersRegistered', expedition.explorersRegistered);
+    setProfileSlot(root, 'totalAdventurePuzzles', expedition.totalAdventurePuzzles);
+    setProfileSlot(root, 'totalKnownRoutes', expedition.totalKnownRoutes);
+    setProfileSlot(root, 'largestSolution', expedition.largestSolution);
+
+    const systemStats = expedition.systemStats;
+
+    try {
+      const docRoot = root.ownerDocument || document;
+      if (docRoot.querySelector('#profileOverlayRoot')) {
+        const layout = await loadAuthScreenLayout({ preferFile: true, screenKey: 'profile' });
+        if (gen !== passportStatsGen) return;
+        applyProfileOverlayLayout(layout, docRoot);
+      }
+    } catch {
+      /* optional — openProfileOverlay already applies layout */
+    }
+
+    if (!dailyMeta?.levelId) {
+      setProfileSlot(
+        root,
+        'todaysChallenge',
+        (await fetchTodaysChallengeLevelId()) || mock.todaysChallenge,
+      );
+    }
+    applyCommunityDiscoveryStats(root, {
+      recentPuzzleSolved: hydratedRecent || mock.recentPuzzleSolved,
+      recentDailyCompleted: hydratedRecent || mock.recentDailyCompleted,
+      mostSolvedPuzzle: hydratedMostSolved || mock.mostSolvedPuzzle,
+      latestDiscovery: hydratedRecent || mock.latestDiscovery,
+      totalPlaySeconds: systemStats?.totalPlaySeconds,
+    });
+    syncGuestNoteSlot(root);
+  })();
+
+  try {
+    await passportStatsPromise;
+  } finally {
+    if (gen === passportStatsGen) passportStatsPromise = null;
+  }
 }
 
 let hintBalanceListenerBound = false;

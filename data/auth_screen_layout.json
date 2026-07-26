@@ -289,7 +289,8 @@
         "y": 37.6,
         "w": 17.4,
         "h": 6.2,
-        "fontScale": 0.92
+        "fontScale": 0.92,
+        "hidden": true
       },
       "explorersRegistered": {
         "x": 35,
