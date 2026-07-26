@@ -23,7 +23,9 @@ async function refreshJournalVersionBadge() {
     badge.textContent = version || '—';
   }
   if (emailEl) {
-    const email = String(info?.contactEmail || '').trim();
+    const email = String(
+      info?.contactEmail || info?.extra?.contactEmail || ''
+    ).trim();
     if (email) {
       emailEl.textContent = email;
       emailEl.href = `mailto:${email}`;

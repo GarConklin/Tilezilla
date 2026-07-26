@@ -175,6 +175,12 @@
       outline: 2px dashed #86efac;
       outline-offset: 2px;
     }
+    /* Shell keeps version non-interactive in-game; tuner must receive clicks. */
+    .cartographers-journal-tuner-page .tz-cartographers-journal__version,
+    .cartographers-journal-tuner-page .tz-cartographers-journal__email {
+      pointer-events: auto !important;
+      cursor: pointer;
+    }
     .cartographers-journal-tuner-page .tz-cartographers-journal__exit .hit-label {
       position: absolute;
       inset: 0;
@@ -603,6 +609,7 @@
         refresh();
       });
       document.getElementById('mockJournalEmail')?.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         currentItem = 'email';
         refresh();
@@ -634,7 +641,9 @@
       try {
         const info = await fetchSystemInfo();
         const version = String(info?.version || '').trim();
-        const email = String(info?.contactEmail || '').trim();
+        const email = String(
+          info?.contactEmail || info?.extra?.contactEmail || ''
+        ).trim();
         const badge = document.getElementById('mockJournalVersion');
         const emailEl = document.getElementById('mockJournalEmail');
         if (badge && version) badge.textContent = version;
@@ -643,9 +652,8 @@
             emailEl.textContent = email;
             emailEl.href = `mailto:${email}`;
             emailEl.hidden = false;
-          } else {
-            emailEl.hidden = true;
           }
+          /* Keep tuner placeholder visible when API has no contactEmail. */
         }
       } catch {
         /* keep placeholder */
