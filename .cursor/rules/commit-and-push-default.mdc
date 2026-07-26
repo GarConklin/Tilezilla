@@ -1,0 +1,23 @@
+---
+description: Always commit and push finished work to the active release branch unless the user says not to.
+alwaysApply: true
+---
+
+# Commit and push by default
+
+When a change is meant for this project (especially live / release work):
+
+1. Implement the change.
+2. **Commit and push** to the current release branch as part of finishing — do not leave it local-only.
+3. Skip commit/push only if the user explicitly says **don't** (e.g. "don't commit", "don't push", "local only").
+
+## How
+
+- Follow the repo's normal commit message style and git safety rules (no force push to main/master, no secrets, no `data/solver-runs/`).
+- After push, give the usual VPS deploy commands when the change needs a live rebuild.
+- Sync tuner/layout values from the stack the user tunes on into this repo before committing when those files are the source of truth for deploy.
+
+## Do not
+
+- Wait for a separate "commit and push" message after shipping a live-facing fix.
+- Lecture the user to change their tune → deploy process.
