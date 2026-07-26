@@ -1063,6 +1063,17 @@ export function initJournalUi({
       .catch((err) => console.warn('Revisit layout reload:', err));
   });
 
+  window.addEventListener('tilezilla:progress-ready', () => {
+    if (root.hidden) return;
+    if (state.mode === 'library') {
+      void refreshLibraryView();
+    } else if (state.activeTab === 'records') {
+      void recordsApi?.refreshRecordsView?.();
+    } else {
+      void refreshRecordView();
+    }
+  });
+
   window.addEventListener('storage', (e) => {
     if (
       e.key === 'tilezilla:layouts:revisit'

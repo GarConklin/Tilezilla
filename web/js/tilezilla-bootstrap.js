@@ -291,6 +291,11 @@ async function syncPlayerChrome(app) {
   if (app.progress?.load) {
     app.progress.data = app.progress.load();
   }
+  const currentLevel = app.state?.currentLevel;
+  if (currentLevel && app.renderFoundList && app.loadKnownSolutionsForLevel) {
+    const knownSolutions = await app.loadKnownSolutionsForLevel(currentLevel);
+    app.renderFoundList(currentLevel.id, knownSolutions);
+  }
   await ensureAdventureLevelContext(app);
   await updateRankPanel(app);
   updateGlobalHintCount(app);
@@ -2637,7 +2642,7 @@ async function deferredShellWarmup(app, authState, { progressHydrated = false } 
   if (!progressHydrated && authState?.mode === 'registered' && authState?.user) {
     try {
       const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
-      bindPendingSolveFlush();
+      bindPendingSolveFlush(app.progress);
       await hydrateProgressFromServer(app.progress);
     } catch (err) {
       console.warn('Server progress hydrate (deferred):', err);
@@ -3012,7 +3017,7 @@ async function init() {
   if (!deferBootPuzzle && authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
     try {
       const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
-      bindPendingSolveFlush();
+      bindPendingSolveFlush(app.progress);
       await hydrateProgressFromServer(app.progress);
       progressHydrated = true;
     } catch (err) {

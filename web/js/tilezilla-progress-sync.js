@@ -181,6 +181,37 @@ export async function hydrateProgressFromServer(progress) {
 }
 
 /**
+ * Refresh an already-hydrated browser from the server without re-uploading the
+ * entire local progress blob. Pending solve POSTs are flushed separately before
+ * this runs. Server metadata wins while found solutions remain an additive
+ * union, so an offline local find is never hidden.
+ *
+ * @param {import('./progress.js').Progress} progress
+ */
+export async function refreshProgressFromServer(progress) {
+  if (!progress) return { ok: false, reason: 'no-progress' };
+  const remote = await fetchServerProgress();
+  if (!remote.ok) {
+    console.warn('Server progress refresh:', remote.error);
+    return remote;
+  }
+
+  const merged = mergeProgressData(progress.data || {}, remote.data || {});
+  progress.importSnapshot({ data: merged });
+  progress.save();
+  window.__passportServerProgressHydrated = true;
+  window.dispatchEvent(new CustomEvent('tilezilla:progress-ready', {
+    detail: { source: 'server-refresh' },
+  }));
+  return {
+    ok: true,
+    source: 'server-refresh',
+    levels: countProgressLevels(merged),
+    solves: countFoundSolutions(merged),
+  };
+}
+
+/**
  * Record server-side daily attempt start (registered users, today's daily only).
  */
 export async function startDailyAttemptOnServer({
@@ -326,14 +357,44 @@ export async function flushPendingSolves() {
 }
 
 let pendingFlushBound = false;
+let resumeSyncInFlight = null;
+let lastResumeSyncAt = 0;
+const RESUME_SYNC_THROTTLE_MS = 5000;
+const VISIBLE_SYNC_INTERVAL_MS = 30000;
 
-/** Bind online / visibility retries once per page load. */
-export function bindPendingSolveFlush() {
+/**
+ * Bind progress synchronization to browser lifecycle events.
+ *
+ * A player may leave this page open while solving on another device. Pull the
+ * server union whenever this game becomes active again so a stale tab does not
+ * require a hard refresh. The throttle collapses the focus + visibilitychange
+ * pair that browsers commonly emit together.
+ *
+ * @param {import('./progress.js').Progress} [progress]
+ */
+export function bindPendingSolveFlush(progress = null) {
   if (pendingFlushBound || typeof window === 'undefined') return;
   pendingFlushBound = true;
-  const run = () => { void flushPendingSolves(); };
+
+  const run = () => {
+    const now = Date.now();
+    if (resumeSyncInFlight || now - lastResumeSyncAt < RESUME_SYNC_THROTTLE_MS) return;
+    lastResumeSyncAt = now;
+    resumeSyncInFlight = (async () => {
+      await flushPendingSolves();
+      if (progress) await refreshProgressFromServer(progress);
+    })()
+      .catch((err) => console.warn('Progress resume sync failed:', err))
+      .finally(() => { resumeSyncInFlight = null; });
+  };
+
   window.addEventListener('online', run);
+  window.addEventListener('focus', run);
+  window.addEventListener('pageshow', run);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') run();
   });
+  window.setInterval(() => {
+    if (document.visibilityState === 'visible') run();
+  }, VISIBLE_SYNC_INTERVAL_MS);
 }

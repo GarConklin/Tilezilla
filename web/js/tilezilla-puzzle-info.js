@@ -344,6 +344,10 @@ export function initPuzzleInfoPopup({ getApp: getAppFn, menuApi: menu, journalAp
 
   });
 
+  window.addEventListener('tilezilla:progress-ready', () => {
+    if (!root.hidden) void refreshPuzzleInfoFields();
+  });
+
 
 
   return { openPuzzleInfo, closePuzzleInfoPopup };

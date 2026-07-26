@@ -4891,6 +4891,7 @@ async function init(){
     puzzleAttemptUsedHints, processSolutionFound, PUZZLE_TIME_BONUS_SECONDS,
     boardHasHintTiles,
     getMenuPuzzleInfo, getMenuFoundSolutions, getDevKnownSolutions: getMenuDevKnownSolutions,
+    renderFoundList,
     getExampleRoutePlacements, selectSolutionForReveal, getRevealSolutionPlacements,
     applyKnownSolutionToBoard, loadFirstValidKnownSolution, applyPlacementsToBoard,
     clearBoard, clearBoardKeepingHints, setCheckMessage, isDevUser,
