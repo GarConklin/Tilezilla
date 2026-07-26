@@ -43,7 +43,7 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
   < scripts/sql/bump-version-0.99.207.sql
 ```
 
-No schema changes. If contact email is missing on older DBs, also apply `scripts/migrations/2026-07-25-system-info-contact-email.sql` (or ensure `extra_json.contactEmail` is set).
+No schema changes.
 
 ## Verify
 

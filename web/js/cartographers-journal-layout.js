@@ -38,16 +38,16 @@ export const DEFAULT_JOURNAL_LAYOUT = {
     nudgeY: 0,
   },
   version: {
-    top: 14.2,
-    nudgeX: 0,
-    nudgeY: 0,
-    fontScale: 0.85,
+    top: 13.2,
+    nudgeX: 30,
+    nudgeY: 2,
+    fontScale: 0.73,
   },
   email: {
-    top: 15.5,
+    top: 20,
     nudgeX: 0,
     nudgeY: 0,
-    fontScale: 0.72,
+    fontScale: 0.96,
   },
 };
 
@@ -149,15 +149,15 @@ export function applyCartographersJournalLayout(layout, target = document.docume
   target.style.setProperty('--tz-journal-scroller-nudge-x', `${sc.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-scroller-nudge-y', `${sc.nudgeY ?? 0}px`);
 
-  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 14.2}%`);
-  target.style.setProperty('--tz-journal-version-nudge-x', `${ver.nudgeX ?? 0}px`);
-  target.style.setProperty('--tz-journal-version-nudge-y', `${ver.nudgeY ?? 0}px`);
-  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 0.85));
+  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 13.2}%`);
+  target.style.setProperty('--tz-journal-version-nudge-x', `${ver.nudgeX ?? 30}px`);
+  target.style.setProperty('--tz-journal-version-nudge-y', `${ver.nudgeY ?? 2}px`);
+  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 0.73));
 
-  target.style.setProperty('--tz-journal-email-top', `${em.top ?? 15.5}%`);
+  target.style.setProperty('--tz-journal-email-top', `${em.top ?? 20}%`);
   target.style.setProperty('--tz-journal-email-nudge-x', `${em.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-email-nudge-y', `${em.nudgeY ?? 0}px`);
-  target.style.setProperty('--tz-journal-email-font-scale', String(em.fontScale ?? 0.72));
+  target.style.setProperty('--tz-journal-email-font-scale', String(em.fontScale ?? 0.96));
 }
 
 export function buildCartographersJournalLayoutReport(layout) {

@@ -84,14 +84,14 @@
   --tz-journal-scroller-track-w: 22;
   --tz-journal-scroller-pin-w: 22;
   --tz-journal-scroller-pin-h: 36;
-  --tz-journal-version-top: 14.2%;
-  --tz-journal-version-nudge-x: 0px;
-  --tz-journal-version-nudge-y: 0px;
-  --tz-journal-version-font-scale: 0.85;
-  --tz-journal-email-top: 15.5%;
+  --tz-journal-version-top: 13.2%;
+  --tz-journal-version-nudge-x: 30px;
+  --tz-journal-version-nudge-y: 2px;
+  --tz-journal-version-font-scale: 0.73;
+  --tz-journal-email-top: 20%;
   --tz-journal-email-nudge-x: 0px;
   --tz-journal-email-nudge-y: 0px;
-  --tz-journal-email-font-scale: 0.72;
+  --tz-journal-email-font-scale: 0.96;
 
   --tz-settings-art-w: 390;
   --tz-settings-art-h: 844;

@@ -26,15 +26,15 @@
     "nudgeY": 0
   },
   "version": {
-    "top": 14.2,
-    "nudgeX": 0,
-    "nudgeY": 0,
-    "fontScale": 0.85
+    "top": 13.2,
+    "nudgeX": 30,
+    "nudgeY": 2,
+    "fontScale": 0.73
   },
   "email": {
-    "top": 15.5,
+    "top": 20,
     "nudgeX": 0,
     "nudgeY": 0,
-    "fontScale": 0.72
+    "fontScale": 0.96
   }
 }
