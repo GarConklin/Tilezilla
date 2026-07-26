@@ -11,6 +11,11 @@ node scripts/generate-levels-5x6-0bc-from-palette.js --tier 0B --parallel 8
 # 5x6 tier 0C, cap testing for trial
 node scripts/generate-levels-5x6-0bc-from-palette.js --tier 0C --parallel 8 --max-tested 5000
 
+# 5x6-0C requiring CR, CQ, or CT in the bag (remote overnight)
+.\tools\scripts\remote-run-5x6-0c-crcqct.ps1
+# or: bash tools/scripts/remote-run-5x6-0c-crcqct.sh
+node tools/scripts/generate-levels-5x6-0c-crcqct-from-palette.js --tier 0C --parallel 8 --reserve-codes-from data/levels/5x6-0C.json
+
 # 6x6 tier 0C
 node scripts/generate-levels-6x6-from-palette.js --tier 0C --parallel 8
 
