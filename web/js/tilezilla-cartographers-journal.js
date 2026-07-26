@@ -3,7 +3,11 @@
  * Version label is loaded from /api/system-info (MySQL cache).
  */
 
-import { syncCartographersJournalWindowGeometry } from './cartographers-journal-layout.js';
+import {
+  applyCartographersJournalLayout,
+  loadCartographersJournalLayout,
+  syncCartographersJournalWindowGeometry,
+} from './cartographers-journal-layout.js';
 import { initFancyScroller } from './fancy-scroller.js';
 import { clearSystemInfoCache, fetchSystemInfo } from './system-info.js';
 
@@ -37,6 +41,14 @@ async function refreshJournalVersionBadge() {
   }
 }
 
+async function refreshJournalLayout() {
+  try {
+    applyCartographersJournalLayout(await loadCartographersJournalLayout({ force: true }));
+  } catch (err) {
+    console.warn("Cartographer's journal layout refresh:", err);
+  }
+}
+
 function openCartographersJournalPopup() {
   const root = $('cartographersJournalRoot');
   if (!root) return;
@@ -51,6 +63,10 @@ function openCartographersJournalPopup() {
   if (scroll) scroll.scrollTop = 0;
 
   void refreshJournalVersionBadge();
+  void refreshJournalLayout().then(() => {
+    syncCartographersJournalWindowGeometry();
+    fancyScroller?.sync?.();
+  });
 
   requestAnimationFrame(() => {
     syncCartographersJournalWindowGeometry();

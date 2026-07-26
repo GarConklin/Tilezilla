@@ -1,6 +1,6 @@
 /** The Cartographer's Journal overlay — window, scroller, exit, version badge layout. */
 
-export const JOURNAL_ART = { w: 844, h: 1798 };
+export const JOURNAL_ART = { w: 605, h: 1815 };
 
 export const CARTOGRAPHERS_JOURNAL_ITEM_DEFS = {
   window: { label: 'Window (panel)', kind: 'window' },
@@ -38,13 +38,13 @@ export const DEFAULT_JOURNAL_LAYOUT = {
     nudgeY: 0,
   },
   version: {
-    top: 12.6,
+    top: 14.2,
     nudgeX: 0,
     nudgeY: 0,
-    fontScale: 0.9,
+    fontScale: 0.85,
   },
   email: {
-    top: 14.1,
+    top: 15.5,
     nudgeX: 0,
     nudgeY: 0,
     fontScale: 0.72,
@@ -149,12 +149,12 @@ export function applyCartographersJournalLayout(layout, target = document.docume
   target.style.setProperty('--tz-journal-scroller-nudge-x', `${sc.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-scroller-nudge-y', `${sc.nudgeY ?? 0}px`);
 
-  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 12.6}%`);
+  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 14.2}%`);
   target.style.setProperty('--tz-journal-version-nudge-x', `${ver.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-version-nudge-y', `${ver.nudgeY ?? 0}px`);
-  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 0.9));
+  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 0.85));
 
-  target.style.setProperty('--tz-journal-email-top', `${em.top ?? 14.1}%`);
+  target.style.setProperty('--tz-journal-email-top', `${em.top ?? 15.5}%`);
   target.style.setProperty('--tz-journal-email-nudge-x', `${em.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-email-nudge-y', `${em.nudgeY ?? 0}px`);
   target.style.setProperty('--tz-journal-email-font-scale', String(em.fontScale ?? 0.72));
@@ -182,8 +182,8 @@ export function buildCartographersJournalLayoutReport(layout) {
     `Close: right ${ex.right ?? 6}px · bottom ${ex.bottom ?? 6}px · size ${ex.size ?? 48}px`,
     `Close: nudgeX ${ex.nudgeX ?? 0}px · nudgeY ${ex.nudgeY ?? 0}px`,
     '',
-    `Version: top ${ver.top ?? 12.6}% · nudgeX ${ver.nudgeX ?? 0}px · nudgeY ${ver.nudgeY ?? 0}px · fontScale ${ver.fontScale ?? 0.9}`,
-    `Email: top ${em.top ?? 14.1}% · nudgeX ${em.nudgeX ?? 0}px · nudgeY ${em.nudgeY ?? 0}px · fontScale ${em.fontScale ?? 0.72}`,
+    `Version: top ${ver.top ?? 14.2}% · nudgeX ${ver.nudgeX ?? 0}px · nudgeY ${ver.nudgeY ?? 0}px · fontScale ${ver.fontScale ?? 0.85}`,
+    `Email: top ${em.top ?? 15.5}% · nudgeX ${em.nudgeX ?? 0}px · nudgeY ${em.nudgeY ?? 0}px · fontScale ${em.fontScale ?? 0.72}`,
   ].join('\n');
 }
 
