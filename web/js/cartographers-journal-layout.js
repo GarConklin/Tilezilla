@@ -7,6 +7,7 @@ export const CARTOGRAPHERS_JOURNAL_ITEM_DEFS = {
   scroller: { label: 'Fancy scroller (right edge)', kind: 'scroller' },
   exit: { label: 'Close button', kind: 'exit' },
   version: { label: 'Version badge (from DB)', kind: 'version' },
+  email: { label: 'Contact email (under version)', kind: 'email' },
 };
 
 export const DEFAULT_JOURNAL_LAYOUT = {
@@ -37,10 +38,16 @@ export const DEFAULT_JOURNAL_LAYOUT = {
     nudgeY: 0,
   },
   version: {
-    top: 16.8,
+    top: 12.6,
     nudgeX: 0,
     nudgeY: 0,
-    fontScale: 1,
+    fontScale: 0.9,
+  },
+  email: {
+    top: 14.1,
+    nudgeX: 0,
+    nudgeY: 0,
+    fontScale: 0.72,
   },
 };
 
@@ -60,7 +67,7 @@ export function clearCartographersJournalLayoutCache() {
 export function mergeCartographersJournalLayout(raw) {
   const base = JSON.parse(JSON.stringify(DEFAULT_JOURNAL_LAYOUT));
   if (!raw || typeof raw !== 'object') return base;
-  for (const key of ['window', 'exit', 'scroller', 'version']) {
+  for (const key of ['window', 'exit', 'scroller', 'version', 'email']) {
     if (raw[key] && typeof raw[key] === 'object') {
       base[key] = { ...base[key], ...raw[key] };
     }
@@ -116,6 +123,7 @@ export function applyCartographersJournalLayout(layout, target = document.docume
   const ex = merged.exit || DEFAULT_JOURNAL_LAYOUT.exit;
   const sc = merged.scroller || DEFAULT_JOURNAL_LAYOUT.scroller;
   const ver = merged.version || DEFAULT_JOURNAL_LAYOUT.version;
+  const em = merged.email || DEFAULT_JOURNAL_LAYOUT.email;
 
   target.style.setProperty('--tz-journal-top-vh', String(w.topVh ?? 7.7));
   target.style.setProperty('--tz-journal-height-vh', String(w.heightVh ?? 92.3));
@@ -141,10 +149,15 @@ export function applyCartographersJournalLayout(layout, target = document.docume
   target.style.setProperty('--tz-journal-scroller-nudge-x', `${sc.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-scroller-nudge-y', `${sc.nudgeY ?? 0}px`);
 
-  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 16.8}%`);
+  target.style.setProperty('--tz-journal-version-top', `${ver.top ?? 12.6}%`);
   target.style.setProperty('--tz-journal-version-nudge-x', `${ver.nudgeX ?? 0}px`);
   target.style.setProperty('--tz-journal-version-nudge-y', `${ver.nudgeY ?? 0}px`);
-  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 1));
+  target.style.setProperty('--tz-journal-version-font-scale', String(ver.fontScale ?? 0.9));
+
+  target.style.setProperty('--tz-journal-email-top', `${em.top ?? 14.1}%`);
+  target.style.setProperty('--tz-journal-email-nudge-x', `${em.nudgeX ?? 0}px`);
+  target.style.setProperty('--tz-journal-email-nudge-y', `${em.nudgeY ?? 0}px`);
+  target.style.setProperty('--tz-journal-email-font-scale', String(em.fontScale ?? 0.72));
 }
 
 export function buildCartographersJournalLayoutReport(layout) {
@@ -153,6 +166,7 @@ export function buildCartographersJournalLayoutReport(layout) {
   const ex = merged.exit || {};
   const sc = merged.scroller || {};
   const ver = merged.version || {};
+  const em = merged.email || {};
   const effectiveW = Math.round((w.maxDesignWidth ?? 390) * (w.widthScale ?? 0.95));
   return [
     "Cartographer's Journal layout report (390px game width preview)",
@@ -168,7 +182,8 @@ export function buildCartographersJournalLayoutReport(layout) {
     `Close: right ${ex.right ?? 6}px · bottom ${ex.bottom ?? 6}px · size ${ex.size ?? 48}px`,
     `Close: nudgeX ${ex.nudgeX ?? 0}px · nudgeY ${ex.nudgeY ?? 0}px`,
     '',
-    `Version: top ${ver.top ?? 16.8}% · nudgeX ${ver.nudgeX ?? 0}px · nudgeY ${ver.nudgeY ?? 0}px · fontScale ${ver.fontScale ?? 1}`,
+    `Version: top ${ver.top ?? 12.6}% · nudgeX ${ver.nudgeX ?? 0}px · nudgeY ${ver.nudgeY ?? 0}px · fontScale ${ver.fontScale ?? 0.9}`,
+    `Email: top ${em.top ?? 14.1}% · nudgeX ${em.nudgeX ?? 0}px · nudgeY ${em.nudgeY ?? 0}px · fontScale ${em.fontScale ?? 0.72}`,
   ].join('\n');
 }
 

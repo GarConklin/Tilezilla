@@ -16,11 +16,25 @@ function $(id) {
 
 async function refreshJournalVersionBadge() {
   const badge = $('cartographersJournalVersion');
-  if (!badge) return;
+  const emailEl = $('cartographersJournalEmail');
   clearSystemInfoCache();
   const info = await fetchSystemInfo();
-  const version = String(info?.version || '').trim();
-  badge.textContent = version ? `v${version}` : '—';
+  if (badge) {
+    const version = String(info?.version || '').trim();
+    badge.textContent = version || '—';
+  }
+  if (emailEl) {
+    const email = String(info?.contactEmail || '').trim();
+    if (email) {
+      emailEl.textContent = email;
+      emailEl.href = `mailto:${email}`;
+      emailEl.hidden = false;
+    } else {
+      emailEl.hidden = true;
+      emailEl.removeAttribute('href');
+      emailEl.textContent = '';
+    }
+  }
 }
 
 function openCartographersJournalPopup() {

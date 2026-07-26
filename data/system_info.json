@@ -6,6 +6,7 @@
   "creationDate": "March 28, 2026",
   "productName": "Tilezilla",
   "environment": "development",
+  "contactEmail": "gar@hotmail.ca",
   "logoutRedirectUrl": "https://www.skifflakegames.com/",
   "stats": {
     "statsUpdatedAt": "2026-06-26",

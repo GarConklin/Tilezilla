@@ -84,9 +84,14 @@
   --tz-journal-scroller-track-w: 22;
   --tz-journal-scroller-pin-w: 22;
   --tz-journal-scroller-pin-h: 36;
-  --tz-journal-version-top: 16.8%;
+  --tz-journal-version-top: 12.6%;
   --tz-journal-version-nudge-x: 0px;
   --tz-journal-version-nudge-y: 0px;
+  --tz-journal-version-font-scale: 0.9;
+  --tz-journal-email-top: 14.1%;
+  --tz-journal-email-nudge-x: 0px;
+  --tz-journal-email-nudge-y: 0px;
+  --tz-journal-email-font-scale: 0.72;
 
   --tz-settings-art-w: 390;
   --tz-settings-art-h: 844;
@@ -7482,7 +7487,36 @@ html.tz-phone-preview .tz-cartographers-journal-window {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
   pointer-events: none;
   white-space: nowrap;
-  font-size: calc(clamp(0.62rem, 2.6vw, 0.78rem) * var(--tz-journal-version-font-scale, 1));
+  z-index: 2;
+  font-size: calc(clamp(0.62rem, 2.6vw, 0.78rem) * var(--tz-journal-version-font-scale, 0.9));
+}
+
+.tz-cartographers-journal__email {
+  position: absolute;
+  left: calc(50% + var(--tz-journal-email-nudge-x));
+  top: calc(var(--tz-journal-email-top) + var(--tz-journal-email-nudge-y));
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #1c3d55;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: auto;
+  white-space: nowrap;
+  z-index: 2;
+  font-size: calc(clamp(0.55rem, 2.2vw, 0.7rem) * var(--tz-journal-email-font-scale, 0.72));
+}
+
+.tz-cartographers-journal__email[hidden] {
+  display: none !important;
+}
+
+.tz-cartographers-journal__email:focus-visible {
+  outline: 2px solid #c4a35a;
+  outline-offset: 2px;
 }
 
 .tz-cartographers-journal-scroller {

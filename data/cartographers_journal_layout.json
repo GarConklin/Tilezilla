@@ -27,8 +27,14 @@
   },
   "version": {
     "top": 13.1,
-    "nudgeX": 24,
+    "nudgeX": 30,
+    "nudgeY": 2,
+    "fontScale": 0.62
+  },
+  "email": {
+    "top": 19.6,
+    "nudgeX": 0,
     "nudgeY": 0,
-    "fontScale": 0.74
+    "fontScale": 1.12
   }
 }
