@@ -3449,11 +3449,14 @@ if (validateBtn) validateBtn.addEventListener('click', () => {
 
 
 // ---- Load data ----
-async function loadJson(url, { retries = 3 } = {}){
+async function loadJson(url, { retries = 3, timeoutMs = 12000 } = {}){
   let lastErr;
   for(let attempt = 0; attempt < retries; attempt++){
     try{
-      const res = await fetch(url, { cache:'no-store' });
+      const res = await fetch(url, {
+        cache:'no-store',
+        signal: AbortSignal.timeout(timeoutMs),
+      });
       if(!res.ok) throw new Error(`Failed ${url}: ${res.status}`);
       return await res.json();
     }catch(e){
@@ -5014,6 +5017,7 @@ async function init(){
   }
   syncDevUserUi(state.userId);
   syncAdminUi(state.userId);
+  window.__app.ready = true;
   if(state.currentLevel){
     const knownSolutions = await loadKnownSolutionsForLevel(state.currentLevel);
     renderFoundList(state.currentLevel.id, knownSolutions);
@@ -5058,7 +5062,7 @@ async function init(){
       }
     });
   }
-  window.__app.ready = true;
+  if (!window.__app.ready) window.__app.ready = true;
 }
 
 let solver=null;

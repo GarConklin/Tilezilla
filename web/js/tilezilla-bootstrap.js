@@ -2775,7 +2775,9 @@ async function initShellExtendedUi(appRef, settings, { deferBootPuzzle = false }
   }
   if (deferBootPuzzle) {
     try {
-      await openProfileOverlay();
+      void openProfileOverlay().catch((err) => {
+        console.warn('Profile overlay (deferred boot):', err);
+      });
     } catch (err) {
       console.warn('Profile overlay (deferred boot):', err);
     }
@@ -2957,7 +2959,20 @@ async function init() {
   applyUiScale();
   if (usesViewportLock(settings)) runViewportFit(false);
   wireUiScaleListeners();
-  await applyShellLayouts();
+  // Unhide chrome immediately; layouts and engine finish loading in the background.
+  finishShellBoot();
+  const shellLayoutsPromise = Promise.race([
+    applyShellLayouts(),
+    new Promise((resolve) => {
+      setTimeout(() => {
+        console.warn('Shell layouts timed out; continuing with defaults');
+        resolve(null);
+      }, 6000);
+    }),
+  ]).catch((err) => {
+    console.warn('Shell layouts:', err);
+    return null;
+  });
   const earlyUrlParams = new URLSearchParams(window.location.search);
   const earlyProfileBoot = earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true';
   const profileLayoutWarm = earlyProfileBoot
@@ -2976,7 +2991,7 @@ async function init() {
   wireTileBagExpand(syncBagScroll, () => appRef);
   resetPuzzleTimer();
 
-  const [authState, app] = await Promise.all([authPromise, waitForApp()]);
+  const [authState, app] = await Promise.all([authPromise, waitForApp(), shellLayoutsPromise]);
   appRef = app;
   wireCheckSolvePreview();
   if (authState.mode === 'registered' && authState.user) {
@@ -3066,12 +3081,15 @@ async function init() {
       try {
         const profileRoot = $('profileOverlayRoot');
         if (profileRoot?.hidden) {
-          if (profileLayoutWarm) {
-            await awaitWithTimeout(profileLayoutWarm, 4000, 'Profile layout warm').catch((err) => {
-              console.warn('Profile layout warm:', err);
-            });
-          }
-          await openProfileOverlay();
+          void openProfileOverlay().catch((err) => {
+            console.warn('Profile overlay boot:', err);
+            dismissDiscoveryForBoardEdit();
+            applyInitialBootScreen('daily-challenge');
+            persistNavScreen('daily-challenge');
+            if (appRef && !appRef.state?.currentLevel) {
+              void loadDailyPuzzle(appRef);
+            }
+          });
         }
       } catch (err) {
         console.warn('Profile overlay boot:', err);

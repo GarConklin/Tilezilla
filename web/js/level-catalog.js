@@ -14,11 +14,14 @@ let bucketLoadPromises = new Map();
 let statsIndex = null;
 let statsLoadPromise = null;
 
-async function fetchJson(url, { retries = 3 } = {}) {
+async function fetchJson(url, { retries = 3, timeoutMs = 12000 } = {}) {
   let lastErr;
   for (let attempt = 0; attempt < retries; attempt += 1) {
     try {
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(url, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(timeoutMs),
+      });
       if (!res.ok) throw new Error(`Failed ${url}: ${res.status}`);
       return await res.json();
     } catch (e) {
