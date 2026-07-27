@@ -6124,6 +6124,7 @@ html.tz-phone-preview .tz-pinfo-dialog {
   z-index: 1;
   flex-shrink: 0;
   box-sizing: border-box;
+  container-type: inline-size;
   margin:
     calc(var(--tz-journal-dialog-top) + var(--tz-journal-dialog-top-nudge))
     auto
@@ -9322,7 +9323,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   top: calc(var(--tz-records-field-daily-puzzle-id-y, 13.2) * 1% + var(--tz-records-field-daily-puzzle-id-nudge-y, 0px));
   width: calc(var(--tz-records-field-daily-puzzle-id-w, 34) * 1%);
   height: calc(var(--tz-records-field-daily-puzzle-id-h, 3.2) * 1%);
-  font-size: calc(var(--tz-records-field-font) * var(--tz-records-field-daily-puzzle-id-font-scale, 1.15));
+  font-size: var(--tz-records-field-daily-puzzle-id-font-size, 3.05cqi);
   justify-content: flex-start;
   text-align: left;
   font-variant-numeric: tabular-nums;
@@ -9334,7 +9335,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   top: calc(var(--tz-records-field-daily-date-y, 13.2) * 1% + var(--tz-records-field-daily-date-nudge-y, 0px));
   width: calc(var(--tz-records-field-daily-date-w, 32) * 1%);
   height: calc(var(--tz-records-field-daily-date-h, 3.2) * 1%);
-  font-size: calc(var(--tz-records-field-font) * var(--tz-records-field-daily-date-font-scale, 1.05));
+  font-size: var(--tz-records-field-daily-date-font-size, 2.79cqi);
   justify-content: center;
   text-align: center;
   z-index: 5;
@@ -9345,7 +9346,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   top: calc(var(--tz-records-field-daily-time-y, 13.2) * 1% + var(--tz-records-field-daily-time-nudge-y, 0px));
   width: calc(var(--tz-records-field-daily-time-w, 14) * 1%);
   height: calc(var(--tz-records-field-daily-time-h, 3.2) * 1%);
-  font-size: calc(var(--tz-records-field-font) * var(--tz-records-field-daily-time-font-scale, 1.15));
+  font-size: var(--tz-records-field-daily-time-font-size, 3.05cqi);
   justify-content: flex-end;
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -9537,7 +9538,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   top: calc(var(--tz-records-field-guest-placement-y, 17.5) * 1% + var(--tz-records-field-guest-placement-nudge-y, 0px));
   width: calc(var(--tz-records-field-guest-placement-w, 84) * 1%);
   height: calc(var(--tz-records-field-guest-placement-h, 4) * 1%);
-  font-size: calc(var(--tz-records-field-font) * var(--tz-records-field-guest-placement-font-scale, 0.92));
+  font-size: var(--tz-records-field-guest-placement-font-size, 2.44cqi);
   font-weight: 600;
   color: var(--tz-records-field-color, #3d2e1a);
   text-align: center;
@@ -9556,7 +9557,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
     var(--tz-records-col-time-w, 30%);
   gap: var(--tz-records-list-row-gap, 2px);
   padding: var(--tz-records-list-row-pad-y, 4px) var(--tz-records-list-row-pad-x, 6px);
-  font-size: calc(var(--tz-records-field-font) * var(--tz-records-list-row-font-scale, 1));
+  font-size: var(--tz-records-list-row-font-size, 3.35cqi);
   font-weight: 600;
   color: var(--tz-records-field-color, #3d2e1a);
   line-height: 1.15;
@@ -9600,7 +9601,7 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 .tz-records-list__empty {
   margin: 0;
   padding: 8px 6px;
-  font-size: var(--tz-records-field-font);
+  font-size: var(--tz-records-list-row-font-size, 3.35cqi);
   color: var(--tz-records-field-color, #3d2e1a);
   opacity: 0.75;
   font-style: italic;

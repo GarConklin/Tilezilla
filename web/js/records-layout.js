@@ -211,6 +211,12 @@ function cssVarName(itemKey, suffix) {
   return `--tz-records-${itemKey.replace(/([A-Z])/g, '-$1').toLowerCase()}-${suffix}`;
 }
 
+/** Font size in cqi so records text tracks journal frame width (tuner % coords stay valid). */
+function recordsFontCqi(pxAtDesign, designW, scale = 1) {
+  const w = Number(designW) || 394;
+  return `${((pxAtDesign / w) * 100 * scale).toFixed(3)}cqi`;
+}
+
 function applyRecordsBoxVars(target, itemKey, box, meta) {
   if (meta.kind === 'col') {
     target.style.setProperty(cssVarName(itemKey, 'w'), `${box.w}%`);
@@ -291,6 +297,22 @@ export function applyRecordsLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-records-field-color', typo.fieldColor || '#3d2e1a');
   target.style.setProperty('--tz-records-field-font', typo.fieldFont || 'calc(0.58rem + 1px)');
   target.style.setProperty('--tz-records-header-font', typo.headerFont || 'calc(0.52rem + 1px)');
+
+  const designW = Number(d.maxDesignWidth ?? 394) || 394;
+  const listRow = getRecordsItemLayout('listRow', merged);
+  target.style.setProperty(
+    '--tz-records-list-row-font-size',
+    recordsFontCqi(13.2, designW, listRow.fontScale ?? 1),
+  );
+
+  for (const [itemKey, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
+    if (meta.kind !== 'text') continue;
+    const box = getRecordsItemLayout(itemKey, merged);
+    target.style.setProperty(
+      `--tz-records-field-${meta.cssKey}-font-size`,
+      recordsFontCqi(12, designW, box.fontScale ?? 1),
+    );
+  }
 
   for (const itemKey of Object.keys(RECORDS_ITEM_DEFS)) {
     const box = getRecordsItemLayout(itemKey, merged);
