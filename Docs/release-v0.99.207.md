@@ -1,7 +1,8 @@
 # Release v0.99.207 — journal, progress sync, and shell startup polish
 
+**Superseded by:** `v0.99.208` → branch `release/v0.99.208` (see `Docs/release-v0.99.208.md`)  
 **Previous stable:** `v0.99.206` → branch `release/v0.99.206`  
-**New development / deploy:** `v0.99.207` → branch `release/v0.99.207`
+**Was active:** `v0.99.207` → branch `release/v0.99.207`
 
 ## What changed in 0.99.207 (vs 0.99.206)
 
@@ -15,8 +16,8 @@
 | Branch | Version | Use |
 |--------|---------|-----|
 | `release/v0.99.206` | 0.99.206 | Frozen — previous deploy line |
-| `release/v0.99.207` | 0.99.207 | **Active** development and deploy |
-| `main` | — | Merge `release/v0.99.207` when ready |
+| `release/v0.99.208` | 0.99.208 | **Active** development and deploy |
+| `main` | — | Merge `release/v0.99.208` when ready |
 
 ### Deploy 0.99.207
 

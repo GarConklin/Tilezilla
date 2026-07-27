@@ -1,6 +1,6 @@
 # Release v0.99.206 — iPhone hint interaction polish
 
-**Superseded by:** `v0.99.207` → branch `release/v0.99.207` (see `Docs/release-v0.99.207.md`)  
+**Superseded by:** `v0.99.208` → branch `release/v0.99.208` (see `Docs/release-v0.99.208.md`)  
 **Previous stable:** `v0.99.205` → branch `release/v0.99.205`  
 **This branch:** `v0.99.206` → `release/v0.99.206` (frozen previous line)
 
@@ -16,8 +16,8 @@
 |--------|---------|-----|
 | `release/v0.99.205` | 0.99.205 | Frozen — previous deploy line |
 | `release/v0.99.206` | 0.99.206 | Frozen — previous deploy line |
-| `release/v0.99.207` | 0.99.207 | **Active** development and deploy |
-| `main` | — | Merge `release/v0.99.207` when ready |
+| `release/v0.99.208` | 0.99.208 | **Active** development and deploy |
+| `main` | — | Merge `release/v0.99.208` when ready |
 
 ### Deploy 0.99.206
 
