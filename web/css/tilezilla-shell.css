@@ -4685,9 +4685,8 @@ body.tz-modal-open .tz-shell-boot-loader {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    calc(var(--tz-w-preview, var(--tz-design-width)) * var(--tz-stuck-preview-layout-width-ratio)),
-    calc(100vw - var(--tz-stuck-display-pad)),
-    calc((100svh - var(--tz-stuck-display-pad)) * var(--tz-stuck-art-w) / var(--tz-stuck-art-h))
+    calc(var(--tz-w-preview, var(--tz-design-width)) * var(--tz-stuck-preview-layout-width-ratio) * var(--tz-ui-scale, 1)),
+    calc(100vw - var(--tz-stuck-display-pad))
   );
   aspect-ratio: calc(var(--tz-stuck-art-w) / var(--tz-stuck-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
@@ -4695,9 +4694,8 @@ body.tz-modal-open .tz-shell-boot-loader {
 
 .tz-stuck-dialog.is-reveal {
   width: min(
-    calc(var(--tz-w-preview, var(--tz-design-width)) * var(--tz-stuck-preview-layout-width-ratio)),
-    calc(100vw - var(--tz-stuck-display-pad)),
-    calc((100svh - var(--tz-stuck-display-pad)) * var(--tz-stuck-reveal-art-w) / var(--tz-stuck-reveal-art-h))
+    calc(var(--tz-w-preview, var(--tz-design-width)) * var(--tz-stuck-preview-layout-width-ratio) * var(--tz-ui-scale, 1)),
+    calc(100vw - var(--tz-stuck-display-pad))
   );
   aspect-ratio: calc(var(--tz-stuck-reveal-art-w) / var(--tz-stuck-reveal-art-h));
 }
@@ -4906,10 +4904,9 @@ body.tz-modal-open .tz-shell-boot-loader {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    100vw,
-    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1)),
-    calc(var(--tz-random-art-w) * 1px),
-    calc((100svh - var(--tz-random-display-pad)) * var(--tz-random-art-w) / var(--tz-random-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-random-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-random-art-w) / var(--tz-random-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
@@ -4917,9 +4914,8 @@ body.tz-modal-open .tz-shell-boot-loader {
 
 html.tz-phone-preview .tz-random-dialog {
   width: min(
-    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1)),
-    calc(var(--tz-random-art-w) * 1px),
-    calc((100svh - var(--tz-random-display-pad)) * var(--tz-random-art-w) / var(--tz-random-art-h))
+    calc(var(--tz-random-max-design-width, var(--tz-design-width)) * var(--tz-random-width-scale, 1) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-random-art-w) * 1px * var(--tz-ui-scale, 1))
   );
 }
 
@@ -5063,8 +5059,7 @@ html.tz-phone-preview .tz-random-dialog {
       * var(--tz-challenge-begin-width-scale, 1)
       * var(--tz-ui-scale, 1)
     ),
-    calc(var(--tz-challenge-begin-art-w) * 1px * var(--tz-ui-scale, 1)),
-    calc((100svh - var(--tz-challenge-begin-display-pad)) * var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h))
+    calc(var(--tz-challenge-begin-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
@@ -5075,9 +5070,9 @@ html.tz-phone-preview .tz-challenge-begin-dialog {
     calc(
       var(--tz-challenge-begin-max-design-width, var(--tz-design-width))
       * var(--tz-challenge-begin-width-scale, 1)
+      * var(--tz-ui-scale, 1)
     ),
-    calc(var(--tz-challenge-begin-art-w) * 1px),
-    calc((100svh - var(--tz-challenge-begin-display-pad)) * var(--tz-challenge-begin-art-w) / var(--tz-challenge-begin-art-h))
+    calc(var(--tz-challenge-begin-art-w) * 1px * var(--tz-ui-scale, 1))
   );
 }
 
@@ -5208,13 +5203,13 @@ html.tz-phone-preview .tz-challenge-begin-dialog {
   flex-shrink: 0;
   margin: auto;
   width: min(
-    100vw,
+    calc(100vw - 24px),
     calc(
       var(--tz-buy-hints-max-design-width, var(--tz-design-width))
       * var(--tz-buy-hints-width-scale, 0.92)
+      * var(--tz-ui-scale, 1)
     ),
-    calc(var(--tz-buy-hints-art-w) * 1px),
-    calc((100svh - var(--tz-buy-hints-display-pad)) * var(--tz-buy-hints-art-w) / var(--tz-buy-hints-art-h))
+    calc(var(--tz-buy-hints-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-buy-hints-art-w) / var(--tz-buy-hints-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
@@ -5225,9 +5220,9 @@ html.tz-phone-preview .tz-buy-hints-dialog {
     calc(
       var(--tz-buy-hints-max-design-width, var(--tz-design-width))
       * var(--tz-buy-hints-width-scale, 0.92)
+      * var(--tz-ui-scale, 1)
     ),
-    calc(var(--tz-buy-hints-art-w) * 1px),
-    calc((100svh - var(--tz-buy-hints-display-pad)) * var(--tz-buy-hints-art-w) / var(--tz-buy-hints-art-h))
+    calc(var(--tz-buy-hints-art-w) * 1px * var(--tz-ui-scale, 1))
   );
 }
 
@@ -5327,10 +5322,9 @@ html.tz-phone-preview .tz-buy-hints-dialog {
   flex-shrink: 0;
   margin: auto;
   width: min(
-    100vw,
-    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92)),
-    calc(var(--tz-use-hint-art-w) * 1px),
-    calc((100svh - var(--tz-use-hint-display-pad)) * var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-use-hint-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
@@ -5338,9 +5332,8 @@ html.tz-phone-preview .tz-buy-hints-dialog {
 
 html.tz-phone-preview .tz-use-hint-dialog {
   width: min(
-    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92)),
-    calc(var(--tz-use-hint-art-w) * 1px),
-    calc((100svh - var(--tz-use-hint-display-pad)) * var(--tz-use-hint-art-w) / var(--tz-use-hint-art-h))
+    calc(var(--tz-use-hint-max-design-width, var(--tz-design-width)) * var(--tz-use-hint-width-scale, 0.92) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-use-hint-art-w) * 1px * var(--tz-ui-scale, 1))
   );
 }
 
@@ -5495,9 +5488,8 @@ html.tz-phone-preview .tz-use-hint-dialog {
   z-index: 1;
   margin: auto;
   width: min(
-    calc(var(--tz-reset-hint-max-design-width, var(--tz-design-width)) * var(--tz-reset-hint-width-scale, 0.92)),
-    calc(var(--tz-reset-hint-art-w) * 1px),
-    calc((100svh - var(--tz-reset-hint-display-pad)) * var(--tz-reset-hint-art-w) / var(--tz-reset-hint-art-h))
+    calc(var(--tz-reset-hint-max-design-width, var(--tz-design-width)) * var(--tz-reset-hint-width-scale, 0.92) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-reset-hint-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-reset-hint-art-w) / var(--tz-reset-hint-art-h));
   flex-shrink: 0;
@@ -5609,9 +5601,8 @@ html.tz-phone-preview .tz-use-hint-dialog {
   z-index: 1;
   flex-shrink: 0;
   width: min(
-    calc(var(--tz-rank-award-max-width, 390px) * var(--tz-rank-award-width-scale, 0.92)),
-    calc(var(--tz-rank-award-art-w) * 1px),
-    calc((100svh - 48px) * var(--tz-rank-award-art-w) / var(--tz-rank-award-art-h))
+    calc(var(--tz-rank-award-max-width, 390px) * var(--tz-rank-award-width-scale, 0.92) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-rank-award-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-rank-award-art-w) / var(--tz-rank-award-art-h));
   margin: auto;
@@ -5892,13 +5883,11 @@ html.tz-phone-preview .tz-profile-dialog {
   margin: auto;
   box-sizing: border-box;
   width: min(
-    calc(100vw - 32px),
-    100%,
-    var(--tz-pinfo-max-design-width, var(--tz-design-width)),
-    calc((100svh - var(--tz-pinfo-display-pad)) * var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-pinfo-max-design-width, var(--tz-design-width)) * var(--tz-ui-scale, 1))
   );
   max-width: 100%;
-  max-height: calc(100svh - var(--tz-pinfo-display-pad));
+  max-height: calc(100dvh - var(--tz-pinfo-display-pad));
   aspect-ratio: calc(var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
 }
@@ -5906,8 +5895,7 @@ html.tz-phone-preview .tz-profile-dialog {
 html.tz-phone-preview .tz-pinfo-dialog {
   width: min(
     100%,
-    var(--tz-pinfo-max-design-width, var(--tz-design-width)),
-    calc((100svh - var(--tz-pinfo-display-pad)) * var(--tz-pinfo-art-w) / var(--tz-pinfo-art-h))
+    calc(var(--tz-pinfo-max-design-width, var(--tz-design-width)) * var(--tz-ui-scale, 1))
   );
 }
 
@@ -6139,10 +6127,9 @@ html.tz-phone-preview .tz-pinfo-dialog {
     auto
     0;
   width: min(
-    100%,
-    var(--tz-journal-max-design-width, var(--tz-design-width)),
-    calc(var(--tz-journal-art-w) * 1px),
-    calc((100svh - var(--tz-journal-display-pad)) * var(--tz-journal-art-w) / var(--tz-journal-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-journal-max-design-width, var(--tz-design-width)) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-journal-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   max-width: 100%;
   aspect-ratio: calc(var(--tz-journal-art-w) / var(--tz-journal-art-h));
@@ -7201,12 +7188,12 @@ html.tz-phone-preview .tz-journal-root__backdrop {
   transform: translateX(-50%) scale(var(--tz-hint-rules-scale));
   transform-origin: top center;
   width: min(
-    100vw,
+    calc(100vw - 24px),
     calc(
       var(--tz-hint-rules-max-design-width, var(--tz-design-width))
       * var(--tz-hint-rules-width-scale, 1)
-    ),
-    calc(var(--tz-hint-rules-mu-w) * 1px)
+      * var(--tz-ui-scale, 1)
+    )
   );
   height: calc(var(--tz-hint-rules-height-vh) * 1vh);
   box-sizing: border-box;
@@ -7226,21 +7213,23 @@ html.tz-phone-preview .tz-journal-root__backdrop {
 
 html.tz-phone-preview .tz-hint-rules-window {
   width: min(
+    calc(100% - 24px),
     calc(
       var(--tz-hint-rules-max-design-width, var(--tz-design-width))
       * var(--tz-hint-rules-width-scale, 1)
-    ),
-    calc(var(--tz-hint-rules-mu-w) * 1px)
+      * var(--tz-ui-scale, 1)
+    )
   );
 }
 
 html.tz-phone-preview .tz-cartographers-journal-window {
   width: min(
+    calc(100% - 24px),
     calc(
       var(--tz-journal-max-design-width, var(--tz-design-width))
       * var(--tz-journal-width-scale, 1)
-    ),
-    calc(var(--tz-journal-art-w) * 1px)
+      * var(--tz-ui-scale, 1)
+    )
   );
 }
 
@@ -7424,12 +7413,12 @@ html.tz-phone-preview .tz-hint-rules__img--desktop {
   transform: translateX(-50%) scale(var(--tz-journal-scale));
   transform-origin: top center;
   width: min(
-    100vw,
+    calc(100vw - 24px),
     calc(
       var(--tz-journal-max-design-width, var(--tz-design-width))
       * var(--tz-journal-width-scale, 1)
-    ),
-    calc(var(--tz-journal-art-w) * 1px)
+      * var(--tz-ui-scale, 1)
+    )
   );
   height: calc(var(--tz-journal-height-vh) * 1vh);
   box-sizing: border-box;
@@ -7449,11 +7438,12 @@ html.tz-phone-preview .tz-hint-rules__img--desktop {
 
 html.tz-phone-preview .tz-cartographers-journal-window {
   width: min(
+    calc(100% - 24px),
     calc(
       var(--tz-journal-max-design-width, var(--tz-design-width))
       * var(--tz-journal-width-scale, 1)
-    ),
-    calc(var(--tz-journal-art-w) * 1px)
+      * var(--tz-ui-scale, 1)
+    )
   );
 }
 
@@ -7777,12 +7767,11 @@ html.tz-phone-preview .tz-settings-frame {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    calc(100% - 32px),
-    var(--tz-settings-max-width, 390px),
-    calc((100svh - 24px) * var(--tz-settings-art-w) / var(--tz-settings-art-h))
+    calc(100% - 24px),
+    calc(var(--tz-settings-max-width, 390px) * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-settings-art-w) / var(--tz-settings-art-h));
-  max-height: calc(100svh - 24px);
+  max-height: calc(100dvh - 24px);
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
   transform: translateX(var(--tz-settings-frame-nudge-x, 0px));
 }
@@ -8189,12 +8178,11 @@ body.tz-is-dev-user .tz-menu-plaque__hit--bottom-menu {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    calc(100% - 32px),
-    var(--tz-development-max-width, 390px),
-    calc((100svh - 24px) * 709 / 824)
+    calc(100% - 24px),
+    calc(var(--tz-development-max-width, 390px) * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(709 / 824);
-  max-height: calc(100svh - 24px);
+  max-height: calc(100dvh - 24px);
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
 }
 
@@ -8478,12 +8466,11 @@ body.tz-is-dev-user .tz-menu-plaque__hit--bottom-menu {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    calc(100% - 32px),
-    var(--tz-settings-max-width, 390px),
-    calc((100svh - 24px) * var(--tz-settings-art-w) / var(--tz-settings-art-h))
+    calc(100% - 24px),
+    calc(var(--tz-settings-max-width, 390px) * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-settings-art-w) / var(--tz-settings-art-h));
-  max-height: calc(100svh - 24px);
+  max-height: calc(100dvh - 24px);
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
   transform: translateX(var(--tz-settings-frame-nudge-x, 0px));
 }
@@ -9057,10 +9044,9 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   max-width: 100%;
   box-sizing: border-box;
   width: min(
-    100vw,
-    calc(var(--tz-guest-login-max-design-width, var(--tz-design-width)) * var(--tz-guest-login-width-scale, 1)),
-    calc(var(--tz-guest-login-art-w) * 1px),
-    calc((100svh - var(--tz-guest-login-display-pad)) * var(--tz-guest-login-art-w) / var(--tz-guest-login-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-guest-login-max-design-width, var(--tz-design-width)) * var(--tz-guest-login-width-scale, 1) * var(--tz-ui-scale, 1)),
+    calc(var(--tz-guest-login-art-w) * 1px * var(--tz-ui-scale, 1))
   );
   aspect-ratio: calc(var(--tz-guest-login-art-w) / var(--tz-guest-login-art-h));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));

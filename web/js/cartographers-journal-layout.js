@@ -231,9 +231,15 @@ export function syncCartographersJournalWindowGeometry(layout) {
 
   const boardRect = board.getBoundingClientRect();
   const tilebagRect = tilebag.getBoundingClientRect();
+  const scaleHost = document.querySelector('.tz-scale-host');
+  const hostW = scaleHost?.getBoundingClientRect().width || 0;
   const uiScale = parseFloat(document.documentElement.dataset.uiScale) || 1;
   const widthScale = Number(w.widthScale ?? 0.95);
-  const width = (Number(w.maxDesignWidth) || 390) * widthScale * uiScale;
+  // Prefer visible shell width so PC desktop scale and mobile match the game, not a raw 390px.
+  const shellW = hostW > 0
+    ? hostW
+    : (Number(w.maxDesignWidth) || 390) * uiScale;
+  const width = shellW * widthScale;
   const top = boardRect.top + (Number(w.nudgeY) || 0);
   const height = Math.max(0, tilebagRect.bottom - top);
 
