@@ -8,7 +8,7 @@ export const TZ_DESIGN_WIDTH = 390;
 export const TZ_DESIGN_HEIGHT = 844;
 const TZ_DESKTOP_SCALE_AUTO = 2;
 
-function viewportSize() {
+export function viewportSize() {
   const vp = window.visualViewport;
   return {
     vw: vp?.width ?? window.innerWidth,
@@ -116,6 +116,7 @@ export function applyUiScale() {
   document.documentElement.dataset.desktopScale = locked ? String(lockedDesktopScale) : 'auto';
   document.documentElement.dataset.uiScale = String(scale);
   document.documentElement.style.setProperty('--tz-ui-scale', String(scale));
+  document.documentElement.style.setProperty('--tz-frame-upscale', String(Math.max(1, scale)));
 
   const scaleHost = document.querySelector('.tz-scale-host');
   const stage = document.querySelector('.tz-stage');
@@ -136,6 +137,7 @@ export function applyUiScale() {
   applyViewportLock();
 
   window.__journalApi?.syncJournalDialogTop?.();
+  window.__journalApi?.syncJournalDialogFrame?.();
   window.__journalApi?.syncJournalLayoutHits?.();
   window.dispatchEvent(new CustomEvent('tilezilla:ui-scale-changed', { detail: { scale, locked } }));
   return scale;

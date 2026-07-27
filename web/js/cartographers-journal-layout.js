@@ -231,9 +231,9 @@ export function syncCartographersJournalWindowGeometry(layout) {
 
   const boardRect = board.getBoundingClientRect();
   const tilebagRect = tilebag.getBoundingClientRect();
-  const uiScale = parseFloat(document.documentElement.dataset.uiScale) || 1;
   const widthScale = Number(w.widthScale ?? 0.95);
-  const width = (Number(w.maxDesignWidth) || 390) * widthScale * uiScale;
+  const hostW = document.querySelector('.tz-scale-host')?.getBoundingClientRect?.().width;
+  const width = (hostW > 0 ? hostW : (Number(w.maxDesignWidth) || 390)) * widthScale;
   const top = boardRect.top + (Number(w.nudgeY) || 0);
   const height = Math.max(0, tilebagRect.bottom - top);
 

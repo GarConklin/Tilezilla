@@ -1,5 +1,7 @@
 /** Login, create passport, and logged-in profile overlay layouts (% of art frame). */
 
+import { syncProfileOverlayFrame, syncAuthPassportFrame } from './tilezilla-frame-geometry.js';
+
 export const AUTH_PASSPORT_ART = { w: 1418, h: 2200 };
 
 export const PROFILE_HIT_ART = {
@@ -810,6 +812,7 @@ export function applyProfileOverlayLayout(layout, root = document) {
   applyProfileSlotPositions(layout, root);
   applyProfileHitPositions(layout, root);
   syncAuthScreenItemVisibility(layout, 'profile', visibilityRoot);
+  syncProfileOverlayFrame(root);
 }
 
 /** Reload profile overlay layout from disk and apply to live DOM. */
@@ -833,6 +836,15 @@ export async function initAuthScreenLayout(screenKey, { preferFile = false } = {
     applyProfileHitPositions(layout, document);
   } else {
     applyAuthScreenItemPositions(layout, screenKey, stage || document);
+    const merged = mergeAuthScreenLayout(layout);
+    const d = merged[screenKey]?.dialog || {};
+    const boardY = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--auth-chrome-stage-top'),
+    );
+    syncAuthPassportFrame({
+      boardYPercent: Number.isFinite(boardY) ? boardY : 8.1,
+      maxDesignWidth: d.maxWidth ?? 390,
+    });
   }
   return layout;
 }

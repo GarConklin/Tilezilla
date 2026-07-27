@@ -20,6 +20,7 @@ import {
   clearLeaderboardRowsCache,
   shiftDailyLeaderboardDate,
 } from './records-data.js';
+import { syncJournalDialogFrame } from './tilezilla-frame-geometry.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -92,6 +93,7 @@ async function applyLayoutFromDisk({ force = false } = {}) {
     }
     syncJournalOverlays();
     syncJournalDialogTop();
+    syncJournalDialogFrame();
     if (journalOpen) {
       listScroller?.sync?.();
       await rerenderSelectedPreview();
@@ -129,6 +131,8 @@ export function syncJournalDialogTop() {
   const marginTop = Math.max(0, anchorBottom - rootTop - padTop + titleGap);
   journalRoot.style.setProperty('--tz-journal-dialog-top', `${marginTop}px`);
 }
+
+export { syncJournalDialogFrame };
 
 function syncJournalLayoutHits() {
   const layout = effectiveJournalLayout();
@@ -361,6 +365,7 @@ export async function openDailyLeaderboardAfterSolve() {
   root.hidden = false;
   setModalOpen(true);
   syncJournalDialogTop();
+  syncJournalDialogFrame();
 
   await activateJournalTab('records');
   recordsApi?.setRecordsSubTab?.('leaderboard');
@@ -893,6 +898,7 @@ export async function openJournal({
   setModalOpen(true);
   setJournalLoading(true);
   syncJournalDialogTop();
+  syncJournalDialogFrame();
 
   const scroll = $('journalListScroll');
   if (scroll) scroll.scrollTop = 0;
@@ -918,6 +924,7 @@ export async function openJournal({
   listScroller?.sync?.();
   requestAnimationFrame(() => {
     syncJournalDialogTop();
+    syncJournalDialogFrame();
     syncJournalLayoutHits();
     syncJournalOverlays();
     listScroller?.sync?.();
@@ -1094,6 +1101,7 @@ export function initJournalUi({
   window.addEventListener('resize', () => {
     if (root.hidden) return;
     syncJournalDialogTop();
+    syncJournalDialogFrame();
     syncJournalLayoutHits();
     listScroller?.sync?.();
   });
@@ -1112,6 +1120,7 @@ export function initJournalUi({
     closeJournal,
     applyLayoutFromDisk,
     syncJournalDialogTop,
+    syncJournalDialogFrame,
     syncJournalLayoutHits,
     syncJournalTabHits: syncJournalLayoutHits,
   };

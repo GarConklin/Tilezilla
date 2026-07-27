@@ -13,9 +13,11 @@
 
 :root {
   --tz-design-width: 390px;
+  --tz-frame-upscale: 1;
   --tz-design-height: 844px;
   --tz-desktop-breakpoint: 780px; /* 2 × 390 */
   --tz-ui-scale: 1;
+  --tz-frame-upscale: 1;
   --tz-img-bg: url("/img/Background%20lake%20and%20dock.png");
   --tz-img-bg-inline: url("/img/Background lake and dock.png");
   --tz-img-bg-sky: url("/img/Background%20Sky%20and%20dock%20without%20water.png");
@@ -5710,25 +5712,27 @@ html.tz-phone-preview .tz-use-hint-dialog {
   margin: 0 auto;
   max-width: 100%;
   box-sizing: border-box;
-  width: min(
-    100%,
-    var(--tz-profile-max-design-width),
-    var(--auth-profile-max-width, 420px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  width: var(
+    --auth-passport-frame-width,
+    min(
+      100%,
+      var(--auth-profile-max-width, calc(420px * var(--tz-frame-upscale, 1))),
+      calc(390px * var(--tz-frame-upscale, 1))
+    )
   );
+  max-height: var(--auth-passport-avail-h, calc(100dvh - var(--tz-profile-display-pad)));
   aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
-  max-height: calc(100dvh - var(--tz-profile-display-pad));
   filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
 }
 
 html.tz-phone-preview .tz-profile-dialog {
-  width: min(
-    var(--tz-profile-max-design-width),
-    var(--auth-profile-max-width, 420px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc((100dvh - var(--tz-profile-display-pad)) * var(--tz-profile-art-w) / var(--tz-profile-art-h)),
-    100%
+  width: var(
+    --auth-passport-frame-width,
+    min(
+      var(--auth-profile-max-width, calc(420px * var(--tz-frame-upscale, 1))),
+      calc(390px * var(--tz-frame-upscale, 1)),
+      100%
+    )
   );
 }
 
@@ -6126,8 +6130,8 @@ html.tz-phone-preview .tz-pinfo-dialog {
     0;
   width: min(
     100%,
-    var(--tz-journal-max-design-width, var(--tz-design-width)),
-    calc(var(--tz-journal-art-w) * 1px)
+    var(--tz-journal-max-design-width, calc(var(--tz-design-width) * var(--tz-frame-upscale, 1))),
+    calc(var(--tz-journal-art-w) * 1px * var(--tz-frame-upscale, 1))
   );
   max-width: 100%;
   aspect-ratio: calc(var(--tz-journal-art-w) / var(--tz-journal-art-h));
@@ -7922,12 +7926,11 @@ body.tz-modal-open .tz-menu-btn {
   z-index: 1;
   box-sizing: border-box;
   width: min(
-    var(--tz-menu-display-w),
+    calc(var(--tz-menu-display-w) * var(--tz-frame-upscale, 1)),
     calc(100vw - 32px),
-    var(--tz-design-width)
+    calc(var(--tz-design-width) * var(--tz-frame-upscale, 1))
   );
   max-width: 100%;
-  max-height: calc(100dvh - 32px);
   aspect-ratio: calc(var(--tz-menu-art-w) / var(--tz-menu-art-h));
   container-type: inline-size;
   overflow: visible;
@@ -7936,9 +7939,9 @@ body.tz-modal-open .tz-menu-btn {
 
 html.tz-phone-preview .tz-menu-plaque {
   width: min(
-    var(--tz-menu-display-w),
+    calc(var(--tz-menu-display-w) * var(--tz-frame-upscale, 1)),
     100%,
-    var(--tz-design-width)
+    calc(var(--tz-design-width) * var(--tz-frame-upscale, 1))
   );
 }
 

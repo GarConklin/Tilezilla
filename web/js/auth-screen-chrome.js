@@ -7,6 +7,7 @@ import {
   mergeMainScreenV2Layout,
 } from './main-screen-v2-layout.js';
 import { applyWaterRippleLayout, loadWaterRippleLayout } from './water-ripple-layout.js';
+import { syncAuthPassportFrame, wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
 
 export function applyAuthScreenChrome(layout, target = document.documentElement) {
   const merged = mergeMainScreenV2Layout(layout);
@@ -20,10 +21,7 @@ export function applyAuthScreenChrome(layout, target = document.documentElement)
   const topFrac = board.y / 100;
   target.style.setProperty('--auth-chrome-stage-top', `${board.y}%`);
   target.style.setProperty('--auth-chrome-stage-top-frac', String(topFrac));
-  target.style.setProperty(
-    '--auth-passport-avail-h',
-    `calc(100dvh - 100dvh * ${topFrac} - max(8px, env(safe-area-inset-bottom, 0px)))`,
-  );
+  syncAuthPassportFrame({ boardYPercent: board.y, root: target });
 }
 
 export async function initAuthScreenChrome({ force = false } = {}) {
@@ -33,5 +31,11 @@ export async function initAuthScreenChrome({ force = false } = {}) {
   ]);
   applyAuthScreenChrome(layout);
   applyWaterRippleLayout(ripple);
+  wireOverlayFrameListeners(() => {
+    const boardY = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--auth-chrome-stage-top'),
+    );
+    return Number.isFinite(boardY) ? boardY : 8.1;
+  });
   return layout;
 }

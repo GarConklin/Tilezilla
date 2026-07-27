@@ -15,7 +15,8 @@
     max(8px, env(safe-area-inset-top, 0px))
     + max(8px, env(safe-area-inset-bottom, 0px))
   );
-  --tz-profile-max-design-width: min(100%, 390px);
+  --tz-profile-max-design-width: min(100%, calc(390px * var(--tz-frame-upscale, 1)));
+  --tz-frame-upscale: 1;
 }
 
 html, body {
@@ -132,7 +133,7 @@ body.auth-screen--layout-pending .auth-screen__stage > :not(.auth-screen__art) {
 .auth-screen__viewport {
   position: relative;
   z-index: 1;
-  width: min(100%, 390px);
+  width: min(100%, calc(390px * var(--tz-frame-upscale, 1)));
   margin: 0 auto;
   min-height: 100dvh;
   max-height: 100dvh;
@@ -260,32 +261,31 @@ body.auth-screen--layout-pending .auth-screen__stage > :not(.auth-screen__art) {
 .auth-screen--login .auth-screen__stage,
 .auth-screen--create .auth-screen__stage,
 .auth-screen--profile .auth-screen__stage {
-  width: min(
-    100%,
-    var(--tz-profile-max-design-width),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
-  );
+  width: var(--auth-passport-frame-width, min(100%, calc(390px * var(--tz-frame-upscale, 1))));
+  height: var(--auth-passport-frame-height, auto);
+  max-height: var(--auth-passport-avail-h, calc(100dvh - 100dvh * var(--auth-chrome-stage-top-frac, 0.077)));
   aspect-ratio: calc(var(--tz-profile-art-w) / var(--tz-profile-art-h));
 }
 
 .auth-screen--login .auth-screen__stage {
-  width: min(
-    100%,
-    var(--tz-profile-max-design-width),
-    var(--auth-login-max-width, 390px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  width: var(
+    --auth-passport-frame-width,
+    min(
+      100%,
+      var(--auth-login-max-width, calc(390px * var(--tz-frame-upscale, 1))),
+      calc(390px * var(--tz-frame-upscale, 1))
+    )
   );
 }
 
 .auth-screen--create .auth-screen__stage {
-  width: min(
-    100%,
-    var(--tz-profile-max-design-width),
-    var(--auth-create-max-width, 390px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  width: var(
+    --auth-passport-frame-width,
+    min(
+      100%,
+      var(--auth-create-max-width, calc(390px * var(--tz-frame-upscale, 1))),
+      calc(390px * var(--tz-frame-upscale, 1))
+    )
   );
 }
 
@@ -350,12 +350,13 @@ body.auth-screen--layout-pending .auth-screen__stage > :not(.auth-screen__art) {
 }
 
 .auth-screen--profile .auth-screen__stage {
-  width: min(
-    100%,
-    var(--tz-profile-max-design-width),
-    var(--auth-profile-max-width, 420px),
-    calc(var(--tz-profile-art-w) * 1px),
-    calc(var(--auth-passport-avail-h) * var(--tz-profile-art-w) / var(--tz-profile-art-h))
+  width: var(
+    --auth-passport-frame-width,
+    min(
+      100%,
+      var(--auth-profile-max-width, calc(420px * var(--tz-frame-upscale, 1))),
+      calc(390px * var(--tz-frame-upscale, 1))
+    )
   );
 }
 

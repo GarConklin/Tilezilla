@@ -5,6 +5,7 @@ import { initPasswordRevealToggles } from './auth-screen-pass-toggle.js';
 import { refreshProfilePassportStats, bindProfileHintBalanceListener, bindProfileProgressReadyListener } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
 import { applyPassportJournalStats } from './passport-journal-stats.js';
+import { syncAuthPassportFrame } from './tilezilla-frame-geometry.js';
 
 const SCREEN_BY_CLASS = {
   'auth-screen--login': 'login',
@@ -47,6 +48,15 @@ async function bootAuthScreen(screenKey) {
     await Promise.race([layoutReady, layoutTimeout]);
   } finally {
     document.body.classList.remove('auth-screen--layout-pending');
+    const boardY = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--auth-chrome-stage-top'),
+    );
+    const maxVar = getComputedStyle(document.documentElement).getPropertyValue(`--auth-${screenKey}-max-width`);
+    const maxW = parseFloat(maxVar) || 390;
+    syncAuthPassportFrame({
+      boardYPercent: Number.isFinite(boardY) ? boardY : 8.1,
+      maxDesignWidth: maxW,
+    });
   }
 }
 

@@ -187,6 +187,7 @@ import {
   resolveAdventureResume,
 } from './adventure-path.js';
 import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
+import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
 
@@ -2960,6 +2961,7 @@ async function init() {
   applyUiScale();
   if (usesViewportLock(settings)) runViewportFit(false);
   wireUiScaleListeners();
+  wireOverlayFrameListeners();
   applyMenuLayout(DEFAULT_MENU_LAYOUT);
   void loadMenuLayout()
     .then((layout) => {
