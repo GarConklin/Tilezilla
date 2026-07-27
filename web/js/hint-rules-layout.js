@@ -169,14 +169,9 @@ export function syncHintRulesWindowGeometry(layout) {
 
   const boardRect = board.getBoundingClientRect();
   const tilebagRect = tilebag.getBoundingClientRect();
-  const scaleHost = document.querySelector('.tz-scale-host');
-  const hostW = scaleHost?.getBoundingClientRect().width || 0;
   const uiScale = parseFloat(document.documentElement.dataset.uiScale) || 1;
   const widthScale = Number(w.widthScale ?? 0.95);
-  const shellW = hostW > 0
-    ? hostW
-    : (Number(w.maxDesignWidth) || 390) * uiScale;
-  const width = shellW * widthScale;
+  const width = (Number(w.maxDesignWidth) || 390) * widthScale * uiScale;
   const top = boardRect.top + (Number(w.nudgeY) || 0);
   let height = Math.max(0, tilebagRect.bottom - top);
 
