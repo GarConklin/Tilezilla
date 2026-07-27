@@ -7937,14 +7937,14 @@ body.tz-modal-open .tz-menu-btn {
   position: relative;
   z-index: 1;
   box-sizing: border-box;
+  /* Width follows tuned display size and scaled shell — not svh (Android toolbar reports too small). */
   width: min(
     var(--tz-menu-display-w),
-    calc(100vw - 32px),
-    var(--tz-design-width),
-    calc((100svh - 32px) * var(--tz-menu-art-w) / var(--tz-menu-art-h))
+    calc(100vw - 24px),
+    calc(var(--tz-design-width) * var(--tz-ui-scale, 1))
   );
   max-width: 100%;
-  max-height: calc(100svh - 32px);
+  max-height: calc(100dvh - 32px);
   aspect-ratio: calc(var(--tz-menu-art-w) / var(--tz-menu-art-h));
   container-type: inline-size;
   overflow: visible;
@@ -7955,8 +7955,7 @@ html.tz-phone-preview .tz-menu-plaque {
   width: min(
     var(--tz-menu-display-w),
     100%,
-    var(--tz-design-width),
-    calc((100svh - 32px) * var(--tz-menu-art-w) / var(--tz-menu-art-h))
+    calc(var(--tz-design-width) * var(--tz-ui-scale, 1))
   );
 }
 

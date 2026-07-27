@@ -6,6 +6,7 @@ import { closeDevelopmentMenu } from './tilezilla-development-menu.js';
 import { openPuzzleInfo } from './tilezilla-puzzle-info.js';
 import { refreshDevToolsPanel } from './tilezilla-dev-tools.js';
 import { openJournal } from './tilezilla-journal.js';
+import { applyMenuLayout, DEFAULT_MENU_LAYOUT, loadMenuLayout } from './menu-layout.js';
 
 const PANELS = {
   'found-solutions': {
@@ -130,6 +131,13 @@ export function initMenuUi({ getApp: getAppFn, openStuckFlow: openStuck }) {
     !menuRoot.hidden || !menuPanelRoot.hidden || (settingsRoot && !settingsRoot.hidden);
 
   const openMenu = () => {
+    void loadMenuLayout()
+      .then((layout) => {
+        applyMenuLayout(layout || DEFAULT_MENU_LAYOUT);
+      })
+      .catch(() => {
+        applyMenuLayout(DEFAULT_MENU_LAYOUT);
+      });
     menuRoot.hidden = false;
     setModalOpen(true);
   };

@@ -69,6 +69,7 @@ import {
 import {
   applyMenuLayout,
   clearMenuLayoutCache,
+  DEFAULT_MENU_LAYOUT,
   loadMenuLayout,
 } from './menu-layout.js';
 import { initMenuSystemInfo } from './system-info.js';
@@ -2959,6 +2960,14 @@ async function init() {
   applyUiScale();
   if (usesViewportLock(settings)) runViewportFit(false);
   wireUiScaleListeners();
+  applyMenuLayout(DEFAULT_MENU_LAYOUT);
+  void loadMenuLayout()
+    .then((layout) => {
+      if (layout) applyMenuLayout(layout);
+    })
+    .catch((err) => {
+      console.warn('Menu layout (early):', err);
+    });
   // Unhide chrome immediately; layouts and engine finish loading in the background.
   finishShellBoot();
   const shellLayoutsPromise = Promise.race([
