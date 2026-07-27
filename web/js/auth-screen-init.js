@@ -26,7 +26,7 @@ function wireAuthScreenLayoutReload(screenKey) {
 async function bootAuthScreen(screenKey) {
   document.body.classList.add('auth-screen-chrome', 'auth-screen--layout-pending');
   wireAuthScreenLayoutReload(screenKey);
-  try {
+  const layoutReady = (async () => {
     await initAuthScreenChrome();
     await initAuthScreenLayout(screenKey, { preferFile: true });
     initPasswordRevealToggles();
@@ -39,6 +39,12 @@ async function bootAuthScreen(screenKey) {
       bindProfileHintBalanceListener();
       bindProfileProgressReadyListener();
     }
+  })();
+  const layoutTimeout = new Promise((resolve) => {
+    window.setTimeout(resolve, 4000);
+  });
+  try {
+    await Promise.race([layoutReady, layoutTimeout]);
   } finally {
     document.body.classList.remove('auth-screen--layout-pending');
   }

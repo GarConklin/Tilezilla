@@ -99,13 +99,14 @@ window.visualViewport?.addEventListener('resize', onViewportChange);
 window.visualViewport?.addEventListener('scroll', onViewportChange);
 applyUiScale();
 
-document.getElementById('playGuestBtn')?.addEventListener('click', () => {
+document.getElementById('playGuestBtn')?.addEventListener('click', (e) => {
+  e.preventDefault();
   playAsGuest();
   trackGuestEvent('Daily Challenge Started', { source: 'load_screen' });
-  window.location.href = TILEZILLA_GAME_URL;
+  window.location.assign(TILEZILLA_GAME_URL);
 });
 
 document.getElementById('loginBtn')?.addEventListener('click', () => {
   trackGuestEvent('Login Clicked', { source: 'load_screen' });
-  window.location.href = '/login-screen.html';
+  // Native href opens login-screen.html even if navigation is delayed.
 });

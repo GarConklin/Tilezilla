@@ -915,6 +915,7 @@ button {
   width: 100%;
   max-height: var(--tz-load-art-max-h, 58%);
   aspect-ratio: var(--tz-load-art-aspect, 375 / 467);
+  z-index: 2;
 }
 
 .tz-load-screen__carousel {
@@ -1137,13 +1138,16 @@ button {
 
 .tz-load-screen__hit {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   border: none;
   padding: 0;
   margin: 0;
   background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  color: transparent;
 }
 
 .tz-load-screen__hit img {

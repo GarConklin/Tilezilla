@@ -191,7 +191,14 @@ export function isRestrictedFeature(feature) {
 }
 
 export function trackGuestEvent(action, meta = {}) {
-  if (!isGuestUser() && action !== 'Guest Created' && action !== 'Account Created') {
+  const alwaysTrack = new Set([
+    'Guest Created',
+    'Account Created',
+    'Login Clicked',
+    'Create Account Clicked',
+    'Login Required Shown',
+  ]);
+  if (!isGuestUser() && !alwaysTrack.has(action)) {
     const code = meta.guest_code || getGuestCode();
     if (!code) return;
   }
