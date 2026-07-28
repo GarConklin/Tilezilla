@@ -171,16 +171,19 @@
       "w": 10
     },
     "colAdvUser": {
-      "w": 26
+      "w": 24
     },
     "colPaths": {
-      "w": 14
+      "w": 12
+    },
+    "colRankName": {
+      "w": 22
+    },
+    "colSubLevel": {
+      "w": 12
     },
     "colAdvTime": {
-      "w": 16
-    },
-    "colAdvId": {
-      "w": 34
+      "w": 20
     },
     "colSize": {
       "w": 22

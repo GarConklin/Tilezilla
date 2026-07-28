@@ -37,7 +37,7 @@ const PREVIEW_MODES = {
   adventure: {
     tabKey: 'adventure',
     title: 'Adventure Leaderboard',
-    detail: 'Lists: rank · user · paths · last time · Adv ID (0 / 1 / 2 hint panes).',
+    detail: 'Lists: rank · user · paths · level name · sublevel · time (0 / 1 / 2 hint panes).',
     mockStageClass: 'preview-mode-adventure',
     btnId: 'previewAdventureBtn',
     badge: 'ADVENTURE LB',
@@ -59,7 +59,7 @@ const PANE_HIT_LABELS = {
     paneBr: 'LB · 2 hints',
   },
   adventure: {
-    paneTop: 'Adv · 0 hints · rank/user/paths/time/id',
+    paneTop: 'Adv · 0 hints · rank/user/paths/name/sub/time',
     paneBl: 'Adv · 1 hint',
     paneBr: 'Adv · 2 hints',
   },
@@ -72,7 +72,7 @@ const PANE_HIT_LABELS = {
 
 const MOCK_ADVENTURE_HEADER = {
   date: 'Adventure',
-  puzzleId: 'Paths · Time · Adv ID',
+  puzzleId: 'Paths · Rank · Sub · Time',
 };
 
 function previewModeKey() {
@@ -292,7 +292,7 @@ function updatePreviewBanner() {
   if (els.controlsModeHint) {
     els.controlsModeHint.textContent = {
       leaderboard: "Daily Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time",
-      adventure: 'Adventure Leaderboard — lists are rank / user / paths / last time / Adv ID',
+      adventure: 'Adventure Leaderboard — lists are rank / user / paths / level name / sublevel / time',
       personalBest: 'Personal Best — header shows your last daily completion; lists are size / puzzle / time',
     }[previewSubTab] || mode.detail;
   }

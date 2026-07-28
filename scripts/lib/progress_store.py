@@ -1404,7 +1404,7 @@ def daily_leaderboard_for_date(
 def adventure_leaderboard(
     repo_root: Path,  # noqa: ARG001
 ) -> dict[str, Any]:
-    """Cross-user adventure rankings: paths completed, last adventure time/hints, Adv_ID."""
+    """Cross-user adventure rankings: paths completed, rank/sublevel, last adventure time/hints."""
     try:
         conn = _mysql_connect()
     except Exception:
@@ -1413,23 +1413,6 @@ def adventure_leaderboard(
     rows: list[dict[str, Any]] = []
     try:
         with conn.cursor() as cur:
-            # 1-based Adv_ID sequence matching adventure map order.
-            cur.execute(
-                """
-                SELECT
-                    ap.level_id AS level_id,
-                    ROW_NUMBER() OVER (
-                        ORDER BY ap.rank_id, ap.sub_level, ap.puzzle_order
-                    ) AS adv_id
-                FROM adventure_puzzle ap
-                """
-            )
-            adv_by_level = {
-                str(r.get("level_id") or ""): int(r.get("adv_id") or 0)
-                for r in (cur.fetchall() or [])
-                if r.get("level_id")
-            }
-
             cur.execute(
                 """
                 SELECT
@@ -1438,9 +1421,11 @@ def adventure_leaderboard(
                     u.player_name              AS player_name,
                     pp.total_levels_solved     AS paths_completed,
                     pp.current_rank_id         AS current_rank_id,
-                    pp.current_sub_level       AS current_sub_level
+                    pp.current_sub_level       AS current_sub_level,
+                    ar.rank_name               AS rank_name
                 FROM player_progress pp
                 LEFT JOIN users u ON u.user_id = pp.player_id
+                LEFT JOIN adventure_rank ar ON ar.rank_id = pp.current_rank_id
                 WHERE pp.total_levels_solved > 0
                 """
             )
@@ -1448,7 +1433,6 @@ def adventure_leaderboard(
             if not players:
                 return {"ok": True, "rows": []}
 
-            # Prefer found-solutions (has hints); fall back to level_progress.
             last_by_user: dict[Any, dict[str, Any]] = {}
             try:
                 cur.execute(
@@ -1504,30 +1488,6 @@ def adventure_leaderboard(
                         "hintsUsedCount": 0,
                     }
 
-            # Current Adv_ID for rank/sub position (first puzzle of that step).
-            cur.execute(
-                """
-                SELECT
-                    ap.rank_id AS rank_id,
-                    ap.sub_level AS sub_level,
-                    MIN(seq.adv_id) AS adv_id
-                FROM adventure_puzzle ap
-                INNER JOIN (
-                    SELECT
-                        level_id,
-                        ROW_NUMBER() OVER (
-                            ORDER BY rank_id, sub_level, puzzle_order
-                        ) AS adv_id
-                    FROM adventure_puzzle
-                ) seq ON seq.level_id = ap.level_id
-                GROUP BY ap.rank_id, ap.sub_level
-                """
-            )
-            adv_by_rank_sub = {
-                (int(r.get("rank_id") or 0), int(r.get("sub_level") or 0)): int(r.get("adv_id") or 0)
-                for r in (cur.fetchall() or [])
-            }
-
             for player in players:
                 uid = player.get("user_id")
                 username = str(player.get("username") or "").strip()
@@ -1538,11 +1498,9 @@ def adventure_leaderboard(
                 last_level = str(last.get("levelId") or "")
                 last_time = int(last.get("timeSeconds") or 0)
                 hints = max(0, int(last.get("hintsUsedCount") or 0))
-                adventure_id = adv_by_level.get(last_level) or 0
-                if not adventure_id:
-                    rank_id = int(player.get("current_rank_id") or 0)
-                    sub_level = int(player.get("current_sub_level") or 0)
-                    adventure_id = adv_by_rank_sub.get((rank_id, sub_level)) or paths
+                rank_id = int(player.get("current_rank_id") or 0)
+                sub_level = max(1, int(player.get("current_sub_level") or 1))
+                rank_name = str(player.get("rank_name") or "").strip() or f"Rank {rank_id or '—'}"
                 rows.append(
                     {
                         "userId": uid,
@@ -1551,7 +1509,9 @@ def adventure_leaderboard(
                         "lastTimeSec": last_time,
                         "completionTimeSeconds": last_time,
                         "hintsUsedCount": hints,
-                        "adventureId": adventure_id or paths,
+                        "rankId": rank_id,
+                        "rankName": rank_name,
+                        "subLevel": sub_level,
                         "levelId": last_level,
                     }
                 )

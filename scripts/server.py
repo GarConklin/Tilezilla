@@ -1146,7 +1146,7 @@ RECORDS_ITEM_KEYS = (
     "paneTop", "paneBl", "paneBr",
     "listTop", "scrollerTop", "listBl", "scrollerBl", "listBr", "scrollerBr",
     "listRow", "colRank", "colUser", "colTime",
-    "colAdvRank", "colAdvUser", "colPaths", "colAdvTime", "colAdvId",
+    "colAdvRank", "colAdvUser", "colPaths", "colRankName", "colSubLevel", "colAdvTime",
     "colSize", "colPuzzle",
     "personalPane", "listPersonal", "scrollerPersonal",
     "btnBack", "btnClose",

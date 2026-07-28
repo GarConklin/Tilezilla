@@ -9583,10 +9583,11 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 .tz-records-panel[data-records-mode="adventure"] .tz-records-list__row {
   grid-template-columns:
     var(--tz-records-col-adv-rank-w, 10%)
-    var(--tz-records-col-adv-user-w, 26%)
-    var(--tz-records-col-paths-w, 14%)
-    var(--tz-records-col-adv-time-w, 16%)
-    var(--tz-records-col-adv-id-w, 34%);
+    var(--tz-records-col-adv-user-w, 24%)
+    var(--tz-records-col-paths-w, 12%)
+    var(--tz-records-col-rank-name-w, 22%)
+    var(--tz-records-col-sub-level-w, 12%)
+    var(--tz-records-col-adv-time-w, 20%);
 }
 
 .tz-records-list__cell--rank {
@@ -9598,12 +9599,15 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   font-variant-numeric: tabular-nums;
 }
 
-.tz-records-list__cell--adv-id {
+.tz-records-list__cell--rank-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+}
+
+.tz-records-list__cell--sub-level {
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .tz-records-list__cell--size {

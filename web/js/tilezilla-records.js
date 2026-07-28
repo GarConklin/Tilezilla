@@ -143,7 +143,7 @@ export async function refreshRecordsView() {
     await renderAdventureLeaderboardLists();
     setRecordsHeaderFields(document, {
       date: 'Adventure',
-      puzzleId: 'Paths · Time · Adv ID',
+      puzzleId: 'Paths · Rank · Sub · Time',
       time: '—',
       showTime: false,
     });

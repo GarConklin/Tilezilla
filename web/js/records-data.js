@@ -620,17 +620,20 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
     const timeB = Number(b.completionTimeSeconds ?? b.lastTimeSec) || 1e9;
     return timeA - timeB;
   });
-  return sorted.map((row, idx) => ({
-    rank: idx + 1,
-    user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
-    paths: String(Number(row.pathsCompleted) || 0),
-    time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
-    adventureId: row.adventureId != null && row.adventureId !== ''
-      ? String(row.adventureId)
-      : '—',
-    hintsUsedCount: hintBucket(row),
-    isGuestPreview: !!row.isGuestPreview,
-  }));
+  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  return sorted.map((row, idx) => {
+    const sub = Math.max(1, Number(row.subLevel) || 1);
+    return {
+      rank: idx + 1,
+      user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
+      paths: String(Number(row.pathsCompleted) || 0),
+      rankName: String(row.rankName || '').trim() || '—',
+      subLevel: numerals[sub - 1] || String(sub),
+      time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
+      hintsUsedCount: hintBucket(row),
+      isGuestPreview: !!row.isGuestPreview,
+    };
+  });
 }
 
 /**
@@ -653,7 +656,9 @@ export async function fetchAdventureLeaderboardRows() {
       completionTimeSeconds: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
       lastTimeSec: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
       hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
-      adventureId: row.adventureId ?? '',
+      rankId: Number(row.rankId) || 0,
+      rankName: row.rankName || '',
+      subLevel: Number(row.subLevel) || 1,
       levelId: row.levelId || '',
     }));
   } catch {
@@ -830,8 +835,9 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
         <span class="tz-records-list__cell tz-records-list__cell--user">${escapeHtml(entry.user)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--paths">${escapeHtml(entry.paths)}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--rank-name">${escapeHtml(entry.rankName)}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--sub-level">${escapeHtml(entry.subLevel)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
-        <span class="tz-records-list__cell tz-records-list__cell--adv-id">${escapeHtml(entry.adventureId)}</span>
       `;
     } else {
       row.innerHTML = `
@@ -889,17 +895,17 @@ export const MOCK_PERSONAL_BEST_ROWS = {
 
 export const MOCK_ADVENTURE_LEADERBOARD_ROWS = {
   zero: [
-    { rank: 1, user: 'PathKing', paths: '42', time: '2:10', adventureId: '42' },
-    { rank: 2, user: 'TrailAce', paths: '38', time: '2:44', adventureId: '38' },
-    { rank: 3, user: 'MapNomad', paths: '31', time: '3:02', adventureId: '31' },
-    { rank: 4, user: 'RoutePro', paths: '27', time: '3:18', adventureId: '27' },
+    { rank: 1, user: 'PathKing', paths: '42', rankName: 'Trailblazer', subLevel: 'III', time: '2:10' },
+    { rank: 2, user: 'TrailAce', paths: '38', rankName: 'Explorer', subLevel: 'II', time: '2:44' },
+    { rank: 3, user: 'MapNomad', paths: '31', rankName: 'Explorer', subLevel: 'I', time: '3:02' },
+    { rank: 4, user: 'RoutePro', paths: '27', rankName: 'Pathfinder', subLevel: 'IV', time: '3:18' },
   ],
   one: [
-    { rank: 1, user: 'HintHiker', paths: '22', time: '3:40', adventureId: '22' },
-    { rank: 2, user: 'NudgeScout', paths: '18', time: '4:05', adventureId: '18' },
+    { rank: 1, user: 'HintHiker', paths: '22', rankName: 'Pathfinder', subLevel: 'II', time: '3:40' },
+    { rank: 2, user: 'NudgeScout', paths: '18', rankName: 'Wanderer', subLevel: 'V', time: '4:05' },
   ],
   two: [
-    { rank: 1, user: 'DoublePath', paths: '14', time: '5:12', adventureId: '14' },
+    { rank: 1, user: 'DoublePath', paths: '14', rankName: 'Wanderer', subLevel: 'III', time: '5:12' },
   ],
 };
 
