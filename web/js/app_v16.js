@@ -2620,6 +2620,7 @@ async function processSolutionFound(lv, res, placements) {
       if (elapsedSec > 0) {
         timer?.updateBest?.(elapsedSec, lv.id);
       }
+      timer?.clearDailyElapsed?.(challengeDate, dailyUserId);
     }
   }
 

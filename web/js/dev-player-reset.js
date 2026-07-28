@@ -34,6 +34,7 @@ export function resetDevPlayerProgress(userId) {
       key === progressKey(userId)
       || key === hintTokensKey(userId)
       || key.startsWith(puzzleBestPrefix(userId))
+      || key.startsWith(`snake_daily_attempt_elapsed_v1:${userId}:`)
     ) {
       localStorage.removeItem(key);
       removedKeys.push(key);

@@ -2123,6 +2123,9 @@ let puzzleTimerRunning = false;
 let puzzleTimerStopped = false;
 let puzzleTimerElapsedSec = 0;
 
+/** Unfinished daily attempt elapsed — survives reload / leave / power-off. */
+const DAILY_ATTEMPT_ELAPSED_KEY = 'snake_daily_attempt_elapsed_v1';
+
 function updatePuzzleTimerDisplay(sec = 0) {
   const text = formatPuzzleTimer(sec);
   const el = $('timerCurrent');
@@ -2135,7 +2138,7 @@ function updatePuzzleTimerDisplay(sec = 0) {
 
 function getPuzzleElapsedSeconds() {
   if (puzzleTimerStopped) return puzzleTimerElapsedSec;
-  if (!puzzleTimerStartedAt) return 0;
+  if (!puzzleTimerStartedAt) return Math.max(0, Number(puzzleTimerElapsedSec) || 0);
   return Math.floor((Date.now() - puzzleTimerStartedAt) / 1000);
 }
 
@@ -2149,7 +2152,119 @@ function stopPuzzleTimer() {
     puzzleTimerInterval = null;
   }
   updatePuzzleTimerDisplay(puzzleTimerElapsedSec);
+  persistDailyAttemptElapsed(puzzleTimerElapsedSec);
   return puzzleTimerElapsedSec;
+}
+
+function dailyAttemptElapsedKey(userId, challengeDate) {
+  return `${DAILY_ATTEMPT_ELAPSED_KEY}:${userId || 'gar'}:${challengeDate || ''}`;
+}
+
+function readPersistedDailyAttemptElapsed(userId, challengeDate) {
+  if (!challengeDate) return null;
+  try {
+    const raw = localStorage.getItem(dailyAttemptElapsedKey(userId, challengeDate));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    const elapsedSec = Math.max(0, Math.floor(Number(parsed.elapsedSec) || 0));
+    if (elapsedSec <= 0) return null;
+    return {
+      challengeDate: String(parsed.challengeDate || challengeDate),
+      userId: String(parsed.userId || userId || 'gar'),
+      levelId: parsed.levelId ? String(parsed.levelId) : null,
+      elapsedSec,
+      updatedAt: parsed.updatedAt || null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function clearPersistedDailyAttemptElapsed(userId, challengeDate) {
+  if (!challengeDate) return;
+  try {
+    localStorage.removeItem(dailyAttemptElapsedKey(userId, challengeDate));
+  } catch {
+    /* ignore */
+  }
+}
+
+function canPersistDailyAttemptElapsed() {
+  if (!isTodayDailyLeaderboardAttempt()) return false;
+  const meta = window.__dailyChallengeMeta;
+  const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const progress = window.__app?.progress;
+  const userId = window.__app?.state?.userId || 'gar';
+  if (!challengeDate) return false;
+  if (progress?.hasLeaderboardResult?.(challengeDate, userId)) return false;
+  return true;
+}
+
+/** Save unfinished daily stopwatch (never decreases for the same user/day). */
+function persistDailyAttemptElapsed(elapsedSec) {
+  if (!canPersistDailyAttemptElapsed()) return false;
+  const meta = window.__dailyChallengeMeta;
+  const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const userId = window.__app?.state?.userId || 'gar';
+  const levelId = meta?.levelId || window.__app?.state?.currentLevel?.id || null;
+  const nextSec = Math.max(0, Math.floor(Number(elapsedSec) || 0));
+  if (nextSec <= 0 || !challengeDate) return false;
+  const prev = readPersistedDailyAttemptElapsed(userId, challengeDate);
+  const elapsed = Math.max(prev?.elapsedSec || 0, nextSec);
+  try {
+    localStorage.setItem(
+      dailyAttemptElapsedKey(userId, challengeDate),
+      JSON.stringify({
+        challengeDate,
+        userId,
+        levelId,
+        elapsedSec: elapsed,
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Restore unfinished daily elapsed into the in-memory timer (paused until next placement).
+ * @returns {boolean} true when a saved elapsed was applied
+ */
+function hydrateDailyAttemptTimer(app, meta) {
+  const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const userId = app?.state?.userId || 'gar';
+  if (!challengeDate || meta?.leaderboardEligible === false) {
+    resetPuzzleTimer();
+    return false;
+  }
+  if (challengeDate !== todayIso()) {
+    clearPersistedDailyAttemptElapsed(userId, challengeDate);
+    resetPuzzleTimer();
+    return false;
+  }
+  if (app?.progress?.hasLeaderboardResult?.(challengeDate, userId)) {
+    clearPersistedDailyAttemptElapsed(userId, challengeDate);
+    resetPuzzleTimer();
+    return false;
+  }
+  const saved = readPersistedDailyAttemptElapsed(userId, challengeDate);
+  if (!saved?.elapsedSec) {
+    resetPuzzleTimer();
+    return false;
+  }
+  if (puzzleTimerInterval) {
+    clearInterval(puzzleTimerInterval);
+    puzzleTimerInterval = null;
+  }
+  puzzleTimerRunning = false;
+  puzzleTimerStopped = false;
+  puzzleTimerStartedAt = null;
+  puzzleTimerElapsedSec = saved.elapsedSec;
+  updatePuzzleTimerDisplay(puzzleTimerElapsedSec);
+  return true;
 }
 
 function puzzleBestStorageKey(userId, levelId) {
@@ -2229,7 +2344,10 @@ function shouldPreserveDailyAttemptTimer() {
   if (challengeDate && progress?.hasLeaderboardResult?.(challengeDate, userId)) {
     return false;
   }
-  return puzzleTimerRunning || puzzleTimerStopped || puzzleTimerElapsedSec > 0 || !!puzzleTimerStartedAt;
+  if (puzzleTimerRunning || puzzleTimerStopped || puzzleTimerElapsedSec > 0 || !!puzzleTimerStartedAt) {
+    return true;
+  }
+  return !!readPersistedDailyAttemptElapsed(userId, challengeDate)?.elapsedSec;
 }
 
 function resetPuzzleTimerUnlessDailyAttempt() {
@@ -2239,6 +2357,8 @@ function resetPuzzleTimerUnlessDailyAttempt() {
 }
 
 function resetPuzzleTimer() {
+  const sec = getPuzzleElapsedSeconds();
+  if (sec > 0) persistDailyAttemptElapsed(sec);
   puzzleTimerRunning = false;
   puzzleTimerStopped = false;
   puzzleTimerElapsedSec = 0;
@@ -2250,11 +2370,34 @@ function resetPuzzleTimer() {
   updatePuzzleTimerDisplay(0);
 }
 
-/** Reset timer when the page is frozen/restored (bfcache) so elapsed time cannot carry over. */
-function resetDailyTimerOnSessionBoundary() {
+/**
+ * Pause + persist unfinished daily elapsed when the page is hidden / frozen.
+ * Never zero the attempt clock — resume continues from the saved time.
+ */
+function pauseAndPersistDailyTimerOnLeave() {
+  if (!isTodayDailyLeaderboardAttempt()) return;
   const onDaily = document.querySelector('.tz-app')?.dataset?.screen === 'daily-challenge';
-  if (!onDaily || !isTodayDailyLeaderboardAttempt()) return;
-  resetPuzzleTimer();
+  if (!onDaily && !(puzzleTimerRunning || puzzleTimerElapsedSec > 0 || !!puzzleTimerStartedAt)) {
+    return;
+  }
+  const sec = getPuzzleElapsedSeconds();
+  if (sec > 0) persistDailyAttemptElapsed(sec);
+  if (!puzzleTimerRunning && !puzzleTimerStartedAt) {
+    if (sec > 0) {
+      puzzleTimerElapsedSec = sec;
+      updatePuzzleTimerDisplay(sec);
+    }
+    return;
+  }
+  puzzleTimerElapsedSec = sec;
+  puzzleTimerRunning = false;
+  puzzleTimerStopped = false;
+  puzzleTimerStartedAt = null;
+  if (puzzleTimerInterval) {
+    clearInterval(puzzleTimerInterval);
+    puzzleTimerInterval = null;
+  }
+  updatePuzzleTimerDisplay(puzzleTimerElapsedSec);
 }
 
 let dailyTimerSessionListenersBound = false;
@@ -2262,34 +2405,48 @@ let dailyTimerSessionListenersBound = false;
 function bindDailyTimerSessionListeners() {
   if (dailyTimerSessionListenersBound) return;
   dailyTimerSessionListenersBound = true;
-  window.addEventListener('pagehide', (event) => {
-    if (event.persisted) resetDailyTimerOnSessionBoundary();
+  window.addEventListener('pagehide', () => {
+    pauseAndPersistDailyTimerOnLeave();
   });
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) resetDailyTimerOnSessionBoundary();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') pauseAndPersistDailyTimerOnLeave();
+  });
+  window.addEventListener('beforeunload', () => {
+    pauseAndPersistDailyTimerOnLeave();
   });
 }
 
 /** Starts on first manual placement from preview/bag — not on load or hints. */
 function startPuzzleTimerOnFirstPlacement() {
   if (puzzleTimerRunning) return;
+  const meta = window.__dailyChallengeMeta;
+  const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const userId = window.__app?.state?.userId || 'gar';
+  let baseElapsed = Math.max(0, Math.floor(Number(puzzleTimerElapsedSec) || 0));
+  if (
+    isTodayDailyLeaderboardAttempt()
+    && !window.__app?.progress?.hasLeaderboardResult?.(challengeDate, userId)
+  ) {
+    const saved = readPersistedDailyAttemptElapsed(userId, challengeDate);
+    if (saved?.elapsedSec) baseElapsed = Math.max(baseElapsed, saved.elapsedSec);
+  }
   puzzleTimerStopped = false;
-  puzzleTimerElapsedSec = 0;
+  puzzleTimerElapsedSec = baseElapsed;
   puzzleTimerRunning = true;
-  puzzleTimerStartedAt = Date.now();
+  puzzleTimerStartedAt = Date.now() - baseElapsed * 1000;
   const tick = () => {
     if (!puzzleTimerStartedAt) return;
-    updatePuzzleTimerDisplay(Math.floor((Date.now() - puzzleTimerStartedAt) / 1000));
+    const sec = Math.floor((Date.now() - puzzleTimerStartedAt) / 1000);
+    puzzleTimerElapsedSec = sec;
+    updatePuzzleTimerDisplay(sec);
+    persistDailyAttemptElapsed(sec);
   };
   tick();
   puzzleTimerInterval = setInterval(tick, 1000);
 
   if (guestUser.isRegisteredUser?.() && isTodayDailyLeaderboardAttempt()) {
-    const meta = window.__dailyChallengeMeta;
-    const challengeDate = parseDailyCsvDate(meta?.date) || meta?.date;
     const levelId = meta?.levelId;
     const progress = window.__app?.progress;
-    const userId = window.__app?.state?.userId || 'gar';
     const alreadyOnBoard = challengeDate
       && progress?.hasLeaderboardResult?.(challengeDate, userId);
     if (challengeDate && levelId && !alreadyOnBoard) {
@@ -2313,6 +2470,11 @@ function wirePuzzleTimer(app) {
     stop: stopPuzzleTimer,
     getElapsedSeconds: getPuzzleElapsedSeconds,
     reset: resetPuzzleTimer,
+    persistDailyElapsed: persistDailyAttemptElapsed,
+    clearDailyElapsed: (challengeDate, userId) => clearPersistedDailyAttemptElapsed(
+      userId || app.state?.userId || 'gar',
+      challengeDate,
+    ),
     loadBest: (levelId, userId) => loadPuzzleTimerBest(levelId, userId || app.state?.userId || 'gar'),
     updateBest: (elapsedSec, levelId) => updatePuzzleTimerBest(
       elapsedSec,
@@ -2401,7 +2563,11 @@ async function loadJournalPuzzleOnBoard(app, levelId, { challengeDate = null } =
     updateChallengePanel(level, panelMeta);
   }
 
-  resetPuzzleTimer();
+  if (dailyMeta && (parseDailyCsvDate(dailyMeta.date) || dailyMeta.date) === todayIso()) {
+    hydrateDailyAttemptTimer(app, dailyMeta);
+  } else {
+    resetPuzzleTimer();
+  }
   displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
   await refreshPaletteIfReady(app);
   updateTileBagCount(app);
@@ -2469,9 +2635,10 @@ async function loadDailyPuzzle(app) {
     if (!level) throw new Error('No puzzle level available');
 
     await loadLevelOnBoard(app, level);
-    resetPuzzleTimer();
-    displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     window.__dailyChallengeMeta = meta;
+    // Resume unfinished daily elapsed — never blind-reset today's attempt clock.
+    hydrateDailyAttemptTimer(app, meta);
+    displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     updateChallengePanel(level, { ...meta, screen: 'daily-challenge' });
     updateTileBagCount(app);
     updateValidationState(app);
