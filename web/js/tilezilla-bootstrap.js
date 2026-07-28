@@ -2125,6 +2125,10 @@ let puzzleTimerElapsedSec = 0;
 
 /** Unfinished daily attempt elapsed — survives reload / leave / power-off. */
 const DAILY_ATTEMPT_ELAPSED_KEY = 'snake_daily_attempt_elapsed_v1';
+/** How often the running stopwatch writes elapsed to localStorage (leave/hide still save immediately). */
+const DAILY_ATTEMPT_PERSIST_EVERY_SEC = 5 * 60;
+
+let puzzleTimerLastPersistedSec = -1;
 
 function updatePuzzleTimerDisplay(sec = 0) {
   const text = formatPuzzleTimer(sec);
@@ -2223,6 +2227,7 @@ function persistDailyAttemptElapsed(elapsedSec) {
         updatedAt: new Date().toISOString(),
       }),
     );
+    puzzleTimerLastPersistedSec = elapsed;
     return true;
   } catch {
     return false;
@@ -2434,12 +2439,15 @@ function startPuzzleTimerOnFirstPlacement() {
   puzzleTimerElapsedSec = baseElapsed;
   puzzleTimerRunning = true;
   puzzleTimerStartedAt = Date.now() - baseElapsed * 1000;
+  puzzleTimerLastPersistedSec = baseElapsed;
   const tick = () => {
     if (!puzzleTimerStartedAt) return;
     const sec = Math.floor((Date.now() - puzzleTimerStartedAt) / 1000);
     puzzleTimerElapsedSec = sec;
     updatePuzzleTimerDisplay(sec);
-    persistDailyAttemptElapsed(sec);
+    if (sec - puzzleTimerLastPersistedSec >= DAILY_ATTEMPT_PERSIST_EVERY_SEC) {
+      persistDailyAttemptElapsed(sec);
+    }
   };
   tick();
   puzzleTimerInterval = setInterval(tick, 1000);
