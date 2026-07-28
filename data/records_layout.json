@@ -13,8 +13,12 @@
   },
   "tabs": {
     "leaderboard": {
-      "idle": "/img/LeaderBoard-W.png",
-      "active": "/img/LeaderBoard-G.png"
+      "idle": "/img/D-LeaderBoard-W.png",
+      "active": "/img/D-LeaderBoard-G.png"
+    },
+    "adventure": {
+      "idle": "/img/A-LeaderBoard-W.png",
+      "active": "/img/A-LeaderBoard-G.png"
     },
     "personalBest": {
       "idle": "/img/Personal-Best-W.png",
@@ -30,9 +34,17 @@
       "nudgeX": 0,
       "nudgeY": 0
     },
+    "tabAdventure": {
+      "x": 86.5,
+      "y": 16.5,
+      "w": 13,
+      "h": 13.5,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
     "tabPersonalBest": {
       "x": 86.5,
-      "y": 21.9,
+      "y": 28.5,
       "w": 13.8,
       "h": 15.6,
       "nudgeX": 0,
@@ -154,6 +166,21 @@
     },
     "colTime": {
       "w": 30
+    },
+    "colAdvRank": {
+      "w": 10
+    },
+    "colAdvUser": {
+      "w": 26
+    },
+    "colPaths": {
+      "w": 14
+    },
+    "colAdvTime": {
+      "w": 16
+    },
+    "colAdvId": {
+      "w": 34
     },
     "colSize": {
       "w": 22

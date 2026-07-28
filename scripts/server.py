@@ -105,6 +105,7 @@ from lib.adventure_path_build import (  # noqa: E402
 )
 from lib.level_catalog import lookup_level  # noqa: E402
 from lib.progress_store import (  # noqa: E402
+    adventure_leaderboard,
     all_time_best_daily,
     daily_leaderboard_for_date,
     merge_progress,
@@ -441,6 +442,9 @@ class Handler(SimpleHTTPRequestHandler):
             if not date_raw:
                 date_raw = datetime.now(timezone.utc).date().isoformat()
             self._send_json(200, daily_leaderboard_for_date(ROOT, date_raw))
+            return
+        if parsed.path == "/api/adventure-leaderboard":
+            self._send_json(200, adventure_leaderboard(ROOT))
             return
         if parsed.path == "/api/dev/save-sublevel-layout":
             body = json.dumps(
@@ -1137,15 +1141,17 @@ def validate_random_popup_layout(payload: object) -> str | None:
 
 
 RECORDS_ITEM_KEYS = (
-    "tabLeaderboard", "tabPersonalBest",
+    "tabLeaderboard", "tabAdventure", "tabPersonalBest",
     "fieldDailyPuzzleId", "fieldDailyDate", "fieldDailyTime",
     "paneTop", "paneBl", "paneBr",
     "listTop", "scrollerTop", "listBl", "scrollerBl", "listBr", "scrollerBr",
-    "listRow", "colRank", "colUser", "colTime", "colSize", "colPuzzle",
+    "listRow", "colRank", "colUser", "colTime",
+    "colAdvRank", "colAdvUser", "colPaths", "colAdvTime", "colAdvId",
+    "colSize", "colPuzzle",
     "personalPane", "listPersonal", "scrollerPersonal",
     "btnBack", "btnClose",
 )
-RECORDS_TAB_KEYS = ("leaderboard", "personalBest")
+RECORDS_TAB_KEYS = ("leaderboard", "adventure", "personalBest")
 
 
 def validate_records_layout(payload: object) -> str | None:
@@ -1898,6 +1904,7 @@ def main() -> None:
     print("Player progress API: GET /api/progress")
     print("Daily leaderboard API: GET /api/daily-leaderboard?date=YYYY-MM-DD")
     print("Daily leaderboard API: GET /api/daily-leaderboard/best")
+    print("Adventure leaderboard API: GET /api/adventure-leaderboard")
     print("Player progress API: POST /api/progress/solve")
     print("Player progress API: POST /api/progress/migrate")
     print("Player progress API: POST /api/progress/merge")

@@ -9294,9 +9294,16 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   height: calc(var(--tz-records-tab-leaderboard-h, 11.2) * 1%);
 }
 
+.tz-records-field--tab-adventure {
+  left: calc(var(--tz-records-tab-adventure-x, 88.5) * 1% + var(--tz-records-tab-adventure-nudge-x, 0px));
+  top: calc(var(--tz-records-tab-adventure-y, 16.5) * 1% + var(--tz-records-tab-adventure-nudge-y, 0px));
+  width: calc(var(--tz-records-tab-adventure-w, 9.5) * 1%);
+  height: calc(var(--tz-records-tab-adventure-h, 11.5) * 1%);
+}
+
 .tz-records-field--tab-personal {
   left: calc(var(--tz-records-tab-personal-best-x, 88.9) * 1% + var(--tz-records-tab-personal-best-nudge-x, 0px));
-  top: calc(var(--tz-records-tab-personal-best-y, 20.9) * 1% + var(--tz-records-tab-personal-best-nudge-y, 0px));
+  top: calc(var(--tz-records-tab-personal-best-y, 28.5) * 1% + var(--tz-records-tab-personal-best-nudge-y, 0px));
   width: calc(var(--tz-records-tab-personal-best-w, 7.8) * 1%);
   height: calc(var(--tz-records-tab-personal-best-h, 10.7) * 1%);
 }
@@ -9571,7 +9578,29 @@ html.tz-phone-preview .tz-tileset-picker-frame {
     var(--tz-records-col-time-w, 30%);
 }
 
+.tz-records-panel[data-records-mode="adventure"] .tz-records-list__row {
+  grid-template-columns:
+    var(--tz-records-col-adv-rank-w, 10%)
+    var(--tz-records-col-adv-user-w, 26%)
+    var(--tz-records-col-paths-w, 14%)
+    var(--tz-records-col-adv-time-w, 16%)
+    var(--tz-records-col-adv-id-w, 34%);
+}
+
 .tz-records-list__cell--rank {
+  text-align: center;
+}
+
+.tz-records-list__cell--paths {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tz-records-list__cell--adv-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
@@ -9621,7 +9650,8 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   height: calc(var(--tz-records-btn-close-h, 5.2) * 1%);
 }
 
-.tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--daily-time {
+.tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--daily-time,
+.tz-records-panel[data-records-mode="adventure"] .tz-records-field--daily-time {
   display: none !important;
 }
 
@@ -9629,7 +9659,8 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   display: none !important;
 }
 
-.tz-records-hit[data-records-tab="personalBest"][hidden] {
+.tz-records-hit[data-records-tab="personalBest"][hidden],
+.tz-records-hit[data-records-tab="adventure"][hidden] {
   display: none !important;
 }
 

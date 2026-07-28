@@ -257,7 +257,7 @@ function isJournalRecordsContext() {
 function isLeaderboardRecordsView() {
   if (!isJournalRecordsContext()) return false;
   const panel = $('journalRecordsPanel');
-  return panel?.dataset?.recordsMode !== 'personal';
+  return panel?.dataset?.recordsMode === 'leaderboard';
 }
 
 async function navigateLeaderboardDay(direction) {

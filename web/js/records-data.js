@@ -610,6 +610,71 @@ export function buildRankedEntries(rows, { currentUserId, currentUsername } = {}
   }));
 }
 
+/** Rank adventure rows: paths completed desc, then last time asc. */
+export function buildAdventureRankedEntries(rows, { currentUserId, currentUsername } = {}) {
+  const sorted = [...(rows || [])].sort((a, b) => {
+    const pathsA = Number(a.pathsCompleted) || 0;
+    const pathsB = Number(b.pathsCompleted) || 0;
+    if (pathsB !== pathsA) return pathsB - pathsA;
+    const timeA = Number(a.completionTimeSeconds ?? a.lastTimeSec) || 1e9;
+    const timeB = Number(b.completionTimeSeconds ?? b.lastTimeSec) || 1e9;
+    return timeA - timeB;
+  });
+  return sorted.map((row, idx) => ({
+    rank: idx + 1,
+    user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
+    paths: String(Number(row.pathsCompleted) || 0),
+    time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
+    adventureId: row.adventureId != null && row.adventureId !== ''
+      ? String(row.adventureId)
+      : '—',
+    hintsUsedCount: hintBucket(row),
+    isGuestPreview: !!row.isGuestPreview,
+  }));
+}
+
+/**
+ * Fetch cross-user adventure leaderboard from MySQL API.
+ * @returns {Promise<object[]>}
+ */
+export async function fetchAdventureLeaderboardRows() {
+  try {
+    const res = await fetch('/api/adventure-leaderboard', {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!data?.ok || !Array.isArray(data.rows)) return [];
+    return data.rows.map((row) => ({
+      userId: row.userId,
+      username: row.username,
+      pathsCompleted: Number(row.pathsCompleted) || 0,
+      completionTimeSeconds: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
+      lastTimeSec: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
+      hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
+      adventureId: row.adventureId ?? '',
+      levelId: row.levelId || '',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function partitionAdventureLeaderboardByHints(rows) {
+  const { zero, one, two } = partitionLeaderboardByHints(rows);
+  const byPathsThenTime = (a, b) => {
+    const pathsA = Number(a.pathsCompleted) || 0;
+    const pathsB = Number(b.pathsCompleted) || 0;
+    if (pathsB !== pathsA) return pathsB - pathsA;
+    return (Number(a.completionTimeSeconds) || 1e9) - (Number(b.completionTimeSeconds) || 1e9);
+  };
+  zero.sort(byPathsThenTime);
+  one.sort(byPathsThenTime);
+  two.sort(byPathsThenTime);
+  return { zero, one, two };
+}
+
 export function boardSizeFromLevelId(levelId, levelLookup = null) {
   const key = String(levelId || '').trim().replace(/\.json$/i, '');
   if (!key) return null;
@@ -760,6 +825,14 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--puzzle">${escapeHtml(entry.puzzleId)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
       `;
+    } else if (mode === 'adventure') {
+      row.innerHTML = `
+        <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--user">${escapeHtml(entry.user)}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--paths">${escapeHtml(entry.paths)}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--adv-id">${escapeHtml(entry.adventureId)}</span>
+      `;
     } else {
       row.innerHTML = `
         <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
@@ -814,6 +887,22 @@ export const MOCK_PERSONAL_BEST_ROWS = {
   ],
 };
 
+export const MOCK_ADVENTURE_LEADERBOARD_ROWS = {
+  zero: [
+    { rank: 1, user: 'PathKing', paths: '42', time: '2:10', adventureId: '42' },
+    { rank: 2, user: 'TrailAce', paths: '38', time: '2:44', adventureId: '38' },
+    { rank: 3, user: 'MapNomad', paths: '31', time: '3:02', adventureId: '31' },
+    { rank: 4, user: 'RoutePro', paths: '27', time: '3:18', adventureId: '27' },
+  ],
+  one: [
+    { rank: 1, user: 'HintHiker', paths: '22', time: '3:40', adventureId: '22' },
+    { rank: 2, user: 'NudgeScout', paths: '18', time: '4:05', adventureId: '18' },
+  ],
+  two: [
+    { rank: 1, user: 'DoublePath', paths: '14', time: '5:12', adventureId: '14' },
+  ],
+};
+
 export function renderMockLeaderboardLists(root = document) {
   renderRecordsList(root.getElementById?.('recordsListTop') || root.querySelector?.('#recordsListTop'), MOCK_LEADERBOARD_ROWS.zero);
   renderRecordsList(root.getElementById?.('recordsListBl') || root.querySelector?.('#recordsListBl'), MOCK_LEADERBOARD_ROWS.one);
@@ -836,4 +925,22 @@ export function renderMockPersonalBestLists(root = document) {
     MOCK_PERSONAL_BEST_ROWS.two,
     { mode: 'personal', emptyText: 'No 2-hint bests yet.' },
   );
+}
+
+export function renderMockAdventureLeaderboardLists(root = document) {
+  const top = root.getElementById?.('recordsListTop') || root.querySelector?.('#recordsListTop');
+  const bl = root.getElementById?.('recordsListBl') || root.querySelector?.('#recordsListBl');
+  const br = root.getElementById?.('recordsListBr') || root.querySelector?.('#recordsListBr');
+  renderRecordsList(top, MOCK_ADVENTURE_LEADERBOARD_ROWS.zero, {
+    mode: 'adventure',
+    emptyText: 'No adventure times yet.',
+  });
+  renderRecordsList(bl, MOCK_ADVENTURE_LEADERBOARD_ROWS.one, {
+    mode: 'adventure',
+    emptyText: 'No 1-hint adventure times yet.',
+  });
+  renderRecordsList(br, MOCK_ADVENTURE_LEADERBOARD_ROWS.two, {
+    mode: 'adventure',
+    emptyText: 'No 2-hint adventure times yet.',
+  });
 }

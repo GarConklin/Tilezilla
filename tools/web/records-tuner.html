@@ -269,6 +269,10 @@
       border-color: rgba(232, 185, 35, 0.65);
       box-shadow: inset 0 0 0 1px rgba(232, 185, 35, 0.2);
     }
+    .records-tuner-page .mock-stage.preview-mode-adventure {
+      border-color: rgba(120, 180, 220, 0.75);
+      box-shadow: inset 0 0 0 1px rgba(120, 180, 220, 0.25);
+    }
     .records-tuner-page .mock-stage.preview-mode-personal {
       border-color: rgba(143, 212, 154, 0.65);
       box-shadow: inset 0 0 0 1px rgba(143, 212, 154, 0.2);
@@ -278,14 +282,17 @@
     .records-tuner-page.preview-mode-leaderboard .tz-records-field--daily-time {
       outline: 1px dashed rgba(232, 185, 35, 0.5);
     }
+    .records-tuner-page.preview-mode-adventure .tz-records-field--daily-date,
+    .records-tuner-page.preview-mode-adventure .tz-records-field--daily-puzzle-id {
+      outline: 1px dashed rgba(120, 180, 220, 0.55);
+    }
   </style>
 </head>
 <body>
   <h1>Records screen tuner</h1>
   <p class="lead">
-    Tune <code>PuzzleJournal-Records.png</code> for two sub-screens: <strong>Daily Leaderboard</strong>
-    (all-time best daily) and <strong>Personal Best</strong>
-    (your last daily completion + size/puzzle/time bests).
+    Tune <code>PuzzleJournal-Records.png</code> for three sub-screens:
+    <strong>Daily Leaderboard</strong>, <strong>Adventure Leaderboard</strong>, and <strong>Personal Best</strong>.
     Use the preview buttons to switch — controls and mock data change per tab. Saves to <code>data/records_layout.json</code>.
     <a href="/tools/journal-tuner.html">Journal tuner</a> ·
     <a href="/tilezilla-v2.html">Open game</a> ·
@@ -300,7 +307,8 @@
       <p class="mode-hint">Wheel = X% · Shift = Y% · Ctrl = W% · Alt = H% · Scroller: Ctrl=track Alt=pin</p>
       <p class="readout" id="readout">—</p>
       <div class="btn-row">
-        <button type="button" class="btn is-active" id="previewLeaderboardBtn">Preview: Leaderboard</button>
+        <button type="button" class="btn is-active" id="previewLeaderboardBtn">Preview: Daily</button>
+        <button type="button" class="btn" id="previewAdventureBtn">Preview: Adventure</button>
         <button type="button" class="btn" id="previewPersonalBtn">Preview: Personal best</button>
       </div>
       <div class="nudge-grid" id="nudgeGrid">
@@ -342,8 +350,15 @@
 
             <div class="tz-records-panel" id="journalRecordsPanel">
               <button type="button" class="tz-records-hit tz-records-field--tab-leaderboard tuner-box" data-item="tabLeaderboard" data-records-item="tabLeaderboard" data-records-tab="leaderboard">
-                <img class="tz-records-tab__art" src="/img/LeaderBoard-G.png" alt="" />
-                <span class="hit-label">Leaderboard tab</span>
+                <img class="tz-records-tab__art" src="/img/D-LeaderBoard-G.png" alt="" />
+                <span class="hit-label">Daily LB tab</span>
+                <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+              </button>
+              <button type="button" class="tz-records-hit tz-records-field--tab-adventure tuner-box" data-item="tabAdventure" data-records-item="tabAdventure" data-records-tab="adventure">
+                <img class="tz-records-tab__art" src="/img/A-LeaderBoard-W.png" alt="" />
+                <span class="hit-label">Adventure LB tab</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
                 <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
                 <span class="tuner-handle tuner-handle--se" data-handle="se"></span>

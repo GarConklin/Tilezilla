@@ -11,7 +11,7 @@ import {
   stashRecordsLayoutDraft,
 } from '/js/records-layout.js';
 import { initFancyScroller } from '/js/fancy-scroller.js';
-import { renderMockLeaderboardLists, renderMockPersonalBestLists, setRecordsHeaderFields, MOCK_RECORDS_HEADER, MOCK_PERSONAL_HEADER } from '/js/records-data.js';
+import { renderMockLeaderboardLists, renderMockPersonalBestLists, renderMockAdventureLeaderboardLists, setRecordsHeaderFields, MOCK_RECORDS_HEADER, MOCK_PERSONAL_HEADER } from '/js/records-data.js';
 
 const POS_STEP = 0.5;
 const SIZE_STEP = 0.5;
@@ -21,7 +21,7 @@ const TUNABLE_ITEMS = Object.keys(RECORDS_ITEM_DEFS).filter((k) => {
   const kind = RECORDS_ITEM_DEFS[k].kind;
   const screens = RECORDS_ITEM_DEFS[k].screens;
   if (!screens?.length) return false;
-  return kind === 'pane' || kind === 'btn' || kind === 'tab' || kind === 'list' || kind === 'scroller' || kind === 'text';
+  return kind === 'pane' || kind === 'btn' || kind === 'tab' || kind === 'list' || kind === 'scroller' || kind === 'text' || kind === 'col';
 });
 
 const PREVIEW_MODES = {
@@ -30,12 +30,24 @@ const PREVIEW_MODES = {
     title: 'Daily Leaderboard',
     detail: "Header: today's daily challenge (puzzle ID · date). Lists: rank · user · time.",
     mockStageClass: 'preview-mode-leaderboard',
+    btnId: 'previewLeaderboardBtn',
+    badge: 'DAILY LB',
+  },
+  adventure: {
+    tabKey: 'adventure',
+    title: 'Adventure Leaderboard',
+    detail: 'Lists: rank · user · paths · last time · Adv ID (0 / 1 / 2 hint panes).',
+    mockStageClass: 'preview-mode-adventure',
+    btnId: 'previewAdventureBtn',
+    badge: 'ADVENTURE LB',
   },
   personalBest: {
     tabKey: 'personal',
     title: 'Personal Best',
     detail: 'Header: your last daily completion (puzzle ID · date · time). Lists: size · puzzle ID · time.',
     mockStageClass: 'preview-mode-personal',
+    btnId: 'previewPersonalBtn',
+    badge: 'PERSONAL BEST',
   },
 };
 
@@ -45,12 +57,28 @@ const PANE_HIT_LABELS = {
     paneBl: 'LB · 1 hint',
     paneBr: 'LB · 2 hints',
   },
+  adventure: {
+    paneTop: 'Adv · 0 hints · rank/user/paths/time/id',
+    paneBl: 'Adv · 1 hint',
+    paneBr: 'Adv · 2 hints',
+  },
   personalBest: {
     paneTop: 'PB · 0 hints · size/id/time',
     paneBl: 'PB · 1 hint',
     paneBr: 'PB · 2 hints',
   },
 };
+
+const MOCK_ADVENTURE_HEADER = {
+  date: 'Adventure',
+  puzzleId: 'Paths · Time · Adv ID',
+};
+
+function previewModeKey() {
+  if (previewSubTab === 'adventure') return 'adventure';
+  if (previewSubTab === 'personalBest') return 'personal';
+  return 'leaderboard';
+}
 
 let workingLayout = mergeRecordsLayout(null);
 let currentItem = 'paneTop';
@@ -137,7 +165,7 @@ function cycleItem(backward = false) {
 }
 
 function getVisibleTunableItems() {
-  const modeKey = previewSubTab === 'leaderboard' ? 'leaderboard' : 'personal';
+  const modeKey = previewModeKey();
   return TUNABLE_ITEMS.filter((k) => itemScreens(k).includes(modeKey));
 }
 
@@ -151,7 +179,7 @@ function getModeOnlyItems(modeKey) {
 function getSharedItems() {
   return TUNABLE_ITEMS.filter((k) => {
     const s = itemScreens(k);
-    return s.includes('leaderboard') && s.includes('personal');
+    return s.includes('leaderboard') && s.includes('adventure') && s.includes('personal');
   });
 }
 
@@ -225,16 +253,21 @@ function rebuildFieldGrid() {
   els.fieldGrid.replaceChildren('');
   addFieldGridButton(DIALOG_ITEM);
 
-  const modeKey = previewSubTab === 'leaderboard' ? 'leaderboard' : 'personal';
+  const modeKey = previewModeKey();
   const modeOnly = getModeOnlyItems(modeKey);
   const shared = getSharedItems();
+  const sectionTitle = {
+    leaderboard: 'Daily Leaderboard tab only',
+    adventure: 'Adventure Leaderboard tab only',
+    personal: 'Personal Best tab only',
+  }[modeKey] || 'This tab only';
 
   if (modeOnly.length) {
-    addFieldGridSection(previewSubTab === 'leaderboard' ? 'Leaderboard tab only' : 'Personal Best tab only');
+    addFieldGridSection(sectionTitle);
     for (const key of modeOnly) addFieldGridButton(key);
   }
   if (shared.length) {
-    addFieldGridSection('Both tabs (same pane positions)');
+    addFieldGridSection('All tabs (same pane positions)');
     for (const key of shared) addFieldGridButton(key);
   }
 }
@@ -252,27 +285,29 @@ function updatePreviewBanner() {
   if (els.previewTitle) els.previewTitle.textContent = mode.title;
   if (els.previewDetail) els.previewDetail.textContent = mode.detail;
   if (els.previewModeBadge) {
-    els.previewModeBadge.textContent = previewSubTab === 'leaderboard' ? 'LEADERBOARD' : 'PERSONAL BEST';
+    els.previewModeBadge.textContent = mode.badge;
     els.previewModeBadge.dataset.mode = previewSubTab;
   }
   if (els.controlsModeHint) {
-    els.controlsModeHint.textContent = previewSubTab === 'leaderboard'
-      ? "Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time"
-      : 'Personal Best — header shows your last daily completion; lists are size / puzzle / time';
+    els.controlsModeHint.textContent = {
+      leaderboard: "Daily Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time",
+      adventure: 'Adventure Leaderboard — lists are rank / user / paths / last time / Adv ID',
+      personalBest: 'Personal Best — header shows your last daily completion; lists are size / puzzle / time',
+    }[previewSubTab] || mode.detail;
   }
   for (const [key, cfg] of Object.entries(PREVIEW_MODES)) {
-    $(cfg.btnId || (key === 'leaderboard' ? 'previewLeaderboardBtn' : 'previewPersonalBtn'))
-      ?.classList.toggle('is-active', previewSubTab === key);
+    $(cfg.btnId)?.classList.toggle('is-active', previewSubTab === key);
   }
-  els.mockStage?.classList.remove('preview-mode-leaderboard', 'preview-mode-personal');
+  els.mockStage?.classList.remove('preview-mode-leaderboard', 'preview-mode-adventure', 'preview-mode-personal');
   els.mockStage?.classList.add(mode.mockStageClass);
+  document.body.classList.remove('preview-mode-leaderboard', 'preview-mode-adventure', 'preview-mode-personal');
+  document.body.classList.add(mode.mockStageClass);
 }
 
 function syncPreviewSubTab() {
   const panel = $('journalRecordsPanel');
   if (!panel) return;
-  const isLeaderboard = previewSubTab === 'leaderboard';
-  panel.dataset.recordsMode = isLeaderboard ? 'leaderboard' : 'personal';
+  panel.dataset.recordsMode = previewModeKey();
   applyRecordsTabArt(workingLayout, document, previewSubTab);
   updatePaneHitLabels();
   updatePreviewBanner();
@@ -310,9 +345,15 @@ function refreshReadout() {
   }
   const box = getRecordsItemLayout(currentItem, workingLayout);
   const meta = RECORDS_ITEM_DEFS[currentItem];
-  const modeTag = previewSubTab === 'leaderboard' ? '[LB]' : '[PB]';
+  const modeTag = {
+    leaderboard: '[Daily]',
+    adventure: '[Adv]',
+    personalBest: '[PB]',
+  }[previewSubTab] || '[?]';
   if (meta?.kind === 'scroller') {
     els.readout.textContent = `${modeTag} ${meta.label}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}`;
+  } else if (meta?.kind === 'col') {
+    els.readout.textContent = `${modeTag} ${meta.label}: w=${box.w}%`;
   } else {
     els.readout.textContent = `${modeTag} ${meta?.label || currentItem}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
   }
@@ -328,6 +369,9 @@ function refresh() {
   if (previewSubTab === 'personalBest') {
     renderMockPersonalBestLists();
     setRecordsHeaderFields(document, { ...MOCK_PERSONAL_HEADER, showTime: true });
+  } else if (previewSubTab === 'adventure') {
+    renderMockAdventureLeaderboardLists();
+    setRecordsHeaderFields(document, { ...MOCK_ADVENTURE_HEADER, showTime: false });
   } else {
     renderMockLeaderboardLists();
     setRecordsHeaderFields(document, { ...MOCK_RECORDS_HEADER, showTime: false });
@@ -376,6 +420,7 @@ export async function initRecordsTuner() {
   rebuildFieldGrid();
 
   $('previewLeaderboardBtn')?.addEventListener('click', () => setPreviewSubTab('leaderboard'));
+  $('previewAdventureBtn')?.addEventListener('click', () => setPreviewSubTab('adventure'));
   $('previewPersonalBtn')?.addEventListener('click', () => setPreviewSubTab('personalBest'));
 
   wireScroller('top', 'recordsListTop', 'recordsScrollerTop', 'recordsScrollerTopTrack', 'recordsScrollerTopPin');

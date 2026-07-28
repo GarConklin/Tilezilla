@@ -1,4 +1,4 @@
-/** Puzzle Journal — Records tab (daily leaderboard + personal best). */
+/** Puzzle Journal — Records tab (daily / adventure leaderboard + personal best). */
 
 import { initFancyScroller } from './fancy-scroller.js';
 import {
@@ -10,10 +10,13 @@ import {
 } from './records-layout.js';
 import { getActiveUsername } from './tilezilla-guest.js';
 import {
+  buildAdventureRankedEntries,
   buildRankedEntries,
+  fetchAdventureLeaderboardRows,
   fetchLeaderboardRows,
   fetchPersonalBestPartitions,
   getGuestLeaderboardPreview,
+  partitionAdventureLeaderboardByHints,
   partitionLeaderboardByHints,
   renderRecordsList,
   resolveDailyChallengeHeader,
@@ -42,15 +45,22 @@ function recordsChallengeDateIso() {
   return iso || todayChallengeDateIso();
 }
 
+function recordsModeForTab(tab) {
+  if (tab === 'adventure') return 'adventure';
+  if (tab === 'personalBest') return 'personal';
+  return 'leaderboard';
+}
+
 function syncSubTabViews() {
   const panel = $('journalRecordsPanel');
   if (!panel) return;
-  const isLeaderboard = activeSubTab === 'leaderboard';
-  panel.dataset.recordsMode = isLeaderboard ? 'leaderboard' : 'personal';
-  syncRecordsHeaderVisibility(document, { showTime: !isLeaderboard });
+  panel.dataset.recordsMode = recordsModeForTab(activeSubTab);
+  syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
   const postDaily = getPostDailyLeaderboard();
   panel.querySelector('[data-records-tab="personalBest"]')
+    ?.toggleAttribute('hidden', postDaily);
+  panel.querySelector('[data-records-tab="adventure"]')
     ?.toggleAttribute('hidden', postDaily);
 }
 
@@ -82,6 +92,32 @@ async function renderLeaderboardLists(progress) {
   });
 }
 
+async function renderAdventureLeaderboardLists() {
+  const rows = await fetchAdventureLeaderboardRows();
+  const partitions = partitionAdventureLeaderboardByHints(rows);
+  const app = getApp();
+  const rankOpts = {
+    currentUserId: app?.state?.userId,
+    currentUsername: getActiveUsername(),
+  };
+  renderRecordsList(
+    $('recordsListTop'),
+    buildAdventureRankedEntries(partitions.zero, rankOpts),
+    { mode: 'adventure', emptyText: 'No adventure times yet.' },
+  );
+  renderRecordsList(
+    $('recordsListBl'),
+    buildAdventureRankedEntries(partitions.one, rankOpts),
+    { mode: 'adventure', emptyText: 'No 1-hint adventure times yet.' },
+  );
+  renderRecordsList(
+    $('recordsListBr'),
+    buildAdventureRankedEntries(partitions.two, rankOpts),
+    { mode: 'adventure', emptyText: 'No 2-hint adventure times yet.' },
+  );
+  setGuestPlacementBanner(document, null);
+}
+
 function renderPersonalBestLists(app) {
   const { zero, one, two } = fetchPersonalBestPartitions(app);
   renderRecordsList($('recordsListTop'), zero, { mode: 'personal', emptyText: 'No 0-hint bests yet.' });
@@ -103,6 +139,14 @@ export async function refreshRecordsView() {
     await renderLeaderboardLists(progress);
     const header = await resolveDailyChallengeHeader({ challengeDate });
     setRecordsHeaderFields(document, { ...header, showTime: false });
+  } else if (activeSubTab === 'adventure') {
+    await renderAdventureLeaderboardLists();
+    setRecordsHeaderFields(document, {
+      date: 'Adventure',
+      puzzleId: 'Paths · Time · Adv ID',
+      time: '—',
+      showTime: false,
+    });
   } else {
     renderPersonalBestLists(app);
     const last = resolveLastDailyCompletion(app);
@@ -122,7 +166,7 @@ export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
   recordsLayout = await loadRecordsLayout({ force });
   applyRecordsLayoutEverywhere(recordsLayout);
   syncRecordsItemVisibility(recordsLayout);
-  syncRecordsHeaderVisibility(document, { showTime: activeSubTab !== 'leaderboard' });
+  syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
   for (const scroller of Object.values(scrollers)) {
     scroller?.sync?.();
@@ -168,6 +212,9 @@ export function initRecordsPanel({
 
   panel.querySelector('[data-records-tab="leaderboard"]')?.addEventListener('click', () => {
     activateRecordsSubTab('leaderboard');
+  });
+  panel.querySelector('[data-records-tab="adventure"]')?.addEventListener('click', () => {
+    activateRecordsSubTab('adventure');
   });
   panel.querySelector('[data-records-tab="personalBest"]')?.addEventListener('click', () => {
     activateRecordsSubTab('personalBest');

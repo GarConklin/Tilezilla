@@ -2,39 +2,49 @@
 
 export const RECORDS_ART = { w: 933, h: 1686 };
 
-export const RECORDS_TAB_KEYS = ['leaderboard', 'personalBest'];
+export const RECORDS_TAB_KEYS = ['leaderboard', 'adventure', 'personalBest'];
 
 export const DEFAULT_RECORDS_TAB_ART = {
-  leaderboard: { idle: '/img/LeaderBoard-W.png', active: '/img/LeaderBoard-G.png' },
+  leaderboard: { idle: '/img/D-LeaderBoard-W.png', active: '/img/D-LeaderBoard-G.png' },
+  adventure: { idle: '/img/A-LeaderBoard-W.png', active: '/img/A-LeaderBoard-G.png' },
   personalBest: { idle: '/img/Personal-Best-W.png', active: '/img/Personal-Best-G.png' },
 };
 
+/** Shared panes/lists appear on all three Records sub-tabs. */
+const SCREENS_ALL = ['leaderboard', 'adventure', 'personal'];
+
 export const RECORDS_ITEM_DEFS = {
-  tabLeaderboard: { cssKey: 'tab-leaderboard', kind: 'tab', label: 'Tab — Leaderboard', tabKey: 'leaderboard', screens: ['leaderboard', 'personal'] },
-  tabPersonalBest: { cssKey: 'tab-personal', kind: 'tab', label: 'Tab — Personal Best', tabKey: 'personalBest', screens: ['leaderboard', 'personal'] },
-  fieldDailyPuzzleId: { cssKey: 'daily-puzzle-id', kind: 'text', label: 'Header — puzzle ID', slot: 'dailyPuzzleId', screens: ['leaderboard', 'personal'] },
-  fieldDailyDate: { cssKey: 'daily-date', kind: 'text', label: 'Header — date', slot: 'dailyDate', screens: ['leaderboard', 'personal'] },
+  tabLeaderboard: { cssKey: 'tab-leaderboard', kind: 'tab', label: 'Tab — Daily Leaderboard', tabKey: 'leaderboard', screens: SCREENS_ALL },
+  tabAdventure: { cssKey: 'tab-adventure', kind: 'tab', label: 'Tab — Adventure Leaderboard', tabKey: 'adventure', screens: SCREENS_ALL },
+  tabPersonalBest: { cssKey: 'tab-personal', kind: 'tab', label: 'Tab — Personal Best', tabKey: 'personalBest', screens: SCREENS_ALL },
+  fieldDailyPuzzleId: { cssKey: 'daily-puzzle-id', kind: 'text', label: 'Header — puzzle ID', slot: 'dailyPuzzleId', screens: SCREENS_ALL },
+  fieldDailyDate: { cssKey: 'daily-date', kind: 'text', label: 'Header — date', slot: 'dailyDate', screens: SCREENS_ALL },
   fieldDailyTime: { cssKey: 'daily-time', kind: 'text', label: 'Header — time', slot: 'dailyTime', screens: ['personal'] },
-  paneTop: { cssKey: 'pane-top', kind: 'pane', label: 'Top pane (0 hints)', screens: ['leaderboard', 'personal'] },
-  paneBl: { cssKey: 'pane-bl', kind: 'pane', label: 'Bottom-left pane (1 hint)', screens: ['leaderboard', 'personal'] },
-  paneBr: { cssKey: 'pane-br', kind: 'pane', label: 'Bottom-right pane (2 hints)', screens: ['leaderboard', 'personal'] },
-  listTop: { cssKey: 'list-top', kind: 'list', label: 'Top list scroll area', screens: ['leaderboard', 'personal'] },
-  scrollerTop: { cssKey: 'scroller-top', kind: 'scroller', label: 'Top scroll bar', screens: ['leaderboard', 'personal'] },
-  listBl: { cssKey: 'list-bl', kind: 'list', label: '1-hint list scroll area', screens: ['leaderboard', 'personal'] },
-  scrollerBl: { cssKey: 'scroller-bl', kind: 'scroller', label: '1-hint scroll bar', screens: ['leaderboard', 'personal'] },
-  listBr: { cssKey: 'list-br', kind: 'list', label: '2-hint list scroll area', screens: ['leaderboard', 'personal'] },
-  scrollerBr: { cssKey: 'scroller-br', kind: 'scroller', label: '2-hint scroll bar', screens: ['leaderboard', 'personal'] },
-  listRow: { cssKey: 'list-row', kind: 'listRow', label: 'List row spacing / font', screens: ['leaderboard', 'personal'] },
-  colRank: { cssKey: 'col-rank', kind: 'col', label: 'LB column — rank', screens: ['leaderboard'] },
-  colUser: { cssKey: 'col-user', kind: 'col', label: 'LB column — username', screens: ['leaderboard'] },
-  colTime: { cssKey: 'col-time', kind: 'col', label: 'Column — time', screens: ['leaderboard', 'personal'] },
+  paneTop: { cssKey: 'pane-top', kind: 'pane', label: 'Top pane (0 hints)', screens: SCREENS_ALL },
+  paneBl: { cssKey: 'pane-bl', kind: 'pane', label: 'Bottom-left pane (1 hint)', screens: SCREENS_ALL },
+  paneBr: { cssKey: 'pane-br', kind: 'pane', label: 'Bottom-right pane (2 hints)', screens: SCREENS_ALL },
+  listTop: { cssKey: 'list-top', kind: 'list', label: 'Top list scroll area', screens: SCREENS_ALL },
+  scrollerTop: { cssKey: 'scroller-top', kind: 'scroller', label: 'Top scroll bar', screens: SCREENS_ALL },
+  listBl: { cssKey: 'list-bl', kind: 'list', label: '1-hint list scroll area', screens: SCREENS_ALL },
+  scrollerBl: { cssKey: 'scroller-bl', kind: 'scroller', label: '1-hint scroll bar', screens: SCREENS_ALL },
+  listBr: { cssKey: 'list-br', kind: 'list', label: '2-hint list scroll area', screens: SCREENS_ALL },
+  scrollerBr: { cssKey: 'scroller-br', kind: 'scroller', label: '2-hint scroll bar', screens: SCREENS_ALL },
+  listRow: { cssKey: 'list-row', kind: 'listRow', label: 'List row spacing / font', screens: SCREENS_ALL },
+  colRank: { cssKey: 'col-rank', kind: 'col', label: 'Daily LB — rank', screens: ['leaderboard'] },
+  colUser: { cssKey: 'col-user', kind: 'col', label: 'Daily LB — username', screens: ['leaderboard'] },
+  colTime: { cssKey: 'col-time', kind: 'col', label: 'Daily/PB — time', screens: ['leaderboard', 'personal'] },
+  colAdvRank: { cssKey: 'col-adv-rank', kind: 'col', label: 'Adv LB — rank', screens: ['adventure'] },
+  colAdvUser: { cssKey: 'col-adv-user', kind: 'col', label: 'Adv LB — username', screens: ['adventure'] },
+  colPaths: { cssKey: 'col-paths', kind: 'col', label: 'Adv LB — paths completed', screens: ['adventure'] },
+  colAdvTime: { cssKey: 'col-adv-time', kind: 'col', label: 'Adv LB — last time', screens: ['adventure'] },
+  colAdvId: { cssKey: 'col-adv-id', kind: 'col', label: 'Adv LB — adventure ID', screens: ['adventure'] },
   colSize: { cssKey: 'col-size', kind: 'col', label: 'PB column — board size', screens: ['personal'] },
   colPuzzle: { cssKey: 'col-puzzle', kind: 'col', label: 'PB column — puzzle ID', screens: ['personal'] },
   personalPane: { cssKey: 'personal-pane', kind: 'pane', label: '(legacy) personal pane', screens: [] },
   listPersonal: { cssKey: 'list-personal', kind: 'list', label: '(legacy) personal list', screens: [] },
   scrollerPersonal: { cssKey: 'scroller-personal', kind: 'scroller', label: '(legacy) personal scroll', screens: [] },
-  btnBack: { cssKey: 'btn-back', kind: 'btn', label: 'Back (gold)', screens: ['leaderboard', 'personal'] },
-  btnClose: { cssKey: 'btn-close', kind: 'btn', label: 'Close (gold X)', screens: ['leaderboard', 'personal'] },
+  btnBack: { cssKey: 'btn-back', kind: 'btn', label: 'Back (gold)', screens: SCREENS_ALL },
+  btnClose: { cssKey: 'btn-close', kind: 'btn', label: 'Close (gold X)', screens: SCREENS_ALL },
 };
 
 export const DEFAULT_RECORDS_LAYOUT = {
@@ -53,7 +63,8 @@ export const DEFAULT_RECORDS_LAYOUT = {
   tabs: { ...DEFAULT_RECORDS_TAB_ART },
   items: {
     tabLeaderboard: { x: 88.2, y: 8.5, w: 8.8, h: 11.2, nudgeX: 0, nudgeY: 0 },
-    tabPersonalBest: { x: 88.9, y: 20.9, w: 7.8, h: 10.7, nudgeX: 0, nudgeY: 0 },
+    tabAdventure: { x: 88.5, y: 16.5, w: 9.5, h: 11.5, nudgeX: 0, nudgeY: 0 },
+    tabPersonalBest: { x: 88.9, y: 28.5, w: 7.8, h: 10.7, nudgeX: 0, nudgeY: 0 },
     fieldDailyPuzzleId: { x: 10, y: 13.2, w: 34, h: 3.2, fontScale: 1.15, nudgeX: 0, nudgeY: 0 },
     fieldDailyDate: { x: 44, y: 13.2, w: 32, h: 3.2, fontScale: 1.05, nudgeX: 0, nudgeY: 0 },
     fieldDailyTime: { x: 76, y: 13.2, w: 14, h: 3.2, fontScale: 1.15, nudgeX: 0, nudgeY: 0 },
@@ -70,6 +81,11 @@ export const DEFAULT_RECORDS_LAYOUT = {
     colRank: { w: 18 },
     colUser: { w: 52 },
     colTime: { w: 30 },
+    colAdvRank: { w: 10 },
+    colAdvUser: { w: 26 },
+    colPaths: { w: 14 },
+    colAdvTime: { w: 16 },
+    colAdvId: { w: 34 },
     colSize: { w: 22 },
     colPuzzle: { w: 48 },
     personalPane: { x: 7.5, y: 16.5, w: 79, h: 64, nudgeX: 0, nudgeY: 0, hidden: true },
@@ -350,7 +366,7 @@ export function syncRecordsItemVisibility(layout, root = document) {
     }
   }
   const recordsMode = panel.dataset.recordsMode || 'leaderboard';
-  if (recordsMode === 'leaderboard') {
+  if (recordsMode === 'leaderboard' || recordsMode === 'adventure') {
     panel.querySelectorAll('[data-records-item="fieldDailyTime"], .tz-records-field--daily-time').forEach((el) => {
       el.hidden = true;
     });
