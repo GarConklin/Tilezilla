@@ -4,13 +4,27 @@ export const RECORDS_ART = { w: 933, h: 1686 };
 
 export const RECORDS_TAB_KEYS = ['leaderboard', 'adventure', 'personalBest'];
 
+/** Layout mode keys used by data-records-mode / byMode (personalBest tab → personal). */
+export const RECORDS_MODE_KEYS = ['leaderboard', 'adventure', 'personal'];
+
+/**
+ * Pane / list / scroller / row spacing — independent per Records tab.
+ * Shared chrome (tabs, header, buttons, columns) stays in `items`.
+ */
+export const RECORDS_MODE_ITEM_KEYS = [
+  'paneTop', 'paneBl', 'paneBr',
+  'listTop', 'listBl', 'listBr',
+  'scrollerTop', 'scrollerBl', 'scrollerBr',
+  'listRowTop', 'listRowBl', 'listRowBr',
+];
+
 export const DEFAULT_RECORDS_TAB_ART = {
   leaderboard: { idle: '/img/D-LeaderBoard-W.png', active: '/img/D-LeaderBoard-G.png' },
   adventure: { idle: '/img/A-LeaderBoard-W.png', active: '/img/A-LeaderBoard-G.png' },
   personalBest: { idle: '/img/Personal-Best-W.png', active: '/img/Personal-Best-G.png' },
 };
 
-/** Shared panes/lists appear on all three Records sub-tabs. */
+/** Shared chrome appears on all three Records sub-tabs. */
 const SCREENS_ALL = ['leaderboard', 'adventure', 'personal'];
 
 export const RECORDS_ITEM_DEFS = {
@@ -20,16 +34,19 @@ export const RECORDS_ITEM_DEFS = {
   fieldDailyPuzzleId: { cssKey: 'daily-puzzle-id', kind: 'text', label: 'Header — puzzle ID', slot: 'dailyPuzzleId', screens: SCREENS_ALL },
   fieldDailyDate: { cssKey: 'daily-date', kind: 'text', label: 'Header — date', slot: 'dailyDate', screens: SCREENS_ALL },
   fieldDailyTime: { cssKey: 'daily-time', kind: 'text', label: 'Header — time', slot: 'dailyTime', screens: ['personal'] },
-  paneTop: { cssKey: 'pane-top', kind: 'pane', label: 'Top pane (0 hints)', screens: SCREENS_ALL },
-  paneBl: { cssKey: 'pane-bl', kind: 'pane', label: 'Bottom-left pane (1 hint)', screens: SCREENS_ALL },
-  paneBr: { cssKey: 'pane-br', kind: 'pane', label: 'Bottom-right pane (2 hints)', screens: SCREENS_ALL },
-  listTop: { cssKey: 'list-top', kind: 'list', label: 'Top list scroll area', screens: SCREENS_ALL },
-  scrollerTop: { cssKey: 'scroller-top', kind: 'scroller', label: 'Top scroll bar', screens: SCREENS_ALL },
-  listBl: { cssKey: 'list-bl', kind: 'list', label: '1-hint list scroll area', screens: SCREENS_ALL },
-  scrollerBl: { cssKey: 'scroller-bl', kind: 'scroller', label: '1-hint scroll bar', screens: SCREENS_ALL },
-  listBr: { cssKey: 'list-br', kind: 'list', label: '2-hint list scroll area', screens: SCREENS_ALL },
-  scrollerBr: { cssKey: 'scroller-br', kind: 'scroller', label: '2-hint scroll bar', screens: SCREENS_ALL },
-  listRow: { cssKey: 'list-row', kind: 'listRow', label: 'List row spacing / font', screens: SCREENS_ALL },
+  paneTop: { cssKey: 'pane-top', kind: 'pane', label: '0-hint pane', screens: SCREENS_ALL, modeLocal: true, panel: 'top' },
+  paneBl: { cssKey: 'pane-bl', kind: 'pane', label: '1-hint pane', screens: SCREENS_ALL, modeLocal: true, panel: 'bl' },
+  paneBr: { cssKey: 'pane-br', kind: 'pane', label: '2-hint pane', screens: SCREENS_ALL, modeLocal: true, panel: 'br' },
+  listTop: { cssKey: 'list-top', kind: 'list', label: '0-hint list area', screens: SCREENS_ALL, modeLocal: true, panel: 'top' },
+  scrollerTop: { cssKey: 'scroller-top', kind: 'scroller', label: '0-hint scroll bar', screens: SCREENS_ALL, modeLocal: true, panel: 'top' },
+  listRowTop: { cssKey: 'list-row-top', kind: 'listRow', label: '0-hint row spacing / font', screens: SCREENS_ALL, modeLocal: true, panel: 'top' },
+  listBl: { cssKey: 'list-bl', kind: 'list', label: '1-hint list area', screens: SCREENS_ALL, modeLocal: true, panel: 'bl' },
+  scrollerBl: { cssKey: 'scroller-bl', kind: 'scroller', label: '1-hint scroll bar', screens: SCREENS_ALL, modeLocal: true, panel: 'bl' },
+  listRowBl: { cssKey: 'list-row-bl', kind: 'listRow', label: '1-hint row spacing / font', screens: SCREENS_ALL, modeLocal: true, panel: 'bl' },
+  listBr: { cssKey: 'list-br', kind: 'list', label: '2-hint list area', screens: SCREENS_ALL, modeLocal: true, panel: 'br' },
+  scrollerBr: { cssKey: 'scroller-br', kind: 'scroller', label: '2-hint scroll bar', screens: SCREENS_ALL, modeLocal: true, panel: 'br' },
+  listRowBr: { cssKey: 'list-row-br', kind: 'listRow', label: '2-hint row spacing / font', screens: SCREENS_ALL, modeLocal: true, panel: 'br' },
+  listRow: { cssKey: 'list-row', kind: 'listRow', label: '(legacy) shared row spacing', screens: [] },
   colRank: { cssKey: 'col-rank', kind: 'col', label: 'Daily LB — rank', screens: ['leaderboard'] },
   colUser: { cssKey: 'col-user', kind: 'col', label: 'Daily LB — username', screens: ['leaderboard'] },
   colTime: { cssKey: 'col-time', kind: 'col', label: 'Daily/PB — time', screens: ['leaderboard', 'personal'] },
@@ -47,6 +64,22 @@ export const RECORDS_ITEM_DEFS = {
   btnBack: { cssKey: 'btn-back', kind: 'btn', label: 'Back (gold)', screens: SCREENS_ALL },
   btnClose: { cssKey: 'btn-close', kind: 'btn', label: 'Close (gold X)', screens: SCREENS_ALL },
 };
+
+export function normalizeRecordsMode(modeOrTab) {
+  if (modeOrTab === 'personalBest' || modeOrTab === 'personal') return 'personal';
+  if (modeOrTab === 'adventure') return 'adventure';
+  return 'leaderboard';
+}
+
+export function detectRecordsMode(root = document) {
+  const panel = root.getElementById?.('journalRecordsPanel')
+    || root.querySelector?.('#journalRecordsPanel');
+  return normalizeRecordsMode(panel?.dataset?.recordsMode || 'leaderboard');
+}
+
+export function isRecordsModeItem(itemKey) {
+  return RECORDS_MODE_ITEM_KEYS.includes(itemKey);
+}
 
 export const DEFAULT_RECORDS_LAYOUT = {
   dialog: {
@@ -72,12 +105,16 @@ export const DEFAULT_RECORDS_LAYOUT = {
     paneTop: { x: 10.6, y: 15.3, w: 74, h: 32.1, nudgeX: 0, nudgeY: 0 },
     paneBl: { x: 8.4, y: 61.4, w: 37, h: 30.2, nudgeX: 0, nudgeY: 0 },
     paneBr: { x: 49, y: 61.5, w: 36, h: 30, nudgeX: 0, nudgeY: 0 },
-    listTop: { x: 10, y: 22, w: 74, h: 22, nudgeX: 0, nudgeY: 0 },
+    /* List areas are % inside their pane (not the full Records frame). */
+    listTop: { x: 3, y: 12, w: 92, h: 84, nudgeX: 0, nudgeY: 0 },
     scrollerTop: { x: 84.5, y: 22, h: 24, trackScale: 0.55, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
-    listBl: { x: 10.25, y: 56, w: 33, h: 22, nudgeX: 0, nudgeY: 0 },
+    listRowTop: { fontScale: 1, padY: 4, padX: 6, gap: 2 },
+    listBl: { x: 3, y: 14, w: 90, h: 82, nudgeX: 0, nudgeY: 0 },
     scrollerBl: { x: 43.5, y: 56, h: 20, trackScale: 0.5, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
-    listBr: { x: 52, y: 56, w: 33, h: 22, nudgeX: 0, nudgeY: 0 },
+    listRowBl: { fontScale: 1, padY: 4, padX: 6, gap: 2 },
+    listBr: { x: 3, y: 14, w: 90, h: 82, nudgeX: 0, nudgeY: 0 },
     scrollerBr: { x: 85.5, y: 56, h: 20, trackScale: 0.5, pinScale: 0.66, nudgeX: 0, nudgeY: 0 },
+    listRowBr: { fontScale: 1, padY: 4, padX: 6, gap: 2 },
     listRow: { fontScale: 1, padY: 4, padX: 6, gap: 2 },
     colRank: { w: 18 },
     colUser: { w: 52 },
@@ -96,6 +133,7 @@ export const DEFAULT_RECORDS_LAYOUT = {
     btnBack: { x: 6.2, y: 1.9, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
     btnClose: { x: 78.2, y: 1.4, w: 9, h: 5.2, nudgeX: 0, nudgeY: 0, hidden: false },
   },
+  byMode: {},
 };
 
 const LS_LAYOUT_KEY = 'tilezilla:layouts:records';
@@ -133,9 +171,56 @@ function mergeBox(base, raw) {
   return { ...base, ...raw };
 }
 
+function cloneDefaultModeItems(sharedItems = {}) {
+  const legacyRow = sharedItems.listRow || DEFAULT_RECORDS_LAYOUT.items.listRow;
+  const out = {};
+  for (const key of RECORDS_MODE_ITEM_KEYS) {
+    const def = DEFAULT_RECORDS_LAYOUT.items[key] || {};
+    if (key.startsWith('listRow')) {
+      out[key] = { ...def, ...legacyRow };
+      continue;
+    }
+    if (key.startsWith('list')) {
+      // Pane-relative insets — do not import old frame-absolute list coords.
+      out[key] = { ...def };
+      continue;
+    }
+    const fromShared = sharedItems[key];
+    out[key] = fromShared && typeof fromShared === 'object'
+      ? mergeBox(def, fromShared)
+      : { ...def };
+  }
+  return out;
+}
+
+function normalizeBox(def, box) {
+  return {
+    x: box.x ?? def.x ?? 0,
+    y: box.y ?? def.y ?? 0,
+    w: box.w ?? def.w ?? 10,
+    h: box.h ?? def.h ?? 10,
+    nudgeX: box.nudgeX ?? def.nudgeX ?? 0,
+    nudgeY: box.nudgeY ?? def.nudgeY ?? 0,
+    fontScale: box.fontScale ?? def.fontScale ?? 1,
+    padX: box.padX ?? def.padX ?? 6,
+    padY: box.padY ?? def.padY ?? 4,
+    gap: box.gap ?? def.gap ?? 2,
+    trackScale: box.trackScale ?? def.trackScale ?? 0.34,
+    pinScale: box.pinScale ?? def.pinScale ?? 0.66,
+    hidden: Boolean(box.hidden ?? def.hidden),
+  };
+}
+
 export function mergeRecordsLayout(raw) {
   const base = JSON.parse(JSON.stringify(DEFAULT_RECORDS_LAYOUT));
-  if (!raw || typeof raw !== 'object') return base;
+  if (!raw || typeof raw !== 'object') {
+    base.byMode = {
+      leaderboard: cloneDefaultModeItems(base.items),
+      adventure: cloneDefaultModeItems(base.items),
+      personal: cloneDefaultModeItems(base.items),
+    };
+    return base;
+  }
   if (raw.dialog && typeof raw.dialog === 'object') {
     base.dialog = { ...base.dialog, ...raw.dialog };
   }
@@ -153,6 +238,24 @@ export function mergeRecordsLayout(raw) {
     for (const [key, val] of Object.entries(raw.items)) {
       if (!RECORDS_ITEM_DEFS[key] || typeof val !== 'object') continue;
       base.items[key] = mergeBox(base.items[key] || {}, val);
+    }
+  }
+
+  const seeded = cloneDefaultModeItems(base.items);
+  base.byMode = {
+    leaderboard: JSON.parse(JSON.stringify(seeded)),
+    adventure: JSON.parse(JSON.stringify(seeded)),
+    personal: JSON.parse(JSON.stringify(seeded)),
+  };
+  if (raw.byMode && typeof raw.byMode === 'object') {
+    for (const mode of RECORDS_MODE_KEYS) {
+      const modeRaw = raw.byMode[mode];
+      if (!modeRaw || typeof modeRaw !== 'object') continue;
+      for (const key of RECORDS_MODE_ITEM_KEYS) {
+        if (modeRaw[key] && typeof modeRaw[key] === 'object') {
+          base.byMode[mode][key] = mergeBox(base.byMode[mode][key] || {}, modeRaw[key]);
+        }
+      }
     }
   }
   return base;
@@ -197,25 +300,18 @@ export async function loadRecordsLayout({ force = false, fromDisk = false } = {}
   return layoutCache;
 }
 
-export function getRecordsItemLayout(itemKey, layout) {
+export function getRecordsItemLayout(itemKey, layout, mode = null) {
   const merged = mergeRecordsLayout(layout);
   const def = DEFAULT_RECORDS_LAYOUT.items[itemKey] || {};
-  const box = merged.items[itemKey] || {};
-  return {
-    x: box.x ?? def.x ?? 0,
-    y: box.y ?? def.y ?? 0,
-    w: box.w ?? def.w ?? 10,
-    h: box.h ?? def.h ?? 10,
-    nudgeX: box.nudgeX ?? def.nudgeX ?? 0,
-    nudgeY: box.nudgeY ?? def.nudgeY ?? 0,
-    fontScale: box.fontScale ?? def.fontScale ?? 1,
-    padX: box.padX ?? def.padX ?? 6,
-    padY: box.padY ?? def.padY ?? 4,
-    gap: box.gap ?? def.gap ?? 2,
-    trackScale: box.trackScale ?? def.trackScale ?? 0.34,
-    pinScale: box.pinScale ?? def.pinScale ?? 0.66,
-    hidden: Boolean(box.hidden ?? def.hidden),
-  };
+  let box = merged.items[itemKey] || {};
+  if (isRecordsModeItem(itemKey)) {
+    const modeKey = normalizeRecordsMode(mode || 'leaderboard');
+    const modeBox = merged.byMode?.[modeKey]?.[itemKey];
+    if (modeBox && typeof modeBox === 'object') {
+      box = modeBox;
+    }
+  }
+  return normalizeBox(def, box);
 }
 
 export function getRecordsTabArtSrc(tabKey, layout, { active = false } = {}) {
@@ -235,7 +331,7 @@ function recordsFontCqi(pxAtDesign, designW, scale = 1) {
   return `${((pxAtDesign / w) * 100 * scale).toFixed(3)}cqi`;
 }
 
-function applyRecordsBoxVars(target, itemKey, box, meta) {
+function applyRecordsBoxVars(target, itemKey, box, meta, designW = 394) {
   if (meta.kind === 'col') {
     target.style.setProperty(cssVarName(itemKey, 'w'), `${box.w}%`);
     return;
@@ -245,6 +341,10 @@ function applyRecordsBoxVars(target, itemKey, box, meta) {
     target.style.setProperty(cssVarName(itemKey, 'pad-x'), `${box.padX}px`);
     target.style.setProperty(cssVarName(itemKey, 'pad-y'), `${box.padY}px`);
     target.style.setProperty(cssVarName(itemKey, 'gap'), `${box.gap}px`);
+    target.style.setProperty(
+      cssVarName(itemKey, 'font-size'),
+      recordsFontCqi(10.3, designW, box.fontScale ?? 1),
+    );
     return;
   }
   if (['pane', 'list', 'btn', 'tab', 'text'].includes(meta.kind)) {
@@ -274,14 +374,16 @@ function applyRecordsBoxVars(target, itemKey, box, meta) {
 }
 
 /** Push tuned box onto live DOM so layout cannot drift (tuner + in-game). */
-export function applyRecordsItemPositions(layout, root = document) {
+export function applyRecordsItemPositions(layout, root = document, mode = null) {
   const merged = mergeRecordsLayout(layout);
+  const modeKey = normalizeRecordsMode(mode || detectRecordsMode(root));
   const panel = root.getElementById?.('journalRecordsPanel') || root.querySelector?.('#journalRecordsPanel');
   if (!panel) return;
 
   for (const [itemKey, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
-    const box = getRecordsItemLayout(itemKey, merged);
     if (!['pane', 'list', 'btn', 'tab', 'scroller', 'text'].includes(meta.kind)) continue;
+    if (meta.screens && meta.screens.length === 0) continue;
+    const box = getRecordsItemLayout(itemKey, merged, modeKey);
     const style = {
       position: 'absolute',
       left: `calc(${box.x}% + ${box.nudgeX ?? 0}px)`,
@@ -304,8 +406,9 @@ export function applyRecordsItemPositions(layout, root = document) {
   }
 }
 
-export function applyRecordsLayout(layout, target = document.documentElement) {
+export function applyRecordsLayout(layout, target = document.documentElement, mode = null) {
   const merged = mergeRecordsLayout(layout);
+  const modeKey = normalizeRecordsMode(mode || 'leaderboard');
   const d = merged.dialog || DEFAULT_RECORDS_LAYOUT.dialog;
   target.style.setProperty('--tz-records-max-width', `${d.maxDesignWidth ?? 394}px`);
   target.style.setProperty('--tz-records-display-pad', `${d.displayPad ?? 16}px`);
@@ -317,16 +420,19 @@ export function applyRecordsLayout(layout, target = document.documentElement) {
   target.style.setProperty('--tz-records-header-font', typo.headerFont || 'calc(0.52rem + 1px)');
 
   const designW = Number(d.maxDesignWidth ?? 394) || 394;
-  const listRow = getRecordsItemLayout('listRow', merged);
-  // Match prior rem sizing (~0.58rem+1px ≈ 10.3px at 1× design width).
+  // Legacy fallback used when a pane-specific row font is missing.
+  const legacyRow = getRecordsItemLayout('listRowTop', merged, modeKey);
   target.style.setProperty(
     '--tz-records-list-row-font-size',
-    recordsFontCqi(10.3, designW, listRow.fontScale ?? 1),
+    recordsFontCqi(10.3, designW, legacyRow.fontScale ?? 1),
   );
+  target.style.setProperty('--tz-records-list-row-pad-x', `${legacyRow.padX ?? 6}px`);
+  target.style.setProperty('--tz-records-list-row-pad-y', `${legacyRow.padY ?? 4}px`);
+  target.style.setProperty('--tz-records-list-row-gap', `${legacyRow.gap ?? 2}px`);
 
   for (const [itemKey, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
     if (meta.kind !== 'text') continue;
-    const box = getRecordsItemLayout(itemKey, merged);
+    const box = getRecordsItemLayout(itemKey, merged, modeKey);
     target.style.setProperty(
       `--tz-records-field-${meta.cssKey}-font-size`,
       recordsFontCqi(10.3, designW, box.fontScale ?? 1),
@@ -334,27 +440,30 @@ export function applyRecordsLayout(layout, target = document.documentElement) {
   }
 
   for (const itemKey of Object.keys(RECORDS_ITEM_DEFS)) {
-    const box = getRecordsItemLayout(itemKey, merged);
     const meta = RECORDS_ITEM_DEFS[itemKey];
-    applyRecordsBoxVars(target, itemKey, box, meta);
+    if (meta.screens && meta.screens.length === 0) continue;
+    const box = getRecordsItemLayout(itemKey, merged, modeKey);
+    applyRecordsBoxVars(target, itemKey, box, meta, designW);
   }
 }
 
-export function applyRecordsLayoutEverywhere(layout, root = document) {
-  applyRecordsLayout(layout, root.documentElement || document.documentElement);
+export function applyRecordsLayoutEverywhere(layout, root = document, mode = null) {
+  const modeKey = normalizeRecordsMode(mode || detectRecordsMode(root));
+  applyRecordsLayout(layout, root.documentElement || document.documentElement, modeKey);
   const frame = root.getElementById?.('mockFrame')
     || root.querySelector?.('#journalRecordsPanel')?.closest?.('.tz-journal-dialog__frame')
     || root.querySelector?.('.tz-journal-dialog__frame');
-  if (frame) applyRecordsLayout(layout, frame);
-  applyRecordsItemPositions(layout, root);
+  if (frame) applyRecordsLayout(layout, frame, modeKey);
+  applyRecordsItemPositions(layout, root, modeKey);
 }
 
-export function syncRecordsItemVisibility(layout, root = document) {
+export function syncRecordsItemVisibility(layout, root = document, mode = null) {
   const merged = mergeRecordsLayout(layout);
+  const modeKey = normalizeRecordsMode(mode || detectRecordsMode(root));
   const panel = root.getElementById?.('journalRecordsPanel') || root.querySelector?.('#journalRecordsPanel');
   if (!panel) return;
   for (const [key, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
-    const box = getRecordsItemLayout(key, merged);
+    const box = getRecordsItemLayout(key, merged, modeKey);
     const hidden = Boolean(box.hidden);
     if (meta.kind === 'tab') {
       panel.querySelectorAll(`[data-records-tab="${meta.tabKey}"]`).forEach((el) => {
@@ -368,8 +477,7 @@ export function syncRecordsItemVisibility(layout, root = document) {
       });
     }
   }
-  const recordsMode = panel.dataset.recordsMode || 'leaderboard';
-  if (recordsMode === 'leaderboard' || recordsMode === 'adventure') {
+  if (modeKey === 'leaderboard' || modeKey === 'adventure') {
     panel.querySelectorAll('[data-records-item="fieldDailyTime"], .tz-records-field--daily-time').forEach((el) => {
       el.hidden = true;
     });
@@ -391,23 +499,26 @@ export function applyRecordsTabArt(layout, root = document, activeTab = 'leaderb
   }
 }
 
-export function buildRecordsLayoutReport(layout) {
+export function buildRecordsLayoutReport(layout, mode = null) {
   const merged = mergeRecordsLayout(layout);
-  const lines = ['Records screen layout', ''];
+  const modeKey = normalizeRecordsMode(mode || 'leaderboard');
+  const lines = ['Records screen layout', `Active tab mode: ${modeKey}`, ''];
   const d = merged.dialog || {};
   lines.push(`maxDesignWidth: ${d.maxDesignWidth ?? 394}px`);
   lines.push('');
   for (const [key, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
-    const box = getRecordsItemLayout(key, merged);
+    if (meta.screens && meta.screens.length === 0) continue;
+    const box = getRecordsItemLayout(key, merged, modeKey);
     const hiddenNote = box.hidden ? ' hidden' : '';
+    const modeNote = isRecordsModeItem(key) ? ` [${modeKey}]` : '';
     if (meta.kind === 'listRow') {
-      lines.push(`${meta.label}: fontScale=${box.fontScale} pad=${box.padY}/${box.padX}px gap=${box.gap}px${hiddenNote}`);
+      lines.push(`${meta.label}${modeNote}: fontScale=${box.fontScale} pad=${box.padY}/${box.padX}px gap=${box.gap}px${hiddenNote}`);
     } else if (meta.kind === 'col') {
       lines.push(`${meta.label}: w=${box.w}%${hiddenNote}`);
     } else if (meta.kind === 'scroller') {
-      lines.push(`${meta.label}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}${hiddenNote}`);
+      lines.push(`${meta.label}${modeNote}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}${hiddenNote}`);
     } else {
-      lines.push(`${meta.label}: x=${box.x}% y=${box.y}% w=${box.w ?? '—'}% h=${box.h ?? '—'}%${hiddenNote}`);
+      lines.push(`${meta.label}${modeNote}: x=${box.x}% y=${box.y}% w=${box.w ?? '—'}% h=${box.h ?? '—'}%${hiddenNote}`);
     }
   }
   return lines.join('\n');
@@ -415,7 +526,8 @@ export function buildRecordsLayoutReport(layout) {
 
 export async function initRecordsLayout(root = document) {
   const layout = await loadRecordsLayout({ force: false });
-  applyRecordsLayoutEverywhere(layout, root);
-  syncRecordsItemVisibility(layout, root);
+  const mode = detectRecordsMode(root);
+  applyRecordsLayoutEverywhere(layout, root, mode);
+  syncRecordsItemVisibility(layout, root, mode);
   return layout;
 }

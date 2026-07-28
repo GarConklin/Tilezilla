@@ -9418,19 +9418,34 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-field--pane-top .tz-records-list-scroll,
-.tz-records-field--personal-pane .tz-records-list-scroll {
-  left: 3%;
-  top: 12%;
-  width: 92%;
-  height: 84%;
+.tz-records-list-scroll[data-records-item="listTop"] {
+  left: calc(var(--tz-records-list-top-x, 3) * 1% + var(--tz-records-list-top-nudge-x, 0px));
+  top: calc(var(--tz-records-list-top-y, 12) * 1% + var(--tz-records-list-top-nudge-y, 0px));
+  width: calc(var(--tz-records-list-top-w, 92) * 1%);
+  height: calc(var(--tz-records-list-top-h, 84) * 1%);
 }
 
 .tz-records-field--pane-bl .tz-records-list-scroll,
-.tz-records-field--pane-br .tz-records-list-scroll {
-  left: 3%;
-  top: 14%;
-  width: 90%;
-  height: 82%;
+.tz-records-list-scroll[data-records-item="listBl"] {
+  left: calc(var(--tz-records-list-bl-x, 3) * 1% + var(--tz-records-list-bl-nudge-x, 0px));
+  top: calc(var(--tz-records-list-bl-y, 14) * 1% + var(--tz-records-list-bl-nudge-y, 0px));
+  width: calc(var(--tz-records-list-bl-w, 90) * 1%);
+  height: calc(var(--tz-records-list-bl-h, 82) * 1%);
+}
+
+.tz-records-field--pane-br .tz-records-list-scroll,
+.tz-records-list-scroll[data-records-item="listBr"] {
+  left: calc(var(--tz-records-list-br-x, 3) * 1% + var(--tz-records-list-br-nudge-x, 0px));
+  top: calc(var(--tz-records-list-br-y, 14) * 1% + var(--tz-records-list-br-nudge-y, 0px));
+  width: calc(var(--tz-records-list-br-w, 90) * 1%);
+  height: calc(var(--tz-records-list-br-h, 82) * 1%);
+}
+
+.tz-records-field--personal-pane .tz-records-list-scroll {
+  left: calc(var(--tz-records-list-top-x, 3) * 1%);
+  top: calc(var(--tz-records-list-top-y, 12) * 1%);
+  width: calc(var(--tz-records-list-top-w, 92) * 1%);
+  height: calc(var(--tz-records-list-top-h, 84) * 1%);
 }
 
 .tz-records-view {
@@ -9571,6 +9586,30 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   color: var(--tz-records-field-color, #3d2e1a);
   line-height: 1.15;
   border-bottom: 1px solid rgba(61, 46, 26, 0.12);
+}
+
+.tz-records-field--pane-top .tz-records-list__row {
+  gap: var(--tz-records-list-row-top-gap, var(--tz-records-list-row-gap, 2px));
+  padding:
+    var(--tz-records-list-row-top-pad-y, var(--tz-records-list-row-pad-y, 4px))
+    var(--tz-records-list-row-top-pad-x, var(--tz-records-list-row-pad-x, 6px));
+  font-size: var(--tz-records-list-row-top-font-size, var(--tz-records-list-row-font-size, 2.61cqi));
+}
+
+.tz-records-field--pane-bl .tz-records-list__row {
+  gap: var(--tz-records-list-row-bl-gap, var(--tz-records-list-row-gap, 2px));
+  padding:
+    var(--tz-records-list-row-bl-pad-y, var(--tz-records-list-row-pad-y, 4px))
+    var(--tz-records-list-row-bl-pad-x, var(--tz-records-list-row-pad-x, 6px));
+  font-size: var(--tz-records-list-row-bl-font-size, var(--tz-records-list-row-font-size, 2.61cqi));
+}
+
+.tz-records-field--pane-br .tz-records-list__row {
+  gap: var(--tz-records-list-row-br-gap, var(--tz-records-list-row-gap, 2px));
+  padding:
+    var(--tz-records-list-row-br-pad-y, var(--tz-records-list-row-pad-y, 4px))
+    var(--tz-records-list-row-br-pad-x, var(--tz-records-list-row-pad-x, 6px));
+  font-size: var(--tz-records-list-row-br-font-size, var(--tz-records-list-row-font-size, 2.61cqi));
 }
 
 .tz-records-panel[data-records-mode="personal"] .tz-records-list__row {

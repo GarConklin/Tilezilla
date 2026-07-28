@@ -6,9 +6,11 @@ import {
   clearRecordsLayoutCache,
   clearRecordsLayoutDraft,
   getRecordsItemLayout,
+  isRecordsModeItem,
   loadRecordsLayout,
   mergeRecordsLayout,
   stashRecordsLayoutDraft,
+  syncRecordsItemVisibility,
 } from '/js/records-layout.js';
 import { initFancyScroller } from '/js/fancy-scroller.js';
 import { renderMockLeaderboardLists, renderMockPersonalBestLists, renderMockAdventureLeaderboardLists, setRecordsHeaderFields, MOCK_RECORDS_HEADER, MOCK_PERSONAL_HEADER } from '/js/records-data.js';
@@ -24,6 +26,24 @@ const TUNABLE_ITEMS = Object.keys(RECORDS_ITEM_DEFS).filter((k) => {
   return kind === 'pane' || kind === 'btn' || kind === 'tab' || kind === 'list'
     || kind === 'scroller' || kind === 'text' || kind === 'col' || kind === 'listRow';
 });
+
+const PANEL_GROUPS = [
+  {
+    id: 'top',
+    title: '0-hint panel',
+    keys: ['paneTop', 'listTop', 'scrollerTop', 'listRowTop'],
+  },
+  {
+    id: 'bl',
+    title: '1-hint panel',
+    keys: ['paneBl', 'listBl', 'scrollerBl', 'listRowBl'],
+  },
+  {
+    id: 'br',
+    title: '2-hint panel',
+    keys: ['paneBr', 'listBr', 'scrollerBr', 'listRowBr'],
+  },
+];
 
 const PREVIEW_MODES = {
   leaderboard: {
@@ -54,17 +74,17 @@ const PREVIEW_MODES = {
 
 const PANE_HIT_LABELS = {
   leaderboard: {
-    paneTop: 'LB · 0 hints · rank/user/time',
-    paneBl: 'LB · 1 hint',
-    paneBr: 'LB · 2 hints',
+    paneTop: 'Daily · 0 hints',
+    paneBl: 'Daily · 1 hint',
+    paneBr: 'Daily · 2 hints',
   },
   adventure: {
-    paneTop: 'Adv · 0 hints · rank/user/paths/name/sub/time',
+    paneTop: 'Adv · 0 hints',
     paneBl: 'Adv · 1 hint',
     paneBr: 'Adv · 2 hints',
   },
   personalBest: {
-    paneTop: 'PB · 0 hints · size/id/time',
+    paneTop: 'PB · 0 hints',
     paneBl: 'PB · 1 hint',
     paneBr: 'PB · 2 hints',
   },
@@ -97,9 +117,25 @@ function itemScreens(key) {
   return RECORDS_ITEM_DEFS[key]?.screens || [];
 }
 
+function ensureModeBucket(mode) {
+  if (!workingLayout.byMode || typeof workingLayout.byMode !== 'object') {
+    workingLayout.byMode = {};
+  }
+  if (!workingLayout.byMode[mode] || typeof workingLayout.byMode[mode] !== 'object') {
+    workingLayout.byMode[mode] = {};
+  }
+  return workingLayout.byMode[mode];
+}
+
 function patchItem(key, patch) {
-  if (!workingLayout.items[key]) workingLayout.items[key] = {};
-  Object.assign(workingLayout.items[key], patch);
+  if (isRecordsModeItem(key)) {
+    const mode = previewModeKey();
+    const bucket = ensureModeBucket(mode);
+    bucket[key] = { ...(bucket[key] || {}), ...patch };
+  } else {
+    if (!workingLayout.items[key]) workingLayout.items[key] = {};
+    Object.assign(workingLayout.items[key], patch);
+  }
   refresh();
 }
 
@@ -112,6 +148,10 @@ function exportJson() {
   return JSON.stringify(workingLayout, null, 2);
 }
 
+function itemBox(key) {
+  return getRecordsItemLayout(key, workingLayout, previewModeKey());
+}
+
 function getFrameRect() {
   return $('mockFrame')?.getBoundingClientRect();
 }
@@ -120,10 +160,23 @@ function applyMoveDelta(dxPx, dyPx) {
   if (currentItem === DIALOG_ITEM) return;
   const rect = getFrameRect();
   if (!rect?.width || !rect?.height) return;
-  const box = getRecordsItemLayout(currentItem, workingLayout);
+  const box = itemBox(currentItem);
+  // List areas are positioned inside their pane — use the pane box as % basis.
+  let basisW = rect.width;
+  let basisH = rect.height;
+  const panel = RECORDS_ITEM_DEFS[currentItem]?.panel;
+  if (RECORDS_ITEM_DEFS[currentItem]?.kind === 'list' && panel) {
+    const paneKey = panel === 'top' ? 'paneTop' : panel === 'bl' ? 'paneBl' : 'paneBr';
+    const paneEl = document.querySelector(`[data-records-item="${paneKey}"]`);
+    const paneRect = paneEl?.getBoundingClientRect();
+    if (paneRect?.width && paneRect?.height) {
+      basisW = paneRect.width;
+      basisH = paneRect.height;
+    }
+  }
   patchItem(currentItem, {
-    x: Math.max(0, Math.round((box.x + (dxPx / rect.width) * 100) * 10) / 10),
-    y: Math.max(0, Math.round((box.y + (dyPx / rect.height) * 100) * 10) / 10),
+    x: Math.max(0, Math.round((box.x + (dxPx / basisW) * 100) * 10) / 10),
+    y: Math.max(0, Math.round((box.y + (dyPx / basisH) * 100) * 10) / 10),
   });
 }
 
@@ -131,13 +184,25 @@ function applyResizeDelta(dxPx, dyPx, edges) {
   if (currentItem === DIALOG_ITEM) return;
   const rect = getFrameRect();
   if (!rect?.width || !rect?.height) return;
-  const box = getRecordsItemLayout(currentItem, workingLayout);
+  const box = itemBox(currentItem);
+  let basisW = rect.width;
+  let basisH = rect.height;
+  const panel = RECORDS_ITEM_DEFS[currentItem]?.panel;
+  if (RECORDS_ITEM_DEFS[currentItem]?.kind === 'list' && panel) {
+    const paneKey = panel === 'top' ? 'paneTop' : panel === 'bl' ? 'paneBl' : 'paneBr';
+    const paneEl = document.querySelector(`[data-records-item="${paneKey}"]`);
+    const paneRect = paneEl?.getBoundingClientRect();
+    if (paneRect?.width && paneRect?.height) {
+      basisW = paneRect.width;
+      basisH = paneRect.height;
+    }
+  }
   const patch = {};
   if (edges.e || edges.se) {
-    patch.w = Math.max(1, Math.round((box.w + (dxPx / rect.width) * 100) * 10) / 10);
+    patch.w = Math.max(1, Math.round((box.w + (dxPx / basisW) * 100) * 10) / 10);
   }
   if (edges.s || edges.se) {
-    patch.h = Math.max(1, Math.round((box.h + (dyPx / rect.height) * 100) * 10) / 10);
+    patch.h = Math.max(1, Math.round((box.h + (dyPx / basisH) * 100) * 10) / 10);
   }
   if (Object.keys(patch).length) patchItem(currentItem, patch);
 }
@@ -170,17 +235,20 @@ function getVisibleTunableItems() {
   return TUNABLE_ITEMS.filter((k) => itemScreens(k).includes(modeKey));
 }
 
-function getModeOnlyItems(modeKey) {
+function getModeColumnItems(modeKey) {
   return TUNABLE_ITEMS.filter((k) => {
-    const s = itemScreens(k);
-    return s.length === 1 && s[0] === modeKey;
+    const meta = RECORDS_ITEM_DEFS[k];
+    if (meta?.kind !== 'col') return false;
+    return itemScreens(k).includes(modeKey);
   });
 }
 
-function getSharedItems() {
+function getSharedChromeItems() {
   return TUNABLE_ITEMS.filter((k) => {
+    if (isRecordsModeItem(k)) return false;
+    if (RECORDS_ITEM_DEFS[k]?.kind === 'col') return false;
     const s = itemScreens(k);
-    return s.includes('leaderboard') && s.includes('adventure') && s.includes('personal');
+    return s.includes('leaderboard') || s.includes('adventure') || s.includes('personal');
   });
 }
 
@@ -263,21 +331,30 @@ function rebuildFieldGrid() {
   addFieldGridButton(DIALOG_ITEM);
 
   const modeKey = previewModeKey();
-  const modeOnly = getModeOnlyItems(modeKey);
-  const shared = getSharedItems();
-  const sectionTitle = {
-    leaderboard: 'Daily Leaderboard tab only',
-    adventure: 'Adventure Leaderboard tab only',
-    personal: 'Personal Best tab only',
-  }[modeKey] || 'This tab only';
+  const tabLabel = {
+    leaderboard: 'Daily Leaderboard',
+    adventure: 'Adventure Leaderboard',
+    personal: 'Personal Best',
+  }[modeKey] || 'This tab';
 
-  if (modeOnly.length) {
-    addFieldGridSection(sectionTitle);
-    for (const key of modeOnly) addFieldGridButton(key);
+  addFieldGridSection(`${tabLabel} — panels (this tab only)`);
+  for (const group of PANEL_GROUPS) {
+    addFieldGridSection(group.title);
+    for (const key of group.keys) {
+      if (TUNABLE_ITEMS.includes(key)) addFieldGridButton(key);
+    }
   }
-  if (shared.length) {
-    addFieldGridSection('All tabs (same pane positions)');
-    for (const key of shared) addFieldGridButton(key);
+
+  const cols = getModeColumnItems(modeKey);
+  if (cols.length) {
+    addFieldGridSection(`${tabLabel} — columns`);
+    for (const key of cols) addFieldGridButton(key);
+  }
+
+  const chrome = getSharedChromeItems().filter((k) => itemScreens(k).includes(modeKey));
+  if (chrome.length) {
+    addFieldGridSection('Shared chrome (all tabs)');
+    for (const key of chrome) addFieldGridButton(key);
   }
 }
 
@@ -299,9 +376,9 @@ function updatePreviewBanner() {
   }
   if (els.controlsModeHint) {
     els.controlsModeHint.textContent = {
-      leaderboard: "Daily Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time",
-      adventure: 'Adventure Leaderboard — lists are rank / user / paths / level - sublevel / time',
-      personalBest: 'Personal Best — header shows your last daily completion; lists are size / puzzle / time',
+      leaderboard: 'Daily — each panel has its own pane / list / scroller / row spacing (saved for this tab)',
+      adventure: 'Adventure — each panel has its own pane / list / scroller / row spacing (saved for this tab)',
+      personalBest: 'Personal Best — each panel has its own pane / list / scroller / row spacing (saved for this tab)',
     }[previewSubTab] || mode.detail;
   }
   for (const [key, cfg] of Object.entries(PREVIEW_MODES)) {
@@ -327,7 +404,7 @@ function refreshFieldGrid() {
     const key = btn.dataset.item;
     btn.classList.toggle('is-active', key === currentItem);
     if (key && key !== DIALOG_ITEM) {
-      btn.classList.toggle('is-game-hidden', Boolean(getRecordsItemLayout(key, workingLayout).hidden));
+      btn.classList.toggle('is-game-hidden', Boolean(itemBox(key).hidden));
     }
   }
   const visibleKeys = new Set([DIALOG_ITEM, ...getVisibleTunableItems()]);
@@ -337,11 +414,11 @@ function refreshFieldGrid() {
     box.classList.toggle('is-wrong-preview-mode', !visible && key !== DIALOG_ITEM);
     box.classList.toggle('is-tuner-active', key === currentItem);
     if (key && key !== DIALOG_ITEM) {
-      box.classList.toggle('is-game-hidden', Boolean(getRecordsItemLayout(key, workingLayout).hidden));
+      box.classList.toggle('is-game-hidden', Boolean(itemBox(key).hidden));
     }
   }
   const hitHidden = currentItem !== DIALOG_ITEM
-    && Boolean(getRecordsItemLayout(currentItem, workingLayout).hidden);
+    && Boolean(itemBox(currentItem).hidden);
   els.hideHitBtn.disabled = currentItem === DIALOG_ITEM || hitHidden;
   els.restoreHitBtn.disabled = currentItem === DIALOG_ITEM || !hitHidden;
 }
@@ -352,31 +429,36 @@ function refreshReadout() {
     els.readout.textContent = `Dialog maxWidth=${d.maxDesignWidth}px pad=${d.displayPad}px topNudge=${d.topNudge}px`;
     return;
   }
-  const box = getRecordsItemLayout(currentItem, workingLayout);
+  const box = itemBox(currentItem);
   const meta = RECORDS_ITEM_DEFS[currentItem];
   const modeTag = {
     leaderboard: '[Daily]',
     adventure: '[Adv]',
     personalBest: '[PB]',
   }[previewSubTab] || '[?]';
+  const perTab = isRecordsModeItem(currentItem) ? ' · this tab' : '';
   if (meta?.kind === 'scroller') {
-    els.readout.textContent = `${modeTag} ${meta.label}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}`;
+    els.readout.textContent = `${modeTag} ${meta.label}${perTab}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}`;
   } else if (meta?.kind === 'col') {
     els.readout.textContent = `${modeTag} ${meta.label}: w=${box.w}%`;
   } else if (meta?.kind === 'listRow') {
-    els.readout.textContent = `${modeTag} ${meta.label}: fontScale=${box.fontScale} pad=${box.padY}/${box.padX}px gap=${box.gap}px`;
+    els.readout.textContent = `${modeTag} ${meta.label}${perTab}: fontScale=${box.fontScale} pad=${box.padY}/${box.padX}px gap=${box.gap}px`;
+  } else if (meta?.kind === 'list') {
+    els.readout.textContent = `${modeTag} ${meta.label}${perTab}: inset x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
   } else {
-    els.readout.textContent = `${modeTag} ${meta?.label || currentItem}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
+    els.readout.textContent = `${modeTag} ${meta?.label || currentItem}${perTab}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
   }
 }
 
 function refresh() {
-  applyRecordsLayoutEverywhere(workingLayout);
+  const mode = previewModeKey();
+  applyRecordsLayoutEverywhere(workingLayout, document, mode);
+  syncRecordsItemVisibility(workingLayout, document, mode);
   syncPreviewSubTab();
   refreshFieldGrid();
   refreshReadout();
   els.jsonOut.value = exportJson();
-  els.reportOut.value = buildRecordsLayoutReport(workingLayout);
+  els.reportOut.value = buildRecordsLayoutReport(workingLayout, mode);
   if (previewSubTab === 'personalBest') {
     renderMockPersonalBestLists();
     setRecordsHeaderFields(document, { ...MOCK_PERSONAL_HEADER, showTime: true });
@@ -453,7 +535,7 @@ export async function initRecordsTuner() {
       const dir = btn.dataset.nudge;
       const box = currentItem === DIALOG_ITEM
         ? workingLayout.dialog
-        : getRecordsItemLayout(currentItem, workingLayout);
+        : itemBox(currentItem);
       if (currentItem === DIALOG_ITEM) {
         if (dir === 'wider') patchDialog({ maxDesignWidth: (box.maxDesignWidth || 394) + 4 });
         else if (dir === 'narrower') patchDialog({ maxDesignWidth: Math.max(280, (box.maxDesignWidth || 394) - 4) });
@@ -499,7 +581,7 @@ export async function initRecordsTuner() {
       else patchDialog({ maxDesignWidth: Math.max(280, (workingLayout.dialog.maxDesignWidth || 394) + dir * 4) });
       return;
     }
-    const box = getRecordsItemLayout(currentItem, workingLayout);
+    const box = itemBox(currentItem);
     const meta = RECORDS_ITEM_DEFS[currentItem];
     if (meta?.kind === 'scroller') {
       if (e.ctrlKey) patchItem(currentItem, { trackScale: Math.max(0.1, box.trackScale + dir * 0.02) });

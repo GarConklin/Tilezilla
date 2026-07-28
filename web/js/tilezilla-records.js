@@ -57,6 +57,11 @@ function syncSubTabViews() {
   panel.dataset.recordsMode = recordsModeForTab(activeSubTab);
   syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
+  if (recordsLayout) {
+    const mode = recordsModeForTab(activeSubTab);
+    applyRecordsLayoutEverywhere(recordsLayout, document, mode);
+    syncRecordsItemVisibility(recordsLayout, document, mode);
+  }
   const postDaily = getPostDailyLeaderboard();
   panel.querySelector('[data-records-tab="personalBest"]')
     ?.toggleAttribute('hidden', postDaily);
@@ -164,8 +169,9 @@ export async function refreshRecordsView() {
 
 export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
   recordsLayout = await loadRecordsLayout({ force });
-  applyRecordsLayoutEverywhere(recordsLayout);
-  syncRecordsItemVisibility(recordsLayout);
+  const mode = recordsModeForTab(activeSubTab);
+  applyRecordsLayoutEverywhere(recordsLayout, document, mode);
+  syncRecordsItemVisibility(recordsLayout, document, mode);
   syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
   for (const scroller of Object.values(scrollers)) {

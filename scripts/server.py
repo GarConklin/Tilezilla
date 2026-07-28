@@ -1155,13 +1155,32 @@ RECORDS_ITEM_KEYS = (
     "fieldDailyPuzzleId", "fieldDailyDate", "fieldDailyTime",
     "paneTop", "paneBl", "paneBr",
     "listTop", "scrollerTop", "listBl", "scrollerBl", "listBr", "scrollerBr",
-    "listRow", "colRank", "colUser", "colTime",
+    "listRow", "listRowTop", "listRowBl", "listRowBr",
+    "colRank", "colUser", "colTime",
     "colAdvRank", "colAdvUser", "colPaths", "colRankName", "colSubLevel", "colAdvTime",
     "colSize", "colPuzzle",
     "personalPane", "listPersonal", "scrollerPersonal",
     "btnBack", "btnClose",
 )
 RECORDS_TAB_KEYS = ("leaderboard", "adventure", "personalBest")
+RECORDS_MODE_KEYS = ("leaderboard", "adventure", "personal")
+RECORDS_MODE_ITEM_KEYS = (
+    "paneTop", "paneBl", "paneBr",
+    "listTop", "listBl", "listBr",
+    "scrollerTop", "scrollerBl", "scrollerBr",
+    "listRowTop", "listRowBl", "listRowBr",
+)
+
+
+def _validate_records_item_box(key: str, box: object, prefix: str) -> str | None:
+    if not isinstance(box, dict):
+        return f"{prefix} must be an object"
+    for dim in ("x", "y", "w", "h", "nudgeX", "nudgeY", "fontScale", "padX", "padY", "gap", "trackScale", "pinScale"):
+        if dim in box and not isinstance(box[dim], (int, float)):
+            return f"{prefix}.{dim} must be a number"
+    if "hidden" in box and not isinstance(box["hidden"], bool):
+        return f"{prefix}.hidden must be a boolean"
+    return None
 
 
 def validate_records_layout(payload: object) -> str | None:
@@ -1191,13 +1210,24 @@ def validate_records_layout(payload: object) -> str | None:
         for key, box in items.items():
             if key not in RECORDS_ITEM_KEYS:
                 return f"Unknown item key: {key}"
-            if not isinstance(box, dict):
-                return f"items.{key} must be an object"
-            for dim in ("x", "y", "w", "h", "nudgeX", "nudgeY", "fontScale", "padX", "padY", "gap", "trackScale", "pinScale"):
-                if dim in box and not isinstance(box[dim], (int, float)):
-                    return f"items.{key}.{dim} must be a number"
-            if "hidden" in box and not isinstance(box["hidden"], bool):
-                return f"items.{key}.hidden must be a boolean"
+            err = _validate_records_item_box(key, box, f"items.{key}")
+            if err:
+                return err
+    by_mode = payload.get("byMode")
+    if by_mode is not None and not isinstance(by_mode, dict):
+        return "byMode must be an object"
+    if isinstance(by_mode, dict):
+        for mode, mode_items in by_mode.items():
+            if mode not in RECORDS_MODE_KEYS:
+                return f"Unknown byMode key: {mode}"
+            if not isinstance(mode_items, dict):
+                return f"byMode.{mode} must be an object"
+            for key, box in mode_items.items():
+                if key not in RECORDS_MODE_ITEM_KEYS:
+                    return f"Unknown byMode.{mode} item key: {key}"
+                err = _validate_records_item_box(key, box, f"byMode.{mode}.{key}")
+                if err:
+                    return err
     return None
 
 

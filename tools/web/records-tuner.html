@@ -306,7 +306,7 @@
       <h2>Controls</h2>
       <p class="controls-mode-hint" id="controlsModeHint">Tuning Leaderboard tab</p>
       <div class="field-grid" id="fieldGrid"></div>
-      <p class="mode-hint">Wheel = X% · Shift = Y% · Ctrl = W% · Alt = H% · Scroller: Ctrl=track Alt=pin · List row: wheel=fontScale Shift=padY Ctrl=padX Alt=gap</p>
+      <p class="mode-hint">Switch Daily / Adventure / PB first — panel layouts are saved per tab. Wheel = X% · Shift = Y% · Ctrl = W% · Alt = H% · Scroller: Ctrl=track Alt=pin · Row spacing: wheel=font Shift=padY Ctrl=padX Alt=gap</p>
       <p class="readout" id="readout">—</p>
       <div class="btn-row">
         <button type="button" class="btn is-active" id="previewLeaderboardBtn">Preview: Daily</button>
@@ -384,23 +384,33 @@
               </p>
 
               <div class="tz-records-pane tz-records-field--pane-top tuner-box" data-item="paneTop" data-records-item="paneTop">
-                <span class="hit-label">Top — 0 hints</span>
+                <span class="hit-label">0-hint pane</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
                 <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
                 <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-                <div class="tz-records-list-scroll" id="recordsListTop"></div>
+                <div class="tz-records-list-scroll tuner-box" data-item="listTop" data-records-item="listTop" id="recordsListTop">
+                  <span class="hit-label">0-hint list</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </div>
               </div>
               <div class="tz-records-list-scroller tz-records-field--scroller-top tuner-box" data-item="scrollerTop" data-records-item="scrollerTop" id="recordsScrollerTop">
-                <span class="hit-label">Top scroll</span>
+                <span class="hit-label">0-hint scroll</span>
                 <img class="tz-records-list-scroller__track" id="recordsScrollerTopTrack" src="/img/FancyScrollerBar.png" alt="" />
                 <button type="button" class="tz-records-list-scroller__pin" id="recordsScrollerTopPin"><img src="/img/FancyScrollerPin.png" alt="" /></button>
               </div>
               <div class="tz-records-pane tz-records-field--pane-bl tuner-box" data-item="paneBl" data-records-item="paneBl">
-                <span class="hit-label">1 hint</span>
+                <span class="hit-label">1-hint pane</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
                 <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
                 <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-                <div class="tz-records-list-scroll" id="recordsListBl"></div>
+                <div class="tz-records-list-scroll tuner-box" data-item="listBl" data-records-item="listBl" id="recordsListBl">
+                  <span class="hit-label">1-hint list</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </div>
               </div>
               <div class="tz-records-list-scroller tz-records-field--scroller-bl tuner-box" data-item="scrollerBl" data-records-item="scrollerBl" id="recordsScrollerBl">
                 <span class="hit-label">1-hint scroll</span>
@@ -408,11 +418,16 @@
                 <button type="button" class="tz-records-list-scroller__pin" id="recordsScrollerBlPin"><img src="/img/FancyScrollerPin.png" alt="" /></button>
               </div>
               <div class="tz-records-pane tz-records-field--pane-br tuner-box" data-item="paneBr" data-records-item="paneBr">
-                <span class="hit-label">2 hints</span>
+                <span class="hit-label">2-hint pane</span>
                 <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
                 <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
                 <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
-                <div class="tz-records-list-scroll" id="recordsListBr"></div>
+                <div class="tz-records-list-scroll tuner-box" data-item="listBr" data-records-item="listBr" id="recordsListBr">
+                  <span class="hit-label">2-hint list</span>
+                  <span class="tuner-handle tuner-handle--e" data-handle="e"></span>
+                  <span class="tuner-handle tuner-handle--s" data-handle="s"></span>
+                  <span class="tuner-handle tuner-handle--se" data-handle="se"></span>
+                </div>
               </div>
               <div class="tz-records-list-scroller tz-records-field--scroller-br tuner-box" data-item="scrollerBr" data-records-item="scrollerBr" id="recordsScrollerBr">
                 <span class="hit-label">2-hint scroll</span>
@@ -441,6 +456,6 @@
     </div>
   </div>
 
-  <script type="module" src="/tools/js/records-tuner.js?v=20260707e"></script>
+  <script type="module" src="/tools/js/records-tuner.js?v=20260728a"></script>
 </body>
 </html>
