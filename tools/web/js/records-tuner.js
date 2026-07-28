@@ -21,7 +21,8 @@ const TUNABLE_ITEMS = Object.keys(RECORDS_ITEM_DEFS).filter((k) => {
   const kind = RECORDS_ITEM_DEFS[k].kind;
   const screens = RECORDS_ITEM_DEFS[k].screens;
   if (!screens?.length) return false;
-  return kind === 'pane' || kind === 'btn' || kind === 'tab' || kind === 'list' || kind === 'scroller' || kind === 'text' || kind === 'col';
+  return kind === 'pane' || kind === 'btn' || kind === 'tab' || kind === 'list'
+    || kind === 'scroller' || kind === 'text' || kind === 'col' || kind === 'listRow';
 });
 
 const PREVIEW_MODES = {
@@ -354,6 +355,8 @@ function refreshReadout() {
     els.readout.textContent = `${modeTag} ${meta.label}: x=${box.x}% y=${box.y}% h=${box.h}% track=${box.trackScale} pin=${box.pinScale}`;
   } else if (meta?.kind === 'col') {
     els.readout.textContent = `${modeTag} ${meta.label}: w=${box.w}%`;
+  } else if (meta?.kind === 'listRow') {
+    els.readout.textContent = `${modeTag} ${meta.label}: fontScale=${box.fontScale} pad=${box.padY}/${box.padX}px gap=${box.gap}px`;
   } else {
     els.readout.textContent = `${modeTag} ${meta?.label || currentItem}: x=${box.x}% y=${box.y}% w=${box.w}% h=${box.h}%`;
   }
@@ -448,6 +451,25 @@ export async function initRecordsTuner() {
         else if (dir === 'narrower') patchDialog({ maxDesignWidth: Math.max(280, (box.maxDesignWidth || 394) - 4) });
         return;
       }
+      const meta = RECORDS_ITEM_DEFS[currentItem];
+      if (meta?.kind === 'listRow') {
+        const patch = {};
+        if (dir === 'wider' || dir === 'taller') {
+          patch.fontScale = Math.round(((box.fontScale || 1) + 0.05) * 100) / 100;
+        } else if (dir === 'narrower' || dir === 'shorter') {
+          patch.fontScale = Math.max(0.4, Math.round(((box.fontScale || 1) - 0.05) * 100) / 100);
+        } else if (dir === 'up') patch.padY = Math.max(0, (box.padY || 0) - 1);
+        else if (dir === 'down') patch.padY = (box.padY || 0) + 1;
+        else if (dir === 'left') patch.padX = Math.max(0, (box.padX || 0) - 1);
+        else if (dir === 'right') patch.padX = (box.padX || 0) + 1;
+        if (Object.keys(patch).length) patchItem(currentItem, patch);
+        return;
+      }
+      if (meta?.kind === 'col') {
+        if (dir === 'wider' || dir === 'right') patchItem(currentItem, { w: (box.w || 10) + ARROW_STEP });
+        else if (dir === 'narrower' || dir === 'left') patchItem(currentItem, { w: Math.max(1, (box.w || 10) - ARROW_STEP) });
+        return;
+      }
       const patch = {};
       if (dir === 'up') patch.y = box.y - ARROW_STEP;
       if (dir === 'down') patch.y = box.y + ARROW_STEP;
@@ -475,6 +497,27 @@ export async function initRecordsTuner() {
       if (e.ctrlKey) patchItem(currentItem, { trackScale: Math.max(0.1, box.trackScale + dir * 0.02) });
       else if (e.altKey) patchItem(currentItem, { pinScale: Math.max(0.1, box.pinScale + dir * 0.02) });
       else patchItem(currentItem, { h: Math.max(1, box.h + dir * SIZE_STEP) });
+      return;
+    }
+    if (meta?.kind === 'listRow') {
+      if (e.shiftKey) patchItem(currentItem, { padY: Math.max(0, box.padY + dir) });
+      else if (e.ctrlKey) patchItem(currentItem, { padX: Math.max(0, box.padX + dir) });
+      else if (e.altKey) patchItem(currentItem, { gap: Math.max(0, box.gap + dir) });
+      else {
+        patchItem(currentItem, {
+          fontScale: Math.max(0.4, Math.round((box.fontScale + dir * 0.05) * 100) / 100),
+        });
+      }
+      return;
+    }
+    if (meta?.kind === 'col') {
+      patchItem(currentItem, { w: Math.max(1, box.w + dir * SIZE_STEP) });
+      return;
+    }
+    if (meta?.kind === 'text' && e.ctrlKey && e.altKey) {
+      patchItem(currentItem, {
+        fontScale: Math.max(0.4, Math.round(((box.fontScale || 1) + dir * 0.05) * 100) / 100),
+      });
       return;
     }
     if (e.shiftKey) patchItem(currentItem, { y: Math.max(0, box.y + dir * POS_STEP) });

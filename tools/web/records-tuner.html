@@ -176,11 +176,13 @@
       margin: 0 auto;
       aspect-ratio: 933 / 1686;
       position: relative;
+      container-type: inline-size;
     }
     .records-tuner-page .mock-records-wrap .tz-journal-dialog__frame {
       position: absolute;
       inset: 0;
       overflow: visible;
+      container-type: inline-size;
     }
     .records-tuner-page #journalRecordsPanel {
       pointer-events: auto;
@@ -304,7 +306,7 @@
       <h2>Controls</h2>
       <p class="controls-mode-hint" id="controlsModeHint">Tuning Leaderboard tab</p>
       <div class="field-grid" id="fieldGrid"></div>
-      <p class="mode-hint">Wheel = X% · Shift = Y% · Ctrl = W% · Alt = H% · Scroller: Ctrl=track Alt=pin</p>
+      <p class="mode-hint">Wheel = X% · Shift = Y% · Ctrl = W% · Alt = H% · Scroller: Ctrl=track Alt=pin · List row: wheel=fontScale Shift=padY Ctrl=padX Alt=gap</p>
       <p class="readout" id="readout">—</p>
       <div class="btn-row">
         <button type="button" class="btn is-active" id="previewLeaderboardBtn">Preview: Daily</button>

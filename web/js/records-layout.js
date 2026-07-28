@@ -316,9 +316,10 @@ export function applyRecordsLayout(layout, target = document.documentElement) {
 
   const designW = Number(d.maxDesignWidth ?? 394) || 394;
   const listRow = getRecordsItemLayout('listRow', merged);
+  // Match prior rem sizing (~0.58rem+1px ≈ 10.3px at 1× design width).
   target.style.setProperty(
     '--tz-records-list-row-font-size',
-    recordsFontCqi(13.2, designW, listRow.fontScale ?? 1),
+    recordsFontCqi(10.3, designW, listRow.fontScale ?? 1),
   );
 
   for (const [itemKey, meta] of Object.entries(RECORDS_ITEM_DEFS)) {
@@ -326,7 +327,7 @@ export function applyRecordsLayout(layout, target = document.documentElement) {
     const box = getRecordsItemLayout(itemKey, merged);
     target.style.setProperty(
       `--tz-records-field-${meta.cssKey}-font-size`,
-      recordsFontCqi(12, designW, box.fontScale ?? 1),
+      recordsFontCqi(10.3, designW, box.fontScale ?? 1),
     );
   }
 
