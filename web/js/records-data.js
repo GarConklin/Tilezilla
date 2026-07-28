@@ -623,12 +623,15 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
   return sorted.map((row, idx) => {
     const sub = Math.max(1, Number(row.subLevel) || 1);
+    const rankName = String(row.rankName || '').trim() || '—';
+    const subLevel = numerals[sub - 1] || String(sub);
     return {
       rank: idx + 1,
       user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
       paths: String(Number(row.pathsCompleted) || 0),
-      rankName: String(row.rankName || '').trim() || '—',
-      subLevel: numerals[sub - 1] || String(sub),
+      rankName,
+      subLevel,
+      levelLabel: `${rankName} - ${subLevel}`,
       time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
       hintsUsedCount: hintBucket(row),
       isGuestPreview: !!row.isGuestPreview,
@@ -831,12 +834,14 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
       `;
     } else if (mode === 'adventure') {
+      const levelLabel = entry.levelLabel
+        || [entry.rankName, entry.subLevel].filter(Boolean).join(' - ')
+        || '—';
       row.innerHTML = `
         <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
         <span class="tz-records-list__cell tz-records-list__cell--user">${escapeHtml(entry.user)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--paths">${escapeHtml(entry.paths)}</span>
-        <span class="tz-records-list__cell tz-records-list__cell--rank-name">${escapeHtml(entry.rankName)}</span>
-        <span class="tz-records-list__cell tz-records-list__cell--sub-level">${escapeHtml(entry.subLevel)}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--rank-name">${escapeHtml(levelLabel)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
       `;
     } else {
@@ -895,17 +900,17 @@ export const MOCK_PERSONAL_BEST_ROWS = {
 
 export const MOCK_ADVENTURE_LEADERBOARD_ROWS = {
   zero: [
-    { rank: 1, user: 'PathKing', paths: '42', rankName: 'Trailblazer', subLevel: 'III', time: '2:10' },
-    { rank: 2, user: 'TrailAce', paths: '38', rankName: 'Explorer', subLevel: 'II', time: '2:44' },
-    { rank: 3, user: 'MapNomad', paths: '31', rankName: 'Explorer', subLevel: 'I', time: '3:02' },
-    { rank: 4, user: 'RoutePro', paths: '27', rankName: 'Pathfinder', subLevel: 'IV', time: '3:18' },
+    { rank: 1, user: 'PathKing', paths: '42', levelLabel: 'Trailblazer - III', time: '2:10' },
+    { rank: 2, user: 'TrailAce', paths: '38', levelLabel: 'Explorer - II', time: '2:44' },
+    { rank: 3, user: 'MapNomad', paths: '31', levelLabel: 'Explorer - I', time: '3:02' },
+    { rank: 4, user: 'RoutePro', paths: '27', levelLabel: 'Pathfinder - IV', time: '3:18' },
   ],
   one: [
-    { rank: 1, user: 'HintHiker', paths: '22', rankName: 'Pathfinder', subLevel: 'II', time: '3:40' },
-    { rank: 2, user: 'NudgeScout', paths: '18', rankName: 'Wanderer', subLevel: 'V', time: '4:05' },
+    { rank: 1, user: 'HintHiker', paths: '22', levelLabel: 'Pathfinder - II', time: '3:40' },
+    { rank: 2, user: 'NudgeScout', paths: '18', levelLabel: 'Wanderer - V', time: '4:05' },
   ],
   two: [
-    { rank: 1, user: 'DoublePath', paths: '14', rankName: 'Wanderer', subLevel: 'III', time: '5:12' },
+    { rank: 1, user: 'DoublePath', paths: '14', levelLabel: 'Wanderer - III', time: '5:12' },
   ],
 };
 

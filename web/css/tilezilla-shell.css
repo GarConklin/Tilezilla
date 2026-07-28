@@ -9582,12 +9582,11 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 
 .tz-records-panel[data-records-mode="adventure"] .tz-records-list__row {
   grid-template-columns:
-    var(--tz-records-col-adv-rank-w, 10%)
-    var(--tz-records-col-adv-user-w, 24%)
-    var(--tz-records-col-paths-w, 12%)
-    var(--tz-records-col-rank-name-w, 22%)
-    var(--tz-records-col-sub-level-w, 12%)
-    var(--tz-records-col-adv-time-w, 20%);
+    var(--tz-records-col-adv-rank-w, 8%)
+    var(--tz-records-col-adv-user-w, 22%)
+    var(--tz-records-col-paths-w, 10%)
+    var(--tz-records-col-rank-name-w, 38%)
+    var(--tz-records-col-adv-time-w, 22%);
 }
 
 .tz-records-list__cell--rank {
@@ -9605,9 +9604,11 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   white-space: nowrap;
 }
 
-.tz-records-list__cell--sub-level {
-  text-align: center;
+.tz-records-list__cell--time {
+  text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .tz-records-list__cell--size {
@@ -9625,11 +9626,6 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.tz-records-list__cell--time {
-  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 

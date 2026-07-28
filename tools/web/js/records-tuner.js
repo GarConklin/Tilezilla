@@ -37,7 +37,7 @@ const PREVIEW_MODES = {
   adventure: {
     tabKey: 'adventure',
     title: 'Adventure Leaderboard',
-    detail: 'Lists: rank · user · paths · level name · sublevel · time (0 / 1 / 2 hint panes).',
+    detail: 'Lists: rank · user · paths · level - sublevel · time (0 / 1 / 2 hint panes).',
     mockStageClass: 'preview-mode-adventure',
     btnId: 'previewAdventureBtn',
     badge: 'ADVENTURE LB',
@@ -199,13 +199,21 @@ async function saveToFile({ quiet = false } = {}) {
     });
     if (!res.ok) {
       const errText = await res.text();
+      let detail = errText || `HTTP ${res.status}`;
+      try {
+        const payload = JSON.parse(errText);
+        if (payload?.error) detail = String(payload.error);
+      } catch {
+        const htmlMsg = /Message:\s*([^.<]+)/i.exec(errText);
+        if (htmlMsg) detail = htmlMsg[1].trim();
+      }
       if (res.status === 404 || res.status === 501) {
         throw new Error('Stale dev server — use http://localhost:3000 and run: docker compose restart web');
       }
-      if (res.status === 400 && /Unknown item key/i.test(errText)) {
+      if (res.status === 400 && /Unknown (item|tab) key/i.test(detail)) {
         throw new Error('Stale dev server (records layout API) — run: docker compose restart web');
       }
-      throw new Error(errText || `HTTP ${res.status}`);
+      throw new Error(detail);
     }
     clearRecordsLayoutCache();
     clearRecordsLayoutDraft();
@@ -292,7 +300,7 @@ function updatePreviewBanner() {
   if (els.controlsModeHint) {
     els.controlsModeHint.textContent = {
       leaderboard: "Daily Leaderboard — header shows today's puzzle ID and date; lists are rank / user / time",
-      adventure: 'Adventure Leaderboard — lists are rank / user / paths / level name / sublevel / time',
+      adventure: 'Adventure Leaderboard — lists are rank / user / paths / level - sublevel / time',
       personalBest: 'Personal Best — header shows your last daily completion; lists are size / puzzle / time',
     }[previewSubTab] || mode.detail;
   }

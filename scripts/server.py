@@ -919,14 +919,24 @@ class Handler(SimpleHTTPRequestHandler):
 
         err = validator(payload)
         if err:
-            self.send_error(400, err)
+            body = json.dumps({"ok": False, "error": err}).encode("utf-8")
+            self.send_response(400)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
             return
 
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         except OSError as exc:
-            self.send_error(500, f"Write failed: {exc}")
+            body = json.dumps({"ok": False, "error": f"Write failed: {exc}"}).encode("utf-8")
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
             return
 
         rel = path.relative_to(ROOT).as_posix()
