@@ -291,18 +291,28 @@ function dequeuePendingSolve(payload) {
   writePendingSolves(readPendingSolves().filter((p) => pendingSolveKey(p) !== key));
 }
 
-async function postSolveToServer(payload) {
+function solveRequestBody(payload) {
+  return JSON.stringify({
+    levelId: payload.levelId,
+    placements: payload.placements,
+    check: payload.check || {},
+    meta: payload.meta || {},
+  });
+}
+
+async function postSolveToServer(payload, { keepalive = false } = {}) {
   const res = await fetch('/api/progress/solve', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      levelId: payload.levelId,
-      placements: payload.placements,
-      check: payload.check || {},
-      meta: payload.meta || {},
-    }),
+    body: solveRequestBody(payload),
+    keepalive: !!keepalive,
   });
+  // On pagehide keepalive, prefer not to read the body — status is enough to dequeue.
+  if (keepalive) {
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    return { ok: true };
+  }
   const body = await res.json().catch(() => ({}));
   if (!res.ok || body?.ok === false) {
     return { ok: false, error: body?.error || `HTTP ${res.status}`, ...body };
@@ -321,6 +331,8 @@ export async function syncSolveToServer({
   }
 
   const payload = { levelId, placements, check: check || {}, meta };
+  // Queue first so an iOS page kill mid-await still leaves a retryable payload.
+  enqueuePendingSolve(payload);
   try {
     const result = await postSolveToServer(payload);
     if (result.ok) {
@@ -328,11 +340,9 @@ export async function syncSolveToServer({
       return result;
     }
     console.warn('Progress solve sync:', result.error || result);
-    enqueuePendingSolve(payload);
     return result;
   } catch (err) {
     console.warn('Progress solve sync failed:', err);
-    enqueuePendingSolve(payload);
     return { ok: false, error: String(err) };
   }
 }
@@ -354,6 +364,27 @@ export async function flushPendingSolves() {
   }
   writePendingSolves(still);
   return { ok: still.length === 0, flushed, remaining: still.length };
+}
+
+/**
+ * Fire-and-forget flush for pagehide / backgrounding.
+ * Safari often cancels awaited fetch on hide; keepalive stays in flight briefly.
+ */
+export function flushPendingSolvesOnLeave() {
+  const pending = readPendingSolves();
+  if (!pending.length) return { ok: true, flushed: 0, remaining: 0 };
+  for (const payload of pending) {
+    try {
+      void postSolveToServer(payload, { keepalive: true })
+        .then((result) => {
+          if (result?.ok) dequeuePendingSolve(payload);
+        })
+        .catch(() => { /* retry on next resume */ });
+    } catch {
+      /* ignore */
+    }
+  }
+  return { ok: true, flushed: 0, remaining: pending.length };
 }
 
 let pendingFlushBound = false;
@@ -388,11 +419,18 @@ export function bindPendingSolveFlush(progress = null) {
       .finally(() => { resumeSyncInFlight = null; });
   };
 
+  const flushOnLeave = () => {
+    flushPendingSolvesOnLeave();
+  };
+
   window.addEventListener('online', run);
   window.addEventListener('focus', run);
   window.addEventListener('pageshow', run);
+  window.addEventListener('pagehide', flushOnLeave);
+  window.addEventListener('freeze', flushOnLeave);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') run();
+    if (document.visibilityState === 'hidden') flushOnLeave();
+    else if (document.visibilityState === 'visible') run();
   });
   window.setInterval(() => {
     if (document.visibilityState === 'visible') run();
