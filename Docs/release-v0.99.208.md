@@ -1,7 +1,8 @@
 # Release v0.99.208 — mobile login, boot speed, and UI polish
 
 **Previous stable:** `v0.99.207` → branch `release/v0.99.207`  
-**New development / deploy:** `v0.99.208` → branch `release/v0.99.208`
+**This line:** `v0.99.208` → branch `release/v0.99.208` (**frozen**)  
+**Current deploy:** `v0.99.210` → branch `release/v0.99.210`
 
 ## What changed in 0.99.208 (vs 0.99.207)
 
@@ -16,8 +17,9 @@
 | Branch | Version | Use |
 |--------|---------|-----|
 | `release/v0.99.207` | 0.99.207 | Frozen — previous deploy line |
-| `release/v0.99.208` | 0.99.208 | **Active** development and deploy |
-| `main` | — | Merge `release/v0.99.208` when ready |
+| `release/v0.99.208` | 0.99.208 | Frozen — previous deploy line |
+| `release/v0.99.210` | 0.99.210 | **Active** development and deploy |
+| `main` | — | Merge `release/v0.99.210` when ready |
 
 ### Deploy 0.99.208
 
