@@ -1,8 +1,10 @@
 /** Bottom navigation plaque — image + transparent hit areas (same pattern as menu-layout.js). */
 
 export const BOTTOM_NAV_ITEM_DEFS = {
-  adventure: { label: 'Adventure', cssKey: 'adventure', hoverSrc: '/img/BMB-1H.png' },
-  dailyChallenge: { label: 'Daily Challenge', cssKey: 'daily-challenge', nav: 'daily-challenge', hoverSrc: '/img/BMB-2H.png' },
+  // Plaque art order (left→right): Daily, Adventure, Random, Library, Profile.
+  // BMB-1H = Daily highlight (slot 1); BMB-2H = Adventure highlight (slot 2).
+  dailyChallenge: { label: 'Daily Challenge', cssKey: 'daily-challenge', nav: 'daily-challenge', hoverSrc: '/img/BMB-1H.png' },
+  adventure: { label: 'Adventure', cssKey: 'adventure', hoverSrc: '/img/BMB-2H.png' },
   random: { label: 'Random Puzzle', cssKey: 'random', hoverSrc: '/img/BMB-3H.png' },
   library: { label: 'Puzzle Library', cssKey: 'library', hoverSrc: '/img/BMB-4H.png' },
   profile: { label: 'Profile', cssKey: 'profile', hoverSrc: '/img/BMB-5H.png' },
@@ -14,8 +16,8 @@ export const DEFAULT_BOTTOM_NAV_LAYOUT = {
   plaque: { offsetY: 0, wScale: 1, hScale: 1 },
   hits: { w: 18, h: 88, y: 50 },
   items: {
-    adventure: { x: 10 },
-    dailyChallenge: { x: 30 },
+    dailyChallenge: { x: 10 },
+    adventure: { x: 30 },
     random: { x: 50 },
     library: { x: 70 },
     profile: { x: 90 },

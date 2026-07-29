@@ -795,10 +795,10 @@
   --tz-bottom-nav-hit-w: 18%;
   --tz-bottom-nav-hit-h: 88%;
   --tz-bottom-nav-hit-y: 50%;
-  --tz-bottom-nav-adventure-x: 10%;
-  --tz-bottom-nav-adventure-y: 50%;
-  --tz-bottom-nav-daily-challenge-x: 30%;
+  --tz-bottom-nav-daily-challenge-x: 10%;
   --tz-bottom-nav-daily-challenge-y: 50%;
+  --tz-bottom-nav-adventure-x: 30%;
+  --tz-bottom-nav-adventure-y: 50%;
   --tz-bottom-nav-random-x: 50%;
   --tz-bottom-nav-random-y: 50%;
   --tz-bottom-nav-library-x: 70%;
@@ -8962,10 +8962,6 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   font-size: 0.68rem;
   font-weight: 600;
   text-decoration: none;
-}
-
-.tz-guest-mode .tz-bottom-nav__hit--daily-challenge {
-  left: 32%;
 }
 
 .tz-guest-mode .tz-bottom-nav__hit--login {

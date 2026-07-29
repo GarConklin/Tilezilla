@@ -10,11 +10,11 @@
     "y": 50
   },
   "items": {
-    "adventure": {
+    "dailyChallenge": {
       "x": 11,
       "y": 49
     },
-    "dailyChallenge": {
+    "adventure": {
       "x": 31.5,
       "y": 50.5
     },
