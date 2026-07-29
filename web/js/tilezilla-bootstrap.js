@@ -458,8 +458,92 @@ function resetPreviewAfterSolve() {
 /** Saved board state so Undo can restore after Reset. Cleared on new placements or level load. */
 let boardBeforeResetSnapshot = null;
 
+/** Mid-puzzle board stash when leaving Daily/Adventure (e.g. accidental Random). */
+const IN_PROGRESS_BOARD_KEY = 'tilezilla:in-progress-board_v1';
+
 function clearBoardResetSnapshot() {
   boardBeforeResetSnapshot = null;
+}
+
+function inProgressBoardStorageKey(userId) {
+  return `${IN_PROGRESS_BOARD_KEY}:${userId || 'gar'}`;
+}
+
+function stashInProgressBoardIfNeeded(app, screenOverride = null) {
+  const screen = screenOverride || document.querySelector('.tz-app')?.dataset?.screen;
+  if (screen !== 'daily-challenge' && screen !== 'adventure') return false;
+  const levelId = app?.state?.currentLevel?.id;
+  const tiles = app?.state?.tiles;
+  if (!levelId || !tiles?.length) return false;
+  if (typeof app.cloneBoardState !== 'function') return false;
+  const userId = app.state?.userId || 'gar';
+  const store = readInProgressBoardStore(userId);
+  store[screen] = {
+    screen,
+    levelId,
+    userId,
+    board: app.cloneBoardState(),
+    savedAt: new Date().toISOString(),
+  };
+  writeInProgressBoardStore(userId, store);
+  return true;
+}
+
+function readInProgressBoardStore(userId) {
+  try {
+    const raw = sessionStorage.getItem(inProgressBoardStorageKey(userId));
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    // Migrate legacy single-snapshot shape.
+    if (parsed.screen && parsed.board) {
+      return { [parsed.screen]: parsed };
+    }
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+function writeInProgressBoardStore(userId, store) {
+  try {
+    sessionStorage.setItem(inProgressBoardStorageKey(userId), JSON.stringify(store || {}));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function readInProgressBoard(app, screen = null) {
+  const userId = app?.state?.userId || 'gar';
+  const store = readInProgressBoardStore(userId);
+  if (screen) return store[screen] || null;
+  return store;
+}
+
+function clearInProgressBoard(app, { screen = null, levelId = null } = {}) {
+  const userId = app?.state?.userId || 'gar';
+  if (!screen) {
+    writeInProgressBoardStore(userId, {});
+    return;
+  }
+  const store = readInProgressBoardStore(userId);
+  const snap = store[screen];
+  if (!snap) return;
+  if (levelId && snap.levelId && snap.levelId !== levelId) return;
+  delete store[screen];
+  writeInProgressBoardStore(userId, store);
+}
+
+window.__clearInProgressBoard = (opts = {}) => {
+  clearInProgressBoard(window.__app, opts);
+};
+
+async function restoreInProgressBoardIfMatching(app, screen, levelId) {
+  const snap = readInProgressBoard(app, screen);
+  if (!snap?.board?.tiles?.length) return false;
+  if (snap.levelId !== levelId) return false;
+  const ok = await app.restoreBoardFromSnapshot?.(snap.board);
+  return !!ok;
 }
 
 async function undoLastPlacedTile(app) {
@@ -1618,16 +1702,18 @@ function resolveInitialBootScreen(urlParams) {
 
   if (guestUser.isGuestUser()) return 'daily-challenge';
 
-  const preferred = loadGameplaySettings().startMode;
-  if (preferred && BOOTABLE_SCREENS.has(preferred)) {
-    if (!guestUser.isRestrictedNav(preferred)) return preferred;
-  }
-
+  // Prefer last screen in this browser session so Start mode does not trap the player
+  // on Daily after they have already switched to Adventure.
   try {
     const saved = sessionStorage.getItem(LAST_NAV_SCREEN_KEY);
     if (saved && BOOTABLE_SCREENS.has(saved)) return saved;
   } catch {
     /* ignore */
+  }
+
+  const preferred = loadGameplaySettings().startMode;
+  if (preferred && BOOTABLE_SCREENS.has(preferred)) {
+    if (!guestUser.isRestrictedNav(preferred)) return preferred;
   }
 
   return 'daily-challenge';
@@ -1697,6 +1783,7 @@ async function pickRandomVentureLevel(app) {
 
 async function switchToAdventureScreen(app) {
   const appRoot = document.querySelector('.tz-app');
+  stashInProgressBoardIfNeeded(app, appRoot?.dataset?.screen || null);
   setActiveBottomNav('adventure');
   appRoot?.setAttribute('data-screen', 'adventure');
   persistNavScreen('adventure');
@@ -1715,6 +1802,7 @@ async function loadRandomVenturePuzzle(app) {
     const level = await pickRandomVentureLevel(app);
     if (!level) throw new Error('No matching random puzzles available');
 
+    stashInProgressBoardIfNeeded(app, appRoot?.dataset?.screen || null);
     setActiveBottomNav('random');
     appRoot?.setAttribute('data-screen', 'random');
     window.__dailyChallengeMeta = null;
@@ -1861,7 +1949,14 @@ async function activateStartMode(app, screen) {
 function wireBottomMenuV2() {
   if (!MAIN_V2_SHELL) return;
   window.__openBottomMenuV2 = openBottomMenuV2;
-  $('bottomMenuOpenBtn')?.addEventListener('click', openBottomMenuV2);
+  const openBtn = $('bottomMenuOpenBtn');
+  if (openBtn) {
+    openBtn.setAttribute('title', 'Hold to open menu');
+    openBtn.setAttribute('aria-label', 'Hold to open bottom menu');
+    bindLongPress(openBtn, () => {
+      openBottomMenuV2();
+    }, { ms: 500 });
+  }
   $('bottomMenuCloseBtn')?.addEventListener('click', closeBottomMenuV2);
 }
 
@@ -1931,6 +2026,8 @@ function wireBottomNav(getApp) {
           return;
         }
         dismissDiscoveryForBoardEdit();
+        // Snapshot current Daily/Adventure board before Random so return can restore it.
+        stashInProgressBoardIfNeeded(app, document.querySelector('.tz-app')?.dataset?.screen || null);
         openRandomPuzzlePopup();
         if (MAIN_V2_SHELL) closeBottomMenuV2();
         return;
@@ -1952,6 +2049,9 @@ function wireBottomNav(getApp) {
         i.classList.toggle('tz-bottom-nav__hit--active', i === item);
         i.toggleAttribute('aria-current', i === item ? 'page' : false);
       });
+      // Snapshot the current Daily/Adventure board before flipping screen / reloading.
+      const leavingScreen = appRoot?.dataset?.screen || null;
+      stashInProgressBoardIfNeeded(app, leavingScreen);
       appRoot?.setAttribute('data-screen', screen);
       persistNavScreen(screen);
       guestUser.syncGuestBanner();
@@ -1978,6 +2078,10 @@ function wireActions(app) {
     } else {
       clearBoardResetSnapshot();
     }
+    clearInProgressBoard(app, {
+      screen: document.querySelector('.tz-app')?.dataset?.screen || null,
+      levelId: app.state?.currentLevel?.id || null,
+    });
     if (keepHints) {
       await app.clearBoardKeepingHints?.();
     } else {
@@ -2623,6 +2727,10 @@ async function loadAdventurePuzzle(app) {
       message: `Adventure puzzle loaded: ${level.id}`,
     });
     if (!loaded) return;
+    const restored = await restoreInProgressBoardIfMatching(app, 'adventure', level.id);
+    if (restored) {
+      showGameMessage(`Adventure resumed: ${level.id}`, 'info');
+    }
   } catch (e) {
     console.error(e);
     showGameMessage(`Failed to load adventure puzzle: ${e.message}`, 'error');
@@ -2646,12 +2754,16 @@ async function loadDailyPuzzle(app) {
     window.__dailyChallengeMeta = meta;
     // Resume unfinished daily elapsed — never blind-reset today's attempt clock.
     hydrateDailyAttemptTimer(app, meta);
+    const restored = await restoreInProgressBoardIfMatching(app, 'daily-challenge', level.id);
     displayPuzzleTimerBest(level.id, app.state?.userId || 'gar');
     updateChallengePanel(level, { ...meta, screen: 'daily-challenge' });
     updateTileBagCount(app);
     updateValidationState(app);
     updateHintButtonState(app);
-    showGameMessage(`Daily challenge loaded: ${level.id}`, 'info');
+    showGameMessage(
+      restored ? `Daily challenge resumed: ${level.id}` : `Daily challenge loaded: ${level.id}`,
+      'info',
+    );
   } catch (e) {
     console.error(e);
     showGameMessage(`Failed to load puzzle: ${e.message}`, 'error');
@@ -3058,9 +3170,7 @@ async function initShellExtendedUiModules(appRef, settings, menuApi) {
       app.applyGameplaySettings(next);
       app.renderTiles();
       updateTileBagCount(app);
-      if (next.startMode && next.startMode !== prev.startMode) {
-        void activateStartMode(appRef, next.startMode);
-      }
+      // Start mode is a boot preference only — do not yank the player off their current screen.
     },
     onViewportFit: () => runViewportFit(true),
     getTilesetLabel: () => formatTilesetDisplayName(appRef?.state?.activeTileset),

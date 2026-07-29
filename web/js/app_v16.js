@@ -2542,6 +2542,16 @@ async function processSolutionFound(lv, res, placements) {
     (Number(state.hintsUsedThisPuzzle) || 0) + (Number(state.randomHintsUsedThisPuzzle) || 0),
   );
 
+  // Solved boards should not restore as an unfinished mid-puzzle stash.
+  try {
+    window.__clearInProgressBoard?.({
+      screen: document.querySelector('.tz-app')?.dataset?.screen || null,
+      levelId: lv?.id || null,
+    });
+  } catch {
+    /* ignore */
+  }
+
   if (guestSession) {
     const n = Number.isFinite(res?.index) ? res.index + 1 : '★';
     let msg = `Solution #${n} found!`;
