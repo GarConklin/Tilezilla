@@ -7,7 +7,7 @@ import {
   mergeMainScreenV2Layout,
 } from './main-screen-v2-layout.js';
 import { applyWaterRippleLayout, loadWaterRippleLayout } from './water-ripple-layout.js';
-import { syncAuthPassportFrame, wireOverlayFrameListeners } from './tilezilla-frame-geometry.js?v=20260730a';
+import { syncAuthPassportFrame, wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
 
 export function applyAuthScreenChrome(layout, target = document.documentElement) {
   const merged = mergeMainScreenV2Layout(layout);

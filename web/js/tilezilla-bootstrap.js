@@ -186,8 +186,8 @@ import {
   loadAdventurePath,
   resolveAdventureResume,
 } from './adventure-path.js';
-import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js?v=20260730a';
-import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js?v=20260730a';
+import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
+import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
 
@@ -3249,23 +3249,10 @@ async function init() {
     .catch((err) => {
       console.warn('Menu layout (early):', err);
     });
-  // Unhide chrome immediately; layouts and engine finish loading in the background.
+  // Unhide chrome immediately; layouts finish in the background (do not block puzzle boot).
   finishShellBoot();
-  const shellLayoutsPromise = applyShellLayouts().catch((err) => {
+  void applyShellLayouts().catch((err) => {
     console.warn('Shell layouts:', err);
-    return null;
-  });
-  // Soft deadline: boot continues even if a layout JSON is slow; applyShellLayouts
-  // still finishes in the background and paints when ready.
-  void Promise.race([
-    shellLayoutsPromise.then(() => 'ok'),
-    new Promise((resolve) => {
-      setTimeout(() => resolve('timeout'), 6000);
-    }),
-  ]).then((status) => {
-    if (status === 'timeout') {
-      console.warn('Shell layouts still loading after 6s; continuing boot with defaults until they arrive');
-    }
   });
   const earlyUrlParams = new URLSearchParams(window.location.search);
   const earlyProfileBoot = earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true';
@@ -3285,7 +3272,13 @@ async function init() {
   wireTileBagExpand(syncBagScroll, () => appRef);
   resetPuzzleTimer();
 
-  const [authState, app] = await Promise.all([authPromise, waitForApp(), shellLayoutsPromise]);
+  const [authState, app] = await Promise.all([
+    awaitWithTimeout(authPromise, 8000, 'Auth sync').catch((err) => {
+      console.warn(err?.message || err);
+      return { mode: 'anonymous', user: null };
+    }),
+    waitForApp(),
+  ]);
   appRef = app;
   wireCheckSolvePreview();
   if (authState.mode === 'registered' && authState.user) {
@@ -3354,18 +3347,31 @@ async function init() {
     try {
       const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
       bindPendingSolveFlush(app.progress);
-      await hydrateProgressFromServer(app.progress);
+      await awaitWithTimeout(
+        hydrateProgressFromServer(app.progress),
+        8000,
+        'Adventure progress hydrate',
+      );
       progressHydrated = true;
     } catch (err) {
-      console.warn('Server progress hydrate (adventure boot):', err);
+      console.warn('Server progress hydrate (adventure boot):', err?.message || err);
     }
   }
 
   if (!deferBootPuzzle) {
     appRoot?.classList.remove('is-shell-booting');
     if (bootLoading) bootLoading.hidden = true;
-    await preloadBootLevels(app, initialScreen);
-    await loadInitialScreenPuzzle(app, initialScreen);
+    try {
+      await awaitWithTimeout(preloadBootLevels(app, initialScreen), 12000, 'Boot level preload');
+    } catch (err) {
+      console.warn(err?.message || err);
+    }
+    try {
+      await awaitWithTimeout(loadInitialScreenPuzzle(app, initialScreen), 20000, 'Initial puzzle load');
+    } catch (err) {
+      console.warn(err?.message || err);
+      showGameMessage('Could not load the starting puzzle. Try Daily or Adventure from the menu.', 'error');
+    }
   }
 
   try {
@@ -3833,7 +3839,16 @@ async function recoverProfilePickerBoot(err) {
   finishShellBoot();
   const appRoot = document.querySelector('.tz-app');
   if (appRoot?.dataset?.screen !== 'profile-picker') {
-    showGameMessage(err.message, 'error');
+    showGameMessage(err?.message || String(err), 'error');
+    const app = window.__app;
+    if (app && !app.state?.currentLevel) {
+      try {
+        applyInitialBootScreen('daily-challenge');
+        await loadDailyPuzzle(app);
+      } catch (loadErr) {
+        console.warn('Recovery daily load failed:', loadErr);
+      }
+    }
     return;
   }
   try {

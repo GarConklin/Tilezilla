@@ -7,7 +7,7 @@ import {
   TZ_DESIGN_WIDTH,
   applyUiScale,
   viewportSize,
-} from './tilezilla-ui-scale.js?v=20260730a';
+} from './tilezilla-ui-scale.js';
 
 /** Desktop 2×/3× only — mobile uiScale < 1 stays at 1× for overlay frames. */
 export function getFrameUpscale() {
@@ -166,26 +166,34 @@ export function wireOverlayFrameListeners(getBoardYPercent = () => 8.1) {
   // Never call applyUiScale from the ui-scale-changed path — that event is
   // dispatched by applyUiScale itself and would recurse forever.
   const syncFrames = () => {
-    const boardY = typeof getBoardYPercent === 'function' ? getBoardYPercent() : 8.1;
-    if (document.body?.classList?.contains('auth-screen')) {
-      const screenKey = ['login', 'create', 'profile'].find((k) =>
-        document.body.classList.contains(`auth-screen--${k}`),
-      );
-      let maxW = TZ_DESIGN_WIDTH;
-      let widthScale = 1;
-      if (screenKey) {
-        const maxVar = getComputedStyle(document.documentElement).getPropertyValue(`--auth-${screenKey}-max-width`);
-        const parsed = parseFloat(maxVar);
-        if (parsed > 0) maxW = parsed;
+    try {
+      const boardY = typeof getBoardYPercent === 'function' ? getBoardYPercent() : 8.1;
+      if (document.body?.classList?.contains('auth-screen')) {
+        const screenKey = ['login', 'create', 'profile'].find((k) =>
+          document.body.classList.contains(`auth-screen--${k}`),
+        );
+        let maxW = TZ_DESIGN_WIDTH;
+        let widthScale = 1;
+        if (screenKey) {
+          const maxVar = getComputedStyle(document.documentElement).getPropertyValue(`--auth-${screenKey}-max-width`);
+          const parsed = parseFloat(maxVar);
+          if (parsed > 0) maxW = parsed;
+        }
+        syncAuthPassportFrame({ boardYPercent: boardY, maxDesignWidth: maxW, widthScale });
       }
-      syncAuthPassportFrame({ boardYPercent: boardY, maxDesignWidth: maxW, widthScale });
+      syncProfileOverlayFrame();
+      syncJournalDialogFrame();
+    } catch (err) {
+      console.warn('Overlay frame sync:', err);
     }
-    syncProfileOverlayFrame();
-    syncJournalDialogFrame();
   };
 
   const onResize = () => {
-    applyUiScale();
+    try {
+      applyUiScale();
+    } catch (err) {
+      console.warn('applyUiScale on resize:', err);
+    }
     syncFrames();
   };
 
