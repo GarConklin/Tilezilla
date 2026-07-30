@@ -141,9 +141,11 @@ function syncJournalLayoutHits() {
 
 function syncJournalOverlays() {
   const frame = $('journalRoot')?.querySelector('.tz-journal-dialog__frame');
-  if (!frame || !journalLayoutCache) return;
+  if (!frame) return;
+  const layout = journalLayoutCache || effectiveJournalLayout();
+  if (!layout) return;
   const recordsMode = $('journalRecordsPanel')?.dataset?.recordsMode || 'leaderboard';
-  applyJournalOverlays(journalLayoutCache, frame, {
+  applyJournalOverlays(layout, frame, {
     mode: state.mode,
     activeTab: state.activeTab,
     recordsMode,
@@ -967,6 +969,10 @@ export function initJournalUi({
     onSubTabChange: () => {
       syncJournalOverlays();
     },
+  });
+
+  window.addEventListener('tilezilla:records-subtab', () => {
+    syncJournalOverlays();
   });
 
   $('journalBackdrop')?.addEventListener('click', closeJournal);

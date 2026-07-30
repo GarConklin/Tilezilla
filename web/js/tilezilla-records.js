@@ -67,6 +67,10 @@ function syncSubTabViews() {
     ?.toggleAttribute('hidden', postDaily);
   panel.querySelector('[data-records-tab="adventure"]')
     ?.toggleAttribute('hidden', postDaily);
+  // Keep journal overlay in sync even if onSubTabChange was not wired yet.
+  window.dispatchEvent(new CustomEvent('tilezilla:records-subtab', {
+    detail: { tab: activeSubTab, mode: recordsModeForTab(activeSubTab) },
+  }));
 }
 
 async function renderLeaderboardLists(progress) {

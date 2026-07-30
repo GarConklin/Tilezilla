@@ -391,7 +391,7 @@ function updatePreviewBanner() {
   const bg = document.querySelector('#mockFrame .tz-journal-dialog__bg');
   if (bg) {
     bg.src = previewSubTab === 'adventure'
-      ? '/img/NewRecordsPuzzleJournalBlankwbtm.png'
+      ? '/img/NewRecordsPuzzleJournalBlankwbtm.png?v=20260730f'
       : '/img/PuzzleJournal-Records.png';
   }
 }

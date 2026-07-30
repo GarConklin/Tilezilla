@@ -36,7 +36,7 @@ export const JOURNAL_OVERLAY_DEFS = {
     label: 'Overlay — Records Adventure (top 10 + 11+)',
     group: 'tab',
     showWhen: { never: true },
-    defaultSrc: '/img/NewRecordsPuzzleJournalBlankwbtm.png',
+    defaultSrc: '/img/NewRecordsPuzzleJournalBlankwbtm.png?v=20260730f',
   },
   bottomBar: {
     label: 'Overlay — Bottom button row labels',
@@ -45,13 +45,16 @@ export const JOURNAL_OVERLAY_DEFS = {
   },
 };
 
+/** Adventure Records art — never fall back to PuzzleJournal-Records.png (0/1/2-hint Daily plate). */
+export const ADVENTURE_RECORDS_ART = '/img/NewRecordsPuzzleJournalBlankwbtm.png?v=20260730f';
+
 const DEFAULT_OVERLAYS = {
   shellBlank: '/img/NewPuzzleJournalBlank.png',
   recordTop: '',
   libraryTop: '',
   statsScreen: '/img/PuzzleJournal-Stats.png',
   recordsScreen: '/img/PuzzleJournal-Records.png',
-  recordsAdventureScreen: '/img/NewRecordsPuzzleJournalBlankwbtm.png',
+  recordsAdventureScreen: ADVENTURE_RECORDS_ART,
   bottomBar: '',
 };
 
@@ -390,8 +393,11 @@ export function applyJournalOverlays(layout, frameEl, {
       && activeTab === 'records'
       && recordsMode === 'adventure'
     ) {
-      src = getJournalOverlaySrc('recordsAdventureScreen', layout)
-        || '/img/NewRecordsPuzzleJournalBlankwbtm.png';
+      // Always the adventure plate — ignore stale layout/localStorage pointing at Daily art.
+      const preferred = getJournalOverlaySrc('recordsAdventureScreen', layout);
+      src = (preferred && !/PuzzleJournal-Records/i.test(preferred))
+        ? preferred
+        : ADVENTURE_RECORDS_ART;
     }
     const visible = src && shouldShowJournalOverlay(key, { mode, activeTab });
     if (visible) {
