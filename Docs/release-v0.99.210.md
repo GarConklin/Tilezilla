@@ -17,7 +17,7 @@
 | Branch | Version | Use |
 |--------|---------|-----|
 | `release/v0.99.208` | 0.99.208 | Frozen — previous deploy line |
-| `release/v0.99.210` | 0.99.210 | **Active** development and deploy |
+| `release/v0.99.210` | 0.99.210 | Frozen — superseded by 0.99.214 |
 | `main` | — | Merge `release/v0.99.210` when ready |
 
 ### Deploy 0.99.210
