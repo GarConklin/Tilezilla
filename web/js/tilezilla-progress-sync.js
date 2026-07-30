@@ -52,12 +52,20 @@ export function mergeProgressData(base, incoming) {
 }
 
 export async function fetchServerProgress() {
-  const res = await fetch('/api/progress', { credentials: 'include', cache: 'no-store' });
-  const payload = await res.json().catch(() => ({}));
-  if (!res.ok || payload?.ok === false) {
-    return { ok: false, error: payload?.error || `HTTP ${res.status}` };
+  try {
+    const res = await fetch('/api/progress', {
+      credentials: 'include',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(12000),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload?.ok === false) {
+      return { ok: false, error: payload?.error || `HTTP ${res.status}` };
+    }
+    return { ok: true, data: payload.data || {}, updatedAt: payload.updatedAt || null };
+  } catch (err) {
+    return { ok: false, error: String(err?.message || err) };
   }
-  return { ok: true, data: payload.data || {}, updatedAt: payload.updatedAt || null };
 }
 
 export async function mergeProgressToServer(localData) {
@@ -70,6 +78,7 @@ export async function mergeProgressToServer(localData) {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data: localData }),
+      signal: AbortSignal.timeout(20000),
     });
     const payload = await res.json().catch(() => ({}));
     if (!res.ok || payload?.ok === false) {
@@ -115,6 +124,7 @@ export async function hydrateProgressFromServer(progress) {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: localData }),
+        signal: AbortSignal.timeout(20000),
       });
       const payload = await res.json().catch(() => ({}));
       if (res.ok && payload?.ok) {

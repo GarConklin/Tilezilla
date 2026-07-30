@@ -3343,18 +3343,14 @@ async function init() {
   }
 
   let progressHydrated = false;
+  // Adventure path needs pending-solve flush early, but full server hydrate must not
+  // block the first puzzle paint — deferredShellWarmup finishes the merge.
   if (!deferBootPuzzle && authState.mode === 'registered' && authState.user && initialScreen === 'adventure') {
     try {
-      const { hydrateProgressFromServer, bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
+      const { bindPendingSolveFlush } = await import('./tilezilla-progress-sync.js');
       bindPendingSolveFlush(app.progress);
-      await awaitWithTimeout(
-        hydrateProgressFromServer(app.progress),
-        8000,
-        'Adventure progress hydrate',
-      );
-      progressHydrated = true;
     } catch (err) {
-      console.warn('Server progress hydrate (adventure boot):', err?.message || err);
+      console.warn('Pending solve flush bind (adventure boot):', err);
     }
   }
 
