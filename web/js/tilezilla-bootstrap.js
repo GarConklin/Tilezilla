@@ -1702,15 +1702,9 @@ function resolveInitialBootScreen(urlParams) {
 
   if (guestUser.isGuestUser()) return 'daily-challenge';
 
-  // Prefer last screen in this browser session so Start mode does not trap the player
-  // on Daily after they have already switched to Adventure.
-  try {
-    const saved = sessionStorage.getItem(LAST_NAV_SCREEN_KEY);
-    if (saved && BOOTABLE_SCREENS.has(saved)) return saved;
-  } catch {
-    /* ignore */
-  }
-
+  // Start mode is the default when opening the game (full page load / after login).
+  // Do not prefer last-nav from sessionStorage — that survives login redirects and
+  // was sending players to Adventure even when Start mode is Daily.
   const preferred = loadGameplaySettings().startMode;
   if (preferred && BOOTABLE_SCREENS.has(preferred)) {
     if (!guestUser.isRestrictedNav(preferred)) return preferred;
@@ -3275,6 +3269,16 @@ async function init() {
   const [authState, app] = await Promise.all([
     awaitWithTimeout(authPromise, 8000, 'Auth sync').catch((err) => {
       console.warn(err?.message || err);
+      // Never treat a slow session check as a fresh guest — that skips the passport
+      // and can boot Adventure from a stale last-nav / wrong mode.
+      if (guestUser.isRegisteredUser()) {
+        const id = localStorage.getItem(guestUser.REGISTERED_USER_ID_KEY);
+        const username = localStorage.getItem(guestUser.ACTIVE_USER_KEY);
+        return {
+          mode: 'registered',
+          user: id ? { id, username: username || String(id) } : null,
+        };
+      }
       return { mode: 'anonymous', user: null };
     }),
     waitForApp(),
