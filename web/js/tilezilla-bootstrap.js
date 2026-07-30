@@ -186,8 +186,8 @@ import {
   loadAdventurePath,
   resolveAdventureResume,
 } from './adventure-path.js';
-import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
-import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
+import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js?v=20260730a';
+import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js?v=20260730a';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
 import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
 
@@ -2773,6 +2773,15 @@ async function loadDailyPuzzle(app) {
   }
 }
 
+async function loadLayoutSafe(label, loader, ms = 4500) {
+  try {
+    return await awaitWithTimeout(Promise.resolve().then(loader), ms, label);
+  } catch (err) {
+    console.warn(`${label}:`, err?.message || err);
+    return null;
+  }
+}
+
 async function applyShellLayouts() {
   if (MAIN_V2_SHELL) {
     try {
@@ -2786,23 +2795,14 @@ async function applyShellLayouts() {
         cartographersJournalLayout,
         hintRulesLayout,
       ] = await Promise.all([
-        loadMainScreenV2Layout(),
-        loadPreviewV2Layout(),
-        loadHintV2Layout(),
-        loadTilebagV2Layout(),
-        loadBottomNavLayout(),
-        loadMenuLayout().catch((err) => {
-          console.warn('Menu layout:', err);
-          return null;
-        }),
-        loadCartographersJournalLayout().catch((err) => {
-          console.warn("Cartographer's journal layout:", err);
-          return null;
-        }),
-        loadHintRulesLayout().catch((err) => {
-          console.warn('Hint rules layout:', err);
-          return null;
-        }),
+        loadLayoutSafe('Main layout', () => loadMainScreenV2Layout()),
+        loadLayoutSafe('Preview layout', () => loadPreviewV2Layout()),
+        loadLayoutSafe('Hint layout', () => loadHintV2Layout()),
+        loadLayoutSafe('Tilebag layout', () => loadTilebagV2Layout()),
+        loadLayoutSafe('Bottom nav layout', () => loadBottomNavLayout()),
+        loadLayoutSafe('Menu layout', () => loadMenuLayout()),
+        loadLayoutSafe("Cartographer's journal layout", () => loadCartographersJournalLayout()),
+        loadLayoutSafe('Hint rules layout', () => loadHintRulesLayout()),
       ]);
       if (mainLayout) applyMainScreenV2Layout(mainLayout);
       if (previewLayout) {
@@ -2830,17 +2830,11 @@ async function applyShellLayouts() {
   } else {
     try {
       const [bottomNavLayout, previewLayout, tilebagLayout, menuLayout, cartographersJournalLayout] = await Promise.all([
-        loadBottomNavLayout(),
-        loadPreviewLayout(),
-        loadTilebagLayout(),
-        loadMenuLayout().catch((err) => {
-          console.warn('Menu layout:', err);
-          return null;
-        }),
-        loadCartographersJournalLayout().catch((err) => {
-          console.warn("Cartographer's journal layout:", err);
-          return null;
-        }),
+        loadLayoutSafe('Bottom nav layout', () => loadBottomNavLayout()),
+        loadLayoutSafe('Preview layout', () => loadPreviewLayout()),
+        loadLayoutSafe('Tilebag layout', () => loadTilebagLayout()),
+        loadLayoutSafe('Menu layout', () => loadMenuLayout()),
+        loadLayoutSafe("Cartographer's journal layout", () => loadCartographersJournalLayout()),
       ]);
       if (bottomNavLayout) applyBottomNavLayout(bottomNavLayout);
       if (previewLayout) applyPreviewLayout(previewLayout);
@@ -3257,17 +3251,21 @@ async function init() {
     });
   // Unhide chrome immediately; layouts and engine finish loading in the background.
   finishShellBoot();
-  const shellLayoutsPromise = Promise.race([
-    applyShellLayouts(),
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.warn('Shell layouts timed out; continuing with defaults');
-        resolve(null);
-      }, 6000);
-    }),
-  ]).catch((err) => {
+  const shellLayoutsPromise = applyShellLayouts().catch((err) => {
     console.warn('Shell layouts:', err);
     return null;
+  });
+  // Soft deadline: boot continues even if a layout JSON is slow; applyShellLayouts
+  // still finishes in the background and paints when ready.
+  void Promise.race([
+    shellLayoutsPromise.then(() => 'ok'),
+    new Promise((resolve) => {
+      setTimeout(() => resolve('timeout'), 6000);
+    }),
+  ]).then((status) => {
+    if (status === 'timeout') {
+      console.warn('Shell layouts still loading after 6s; continuing boot with defaults until they arrive');
+    }
   });
   const earlyUrlParams = new URLSearchParams(window.location.search);
   const earlyProfileBoot = earlyUrlParams.get('profile') === '1' || earlyUrlParams.get('profile') === 'true';

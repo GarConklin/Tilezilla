@@ -7,7 +7,7 @@ import {
   TZ_DESIGN_WIDTH,
   applyUiScale,
   viewportSize,
-} from './tilezilla-ui-scale.js';
+} from './tilezilla-ui-scale.js?v=20260730a';
 
 /** Desktop 2×/3× only — mobile uiScale < 1 stays at 1× for overlay frames. */
 export function getFrameUpscale() {
