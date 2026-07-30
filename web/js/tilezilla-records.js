@@ -16,7 +16,6 @@ import {
   fetchLeaderboardRows,
   fetchPersonalBestPartitions,
   getGuestLeaderboardPreview,
-  partitionAdventureLeaderboardByHints,
   partitionLeaderboardByHints,
   renderRecordsList,
   resolveDailyChallengeHeader,
@@ -36,6 +35,7 @@ let scrollers = {};
 let getApp = () => null;
 let onBack = null;
 let onClose = null;
+let onSubTabChange = null;
 let getChallengeDate = () => null;
 let getPostDailyLeaderboard = () => false;
 
@@ -99,27 +99,26 @@ async function renderLeaderboardLists(progress) {
 
 async function renderAdventureLeaderboardLists() {
   const rows = await fetchAdventureLeaderboardRows();
-  const partitions = partitionAdventureLeaderboardByHints(rows);
   const app = getApp();
   const rankOpts = {
     currentUserId: app?.state?.userId,
     currentUsername: getActiveUsername(),
   };
-  renderRecordsList(
-    $('recordsListTop'),
-    buildAdventureRankedEntries(partitions.zero, rankOpts),
-    { mode: 'adventure', emptyText: 'No adventure times yet.' },
-  );
-  renderRecordsList(
-    $('recordsListBl'),
-    buildAdventureRankedEntries(partitions.one, rankOpts),
-    { mode: 'adventure', emptyText: 'No 1-hint adventure times yet.' },
-  );
-  renderRecordsList(
-    $('recordsListBr'),
-    buildAdventureRankedEntries(partitions.two, rankOpts),
-    { mode: 'adventure', emptyText: 'No 2-hint adventure times yet.' },
-  );
+  const all = buildAdventureRankedEntries(rows, rankOpts);
+  const top10 = all.slice(0, 10);
+  const rest = all.slice(10);
+  renderRecordsList($('recordsListTop'), top10, {
+    mode: 'adventure',
+    emptyText: 'No adventure times yet.',
+  });
+  renderRecordsList($('recordsListBl'), rest, {
+    mode: 'adventure',
+    emptyText: rest.length ? '' : 'No rankings beyond top 10 yet.',
+  });
+  renderRecordsList($('recordsListBr'), [], {
+    mode: 'adventure',
+    emptyText: '',
+  });
   setGuestPlacementBanner(document, null);
 }
 
@@ -148,7 +147,7 @@ export async function refreshRecordsView() {
     await renderAdventureLeaderboardLists();
     setRecordsHeaderFields(document, {
       date: 'Adventure',
-      puzzleId: 'Paths · Rank · Sub · Time',
+      puzzleId: 'Paths · Time · Hints',
       time: '—',
       showTime: false,
     });
@@ -183,6 +182,7 @@ export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
 function activateRecordsSubTab(tab) {
   activeSubTab = tab;
   syncSubTabViews();
+  if (typeof onSubTabChange === 'function') onSubTabChange(tab);
   refreshRecordsView();
 }
 
@@ -202,12 +202,14 @@ export function initRecordsPanel({
   getChallengeDate: getChallengeDateFn,
   onBack: onBackFn,
   onClose: onCloseFn,
+  onSubTabChange: onSubTabChangeFn,
 } = {}) {
   getApp = getAppFn || (() => null);
   getPostDailyLeaderboard = getPostDailyLeaderboardFn || (() => false);
   getChallengeDate = getChallengeDateFn || (() => null);
   onBack = onBackFn || null;
   onClose = onCloseFn || null;
+  onSubTabChange = onSubTabChangeFn || null;
 
   const panel = $('journalRecordsPanel');
   if (!panel) return null;

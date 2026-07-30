@@ -142,9 +142,11 @@ function syncJournalLayoutHits() {
 function syncJournalOverlays() {
   const frame = $('journalRoot')?.querySelector('.tz-journal-dialog__frame');
   if (!frame || !journalLayoutCache) return;
+  const recordsMode = $('journalRecordsPanel')?.dataset?.recordsMode || 'leaderboard';
   applyJournalOverlays(journalLayoutCache, frame, {
     mode: state.mode,
     activeTab: state.activeTab,
+    recordsMode,
   });
 }
 
@@ -962,6 +964,9 @@ export function initJournalUi({
       else void activateJournalTab('stats');
     },
     onClose: closeJournal,
+    onSubTabChange: () => {
+      syncJournalOverlays();
+    },
   });
 
   $('journalBackdrop')?.addEventListener('click', closeJournal);

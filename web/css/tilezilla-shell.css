@@ -9618,10 +9618,11 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 .tz-records-panel[data-records-mode="adventure"] .tz-records-list__row {
   grid-template-columns:
     var(--tz-records-col-adv-rank-w, 8%)
-    var(--tz-records-col-adv-user-w, 22%)
+    var(--tz-records-col-adv-user-w, 20%)
     var(--tz-records-col-paths-w, 10%)
-    var(--tz-records-col-rank-name-w, 38%)
-    var(--tz-records-col-adv-time-w, 22%);
+    var(--tz-records-col-rank-name-w, 26%)
+    var(--tz-records-col-adv-time-w, 16%)
+    var(--tz-records-col-adv-hints-w, 20%);
 }
 
 .tz-records-list__cell--rank {
@@ -9629,6 +9630,11 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-list__cell--paths {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tz-records-list__cell--hints {
   text-align: center;
   font-variant-numeric: tabular-nums;
 }

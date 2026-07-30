@@ -1434,6 +1434,7 @@ def adventure_leaderboard(
                 return {"ok": True, "rows": []}
 
             last_by_user: dict[Any, dict[str, Any]] = {}
+            total_hints_by_user: dict[Any, int] = {}
             try:
                 cur.execute(
                     """
@@ -1452,15 +1453,18 @@ def adventure_leaderboard(
                 )
                 for row in cur.fetchall() or []:
                     uid = row.get("user_id")
+                    hints = max(0, int(row.get("hints_used_count") or 0))
+                    total_hints_by_user[uid] = total_hints_by_user.get(uid, 0) + hints
                     if uid in last_by_user:
                         continue
                     last_by_user[uid] = {
                         "levelId": str(row.get("level_id") or ""),
                         "timeSeconds": int(row.get("time_seconds") or 0),
-                        "hintsUsedCount": max(0, int(row.get("hints_used_count") or 0)),
+                        "hintsUsedCount": hints,
                     }
             except Exception:
                 last_by_user = {}
+                total_hints_by_user = {}
 
             if not last_by_user:
                 cur.execute(
@@ -1497,7 +1501,10 @@ def adventure_leaderboard(
                 last = last_by_user.get(uid) or {}
                 last_level = str(last.get("levelId") or "")
                 last_time = int(last.get("timeSeconds") or 0)
-                hints = max(0, int(last.get("hintsUsedCount") or 0))
+                hints = max(
+                    0,
+                    int(total_hints_by_user.get(uid, last.get("hintsUsedCount") or 0)),
+                )
                 rank_id = int(player.get("current_rank_id") or 0)
                 sub_level = max(1, int(player.get("current_sub_level") or 1))
                 rank_name = str(player.get("rank_name") or "").strip() or f"Rank {rank_id or '—'}"
@@ -1509,6 +1516,7 @@ def adventure_leaderboard(
                         "lastTimeSec": last_time,
                         "completionTimeSeconds": last_time,
                         "hintsUsedCount": hints,
+                        "totalHintsUsed": hints,
                         "rankId": rank_id,
                         "rankName": rank_name,
                         "subLevel": sub_level,

@@ -56,6 +56,7 @@ export const RECORDS_ITEM_DEFS = {
   colRankName: { cssKey: 'col-rank-name', kind: 'col', label: 'Adv LB — level - sublevel', screens: ['adventure'] },
   colSubLevel: { cssKey: 'col-sub-level', kind: 'col', label: '(legacy) Adv LB — sublevel', screens: [] },
   colAdvTime: { cssKey: 'col-adv-time', kind: 'col', label: 'Adv LB — last time', screens: ['adventure'] },
+  colAdvHints: { cssKey: 'col-adv-hints', kind: 'col', label: 'Adv LB — total hints used', screens: ['adventure'] },
   colSize: { cssKey: 'col-size', kind: 'col', label: 'PB column — board size', screens: ['personal'] },
   colPuzzle: { cssKey: 'col-puzzle', kind: 'col', label: 'PB column — puzzle ID', screens: ['personal'] },
   personalPane: { cssKey: 'personal-pane', kind: 'pane', label: '(legacy) personal pane', screens: [] },
@@ -120,11 +121,12 @@ export const DEFAULT_RECORDS_LAYOUT = {
     colUser: { w: 52 },
     colTime: { w: 30 },
     colAdvRank: { w: 8 },
-    colAdvUser: { w: 22 },
+    colAdvUser: { w: 20 },
     colPaths: { w: 10 },
-    colRankName: { w: 38 },
+    colRankName: { w: 26 },
     colSubLevel: { w: 0, hidden: true },
-    colAdvTime: { w: 22 },
+    colAdvTime: { w: 16 },
+    colAdvHints: { w: 20 },
     colSize: { w: 22 },
     colPuzzle: { w: 48 },
     personalPane: { x: 7.5, y: 16.5, w: 79, h: 64, nudgeX: 0, nudgeY: 0, hidden: true },
@@ -479,6 +481,14 @@ export function syncRecordsItemVisibility(layout, root = document, mode = null) 
   }
   if (modeKey === 'leaderboard' || modeKey === 'adventure') {
     panel.querySelectorAll('[data-records-item="fieldDailyTime"], .tz-records-field--daily-time').forEach((el) => {
+      el.hidden = true;
+    });
+  }
+  // Adventure: single bottom list (11+), no 1-hint / 2-hint split panes.
+  if (modeKey === 'adventure') {
+    panel.querySelectorAll(
+      '[data-records-item="paneBr"], [data-records-item="scrollerBr"], .tz-records-field--pane-br, .tz-records-field--scroller-br',
+    ).forEach((el) => {
       el.hidden = true;
     });
   }

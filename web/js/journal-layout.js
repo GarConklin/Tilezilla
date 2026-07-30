@@ -26,10 +26,17 @@ export const JOURNAL_OVERLAY_DEFS = {
     defaultSrc: '/img/PuzzleJournal-Stats.png',
   },
   recordsScreen: {
-    label: 'Overlay — Records (full journal screen)',
+    label: 'Overlay — Records (Daily / Personal)',
     group: 'tab',
     showWhen: { tab: 'records' },
     defaultSrc: '/img/PuzzleJournal-Records.png',
+  },
+  /** Adventure Records sub-tab only — swapped onto recordsScreen img (no extra DOM layer). */
+  recordsAdventureScreen: {
+    label: 'Overlay — Records Adventure (top 10 + 11+)',
+    group: 'tab',
+    showWhen: { never: true },
+    defaultSrc: '/img/NewRecordsPuzzleJournalBlankwbtm.png',
   },
   bottomBar: {
     label: 'Overlay — Bottom button row labels',
@@ -44,6 +51,7 @@ const DEFAULT_OVERLAYS = {
   libraryTop: '',
   statsScreen: '/img/PuzzleJournal-Stats.png',
   recordsScreen: '/img/PuzzleJournal-Records.png',
+  recordsAdventureScreen: '/img/NewRecordsPuzzleJournalBlankwbtm.png',
   bottomBar: '',
 };
 
@@ -341,6 +349,7 @@ export function shouldShowJournalOverlay(overlayKey, { mode = 'record', activeTa
   const def = JOURNAL_OVERLAY_DEFS[overlayKey];
   if (!def || def.isBase) return false;
   const when = def.showWhen || {};
+  if (when.never) return false;
   if (when.always) return true;
   if (when.tab) return when.tab === activeTab;
   if (when.mode) {
@@ -355,9 +364,13 @@ export function shouldShowJournalOverlay(overlayKey, { mode = 'record', activeTa
  * Stack decorative art PNGs on the journal shell. Live data + hit targets stay above overlays.
  * @param {object} layout
  * @param {HTMLElement} frameEl — .tz-journal-dialog__frame
- * @param {{ mode?: string, activeTab?: string }} context
+ * @param {{ mode?: string, activeTab?: string, recordsMode?: string }} context
  */
-export function applyJournalOverlays(layout, frameEl, { mode = 'record', activeTab = 'puzzle' } = {}) {
+export function applyJournalOverlays(layout, frameEl, {
+  mode = 'record',
+  activeTab = 'puzzle',
+  recordsMode = 'leaderboard',
+} = {}) {
   if (!frameEl) return;
 
   const shellSrc = getJournalOverlaySrc('shellBlank', layout);
@@ -368,9 +381,18 @@ export function applyJournalOverlays(layout, frameEl, { mode = 'record', activeT
 
   for (const key of Object.keys(JOURNAL_OVERLAY_DEFS)) {
     if (JOURNAL_OVERLAY_DEFS[key].isBase) continue;
+    if (key === 'recordsAdventureScreen') continue;
     const img = frameEl.querySelector(`[data-journal-overlay="${key}"]`);
     if (!img) continue;
-    const src = getJournalOverlaySrc(key, layout);
+    let src = getJournalOverlaySrc(key, layout);
+    if (
+      key === 'recordsScreen'
+      && activeTab === 'records'
+      && recordsMode === 'adventure'
+    ) {
+      src = getJournalOverlaySrc('recordsAdventureScreen', layout)
+        || '/img/NewRecordsPuzzleJournalBlankwbtm.png';
+    }
     const visible = src && shouldShowJournalOverlay(key, { mode, activeTab });
     if (visible) {
       if (img.getAttribute('src') !== src) img.setAttribute('src', src);

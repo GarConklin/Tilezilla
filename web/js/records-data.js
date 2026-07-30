@@ -625,6 +625,7 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
     const sub = Math.max(1, Number(row.subLevel) || 1);
     const rankName = String(row.rankName || '').trim() || '—';
     const subLevel = numerals[sub - 1] || String(sub);
+    const hints = Math.max(0, Number(row.hintsUsedCount ?? row.totalHintsUsed) || 0);
     return {
       rank: idx + 1,
       user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
@@ -633,7 +634,8 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
       subLevel,
       levelLabel: `${rankName} - ${subLevel}`,
       time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
-      hintsUsedCount: hintBucket(row),
+      hintsUsedCount: hints,
+      hints: String(hints),
       isGuestPreview: !!row.isGuestPreview,
     };
   });
@@ -658,7 +660,8 @@ export async function fetchAdventureLeaderboardRows() {
       pathsCompleted: Number(row.pathsCompleted) || 0,
       completionTimeSeconds: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
       lastTimeSec: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
-      hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
+      hintsUsedCount: Math.max(0, Number(row.totalHintsUsed ?? row.hintsUsedCount) || 0),
+      totalHintsUsed: Math.max(0, Number(row.totalHintsUsed ?? row.hintsUsedCount) || 0),
       rankId: Number(row.rankId) || 0,
       rankName: row.rankName || '',
       subLevel: Number(row.subLevel) || 1,
@@ -843,6 +846,7 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--paths">${escapeHtml(entry.paths)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--rank-name">${escapeHtml(levelLabel)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--hints">${escapeHtml(entry.hints ?? String(entry.hintsUsedCount ?? 0))}</span>
       `;
     } else {
       row.innerHTML = `
@@ -899,18 +903,21 @@ export const MOCK_PERSONAL_BEST_ROWS = {
 };
 
 export const MOCK_ADVENTURE_LEADERBOARD_ROWS = {
-  zero: [
-    { rank: 1, user: 'PathKing', paths: '42', levelLabel: 'Trailblazer - III', time: '2:10' },
-    { rank: 2, user: 'TrailAce', paths: '38', levelLabel: 'Explorer - II', time: '2:44' },
-    { rank: 3, user: 'MapNomad', paths: '31', levelLabel: 'Explorer - I', time: '3:02' },
-    { rank: 4, user: 'RoutePro', paths: '27', levelLabel: 'Pathfinder - IV', time: '3:18' },
+  top: [
+    { rank: 1, user: 'PathKing', paths: '42', levelLabel: 'Trailblazer - III', time: '2:10', hints: '3' },
+    { rank: 2, user: 'TrailAce', paths: '38', levelLabel: 'Explorer - II', time: '2:44', hints: '1' },
+    { rank: 3, user: 'MapNomad', paths: '31', levelLabel: 'Explorer - I', time: '3:02', hints: '0' },
+    { rank: 4, user: 'RoutePro', paths: '27', levelLabel: 'Pathfinder - IV', time: '3:18', hints: '5' },
+    { rank: 5, user: 'ScoutNine', paths: '24', levelLabel: 'Pathfinder - I', time: '3:40', hints: '2' },
+    { rank: 6, user: 'HintHiker', paths: '22', levelLabel: 'Wanderer - V', time: '3:55', hints: '8' },
+    { rank: 7, user: 'NudgeScout', paths: '18', levelLabel: 'Wanderer - III', time: '4:05', hints: '4' },
+    { rank: 8, user: 'Campfire', paths: '15', levelLabel: 'Wanderer - II', time: '4:22', hints: '0' },
+    { rank: 9, user: 'DoublePath', paths: '14', levelLabel: 'Wanderer - I', time: '5:12', hints: '6' },
+    { rank: 10, user: 'TrailKid', paths: '12', levelLabel: 'Wanderer - I', time: '5:40', hints: '1' },
   ],
-  one: [
-    { rank: 1, user: 'HintHiker', paths: '22', levelLabel: 'Pathfinder - II', time: '3:40' },
-    { rank: 2, user: 'NudgeScout', paths: '18', levelLabel: 'Wanderer - V', time: '4:05' },
-  ],
-  two: [
-    { rank: 1, user: 'DoublePath', paths: '14', levelLabel: 'Wanderer - III', time: '5:12' },
+  rest: [
+    { rank: 11, user: 'LateJoin', paths: '9', levelLabel: 'Wanderer - I', time: '6:01', hints: '2' },
+    { rank: 12, user: 'NewBoots', paths: '4', levelLabel: 'Wanderer - I', time: '7:18', hints: '0' },
   ],
 };
 
@@ -942,16 +949,13 @@ export function renderMockAdventureLeaderboardLists(root = document) {
   const top = root.getElementById?.('recordsListTop') || root.querySelector?.('#recordsListTop');
   const bl = root.getElementById?.('recordsListBl') || root.querySelector?.('#recordsListBl');
   const br = root.getElementById?.('recordsListBr') || root.querySelector?.('#recordsListBr');
-  renderRecordsList(top, MOCK_ADVENTURE_LEADERBOARD_ROWS.zero, {
+  renderRecordsList(top, MOCK_ADVENTURE_LEADERBOARD_ROWS.top, {
     mode: 'adventure',
     emptyText: 'No adventure times yet.',
   });
-  renderRecordsList(bl, MOCK_ADVENTURE_LEADERBOARD_ROWS.one, {
+  renderRecordsList(bl, MOCK_ADVENTURE_LEADERBOARD_ROWS.rest, {
     mode: 'adventure',
-    emptyText: 'No 1-hint adventure times yet.',
+    emptyText: 'No rankings beyond top 10 yet.',
   });
-  renderRecordsList(br, MOCK_ADVENTURE_LEADERBOARD_ROWS.two, {
-    mode: 'adventure',
-    emptyText: 'No 2-hint adventure times yet.',
-  });
+  renderRecordsList(br, [], { mode: 'adventure', emptyText: '' });
 }

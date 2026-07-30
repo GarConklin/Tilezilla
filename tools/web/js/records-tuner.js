@@ -57,7 +57,7 @@ const PREVIEW_MODES = {
   adventure: {
     tabKey: 'adventure',
     title: 'Adventure Leaderboard',
-    detail: 'Lists: rank · user · paths · level - sublevel · time (0 / 1 / 2 hint panes).',
+    detail: 'Top 10 + 11+ scroller. Columns: rank · user · paths · level · time · total hints. Adventure art only.',
     mockStageClass: 'preview-mode-adventure',
     btnId: 'previewAdventureBtn',
     badge: 'ADVENTURE LB',
@@ -79,9 +79,9 @@ const PANE_HIT_LABELS = {
     paneBr: 'Daily · 2 hints',
   },
   adventure: {
-    paneTop: 'Adv · 0 hints',
-    paneBl: 'Adv · 1 hint',
-    paneBr: 'Adv · 2 hints',
+    paneTop: 'Adv · Top 10',
+    paneBl: 'Adv · 11+',
+    paneBr: 'Adv · (hidden)',
   },
   personalBest: {
     paneTop: 'PB · 0 hints',
@@ -92,7 +92,7 @@ const PANE_HIT_LABELS = {
 
 const MOCK_ADVENTURE_HEADER = {
   date: 'Adventure',
-  puzzleId: 'Paths · Rank · Sub · Time',
+  puzzleId: 'Paths · Time · Hints',
 };
 
 function previewModeKey() {
@@ -388,6 +388,12 @@ function updatePreviewBanner() {
   els.mockStage?.classList.add(mode.mockStageClass);
   document.body.classList.remove('preview-mode-leaderboard', 'preview-mode-adventure', 'preview-mode-personal');
   document.body.classList.add(mode.mockStageClass);
+  const bg = document.querySelector('#mockFrame .tz-journal-dialog__bg');
+  if (bg) {
+    bg.src = previewSubTab === 'adventure'
+      ? '/img/NewRecordsPuzzleJournalBlankwbtm.png'
+      : '/img/PuzzleJournal-Records.png';
+  }
 }
 
 function syncPreviewSubTab() {
