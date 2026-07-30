@@ -610,14 +610,14 @@ export function buildRankedEntries(rows, { currentUserId, currentUsername } = {}
   }));
 }
 
-/** Rank adventure rows: paths completed desc, then last time asc. */
+/** Rank adventure rows: paths completed desc, then avg time/puzzle asc. */
 export function buildAdventureRankedEntries(rows, { currentUserId, currentUsername } = {}) {
   const sorted = [...(rows || [])].sort((a, b) => {
     const pathsA = Number(a.pathsCompleted) || 0;
     const pathsB = Number(b.pathsCompleted) || 0;
     if (pathsB !== pathsA) return pathsB - pathsA;
-    const timeA = Number(a.completionTimeSeconds ?? a.lastTimeSec) || 1e9;
-    const timeB = Number(b.completionTimeSeconds ?? b.lastTimeSec) || 1e9;
+    const timeA = Number(a.avgTimeSec ?? a.completionTimeSeconds ?? a.lastTimeSec) || 1e9;
+    const timeB = Number(b.avgTimeSec ?? b.completionTimeSeconds ?? b.lastTimeSec) || 1e9;
     return timeA - timeB;
   });
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
@@ -626,6 +626,7 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
     const rankName = String(row.rankName || '').trim() || '—';
     const subLevel = numerals[sub - 1] || String(sub);
     const hints = Math.max(0, Number(row.hintsUsedCount ?? row.totalHintsUsed) || 0);
+    const avgSec = Number(row.avgTimeSec ?? row.completionTimeSeconds ?? row.lastTimeSec) || 0;
     return {
       rank: idx + 1,
       user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
@@ -633,7 +634,7 @@ export function buildAdventureRankedEntries(rows, { currentUserId, currentUserna
       rankName,
       subLevel,
       levelLabel: `${rankName} - ${subLevel}`,
-      time: formatLeaderboardTime(row.completionTimeSeconds ?? row.lastTimeSec),
+      time: formatLeaderboardTime(avgSec),
       hintsUsedCount: hints,
       hints: String(hints),
       isGuestPreview: !!row.isGuestPreview,
@@ -658,7 +659,8 @@ export async function fetchAdventureLeaderboardRows() {
       userId: row.userId,
       username: row.username,
       pathsCompleted: Number(row.pathsCompleted) || 0,
-      completionTimeSeconds: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
+      avgTimeSec: Number(row.avgTimeSec ?? row.completionTimeSeconds ?? row.lastTimeSec) || 0,
+      completionTimeSeconds: Number(row.avgTimeSec ?? row.completionTimeSeconds ?? row.lastTimeSec) || 0,
       lastTimeSec: Number(row.lastTimeSec ?? row.completionTimeSeconds) || 0,
       hintsUsedCount: Math.max(0, Number(row.totalHintsUsed ?? row.hintsUsedCount) || 0),
       totalHintsUsed: Math.max(0, Number(row.totalHintsUsed ?? row.hintsUsedCount) || 0),
@@ -678,7 +680,8 @@ export function partitionAdventureLeaderboardByHints(rows) {
     const pathsA = Number(a.pathsCompleted) || 0;
     const pathsB = Number(b.pathsCompleted) || 0;
     if (pathsB !== pathsA) return pathsB - pathsA;
-    return (Number(a.completionTimeSeconds) || 1e9) - (Number(b.completionTimeSeconds) || 1e9);
+    return (Number(a.avgTimeSec ?? a.completionTimeSeconds) || 1e9)
+      - (Number(b.avgTimeSec ?? b.completionTimeSeconds) || 1e9);
   };
   zero.sort(byPathsThenTime);
   one.sort(byPathsThenTime);

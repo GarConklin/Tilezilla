@@ -57,7 +57,7 @@ const PREVIEW_MODES = {
   adventure: {
     tabKey: 'adventure',
     title: 'Adventure Leaderboard',
-    detail: 'Top 10 + 11+ scroller. Columns: rank · user · paths · level · time · total hints. Adventure art only.',
+    detail: 'Top 10 + 11+ scroller. Columns: rank · user · paths · level · avg time/puzzle · total hints.',
     mockStageClass: 'preview-mode-adventure',
     btnId: 'previewAdventureBtn',
     badge: 'ADVENTURE LB',
@@ -92,7 +92,7 @@ const PANE_HIT_LABELS = {
 
 const MOCK_ADVENTURE_HEADER = {
   date: 'Adventure',
-  puzzleId: 'Paths · Time · Hints',
+  puzzleId: 'Paths · Avg · Hints',
 };
 
 function previewModeKey() {

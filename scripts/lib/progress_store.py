@@ -1404,7 +1404,7 @@ def daily_leaderboard_for_date(
 def adventure_leaderboard(
     repo_root: Path,  # noqa: ARG001
 ) -> dict[str, Any]:
-    """Cross-user adventure rankings: paths completed, rank/sublevel, last adventure time/hints."""
+    """Cross-user adventure rankings: paths, rank/sublevel, avg time/puzzle, total hints."""
     try:
         conn = _mysql_connect()
     except Exception:
@@ -1433,8 +1433,11 @@ def adventure_leaderboard(
             if not players:
                 return {"ok": True, "rows": []}
 
+            # Per user: last solve (for level id), total hints, and best time per puzzle
+            # so avg = mean of per-puzzle bests (not mean of every find).
             last_by_user: dict[Any, dict[str, Any]] = {}
             total_hints_by_user: dict[Any, int] = {}
+            best_time_by_user_level: dict[Any, dict[str, int]] = {}
             try:
                 cur.execute(
                     """
@@ -1453,20 +1456,28 @@ def adventure_leaderboard(
                 )
                 for row in cur.fetchall() or []:
                     uid = row.get("user_id")
+                    level_id = str(row.get("level_id") or "").strip()
                     hints = max(0, int(row.get("hints_used_count") or 0))
+                    time_sec = max(0, int(row.get("time_seconds") or 0))
                     total_hints_by_user[uid] = total_hints_by_user.get(uid, 0) + hints
+                    if level_id and time_sec > 0:
+                        per_level = best_time_by_user_level.setdefault(uid, {})
+                        prev = per_level.get(level_id)
+                        if prev is None or time_sec < prev:
+                            per_level[level_id] = time_sec
                     if uid in last_by_user:
                         continue
                     last_by_user[uid] = {
-                        "levelId": str(row.get("level_id") or ""),
-                        "timeSeconds": int(row.get("time_seconds") or 0),
+                        "levelId": level_id,
+                        "timeSeconds": time_sec,
                         "hintsUsedCount": hints,
                     }
             except Exception:
                 last_by_user = {}
                 total_hints_by_user = {}
+                best_time_by_user_level = {}
 
-            if not last_by_user:
+            if not best_time_by_user_level:
                 cur.execute(
                     """
                     SELECT
@@ -1484,13 +1495,19 @@ def adventure_leaderboard(
                 )
                 for row in cur.fetchall() or []:
                     uid = row.get("user_id")
-                    if uid in last_by_user:
-                        continue
-                    last_by_user[uid] = {
-                        "levelId": str(row.get("level_id") or ""),
-                        "timeSeconds": int(row.get("time_seconds") or 0),
-                        "hintsUsedCount": 0,
-                    }
+                    level_id = str(row.get("level_id") or "").strip()
+                    time_sec = max(0, int(row.get("time_seconds") or 0))
+                    if level_id and time_sec > 0:
+                        per_level = best_time_by_user_level.setdefault(uid, {})
+                        prev = per_level.get(level_id)
+                        if prev is None or time_sec < prev:
+                            per_level[level_id] = time_sec
+                    if uid not in last_by_user:
+                        last_by_user[uid] = {
+                            "levelId": level_id,
+                            "timeSeconds": time_sec,
+                            "hintsUsedCount": 0,
+                        }
 
             for player in players:
                 uid = player.get("user_id")
@@ -1501,6 +1518,11 @@ def adventure_leaderboard(
                 last = last_by_user.get(uid) or {}
                 last_level = str(last.get("levelId") or "")
                 last_time = int(last.get("timeSeconds") or 0)
+                per_level_times = list((best_time_by_user_level.get(uid) or {}).values())
+                if per_level_times:
+                    avg_time = int(round(sum(per_level_times) / len(per_level_times)))
+                else:
+                    avg_time = last_time
                 hints = max(
                     0,
                     int(total_hints_by_user.get(uid, last.get("hintsUsedCount") or 0)),
@@ -1514,7 +1536,8 @@ def adventure_leaderboard(
                         "username": display_name,
                         "pathsCompleted": paths,
                         "lastTimeSec": last_time,
-                        "completionTimeSeconds": last_time,
+                        "avgTimeSec": avg_time,
+                        "completionTimeSeconds": avg_time,
                         "hintsUsedCount": hints,
                         "totalHintsUsed": hints,
                         "rankId": rank_id,
@@ -1527,7 +1550,7 @@ def adventure_leaderboard(
             rows.sort(
                 key=lambda r: (
                     -int(r.get("pathsCompleted") or 0),
-                    int(r.get("lastTimeSec") or 10**9),
+                    int(r.get("avgTimeSec") or r.get("completionTimeSeconds") or 10**9),
                     str(r.get("username") or "").lower(),
                 )
             )

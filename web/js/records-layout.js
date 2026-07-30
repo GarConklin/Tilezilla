@@ -55,7 +55,7 @@ export const RECORDS_ITEM_DEFS = {
   colPaths: { cssKey: 'col-paths', kind: 'col', label: 'Adv LB — paths completed', screens: ['adventure'] },
   colRankName: { cssKey: 'col-rank-name', kind: 'col', label: 'Adv LB — level - sublevel', screens: ['adventure'] },
   colSubLevel: { cssKey: 'col-sub-level', kind: 'col', label: '(legacy) Adv LB — sublevel', screens: [] },
-  colAdvTime: { cssKey: 'col-adv-time', kind: 'col', label: 'Adv LB — last time', screens: ['adventure'] },
+  colAdvTime: { cssKey: 'col-adv-time', kind: 'col', label: 'Adv LB — avg time / puzzle', screens: ['adventure'] },
   colAdvHints: { cssKey: 'col-adv-hints', kind: 'col', label: 'Adv LB — total hints used', screens: ['adventure'] },
   colSize: { cssKey: 'col-size', kind: 'col', label: 'PB column — board size', screens: ['personal'] },
   colPuzzle: { cssKey: 'col-puzzle', kind: 'col', label: 'PB column — puzzle ID', screens: ['personal'] },
