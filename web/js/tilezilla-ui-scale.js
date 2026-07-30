@@ -90,7 +90,21 @@ export function tryFitWindowToViewportLock() {
   }
 }
 
+let applyingUiScale = false;
+
 export function applyUiScale() {
+  if (applyingUiScale) {
+    return parseFloat(document.documentElement.dataset.uiScale) || 1;
+  }
+  applyingUiScale = true;
+  try {
+    return applyUiScaleInner();
+  } finally {
+    applyingUiScale = false;
+  }
+}
+
+function applyUiScaleInner() {
   const phonePreview = document.documentElement.classList.contains('tz-phone-preview');
   const lockedDesktopScale = phonePreview ? null : getLockedDesktopScale();
   const { vw: layoutVw, vh } = viewportSize();

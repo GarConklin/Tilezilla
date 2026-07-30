@@ -163,8 +163,9 @@ let frameListenersWired = false;
 
 /** Call on auth pages and after shell boot so overlays track viewport + desktop scale lock. */
 export function wireOverlayFrameListeners(getBoardYPercent = () => 8.1) {
-  const sync = () => {
-    applyUiScale();
+  // Never call applyUiScale from the ui-scale-changed path — that event is
+  // dispatched by applyUiScale itself and would recurse forever.
+  const syncFrames = () => {
     const boardY = typeof getBoardYPercent === 'function' ? getBoardYPercent() : 8.1;
     if (document.body?.classList?.contains('auth-screen')) {
       const screenKey = ['login', 'create', 'profile'].find((k) =>
@@ -183,12 +184,17 @@ export function wireOverlayFrameListeners(getBoardYPercent = () => 8.1) {
     syncJournalDialogFrame();
   };
 
-  sync();
+  const onResize = () => {
+    applyUiScale();
+    syncFrames();
+  };
 
-  if (frameListenersWired) return sync;
+  onResize();
+
+  if (frameListenersWired) return syncFrames;
   frameListenersWired = true;
-  window.addEventListener('resize', sync);
-  window.visualViewport?.addEventListener('resize', sync);
-  window.addEventListener('tilezilla:ui-scale-changed', sync);
-  return sync;
+  window.addEventListener('resize', onResize);
+  window.visualViewport?.addEventListener('resize', onResize);
+  window.addEventListener('tilezilla:ui-scale-changed', syncFrames);
+  return syncFrames;
 }
