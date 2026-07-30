@@ -1773,10 +1773,15 @@ function computeExpectedPathCount(placed){
   const cfgCount = Number(state.currentLevel?.pathCount || 0);
   const shPlaced = placed.filter(t => tileId(t.tile) === 'SH').length;
   const etPlaced = placed.filter(t => tileId(t.tile) === 'ET').length;
+  const esPlaced = placed.filter(t => tileId(t.tile) === 'ES').length;
   const shLevel = Number(state.levelTileCounts?.SH || 0);
   const etLevel = Number(state.levelTileCounts?.ET || 0);
-  const levelPaths = (shLevel > 0 && etLevel > 0) ? Math.min(shLevel, etLevel) : 0;
-  const fallbackPaths = (shPlaced === 2 && etPlaced === 2) ? 2 : 1;
+  const esLevel = Number(state.levelTileCounts?.ES || 0);
+  // ES is a second-snake end (with ET) on multi-end bags — count both.
+  const endLevel = etLevel + esLevel;
+  const endPlaced = etPlaced + esPlaced;
+  const levelPaths = (shLevel > 0 && endLevel > 0) ? Math.min(shLevel, endLevel) : 0;
+  const fallbackPaths = (shPlaced >= 2 && endPlaced >= 2) ? Math.min(shPlaced, endPlaced) : 1;
   return (levelPaths > 0)
     ? levelPaths
     : (((cfgMode === 'multi' || cfgMode === 'multi-flex') && cfgCount > 0)
@@ -2028,8 +2033,10 @@ function validateBoard(){
     const endTiles = endpoints.map(k => nodeMap.get(k).tile);
     const shEnds = endTiles.filter(t => tileId(t) === 'SH').length;
     const etEnds = endTiles.filter(t => tileId(t) === 'ET').length;
-    if((!isMultiFlex && (shEnds !== expectedPaths || etEnds !== expectedPaths)) || (isMultiFlex && (shEnds < expectedPaths || etEnds < expectedPaths))){
-      return {ok:false, msg:`Endpoints must be ${isMultiFlex ? 'at least' : ''} ${expectedPaths}x SH and ${expectedPaths}x ET (got SH=${shEnds}, ET=${etEnds})`};
+    const esEnds = endTiles.filter(t => tileId(t) === 'ES').length;
+    const pathEnds = etEnds + esEnds;
+    if((!isMultiFlex && (shEnds !== expectedPaths || pathEnds !== expectedPaths)) || (isMultiFlex && (shEnds < expectedPaths || pathEnds < expectedPaths))){
+      return {ok:false, msg:`Endpoints must be ${isMultiFlex ? 'at least' : ''} ${expectedPaths}x SH and ${expectedPaths}x ET/ES (got SH=${shEnds}, ET=${etEnds}, ES=${esEnds})`};
     }
 
     // Build component endpoint traces so checker output can be audited.
@@ -2141,13 +2148,17 @@ function validateBoard(){
         if(!nb) continue;
         if(isNeutralPathTile(info.tile) || isNeutralPathTile(nb.tile)) continue;
 
-        // Ban SH <-> ET direct connection (adjacent live-edge match)
-        const isSH = tileId(info.tile) === 'SH';
-        const isET = tileId(info.tile) === 'ET';
-        const nbIsSH = tileId(nb.tile) === 'SH';
-        const nbIsET = tileId(nb.tile) === 'ET';
-        if ((isSH && nbIsET) || (isET && nbIsSH)) {
-          return {ok:false, msg:`Invalid: SH and ET connect directly at (${r},${c}) <-> (${rr},${cc})`};
+        // Ban SH <-> ET/ES direct connection on single-snake boards.
+        // Multi-path catalogs (2×SH with ET+ES) may place a head against an end;
+        // Check still accepts those via catalog match, so do not reject bonuses here.
+        if (expectedPaths <= 1) {
+          const isSH = tileId(info.tile) === 'SH';
+          const isEnd = tileId(info.tile) === 'ET' || tileId(info.tile) === 'ES';
+          const nbIsSH = tileId(nb.tile) === 'SH';
+          const nbIsEnd = tileId(nb.tile) === 'ET' || tileId(nb.tile) === 'ES';
+          if ((isSH && nbIsEnd) || (isEnd && nbIsSH)) {
+            return {ok:false, msg:`Invalid: SH and ET/ES connect directly at (${r},${c}) <-> (${rr},${cc})`};
+          }
         }
 
         // Only add each undirected edge once (E/S directions)

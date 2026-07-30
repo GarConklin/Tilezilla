@@ -120,8 +120,8 @@
       "blockers": [],
       "solvesFile": "3x4-1A-AAF.json",
       "pathMode": "multi",
-      "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "pathCount": 2,
+      "totalUniqueSolutions": 3
     },
     {
       "id": "3x4-1A-AAG",
