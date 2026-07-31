@@ -484,10 +484,18 @@ export function syncRecordsItemVisibility(layout, root = document, mode = null) 
       el.hidden = true;
     });
   }
-  // Adventure: single bottom list (11+), no 1-hint / 2-hint split panes.
+  // Adventure: Top 10 fits the upper plate (no scroller); only 11+ scrolls below.
+  // Also hide the unused right-hand 2-hint pane from Daily layout.
   if (modeKey === 'adventure') {
     panel.querySelectorAll(
-      '[data-records-item="paneBr"], [data-records-item="scrollerBr"], .tz-records-field--pane-br, .tz-records-field--scroller-br',
+      [
+        '[data-records-item="scrollerTop"]',
+        '.tz-records-field--scroller-top',
+        '[data-records-item="paneBr"]',
+        '[data-records-item="scrollerBr"]',
+        '.tz-records-field--pane-br',
+        '.tz-records-field--scroller-br',
+      ].join(', '),
     ).forEach((el) => {
       el.hidden = true;
     });

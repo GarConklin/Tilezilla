@@ -414,7 +414,8 @@
         "trackScale": 0.55,
         "pinScale": 0.66,
         "nudgeX": 0,
-        "nudgeY": 0
+        "nudgeY": 0,
+        "hidden": true
       },
       "scrollerBl": {
         "x": 84.5,

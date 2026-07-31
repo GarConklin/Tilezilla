@@ -9413,6 +9413,18 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   display: none;
 }
 
+/* Adventure Top 10: no scroller / no scroll — only the 11+ pane scrolls. */
+#journalRecordsPanel[data-records-mode="adventure"] .tz-records-field--pane-top .tz-records-list-scroll,
+#journalRecordsPanel[data-records-mode="adventure"] .tz-records-list-scroll[data-records-item="listTop"] {
+  overflow-y: hidden;
+  touch-action: none;
+}
+
+#journalRecordsPanel[data-records-mode="adventure"] .tz-records-field--scroller-top,
+#journalRecordsPanel[data-records-mode="adventure"] [data-records-item="scrollerTop"] {
+  display: none !important;
+}
+
 .tz-records-field--pane-top .tz-records-list-scroll,
 .tz-records-list-scroll[data-records-item="listTop"] {
   left: calc(var(--tz-records-list-top-x, 3) * 1% + var(--tz-records-list-top-nudge-x, 0px));
