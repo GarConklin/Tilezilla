@@ -506,6 +506,128 @@ def _adventure_cleared_count(cur, progress_data: dict[str, Any]) -> int:
     return cleared
 
 
+def _adventure_cleared_count_from_sql(cur, user_id: int) -> int:
+    """Count cleared adventure puzzles from SQL finds only (no full progress blob)."""
+    cur.execute(
+        """
+        SELECT
+            ap.level_id,
+            ap.is_challenge,
+            COALESCE(l.total_unique_solutions, 1) AS total_known,
+            COUNT(ufs.found_id) AS find_count,
+            SUM(
+                CASE
+                    WHEN ufs.is_bonus = 0 AND ufs.solution_index IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS catalog_count
+        FROM adventure_puzzle ap
+        LEFT JOIN levels l ON l.level_id = ap.level_id
+        LEFT JOIN user_found_solutions ufs
+            ON ufs.user_id = %s AND ufs.level_id = ap.level_id
+        GROUP BY ap.level_id, ap.is_challenge, COALESCE(l.total_unique_solutions, 1)
+        """,
+        (user_id,),
+    )
+    cleared = 0
+    for row in cur.fetchall() or []:
+        is_challenge = bool(row.get("is_challenge"))
+        total_known = int(row.get("total_known") or 1)
+        find_count = int(row.get("find_count") or 0)
+        catalog_count = int(row.get("catalog_count") or 0)
+        if not find_count:
+            continue
+        if not is_challenge:
+            cleared += 1
+        elif catalog_count >= max(total_known, 1):
+            cleared += 1
+    return cleared
+
+
+def _load_level_found_from_sql(cur, user_id: int, level_id: str) -> list[dict[str, Any]]:
+    cur.execute(
+        """
+        SELECT level_id, solution_index, is_bonus, placements_json,
+               completion_time_seconds, hints_used_count,
+               example_route_viewed, leaderboard_submitted, found_at
+        FROM user_found_solutions
+        WHERE user_id = %s AND level_id = %s
+        ORDER BY found_at ASC, found_id ASC
+        """,
+        (user_id, level_id),
+    )
+    return [_row_to_found_entry(row) for row in (cur.fetchall() or [])]
+
+
+def _upsert_level_summary_sql(
+    cur,
+    user_id: int,
+    level_id: str,
+    found: list[dict[str, Any]],
+) -> None:
+    """Update discovery + level progress for one level only."""
+    now = datetime.now().replace(microsecond=0)
+    best = _best_time_seconds(found)
+    solve_count = _solutions_found_count(found)
+    for f in found:
+        if f.get("bonus") or f.get("index") is None:
+            continue
+        solution_id = int(f["index"]) + 1
+        discovered = f.get("foundAt") or now
+        cur.execute(
+            """
+            INSERT IGNORE INTO user_solution_discoveries
+                (user_id, level_id, solution_id, discovered_at)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (user_id, level_id, solution_id, discovered),
+        )
+    cur.execute(
+        """
+        INSERT INTO user_level_progress (
+            user_id, level_id, completed, completion_count,
+            best_time_seconds, solutions_found_count,
+            first_completed_at, last_completed_at
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            completed = VALUES(completed),
+            completion_count = VALUES(completion_count),
+            best_time_seconds = VALUES(best_time_seconds),
+            solutions_found_count = VALUES(solutions_found_count),
+            first_completed_at = COALESCE(first_completed_at, VALUES(first_completed_at)),
+            last_completed_at = VALUES(last_completed_at)
+        """,
+        (
+            user_id,
+            level_id,
+            solve_count > 0,
+            solve_count,
+            best,
+            solve_count,
+            now,
+            now,
+        ),
+    )
+
+
+def _refresh_player_progress_sql(cur, user_id: int) -> None:
+    total_solved = _adventure_cleared_count_from_sql(cur, user_id)
+    rank_id, sub_level = _current_adventure_position(cur, total_solved)
+    cur.execute(
+        """
+        INSERT INTO player_progress (
+            player_id, total_levels_solved, current_rank_id, current_sub_level
+        ) VALUES (%s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            total_levels_solved = VALUES(total_levels_solved),
+            current_rank_id = VALUES(current_rank_id),
+            current_sub_level = VALUES(current_sub_level),
+            last_updated = CURRENT_TIMESTAMP
+        """,
+        (user_id, total_solved, rank_id, sub_level),
+    )
+
+
 def _current_adventure_position(cur, total_solved: int) -> tuple[int, int]:
     """Map cumulative adventure clears to the step the player is currently on."""
     cur.execute(
@@ -538,7 +660,7 @@ def rebuild_mysql_from_progress(
     user_id: int,
     progress_data: dict[str, Any],
 ) -> None:
-    """Sync MySQL summary tables from authoritative JSON progress blob."""
+    """Sync MySQL summary tables from a full progress blob (migrate/import only)."""
     try:
         conn = _mysql_connect()
     except Exception:
@@ -756,59 +878,6 @@ def daily_attempt_elapsed_seconds(
         conn.close()
 
 
-def sync_mysql_after_solve(
-    repo_root: Path,
-    user_id: int,
-    progress_data: dict[str, Any],
-    *,
-    level_id: str,
-    index: Optional[int],
-    bonus: bool,
-    completion_time_seconds: int,
-    challenge_date: Optional[str] = None,
-    leaderboard_saved: bool = False,
-    hints_used_count: int = 0,
-) -> None:
-    """Best-effort MySQL summary; JSON file remains authoritative for full history."""
-    rebuild_mysql_from_progress(repo_root, user_id, progress_data)
-
-    if not leaderboard_saved or not challenge_date or bonus:
-        return
-
-    hint_count = max(0, int(hints_used_count or 0))
-    solution_id = (int(index) + 1) if index is not None else 1
-
-    try:
-        conn = _mysql_connect()
-    except Exception:
-        return
-
-    now = datetime.now().replace(microsecond=0)
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT IGNORE INTO daily_results (
-                    challenge_date, user_id, completion_time_seconds,
-                    solution_id, completed_at, hints_used_count
-                ) VALUES (%s, %s, %s, %s, %s, %s)
-                """,
-                (
-                    challenge_date,
-                    user_id,
-                    max(0, int(completion_time_seconds)),
-                    solution_id,
-                    now,
-                    hint_count,
-                ),
-            )
-        conn.commit()
-    except Exception:
-        conn.rollback()
-    finally:
-        conn.close()
-
-
 def _resolve_leaderboard_time(
     user_id: int | str,
     meta: dict[str, Any],
@@ -848,6 +917,72 @@ def _resolve_leaderboard_time(
     )
 
 
+def sync_mysql_after_solve(
+    repo_root: Path,  # noqa: ARG001
+    user_id: int,
+    progress_data: Optional[dict[str, Any]] = None,  # noqa: ARG001 — kept for call-site compat
+    *,
+    level_id: str,
+    index: Optional[int],
+    bonus: bool,
+    completion_time_seconds: int,
+    challenge_date: Optional[str] = None,
+    leaderboard_saved: bool = False,
+    hints_used_count: int = 0,
+    conn=None,
+) -> None:
+    """Update summary tables for this level only — never rebuild the whole journal."""
+    owns_conn = conn is None
+    if owns_conn:
+        try:
+            conn = _mysql_connect()
+        except Exception:
+            return
+
+    hint_count = max(0, int(hints_used_count or 0))
+    try:
+        with conn.cursor() as cur:
+            found = _load_level_found_from_sql(cur, user_id, level_id)
+            _upsert_level_summary_sql(cur, user_id, level_id, found)
+            _refresh_player_progress_sql(cur, user_id)
+
+            if leaderboard_saved and challenge_date and not bonus:
+                solution_id = (int(index) + 1) if index is not None else 1
+                now = datetime.now().replace(microsecond=0)
+                cur.execute(
+                    """
+                    INSERT IGNORE INTO daily_results (
+                        challenge_date, user_id, completion_time_seconds,
+                        solution_id, completed_at, hints_used_count
+                    ) VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        challenge_date,
+                        user_id,
+                        max(0, int(completion_time_seconds)),
+                        solution_id,
+                        now,
+                        hint_count,
+                    ),
+                )
+        if owns_conn:
+            conn.commit()
+    except Exception:
+        if owns_conn:
+            conn.rollback()
+    finally:
+        if owns_conn:
+            conn.close()
+
+
+def _ensure_sql_progress_seeded(repo_root: Path, user_id: int) -> None:
+    """Import JSON→SQL once if this user has no SQL rows yet. Cheap when already seeded."""
+    n, has_meta = _sql_progress_counts(user_id)
+    if n > 0 or has_meta:
+        return
+    load_progress(repo_root, user_id)
+
+
 def record_solve(
     repo_root: Path,
     user_id: int | str,
@@ -878,54 +1013,8 @@ def record_solve(
         hints_used_count = 1 if meta.get("hintsUsed") else 0
     hints_used_count = max(0, int(hints_used_count or 0))
 
-    # Ensure JSON→SQL import happened before write.
-    data = load_progress(repo_root, uid)
-
-    # Duplicate check against SQL (and assembled blob).
-    try:
-        conn = _mysql_connect()
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT found_id, solution_index, is_bonus, found_at
-                FROM user_found_solutions
-                WHERE user_id = %s AND level_id = %s AND equiv_hash = %s
-                LIMIT 1
-                """,
-                (uid, level_id, equiv_h),
-            )
-            existing_row = cur.fetchone()
-        conn.close()
-    except Exception:
-        existing_row = None
-
-    if existing_row:
-        idx = existing_row.get("solution_index")
-        if leaderboard_saved and challenge_date:
-            sync_mysql_after_solve(
-                repo_root,
-                uid,
-                data,
-                level_id=level_id,
-                index=int(idx) if idx is not None else None,
-                bonus=bool(existing_row.get("is_bonus")),
-                completion_time_seconds=completion_time_seconds,
-                challenge_date=challenge_date,
-                leaderboard_saved=leaderboard_saved,
-                hints_used_count=hints_used_count,
-            )
-        result: dict[str, Any] = {
-            "ok": True,
-            "duplicate": True,
-            "index": idx,
-            "bonus": bool(existing_row.get("is_bonus")),
-            "foundAt": _found_at_iso(existing_row.get("found_at")),
-            "completionTimeSeconds": completion_time_seconds,
-            "leaderboardSubmitted": bool(leaderboard_saved and challenge_date),
-        }
-        if server_completion_time_seconds is not None:
-            result["serverCompletionTimeSeconds"] = server_completion_time_seconds
-        return result
+    # One-time JSON import if needed — do not assemble the full journal on every solve.
+    _ensure_sql_progress_seeded(repo_root, uid)
 
     known = load_solves_file(repo_root, level_id)
     client_check = meta.get("check") if isinstance(meta.get("check"), dict) else {}
@@ -941,8 +1030,6 @@ def record_solve(
                 client_index = None
     if known:
         index, bonus = match_catalog(playable, known, rows, cols)
-    # Prefer the client's catalog match when the server rematch misses (e.g. older
-    # board-size bugs) so multi-device journal counts stay aligned with the phone.
     if index is None and client_index is not None:
         index, bonus = client_index, False
     elif index is None and isinstance(client_check, dict) and client_check.get("bonus") is True:
@@ -966,31 +1053,79 @@ def record_solve(
 
     try:
         conn = _mysql_connect()
+    except Exception as err:
+        return {"ok": False, "error": f"sql-connect-failed: {err}"}
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT found_id, solution_index, is_bonus, found_at
+                FROM user_found_solutions
+                WHERE user_id = %s AND level_id = %s AND equiv_hash = %s
+                LIMIT 1
+                """,
+                (uid, level_id, equiv_h),
+            )
+            existing_row = cur.fetchone()
+
+        if existing_row:
+            idx = existing_row.get("solution_index")
+            if leaderboard_saved and challenge_date:
+                sync_mysql_after_solve(
+                    repo_root,
+                    uid,
+                    None,
+                    level_id=level_id,
+                    index=int(idx) if idx is not None else None,
+                    bonus=bool(existing_row.get("is_bonus")),
+                    completion_time_seconds=completion_time_seconds,
+                    challenge_date=challenge_date,
+                    leaderboard_saved=leaderboard_saved,
+                    hints_used_count=hints_used_count,
+                    conn=conn,
+                )
+            conn.commit()
+            result: dict[str, Any] = {
+                "ok": True,
+                "duplicate": True,
+                "index": idx,
+                "bonus": bool(existing_row.get("is_bonus")),
+                "foundAt": _found_at_iso(existing_row.get("found_at")),
+                "completionTimeSeconds": completion_time_seconds,
+                "leaderboardSubmitted": bool(leaderboard_saved and challenge_date),
+            }
+            if server_completion_time_seconds is not None:
+                result["serverCompletionTimeSeconds"] = server_completion_time_seconds
+            return result
+
         with conn.cursor() as cur:
             _upsert_found_entry_sql(cur, uid, level_id, entry)
-            # Keep level meta keys if present.
-            level_entry = data.get(level_id) if isinstance(data.get(level_id), dict) else {}
-            merged_level = {**level_entry, "found": (level_entry.get("found") or []) + [entry]}
-            data[level_id] = merged_level
-            _write_progress_meta_sql(cur, uid, data)
+        sync_mysql_after_solve(
+            repo_root,
+            uid,
+            None,
+            level_id=level_id,
+            index=index,
+            bonus=bonus,
+            completion_time_seconds=completion_time_seconds,
+            challenge_date=challenge_date,
+            leaderboard_saved=leaderboard_saved,
+            hints_used_count=hints_used_count,
+            conn=conn,
+        )
         conn.commit()
-        conn.close()
     except Exception as err:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         return {"ok": False, "error": f"sql-write-failed: {err}"}
-
-    data = load_progress(repo_root, uid)
-    sync_mysql_after_solve(
-        repo_root,
-        uid,
-        data,
-        level_id=level_id,
-        index=index,
-        bonus=bonus,
-        completion_time_seconds=completion_time_seconds,
-        challenge_date=challenge_date,
-        leaderboard_saved=leaderboard_saved,
-        hints_used_count=hints_used_count,
-    )
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
 
     result = {
         "ok": True,
