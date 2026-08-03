@@ -68,6 +68,7 @@ export async function postHintTransaction(amount, reason, referenceId = null) {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(8000),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.success) {

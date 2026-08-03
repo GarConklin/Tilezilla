@@ -317,6 +317,7 @@ async function postSolveToServer(payload, { keepalive = false } = {}) {
     headers: { 'Content-Type': 'application/json' },
     body: solveRequestBody(payload),
     keepalive: !!keepalive,
+    signal: keepalive ? undefined : AbortSignal.timeout(10000),
   });
   // On pagehide keepalive, prefer not to read the body — status is enough to dequeue.
   if (keepalive) {

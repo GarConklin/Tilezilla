@@ -2263,9 +2263,11 @@ function getGlobalHintTokens() {
   return Math.max(0, Number(state.hintTokens) || 0);
 }
 
-async function grantHintTokens(amount, reason = '', referenceId = null) {
+async function grantHintTokens(amount, reason = '', referenceId = null, { playSound = true } = {}) {
   const n = Math.max(0, Number(amount) || 0);
   if (!n) return 0;
+  const shouldPlay = playSound
+    && (reason === HINT_REASON.puzzleCompletion || reason === HINT_REASON.timeBonus);
   if (usesServerHints()) {
     try {
       const balance = await postHintTransaction(n, reason || 'Hint Grant', referenceId);
@@ -2273,9 +2275,7 @@ async function grantHintTokens(amount, reason = '', referenceId = null) {
       window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
         detail: { amount: n, reason, balance },
       }));
-      if (reason === HINT_REASON.puzzleCompletion || reason === HINT_REASON.timeBonus) {
-        playSfx('tokenEarned');
-      }
+      if (shouldPlay) playSfx('tokenEarned');
       return n;
     } catch (e) {
       console.warn('Hint grant failed:', e);
@@ -2287,9 +2287,7 @@ async function grantHintTokens(amount, reason = '', referenceId = null) {
   window.dispatchEvent(new CustomEvent('tilezilla:hint-balance', {
     detail: { amount: n, reason },
   }));
-  if (reason === HINT_REASON.puzzleCompletion || reason === HINT_REASON.timeBonus) {
-    playSfx('tokenEarned');
-  }
+  if (shouldPlay) playSfx('tokenEarned');
   return n;
 }
 
@@ -2602,24 +2600,6 @@ async function processSolutionFound(lv, res, placements) {
     : (pendingDailySync ? Math.max(0, Number(localDaily.completionTimeSeconds) || 0) : elapsedSec);
   const submitDailyLeaderboard = wantsDailyLeaderboard || pendingDailySync;
 
-  const syncPayload = {
-    levelId: lv.id,
-    placements,
-    check: {
-      index: res.index,
-      bonus: !!res.bonus,
-      duplicate: !!res.duplicate,
-    },
-    meta: {
-      completionTimeSeconds: submitDailyLeaderboard ? leaderboardTimeSec : elapsedSec,
-      hintsUsed,
-      hintsUsedCount,
-      exampleRouteViewed,
-      leaderboardSubmitted: submitDailyLeaderboard,
-      challengeDate: submitDailyLeaderboard ? challengeDate : null,
-    },
-  };
-
   if (submitDailyLeaderboard) {
     // Freeze local daily time immediately on first eligible solve so continued
     // multi-solve play cannot later submit wall-clock from the original attempt start.
@@ -2646,69 +2626,132 @@ async function processSolutionFound(lv, res, placements) {
   }
 
   // Every new find must hit SQL (leaderboard meta is optional on the same request).
-  const { syncSolveToServer, flushPendingSolves } = await import('./tilezilla-progress-sync.js');
-  let syncResult = null;
-  try {
-    syncResult = await syncSolveToServer(syncPayload);
-    void flushPendingSolves();
-  } catch (err) {
-    console.warn('Progress solve sync failed:', err);
-  }
+  // Do not block the discovery popup / token SFX on slow auth→API→MySQL round-trips.
+  const syncPayload = {
+    levelId: lv.id,
+    placements,
+    check: {
+      index: res.index,
+      bonus: !!res.bonus,
+      duplicate: !!res.duplicate,
+    },
+    meta: {
+      completionTimeSeconds: submitDailyLeaderboard ? leaderboardTimeSec : elapsedSec,
+      hintsUsed,
+      hintsUsedCount,
+      exampleRouteViewed,
+      leaderboardSubmitted: submitDailyLeaderboard,
+      challengeDate: submitDailyLeaderboard ? challengeDate : null,
+    },
+  };
 
-  if (submitDailyLeaderboard && syncResult?.ok) {
-    leaderboardSubmitted = !!syncResult.leaderboardSubmitted;
-    if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
-      authoritativeElapsed = Math.max(0, Number(syncResult.completionTimeSeconds));
-    }
-    if (leaderboardSubmitted) {
-      const confirmedSec = wantsDailyLeaderboard
-        ? authoritativeElapsed
-        : Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
-      progress?.confirmLeaderboardResult?.(
-        challengeDate,
-        dailyUserId,
-        confirmedSec || null,
-      );
-      if (wantsDailyLeaderboard && authoritativeElapsed > 0) {
-        timer?.updateBest?.(authoritativeElapsed, lv.id);
-      }
-    }
-  } else if (wantsDailyLeaderboard && !syncResult?.ok) {
-    // Keep frozen local time; pending flag retries with that same time later.
-    leaderboardSubmitted = true;
-    authoritativeElapsed = elapsedSec;
-  }
-
-  // Prefer server catalog index when the POST succeeded.
-  const recordedIndex = Number.isFinite(Number(syncResult?.index))
-    ? Number(syncResult.index)
-    : res.index;
-  const recordedBonus = syncResult?.ok
-    ? !!syncResult.bonus
-    : !!res.bonus;
-
-  progress.recordFound(lv.id, recordedIndex, placements, recordedBonus, authoritativeElapsed * 1000, {
+  // Local progress first so journal/counts update immediately.
+  progress.recordFound(lv.id, res.index, placements, !!res.bonus, authoritativeElapsed * 1000, {
     completionTimeSeconds: authoritativeElapsed,
     hintsUsed,
     hintsUsedCount,
     exampleRouteViewed,
-    leaderboardSubmitted: leaderboardSubmitted || !!dailyAlreadyRecorded,
-    serverSynced: !!syncResult?.ok,
+    leaderboardSubmitted: submitDailyLeaderboard || !!dailyAlreadyRecorded,
+    serverSynced: false,
   });
+
+  if (submitDailyLeaderboard) {
+    // Optimistic: first eligible daily solve is recorded locally already.
+    leaderboardSubmitted = true;
+  }
 
   const bonusNotes = [];
   let tokensEarned = 0;
-  if (hintRewardEligible && !hintsUsed) {
-    const levelRef = lv.id;
-    const granted = await grantHintTokens(1, HINT_REASON.puzzleCompletion, levelRef);
-    tokensEarned += granted;
-    if (granted) bonusNotes.push('+1 hint (no hints used)');
-    if (granted && authoritativeElapsed > 0 && authoritativeElapsed <= PUZZLE_TIME_BONUS_SECONDS) {
-      const bonus = await grantHintTokens(1, HINT_REASON.timeBonus, levelRef);
-      tokensEarned += bonus;
-      if (bonus) bonusNotes.push('+1 hint (under 30 min)');
+  const wantCompletionToken = hintRewardEligible && !hintsUsed;
+  const wantTimeBonus = wantCompletionToken
+    && authoritativeElapsed > 0
+    && authoritativeElapsed <= PUZZLE_TIME_BONUS_SECONDS;
+
+  if (wantCompletionToken) {
+    // Optimistic UI + sounds now; server POSTs settle in the background.
+    if (usesServerHints()) {
+      setGlobalHintTokens(getGlobalHintTokens() + 1);
+      playSfx('tokenEarned');
+      tokensEarned = 1;
+      bonusNotes.push('+1 hint (no hints used)');
+      if (wantTimeBonus) {
+        setGlobalHintTokens(getGlobalHintTokens() + 1);
+        playSfx('tokenEarned');
+        tokensEarned = 2;
+        bonusNotes.push('+1 hint (under 30 min)');
+      }
+    } else {
+      const granted = await grantHintTokens(1, HINT_REASON.puzzleCompletion, lv.id);
+      tokensEarned += granted;
+      if (granted) bonusNotes.push('+1 hint (no hints used)');
+      if (granted && wantTimeBonus) {
+        const bonus = await grantHintTokens(1, HINT_REASON.timeBonus, lv.id);
+        tokensEarned += bonus;
+        if (bonus) bonusNotes.push('+1 hint (under 30 min)');
+      }
     }
   }
+
+  void (async () => {
+    try {
+      const { syncSolveToServer, flushPendingSolves } = await import('./tilezilla-progress-sync.js');
+      const syncResult = await syncSolveToServer(syncPayload);
+      void flushPendingSolves();
+
+      if (submitDailyLeaderboard && syncResult?.ok) {
+        const confirmed = !!syncResult.leaderboardSubmitted;
+        if (confirmed || wantsDailyLeaderboard) {
+          let confirmedSec = authoritativeElapsed;
+          if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
+            confirmedSec = Math.max(0, Number(syncResult.completionTimeSeconds));
+          } else if (!wantsDailyLeaderboard) {
+            confirmedSec = Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
+          }
+          progress?.confirmLeaderboardResult?.(
+            challengeDate,
+            dailyUserId,
+            confirmedSec || null,
+          );
+          if (wantsDailyLeaderboard && confirmedSec > 0) {
+            timer?.updateBest?.(confirmedSec, lv.id);
+          }
+        }
+      }
+
+      const recordedIndex = Number.isFinite(Number(syncResult?.index))
+        ? Number(syncResult.index)
+        : res.index;
+      if (syncResult?.ok && progress?.data?.[lv.id]?.found?.length) {
+        const last = progress.data[lv.id].found[progress.data[lv.id].found.length - 1];
+        if (last && !last.serverSynced) {
+          last.serverSynced = true;
+          if (Number.isFinite(recordedIndex)) last.index = recordedIndex;
+          if (syncResult.bonus != null) last.bonus = !!syncResult.bonus;
+          progress.save();
+        }
+      }
+    } catch (err) {
+      console.warn('Progress solve sync failed:', err);
+    }
+
+    if (wantCompletionToken && usesServerHints()) {
+      try {
+        let balance = await postHintTransaction(1, HINT_REASON.puzzleCompletion, lv.id);
+        if (wantTimeBonus) {
+          balance = await postHintTransaction(1, HINT_REASON.timeBonus, lv.id);
+        }
+        setGlobalHintTokens(balance);
+      } catch (err) {
+        console.warn('Background hint grant failed:', err);
+        try {
+          const { hydrateHintBalanceForApp } = await import('./tilezilla-hints-sync.js');
+          await hydrateHintBalanceForApp({ state });
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  })();
 
   let msg = res.msg || 'Solution found!';
   if (authoritativeElapsed > 0) {
