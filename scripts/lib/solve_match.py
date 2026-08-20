@@ -24,41 +24,23 @@ def parse_board_size(level_id: str) -> tuple[int, int]:
 
 
 def board_size_from_solves(repo_root: Path, level_id: str) -> tuple[int, int]:
-    """Prefer board.rows/cols from the solves doc when present."""
-    solves_dir = repo_root / "solves"
-    candidates = [solves_dir / f"{level_id}.json"]
-    for bucket in (repo_root / "data" / "levels").glob("*.json"):
+    """Board size from the level id prefix. Do not scan data/levels/*.json."""
+    parsed = parse_board_size(level_id)
+    if parsed[0] and parsed[1]:
+        return parsed
+    solves_path = repo_root / "solves" / f"{level_id}.json"
+    if solves_path.is_file():
         try:
-            doc = json.loads(bucket.read_text(encoding="utf-8"))
+            doc = json.loads(solves_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
-            continue
-        for lev in doc.get("levels") or []:
-            if lev.get("id") != level_id:
-                continue
-            solves_file = str(lev.get("solvesFile") or "").strip()
-            if solves_file:
-                candidates.insert(0, solves_dir / solves_file)
-            board = lev.get("board") if isinstance(lev.get("board"), dict) else None
-            if board:
-                rows = int(board.get("rows") or 0)
-                cols = int(board.get("cols") or 0)
-                if rows and cols:
-                    return rows, cols
-            break
-    for path in candidates:
-        if not path.is_file():
-            continue
-        try:
-            doc = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
+            doc = None
         board = doc.get("board") if isinstance(doc, dict) else None
         if isinstance(board, dict):
             rows = int(board.get("rows") or 0)
             cols = int(board.get("cols") or 0)
             if rows and cols:
                 return rows, cols
-    return parse_board_size(level_id)
+    return parsed
 
 
 def playable_placements(placements: list[dict]) -> list[dict]:
@@ -144,32 +126,17 @@ def load_solves_file(repo_root: Path, level_id: str) -> list[dict]:
     solves_dir = repo_root / "solves"
     if not solves_dir.is_dir():
         return []
-    direct = solves_dir / f"{level_id}.json"
-    candidates = [direct]
-    # Level catalog may reference a different solves file name.
-    for bucket in (repo_root / "data" / "levels").glob("*.json"):
-        try:
-            doc = json.loads(bucket.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        for lev in doc.get("levels") or []:
-            if lev.get("id") != level_id:
-                continue
-            solves_file = str(lev.get("solvesFile") or "").strip()
-            if solves_file:
-                candidates.insert(0, solves_dir / solves_file)
-            break
-    for path in candidates:
-        if not path.is_file():
-            continue
-        try:
-            doc = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        raw = doc.get("solutions") if isinstance(doc, dict) else None
-        if isinstance(raw, list):
-            return raw
-    return []
+    # Direct file only — scanning data/levels/*.json on every lookup pegs CPU
+    # (levels.json is a multi-MB combined catalog).
+    path = solves_dir / f"{level_id}.json"
+    if not path.is_file():
+        return []
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    raw = doc.get("solutions") if isinstance(doc, dict) else None
+    return raw if isinstance(raw, list) else []
 
 
 def solution_placements(solution: Any) -> list[dict]:
