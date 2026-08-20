@@ -1369,6 +1369,12 @@ def migrate_user_json_file(
 
 
 def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
+    """Build GET /api/progress payload.
+
+    Read-only by default. Never rewrite MySQL summary tables on poll — that
+    path pegged CPU and blew the browser's 12s AbortSignal when clients
+    refreshed every ~30s. Index repair runs only when null indices exist.
+    """
     data = load_progress(repo_root, user_id)
     updated_at = _now_iso()
     if data:
@@ -1379,18 +1385,20 @@ def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
             for f in (v.get("found") or [])
             if isinstance(f, dict) and f.get("index") is None
         )
-        repaired = repair_found_catalog_indices(repo_root, data)
-        after_null = sum(
-            1
-            for k, v in repaired.items()
-            if not str(k).startswith("_") and isinstance(v, dict)
-            for f in (v.get("found") or [])
-            if isinstance(f, dict) and f.get("index") is None
-        )
-        if after_null < before_null:
-            save_progress(repo_root, user_id, repaired)
-            data = load_progress(repo_root, user_id)
-        rebuild_mysql_from_progress(repo_root, int(user_id), data)
+        # Skip catalog matching entirely when every found row already has an index.
+        if before_null:
+            repaired = repair_found_catalog_indices(repo_root, data)
+            after_null = sum(
+                1
+                for k, v in repaired.items()
+                if not str(k).startswith("_") and isinstance(v, dict)
+                for f in (v.get("found") or [])
+                if isinstance(f, dict) and f.get("index") is None
+            )
+            if after_null < before_null:
+                # save_progress upserts SQL; do not full-rebuild on a GET poll.
+                save_progress(repo_root, user_id, repaired)
+                data = load_progress(repo_root, user_id)
     try:
         conn = _mysql_connect()
         with conn.cursor() as cur:
