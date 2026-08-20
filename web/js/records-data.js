@@ -533,14 +533,17 @@ function mergeLeaderboardRowSets(serverRows, localRows) {
 export async function fetchLeaderboardRows(progress, challengeDate = todayChallengeDateIso()) {
   const dateKey = String(challengeDate || todayChallengeDateIso()).trim();
   let rows = [];
+  let apiLevelId = '';
   try {
     const res = await fetch(`/api/daily-leaderboard?date=${encodeURIComponent(dateKey)}`, {
       credentials: 'include',
       cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
     });
     if (res.ok) {
       const json = await res.json();
       if (json?.ok && Array.isArray(json.rows)) {
+        apiLevelId = String(json.levelId || '').replace(/\.json$/i, '');
         rows = json.rows.map((row) => ({
           userId: row.userId ?? row.user_id ?? '',
           username: String(row.username || '').trim(),
@@ -563,6 +566,8 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
   if (preview) {
     rows = mergeGuestPreviewIntoRows(rows, preview, dateKey);
   }
+  rows.levelId = apiLevelId || String(rows[0]?.levelId || '').replace(/\.json$/i, '');
+  rows.challengeDate = dateKey;
   return rows;
 }
 
@@ -651,6 +656,8 @@ export async function fetchAdventureLeaderboardRows() {
     const res = await fetch('/api/adventure-leaderboard', {
       credentials: 'same-origin',
       headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) return [];
     const data = await res.json();

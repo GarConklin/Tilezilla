@@ -1531,6 +1531,40 @@ def adventure_leaderboard(
         with conn.cursor() as cur:
             cur.execute(
                 """
+                WITH adventure_finds AS (
+                    SELECT
+                        ufs.user_id,
+                        ufs.level_id,
+                        ufs.completion_time_seconds,
+                        ufs.hints_used_count,
+                        ufs.found_at
+                    FROM user_found_solutions ufs
+                    INNER JOIN adventure_puzzle ap ON ap.level_id = ufs.level_id
+                    WHERE ufs.is_bonus = 0
+                      AND ufs.completion_time_seconds > 0
+                ),
+                per_level_best AS (
+                    SELECT user_id, level_id, MIN(completion_time_seconds) AS best_time
+                    FROM adventure_finds
+                    GROUP BY user_id, level_id
+                ),
+                user_hints AS (
+                    SELECT user_id, SUM(hints_used_count) AS total_hints
+                    FROM adventure_finds
+                    GROUP BY user_id
+                ),
+                user_avg AS (
+                    SELECT user_id, ROUND(AVG(best_time)) AS avg_time_sec
+                    FROM per_level_best
+                    GROUP BY user_id
+                ),
+                last_find AS (
+                    SELECT user_id, level_id, completion_time_seconds, hints_used_count,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY user_id ORDER BY found_at DESC
+                           ) AS rn
+                    FROM adventure_finds
+                )
                 SELECT
                     pp.player_id               AS user_id,
                     u.username                 AS username,
@@ -1538,111 +1572,34 @@ def adventure_leaderboard(
                     pp.total_levels_solved     AS paths_completed,
                     pp.current_rank_id         AS current_rank_id,
                     pp.current_sub_level       AS current_sub_level,
-                    ar.rank_name               AS rank_name
+                    ar.rank_name               AS rank_name,
+                    lf.level_id                AS last_level_id,
+                    lf.completion_time_seconds AS last_time_sec,
+                    COALESCE(uh.total_hints, 0) AS total_hints,
+                    ua.avg_time_sec            AS avg_time_sec
                 FROM player_progress pp
                 LEFT JOIN users u ON u.user_id = pp.player_id
                 LEFT JOIN adventure_rank ar ON ar.rank_id = pp.current_rank_id
+                LEFT JOIN last_find lf ON lf.user_id = pp.player_id AND lf.rn = 1
+                LEFT JOIN user_hints uh ON uh.user_id = pp.player_id
+                LEFT JOIN user_avg ua ON ua.user_id = pp.player_id
                 WHERE pp.total_levels_solved > 0
+                ORDER BY pp.total_levels_solved DESC,
+                         COALESCE(ua.avg_time_sec, lf.completion_time_seconds, 999999) ASC,
+                         COALESCE(u.username, u.player_name, '') ASC
                 """
             )
-            players = cur.fetchall() or []
-            if not players:
-                return {"ok": True, "rows": []}
-
-            # Per user: last solve (for level id), total hints, and best time per puzzle
-            # so avg = mean of per-puzzle bests (not mean of every find).
-            last_by_user: dict[Any, dict[str, Any]] = {}
-            total_hints_by_user: dict[Any, int] = {}
-            best_time_by_user_level: dict[Any, dict[str, int]] = {}
-            try:
-                cur.execute(
-                    """
-                    SELECT
-                        ufs.user_id AS user_id,
-                        ufs.level_id AS level_id,
-                        ufs.completion_time_seconds AS time_seconds,
-                        ufs.hints_used_count AS hints_used_count,
-                        ufs.found_at AS found_at
-                    FROM user_found_solutions ufs
-                    INNER JOIN adventure_puzzle ap ON ap.level_id = ufs.level_id
-                    WHERE ufs.is_bonus = 0
-                      AND ufs.completion_time_seconds > 0
-                    ORDER BY ufs.found_at DESC
-                    """
-                )
-                for row in cur.fetchall() or []:
-                    uid = row.get("user_id")
-                    level_id = str(row.get("level_id") or "").strip()
-                    hints = max(0, int(row.get("hints_used_count") or 0))
-                    time_sec = max(0, int(row.get("time_seconds") or 0))
-                    total_hints_by_user[uid] = total_hints_by_user.get(uid, 0) + hints
-                    if level_id and time_sec > 0:
-                        per_level = best_time_by_user_level.setdefault(uid, {})
-                        prev = per_level.get(level_id)
-                        if prev is None or time_sec < prev:
-                            per_level[level_id] = time_sec
-                    if uid in last_by_user:
-                        continue
-                    last_by_user[uid] = {
-                        "levelId": level_id,
-                        "timeSeconds": time_sec,
-                        "hintsUsedCount": hints,
-                    }
-            except Exception:
-                last_by_user = {}
-                total_hints_by_user = {}
-                best_time_by_user_level = {}
-
-            if not best_time_by_user_level:
-                cur.execute(
-                    """
-                    SELECT
-                        ulp.user_id AS user_id,
-                        ulp.level_id AS level_id,
-                        ulp.best_time_seconds AS time_seconds,
-                        ulp.last_completed_at AS found_at
-                    FROM user_level_progress ulp
-                    INNER JOIN adventure_puzzle ap ON ap.level_id = ulp.level_id
-                    WHERE ulp.completed = 1
-                      AND ulp.best_time_seconds IS NOT NULL
-                      AND ulp.best_time_seconds > 0
-                    ORDER BY ulp.last_completed_at DESC
-                    """
-                )
-                for row in cur.fetchall() or []:
-                    uid = row.get("user_id")
-                    level_id = str(row.get("level_id") or "").strip()
-                    time_sec = max(0, int(row.get("time_seconds") or 0))
-                    if level_id and time_sec > 0:
-                        per_level = best_time_by_user_level.setdefault(uid, {})
-                        prev = per_level.get(level_id)
-                        if prev is None or time_sec < prev:
-                            per_level[level_id] = time_sec
-                    if uid not in last_by_user:
-                        last_by_user[uid] = {
-                            "levelId": level_id,
-                            "timeSeconds": time_sec,
-                            "hintsUsedCount": 0,
-                        }
-
-            for player in players:
+            for player in cur.fetchall() or []:
                 uid = player.get("user_id")
                 username = str(player.get("username") or "").strip()
                 player_name = str(player.get("player_name") or "").strip()
                 display_name = username or player_name
                 paths = max(0, int(player.get("paths_completed") or 0))
-                last = last_by_user.get(uid) or {}
-                last_level = str(last.get("levelId") or "")
-                last_time = int(last.get("timeSeconds") or 0)
-                per_level_times = list((best_time_by_user_level.get(uid) or {}).values())
-                if per_level_times:
-                    avg_time = int(round(sum(per_level_times) / len(per_level_times)))
-                else:
-                    avg_time = last_time
-                hints = max(
-                    0,
-                    int(total_hints_by_user.get(uid, last.get("hintsUsedCount") or 0)),
-                )
+                last_level = str(player.get("last_level_id") or "")
+                last_time = max(0, int(player.get("last_time_sec") or 0))
+                avg_time = player.get("avg_time_sec")
+                avg_time = int(avg_time) if avg_time is not None else last_time
+                hints = max(0, int(player.get("total_hints") or 0))
                 rank_id = int(player.get("current_rank_id") or 0)
                 sub_level = max(1, int(player.get("current_sub_level") or 1))
                 rank_name = str(player.get("rank_name") or "").strip() or f"Rank {rank_id or '—'}"
@@ -1663,13 +1620,63 @@ def adventure_leaderboard(
                     }
                 )
 
-            rows.sort(
-                key=lambda r: (
-                    -int(r.get("pathsCompleted") or 0),
-                    int(r.get("avgTimeSec") or r.get("completionTimeSeconds") or 10**9),
-                    str(r.get("username") or "").lower(),
+            # Fallback when finds table is empty but summaries exist.
+            if not rows:
+                cur.execute(
+                    """
+                    SELECT
+                        pp.player_id               AS user_id,
+                        u.username                 AS username,
+                        u.player_name              AS player_name,
+                        pp.total_levels_solved     AS paths_completed,
+                        pp.current_rank_id         AS current_rank_id,
+                        pp.current_sub_level       AS current_sub_level,
+                        ar.rank_name               AS rank_name,
+                        ulp.level_id               AS last_level_id,
+                        ulp.best_time_seconds      AS last_time_sec
+                    FROM player_progress pp
+                    LEFT JOIN users u ON u.user_id = pp.player_id
+                    LEFT JOIN adventure_rank ar ON ar.rank_id = pp.current_rank_id
+                    LEFT JOIN user_level_progress ulp ON ulp.user_id = pp.player_id
+                        AND ulp.completed = 1
+                        AND ulp.best_time_seconds > 0
+                    WHERE pp.total_levels_solved > 0
+                    ORDER BY pp.total_levels_solved DESC,
+                             ulp.best_time_seconds ASC,
+                             COALESCE(u.username, u.player_name, '') ASC
+                    """
                 )
-            )
+                seen: set[Any] = set()
+                for player in cur.fetchall() or []:
+                    uid = player.get("user_id")
+                    if uid in seen:
+                        continue
+                    seen.add(uid)
+                    username = str(player.get("username") or "").strip()
+                    player_name = str(player.get("player_name") or "").strip()
+                    display_name = username or player_name
+                    paths = max(0, int(player.get("paths_completed") or 0))
+                    last_level = str(player.get("last_level_id") or "")
+                    last_time = max(0, int(player.get("last_time_sec") or 0))
+                    rank_id = int(player.get("current_rank_id") or 0)
+                    sub_level = max(1, int(player.get("current_sub_level") or 1))
+                    rank_name = str(player.get("rank_name") or "").strip() or f"Rank {rank_id or '—'}"
+                    rows.append(
+                        {
+                            "userId": uid,
+                            "username": display_name,
+                            "pathsCompleted": paths,
+                            "lastTimeSec": last_time,
+                            "avgTimeSec": last_time,
+                            "completionTimeSeconds": last_time,
+                            "hintsUsedCount": 0,
+                            "totalHintsUsed": 0,
+                            "rankId": rank_id,
+                            "rankName": rank_name,
+                            "subLevel": sub_level,
+                            "levelId": last_level,
+                        }
+                    )
     except Exception:
         return {"ok": False, "error": "query-failed", "rows": []}
     finally:

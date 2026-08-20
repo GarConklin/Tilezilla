@@ -304,7 +304,7 @@ function syncJournalTabContent() {
 
   recordsApi?.showRecordsPanel?.(isJournalRecordsTab());
   if (isJournalRecordsTab()) {
-    void recordsApi?.applyRecordsLayoutFromDisk?.({ force: true });
+    void recordsApi?.applyRecordsLayoutFromDisk?.();
   }
 
   const hideJournalSideTabs = isJournalRecordsContext();

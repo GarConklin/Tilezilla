@@ -25,6 +25,7 @@ import {
   setRecordsHeaderFields,
   syncRecordsHeaderVisibility,
   todayChallengeDateIso,
+  formatDailyChallengeDate,
 } from './records-data.js';
 
 const $ = (id) => document.getElementById(id);
@@ -49,28 +50,6 @@ function recordsModeForTab(tab) {
   if (tab === 'adventure') return 'adventure';
   if (tab === 'personalBest') return 'personal';
   return 'leaderboard';
-}
-
-function syncSubTabViews() {
-  const panel = $('journalRecordsPanel');
-  if (!panel) return;
-  panel.dataset.recordsMode = recordsModeForTab(activeSubTab);
-  syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
-  applyRecordsTabArt(recordsLayout, document, activeSubTab);
-  if (recordsLayout) {
-    const mode = recordsModeForTab(activeSubTab);
-    applyRecordsLayoutEverywhere(recordsLayout, document, mode);
-    syncRecordsItemVisibility(recordsLayout, document, mode);
-  }
-  const postDaily = getPostDailyLeaderboard();
-  panel.querySelector('[data-records-tab="personalBest"]')
-    ?.toggleAttribute('hidden', postDaily);
-  panel.querySelector('[data-records-tab="adventure"]')
-    ?.toggleAttribute('hidden', postDaily);
-  // Keep journal overlay in sync even if onSubTabChange was not wired yet.
-  window.dispatchEvent(new CustomEvent('tilezilla:records-subtab', {
-    detail: { tab: activeSubTab, mode: recordsModeForTab(activeSubTab) },
-  }));
 }
 
 async function renderLeaderboardLists(progress) {
@@ -99,6 +78,10 @@ async function renderLeaderboardLists(progress) {
     const guestRow = $(listId)?.querySelector('.tz-records-list__row--guest-you');
     guestRow?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
+  return {
+    levelId: rows.levelId || String(rows[0]?.levelId || '').replace(/\.json$/i, ''),
+    challengeDate,
+  };
 }
 
 async function renderAdventureLeaderboardLists() {
@@ -137,16 +120,28 @@ export async function refreshRecordsView() {
   const app = getApp();
   const progress = app?.progress;
 
-  if (app?.state && !app.state.levelStatsById) {
+  if (activeSubTab === 'personalBest' && app?.state && !app.state.levelStatsById) {
     const { loadLevelStatsIndex } = await import('./level-catalog.js');
     app.state.levelStatsById = (await loadLevelStatsIndex())?.byId || {};
   }
 
   if (activeSubTab === 'leaderboard') {
     const challengeDate = recordsChallengeDateIso();
-    await renderLeaderboardLists(progress);
-    const header = await resolveDailyChallengeHeader({ challengeDate });
-    setRecordsHeaderFields(document, { ...header, showTime: false });
+    const header = await renderLeaderboardLists(progress);
+    let puzzleId = header?.levelId || '';
+    if (!puzzleId) {
+      const meta = window.__dailyChallengeMeta;
+      if (meta?.levelId && String(meta.date || '').slice(0, 10) === challengeDate) {
+        puzzleId = String(meta.levelId).replace(/\.json$/i, '');
+      } else {
+        puzzleId = (await resolveDailyChallengeHeader({ challengeDate })).puzzleId;
+      }
+    }
+    setRecordsHeaderFields(document, {
+      date: formatDailyChallengeDate(challengeDate),
+      puzzleId: puzzleId || '—',
+      showTime: false,
+    });
   } else if (activeSubTab === 'adventure') {
     await renderAdventureLeaderboardLists();
     setRecordsHeaderFields(document, {
@@ -165,9 +160,11 @@ export async function refreshRecordsView() {
     setGuestPlacementBanner(document, null);
   }
 
-  for (const scroller of Object.values(scrollers)) {
+  for (const [key, scroller] of Object.entries(scrollers)) {
+    if (activeSubTab === 'adventure' && key === 'top') continue;
     scroller?.sync?.();
   }
+  if (activeSubTab === 'adventure') syncAdventureTopScrollerOff();
 }
 
 export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
@@ -177,9 +174,11 @@ export async function applyRecordsLayoutFromDisk({ force = false } = {}) {
   syncRecordsItemVisibility(recordsLayout, document, mode);
   syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
   applyRecordsTabArt(recordsLayout, document, activeSubTab);
-  for (const scroller of Object.values(scrollers)) {
+  for (const [key, scroller] of Object.entries(scrollers)) {
+    if (activeSubTab === 'adventure' && key === 'top') continue;
     scroller?.sync?.();
   }
+  if (activeSubTab === 'adventure') syncAdventureTopScrollerOff();
   return recordsLayout;
 }
 
@@ -198,6 +197,52 @@ function wireScroller(key, scrollId, scrollerId, trackId, pinId) {
     pinEl: $(pinId),
     alwaysVisible: true,
   });
+}
+
+function syncAdventureTopScrollerOff() {
+  const top = $('recordsScrollerTop');
+  if (!top) return;
+  top.hidden = true;
+  top.dataset.recordsForceHidden = '1';
+  top.classList.add('is-hidden');
+  top.setAttribute('aria-hidden', 'true');
+  top.style.setProperty('display', 'none', 'important');
+}
+
+function syncAdventureTopScrollerRestore() {
+  const top = $('recordsScrollerTop');
+  if (!top) return;
+  delete top.dataset.recordsForceHidden;
+  top.style.removeProperty('display');
+  // Layout visibility + fancy-scroller sync decide show/hide for Daily/Personal.
+}
+
+function syncSubTabViews() {
+  const panel = $('journalRecordsPanel');
+  if (!panel) return;
+  panel.dataset.recordsMode = recordsModeForTab(activeSubTab);
+  panel.classList.toggle('is-adventure-records', activeSubTab === 'adventure');
+  syncRecordsHeaderVisibility(document, { showTime: activeSubTab === 'personalBest' });
+  applyRecordsTabArt(recordsLayout, document, activeSubTab);
+  if (recordsLayout) {
+    const mode = recordsModeForTab(activeSubTab);
+    applyRecordsLayoutEverywhere(recordsLayout, document, mode);
+    syncRecordsItemVisibility(recordsLayout, document, mode);
+  }
+  if (activeSubTab === 'adventure') {
+    syncAdventureTopScrollerOff();
+  } else {
+    syncAdventureTopScrollerRestore();
+  }
+  const postDaily = getPostDailyLeaderboard();
+  panel.querySelector('[data-records-tab="personalBest"]')
+    ?.toggleAttribute('hidden', postDaily);
+  panel.querySelector('[data-records-tab="adventure"]')
+    ?.toggleAttribute('hidden', postDaily);
+  // Keep journal overlay in sync even if onSubTabChange was not wired yet.
+  window.dispatchEvent(new CustomEvent('tilezilla:records-subtab', {
+    detail: { tab: activeSubTab, mode: recordsModeForTab(activeSubTab) },
+  }));
 }
 
 export function initRecordsPanel({
@@ -259,7 +304,7 @@ export function initRecordsPanel({
     showRecordsPanel(show) {
       panel.toggleAttribute('hidden', !show);
       if (show) {
-        void applyRecordsLayoutFromDisk({ force: true }).then(() => refreshRecordsView());
+        void applyRecordsLayoutFromDisk().then(() => refreshRecordsView());
       }
     },
   };
