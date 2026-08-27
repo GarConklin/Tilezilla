@@ -189,7 +189,7 @@ import {
 import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
 import { wireOverlayFrameListeners } from './tilezilla-frame-geometry.js';
 import { initTilezillaSfx, setSfxEnabled } from './tilezilla-sfx.js';
-import { isCatalogReady, loadLevelStatsIndex } from './level-catalog.js';
+import { ensureCatalogReady, isCatalogReady, loadLevelStatsIndex, networkFetchTimeoutMs } from './level-catalog.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -260,13 +260,9 @@ async function awaitWithTimeout(promise, ms, label) {
   }
 }
 
-async function waitForCatalogReady(maxMs = 12000) {
+async function waitForCatalogReady(maxMs = 30000) {
   if (isCatalogReady()) return;
-  const deadline = Date.now() + maxMs;
-  while (Date.now() < deadline) {
-    if (isCatalogReady()) return;
-    await new Promise((r) => setTimeout(r, 50));
-  }
+  await ensureCatalogReady(maxMs);
 }
 
 async function ensureAdventureLevelContext(app) {
@@ -358,7 +354,9 @@ async function resolveDailyChallenge(app) {
   const today = todayIso();
   let row = null;
   try {
-    const csv = await fetch(`/data/daily_challenges_import.csv?t=${today}`).then((r) => r.text());
+    const csv = await fetch(`/data/daily_challenges_import.csv?t=${today}`, {
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
+    }).then((r) => r.text());
     const rows = parseDailyCsv(csv);
     row = rows.find((r) => {
       const rowDate = parseDailyCsvDate(r.date) || r.date;
@@ -400,7 +398,9 @@ let dailyCsvRowsCache = null;
 async function loadDailyCsvRows() {
   if (dailyCsvRowsCache) return dailyCsvRowsCache;
   try {
-    const csv = await fetch(`/data/daily_challenges_import.csv?t=${todayIso()}`).then((r) => r.text());
+    const csv = await fetch(`/data/daily_challenges_import.csv?t=${todayIso()}`, {
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
+    }).then((r) => r.text());
     dailyCsvRowsCache = parseDailyCsv(csv);
   } catch {
     dailyCsvRowsCache = [];
@@ -3267,7 +3267,7 @@ async function init() {
   resetPuzzleTimer();
 
   const [authState, app] = await Promise.all([
-    awaitWithTimeout(authPromise, 8000, 'Auth sync').catch((err) => {
+    awaitWithTimeout(authPromise, networkFetchTimeoutMs(8000), 'Auth sync').catch((err) => {
       console.warn(err?.message || err);
       // Never treat a slow session check as a fresh guest — that skips the passport
       // and can boot Adventure from a stale last-nav / wrong mode.
@@ -3342,6 +3342,16 @@ async function init() {
   if (deferBootPuzzle) {
     appRoot?.setAttribute('data-screen', 'profile-picker');
     finishShellBoot();
+    // Warm catalog + today's daily bucket behind the passport picker (cellular cold start).
+    void (async () => {
+      try {
+        await ensureCatalogReady(networkFetchTimeoutMs(30000));
+        const { level } = await resolveDailyChallenge(app);
+        if (level?.id && app.ensureLevel) await app.ensureLevel(level.id);
+      } catch (err) {
+        console.warn('Profile boot warmup:', err?.message || err);
+      }
+    })();
   } else {
     applyInitialBootScreen(initialScreen);
   }
@@ -3362,12 +3372,12 @@ async function init() {
     appRoot?.classList.remove('is-shell-booting');
     if (bootLoading) bootLoading.hidden = true;
     try {
-      await awaitWithTimeout(preloadBootLevels(app, initialScreen), 12000, 'Boot level preload');
+      await awaitWithTimeout(preloadBootLevels(app, initialScreen), networkFetchTimeoutMs(12000), 'Boot level preload');
     } catch (err) {
       console.warn(err?.message || err);
     }
     try {
-      await awaitWithTimeout(loadInitialScreenPuzzle(app, initialScreen), 20000, 'Initial puzzle load');
+      await awaitWithTimeout(loadInitialScreenPuzzle(app, initialScreen), networkFetchTimeoutMs(20000), 'Initial puzzle load');
     } catch (err) {
       console.warn(err?.message || err);
       showGameMessage('Could not load the starting puzzle. Try Daily or Adventure from the menu.', 'error');

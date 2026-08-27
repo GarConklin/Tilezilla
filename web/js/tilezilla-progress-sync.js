@@ -2,6 +2,8 @@
  * Server-backed progress for registered users (PHP session required).
  */
 
+import { networkFetchTimeoutMs } from './level-catalog.js';
+
 function countProgressLevels(data) {
   if (!data || typeof data !== 'object') return 0;
   return Object.keys(data).filter((k) => !k.startsWith('_')).length;
@@ -56,7 +58,7 @@ export async function fetchServerProgress() {
     const res = await fetch('/api/progress', {
       credentials: 'include',
       cache: 'no-store',
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
     });
     const payload = await res.json().catch(() => ({}));
     if (!res.ok || payload?.ok === false) {

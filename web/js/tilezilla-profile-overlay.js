@@ -28,14 +28,10 @@ let deferBootPuzzle = false;
 let profilePathChosen = false;
 let profileStatsPromise = null;
 
-async function waitForCatalogReady(maxMs = 12000) {
-  const { isCatalogReady } = await import('./level-catalog.js');
+async function waitForCatalogReady(maxMs = 30000) {
+  const { ensureCatalogReady, isCatalogReady } = await import('./level-catalog.js');
   if (isCatalogReady()) return;
-  const deadline = Date.now() + maxMs;
-  while (Date.now() < deadline) {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    if (isCatalogReady()) return;
-  }
+  await ensureCatalogReady(maxMs);
 }
 
 async function reloadAppProgress() {

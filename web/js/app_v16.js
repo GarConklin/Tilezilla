@@ -4675,9 +4675,25 @@ async function init(){
   let ensureLevelFn = null;
   let ensureLevelsFn = null;
   if (isTilezillaShell) {
-    const catalog = await initShellLevelCatalog();
-    ensureLevelFn = (levelId) => catalog.ensureLevel(levelId, state);
-    ensureLevelsFn = (levelIds) => catalog.ensureLevels(levelIds, state);
+    try {
+      const catalog = await initShellLevelCatalog();
+      ensureLevelFn = (levelId) => catalog.ensureLevel(levelId, state);
+      ensureLevelsFn = (levelIds) => catalog.ensureLevels(levelIds, state);
+    } catch (e) {
+      console.warn('Level catalog init deferred:', e);
+      const catalog = await import('./level-catalog.js');
+      ensureLevelFn = async (levelId) => {
+        await catalog.ensureCatalogReady(30000, state);
+        return catalog.ensureLevel(levelId, state);
+      };
+      ensureLevelsFn = async (levelIds) => {
+        await catalog.ensureCatalogReady(30000, state);
+        return catalog.ensureLevels(levelIds, state);
+      };
+      void catalog.ensureCatalogReady(30000, state).catch((err) => {
+        console.warn('Level catalog background retry:', err);
+      });
+    }
     state.allLevels = [];
   } else {
     const loadedLevels = await loadAllLevels();

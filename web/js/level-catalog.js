@@ -13,6 +13,21 @@ let levelById = new Map();
 let bucketLoadPromises = new Map();
 let statsIndex = null;
 let statsLoadPromise = null;
+let catalogInitPromise = null;
+
+/** Longer timeouts on cellular / save-data connections (common after login redirect). */
+export function networkFetchTimeoutMs(base = 12000) {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!conn) return base;
+  if (conn.saveData) return Math.max(base, 25000);
+  if (['slow-2g', '2g', '3g'].includes(conn.effectiveType)) return Math.max(base, 25000);
+  return base;
+}
+
+function fetchRetryOptions(baseTimeout = 12000) {
+  const timeoutMs = networkFetchTimeoutMs(baseTimeout);
+  return { retries: timeoutMs > baseTimeout ? 2 : 3, timeoutMs };
+}
 
 async function fetchJson(url, { retries = 3, timeoutMs = 12000 } = {}) {
   let lastErr;
@@ -79,7 +94,7 @@ async function loadBucketFile(file, state) {
 export async function initLevelCatalog(state = null) {
   if (catalogReady) return { buckets: levelBuckets || [] };
 
-  const idx = await fetchJson(INDEX_URL);
+  const idx = await fetchJson(INDEX_URL, fetchRetryOptions());
   levelBuckets = (idx?.buckets || [])
     .filter((b) => b && typeof b.size === 'string' && typeof b.tier === 'string')
     .map((b) => ({
@@ -102,6 +117,39 @@ export function isCatalogReady() {
   return catalogReady;
 }
 
+/**
+ * Wait for (or retry) catalog index load. Safe to call when init failed at app boot.
+ * @param {number} [maxMs]
+ * @param {object} [state]
+ */
+export async function ensureCatalogReady(maxMs = 30000, state = null) {
+  if (catalogReady) return { buckets: levelBuckets || [] };
+
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    if (catalogReady) return { buckets: levelBuckets || [] };
+    if (!catalogInitPromise) {
+      catalogInitPromise = initLevelCatalog(state).catch((err) => {
+        catalogInitPromise = null;
+        throw err;
+      });
+    }
+    try {
+      const result = await Promise.race([
+        catalogInitPromise,
+        new Promise((resolve) => setTimeout(resolve, 200)),
+      ]);
+      if (result?.buckets) return result;
+    } catch (err) {
+      console.warn('Level catalog retry:', err?.message || err);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+    }
+  }
+
+  if (catalogReady) return { buckets: levelBuckets || [] };
+  throw new Error('Level catalog did not load in time');
+}
+
 /** Lightweight stats for passport / adventure (lazy). */
 export async function loadLevelStatsIndex() {
   if (statsIndex) return statsIndex;
@@ -109,7 +157,7 @@ export async function loadLevelStatsIndex() {
 
   statsLoadPromise = (async () => {
     try {
-      statsIndex = await fetchJson(STATS_URL);
+      statsIndex = await fetchJson(STATS_URL, fetchRetryOptions());
     } catch (e) {
       console.warn('level stats index unavailable', e);
       statsIndex = { schema: 'levels-stats-v1', byId: {} };
@@ -148,8 +196,19 @@ export async function ensureLevel(levelId, state = null) {
   const cached = levelById.get(id);
   if (cached) return cached;
 
+  if (!catalogReady) {
+    try {
+      await ensureCatalogReady(30000, state);
+    } catch (err) {
+      console.warn('ensureLevel catalog wait:', err?.message || err);
+    }
+  }
+
   try {
-    const res = await fetch(`/api/level/${encodeURIComponent(id)}`, { cache: 'no-store' });
+    const res = await fetch(`/api/level/${encodeURIComponent(id)}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
+    });
     if (res.ok) {
       const payload = await res.json();
       const level = payload?.level;

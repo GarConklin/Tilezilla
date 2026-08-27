@@ -15,9 +15,10 @@ import {
 import { hydrateEncounteredTiles } from './tilezilla-encountered-tiles.js';
 import { applyAdminFromSessionUser } from './tilezilla-admin.js';
 import { applySessionHintBalance, cacheHintBalance } from './tilezilla-hints-sync.js';
+import { networkFetchTimeoutMs } from './level-catalog.js';
 
 export const AUTH_API = '/auth/api';
-const SESSION_TIMEOUT_MS = 5000;
+const SESSION_TIMEOUT_MS = networkFetchTimeoutMs(8000);
 
 export { clearRegisteredLocalState } from './tilezilla-guest.js';
 
