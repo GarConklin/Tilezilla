@@ -45,6 +45,16 @@ export function initFancyScroller({
   }
 
   function syncVisibility() {
+    // Honor HTML hidden / force-hide (e.g. Adventure Top 10 has no scroller).
+    if (
+      scrollerRoot.hidden
+      || scrollerRoot.hasAttribute('hidden')
+      || scrollerRoot.dataset.recordsForceHidden === '1'
+    ) {
+      scrollerRoot.classList.add('is-hidden');
+      scrollerRoot.setAttribute('aria-hidden', 'true');
+      return;
+    }
     const overflow = scrollEl.scrollHeight > scrollEl.clientHeight + 1;
     const show = alwaysVisible || overflow;
     scrollerRoot.classList.toggle('is-hidden', !show);

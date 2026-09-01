@@ -9415,14 +9415,21 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 
 /* Adventure Top 10: no scroller / no scroll — only the 11+ pane scrolls. */
 #journalRecordsPanel[data-records-mode="adventure"] .tz-records-field--pane-top .tz-records-list-scroll,
-#journalRecordsPanel[data-records-mode="adventure"] .tz-records-list-scroll[data-records-item="listTop"] {
-  overflow-y: hidden;
+#journalRecordsPanel[data-records-mode="adventure"] .tz-records-list-scroll[data-records-item="listTop"],
+#journalRecordsPanel.is-adventure-records .tz-records-field--pane-top .tz-records-list-scroll,
+#journalRecordsPanel.is-adventure-records .tz-records-list-scroll[data-records-item="listTop"] {
+  overflow-y: hidden !important;
   touch-action: none;
+  scrollbar-width: none;
 }
 
 #journalRecordsPanel[data-records-mode="adventure"] .tz-records-field--scroller-top,
-#journalRecordsPanel[data-records-mode="adventure"] [data-records-item="scrollerTop"] {
+#journalRecordsPanel[data-records-mode="adventure"] [data-records-item="scrollerTop"],
+#journalRecordsPanel.is-adventure-records .tz-records-field--scroller-top,
+#journalRecordsPanel.is-adventure-records [data-records-item="scrollerTop"] {
   display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .tz-records-field--pane-top .tz-records-list-scroll,
@@ -9502,8 +9509,9 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-list-scroller.is-hidden {
-  visibility: hidden;
-  pointer-events: none;
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .tz-records-list-scroller__track {

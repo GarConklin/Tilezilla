@@ -498,6 +498,18 @@ export function syncRecordsItemVisibility(layout, root = document, mode = null) 
       ].join(', '),
     ).forEach((el) => {
       el.hidden = true;
+      if (el.matches?.('[data-records-item="scrollerTop"], .tz-records-field--scroller-top')) {
+        el.dataset.recordsForceHidden = '1';
+        el.classList.add('is-hidden');
+        el.style.setProperty('display', 'none', 'important');
+      }
+    });
+  } else {
+    panel.querySelectorAll(
+      '[data-records-item="scrollerTop"], .tz-records-field--scroller-top',
+    ).forEach((el) => {
+      delete el.dataset.recordsForceHidden;
+      el.style.removeProperty('display');
     });
   }
 }
