@@ -184,6 +184,7 @@ import {
   isAdventurePuzzleComplete,
   isPuzzleSatisfied,
   loadAdventurePath,
+  mergeServerAdventureRank,
   resolveAdventureResume,
 } from './adventure-path.js';
 import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
@@ -595,6 +596,7 @@ async function continueDiscoverySearch(app) {
 }
 
 async function refreshAdventureChrome(app) {
+  await updateRankPanel(app);
   if (document.querySelector('.tz-app')?.dataset?.screen !== 'adventure') return;
   const path = await loadAdventurePath();
   const levelContext = await ensureAdventureLevelContext(app);
@@ -606,7 +608,6 @@ async function refreshAdventureChrome(app) {
       updateChallengePanel(level, meta);
     }
   }
-  await updateRankPanel(app);
 }
 
 async function advanceAdventurePath(app) {
@@ -908,11 +909,11 @@ async function loadAdventureRanks() {
 async function updateRankPanel(app) {
   const path = await loadAdventurePath();
   const levelContext = await ensureAdventureLevelContext(app);
-  const rankState = getRankPanelState(
+  const rankState = mergeServerAdventureRank(getRankPanelState(
     app?.progress || window.__app?.progress,
     path,
     levelContext,
-  );
+  ));
   const ranks = await loadAdventureRanks();
   const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
   const total = Math.max(1, rankState.stepTotal || 1);

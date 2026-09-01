@@ -669,7 +669,6 @@ export function findNextUnsolved(progress, path, { afterLevelId = null, levelCon
 
 
 /** Current rank/sublevel and step-local progress for the rank panel. */
-
 export function getRankPanelState(progress, path, levelContext = {}) {
 
   const fallback = {
@@ -734,6 +733,28 @@ export function getRankPanelState(progress, path, levelContext = {}) {
 
   };
 
+}
+
+
+
+/** Cache authoritative rank from MySQL (leaderboard / solve sync). */
+export function cacheServerAdventureRank(rank) {
+  if (typeof window === 'undefined' || !rank) return;
+  const rankId = Number(rank.rankId);
+  const subLevel = Number(rank.subLevel);
+  if (!Number.isFinite(rankId) || rankId <= 0 || !Number.isFinite(subLevel) || subLevel <= 0) return;
+  window.__serverAdventureRank = {
+    rankId,
+    subLevel: Math.max(1, Math.min(10, subLevel)),
+    rankName: rank.rankName || null,
+  };
+}
+
+/** Prefer server rank for badge/sublevel when available (matches leaderboard). */
+export function mergeServerAdventureRank(rankState) {
+  const server = typeof window !== 'undefined' ? window.__serverAdventureRank : null;
+  if (!server?.rankId || !server?.subLevel || !rankState) return rankState;
+  return { ...rankState, rankId: server.rankId, subLevel: server.subLevel };
 }
 
 

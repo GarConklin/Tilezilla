@@ -30,8 +30,8 @@ INSERT INTO system_info (
     extra_json
 ) VALUES (
     1,
-    '0.99.238',
-    '2026-08-26',
+    '0.99.243',
+    '2026-08-31',
     'Gar Conklin',
     'March 28, 2026',
     'Tilezilla',

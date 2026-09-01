@@ -610,6 +610,30 @@ def _upsert_level_summary_sql(
     )
 
 
+def _player_adventure_rank(cur, user_id: int) -> dict[str, Any] | None:
+    cur.execute(
+        """
+        SELECT pp.current_rank_id AS rank_id,
+               pp.current_sub_level AS sub_level,
+               ar.rank_name AS rank_name
+        FROM player_progress pp
+        LEFT JOIN adventure_rank ar ON ar.rank_id = pp.current_rank_id
+        WHERE pp.player_id = %s
+        LIMIT 1
+        """,
+        (user_id,),
+    )
+    row = cur.fetchone()
+    if not row:
+        return None
+    rank_id = int(row.get("rank_id") or 0)
+    sub_level = max(1, int(row.get("sub_level") or 1))
+    if rank_id <= 0:
+        return None
+    rank_name = str(row.get("rank_name") or "").strip() or None
+    return {"rankId": rank_id, "subLevel": sub_level, "rankName": rank_name}
+
+
 def _refresh_player_progress_sql(cur, user_id: int) -> None:
     total_solved = _adventure_cleared_count_from_sql(cur, user_id)
     rank_id, sub_level = _current_adventure_position(cur, total_solved)
@@ -1097,6 +1121,10 @@ def record_solve(
             }
             if server_completion_time_seconds is not None:
                 result["serverCompletionTimeSeconds"] = server_completion_time_seconds
+            with conn.cursor() as cur:
+                adventure_rank = _player_adventure_rank(cur, uid)
+            if adventure_rank:
+                result["adventureRank"] = adventure_rank
             return result
 
         with conn.cursor() as cur:
@@ -1143,6 +1171,15 @@ def record_solve(
     )
     if client_completion_time_seconds != completion_time_seconds:
         result["clientCompletionTimeSeconds"] = client_completion_time_seconds
+    try:
+        conn = _mysql_connect()
+        with conn.cursor() as cur:
+            adventure_rank = _player_adventure_rank(cur, uid)
+        conn.close()
+        if adventure_rank:
+            result["adventureRank"] = adventure_rank
+    except Exception:
+        pass
     return result
 
 
@@ -1372,6 +1409,7 @@ def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
     """Build GET /api/progress payload. Read-only — never repair or rewrite on poll."""
     data = load_progress(repo_root, user_id)
     updated_at = _now_iso()
+    adventure_rank = None
     try:
         conn = _mysql_connect()
         with conn.cursor() as cur:
@@ -1382,10 +1420,14 @@ def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
             row = cur.fetchone()
             if row and row.get("updated_at"):
                 updated_at = _found_at_iso(row["updated_at"])
+            adventure_rank = _player_adventure_rank(cur, int(user_id))
         conn.close()
     except Exception:
         pass
-    return {"ok": True, "data": data, "updatedAt": updated_at}
+    payload: dict[str, Any] = {"ok": True, "data": data, "updatedAt": updated_at}
+    if adventure_rank:
+        payload["adventureRank"] = adventure_rank
+    return payload
 
 
 def all_time_best_daily(repo_root: Path) -> dict[str, Any]:  # noqa: ARG001

@@ -3,6 +3,7 @@
  */
 
 import { networkFetchTimeoutMs } from './level-catalog.js';
+import { cacheServerAdventureRank } from './adventure-path.js';
 
 function countProgressLevels(data) {
   if (!data || typeof data !== 'object') return 0;
@@ -64,7 +65,13 @@ export async function fetchServerProgress() {
     if (!res.ok || payload?.ok === false) {
       return { ok: false, error: payload?.error || `HTTP ${res.status}` };
     }
-    return { ok: true, data: payload.data || {}, updatedAt: payload.updatedAt || null };
+    if (payload.adventureRank) cacheServerAdventureRank(payload.adventureRank);
+    return {
+      ok: true,
+      data: payload.data || {},
+      updatedAt: payload.updatedAt || null,
+      adventureRank: payload.adventureRank || null,
+    };
   } catch (err) {
     return { ok: false, error: String(err?.message || err) };
   }

@@ -4,6 +4,7 @@ import {
   adventureLevelContext,
   getRankPanelState,
   loadAdventurePath,
+  mergeServerAdventureRank,
 } from './adventure-path.js';
 import { resolvePassportProgress, ensurePassportDataHydrated } from './profile-passport-data.js';
 import {
@@ -89,7 +90,7 @@ async function resolveRankSublevel(progress) {
   const path = await loadAdventurePath();
   const prog = progress ?? window.__app?.progress ?? null;
   const ctx = adventureLevelContext(window.__app || {});
-  const rankState = getRankPanelState(prog, path, ctx);
+  const rankState = mergeServerAdventureRank(getRankPanelState(prog, path, ctx));
   const ranks = await loadAdventureRanks();
   const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
   return { subLevel: rankState.subLevel, badge: rank.sublevel_badge, rank };
@@ -116,8 +117,8 @@ async function rescalePassportSublevels(stacks, subs, progress) {
   const resolved = await resolveRankSublevel(progress);
   for (const el of subs) {
     if (!el.closest('.auth-screen__profile-rank-stack')) continue;
-    const subLevel = Number(el.dataset.sublevel) || resolved.subLevel || 1;
-    const badge = el.dataset.sublevelBadge || resolved.badge || 'gld';
+    const subLevel = resolved.subLevel || Number(el.dataset.sublevel) || 1;
+    const badge = resolved.badge || el.dataset.sublevelBadge || 'gld';
     applySublevelIconOnBadgeStack(el, subLevel, badge, layout);
   }
 }

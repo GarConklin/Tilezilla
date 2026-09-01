@@ -2654,6 +2654,7 @@ async function processSolutionFound(lv, res, placements) {
     leaderboardSubmitted: submitDailyLeaderboard || !!dailyAlreadyRecorded,
     serverSynced: false,
   });
+  window.__syncPlayerChrome?.();
 
   if (submitDailyLeaderboard) {
     // Optimistic: first eligible daily solve is recorded locally already.
@@ -2697,6 +2698,12 @@ async function processSolutionFound(lv, res, placements) {
       const { syncSolveToServer, flushPendingSolves } = await import('./tilezilla-progress-sync.js');
       const syncResult = await syncSolveToServer(syncPayload);
       void flushPendingSolves();
+
+      if (syncResult?.adventureRank) {
+        const { cacheServerAdventureRank } = await import('./adventure-path.js');
+        cacheServerAdventureRank(syncResult.adventureRank);
+        window.__syncPlayerChrome?.();
+      }
 
       if (submitDailyLeaderboard && syncResult?.ok) {
         const confirmed = !!syncResult.leaderboardSubmitted;
