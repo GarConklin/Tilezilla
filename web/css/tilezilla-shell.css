@@ -5787,6 +5787,119 @@ html.tz-phone-preview .tz-profile-dialog {
   display: none !important;
 }
 
+/* Temporary: recover phone-local daily leaderboard rows before MySQL sync. */
+.tz-profile-export-daily {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 11.5%;
+  z-index: 6;
+  min-height: 2.4rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(61, 46, 26, 0.45);
+  border-radius: 0.45rem;
+  background: rgba(248, 236, 210, 0.94);
+  color: #3d2e1a;
+  font: 600 0.78rem/1.2 "Segoe UI", system-ui, sans-serif;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.tz-profile-export-daily[hidden] {
+  display: none !important;
+}
+
+.tz-daily-export-root {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.tz-daily-export-root[hidden] {
+  display: none !important;
+}
+
+.tz-daily-export-root__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(12, 18, 24, 0.55);
+  cursor: pointer;
+}
+
+.tz-daily-export-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  max-height: min(90vh, 40rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f6ecd8;
+  color: #2c2114;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.tz-daily-export-dialog h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.tz-daily-export-note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.tz-daily-export-text {
+  width: 100%;
+  min-height: 12rem;
+  flex: 1 1 auto;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 0.55rem;
+  border: 1px solid rgba(61, 46, 26, 0.35);
+  border-radius: 0.4rem;
+  background: #fffaf0;
+  color: #2c2114;
+  font: 0.72rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre;
+}
+
+.tz-daily-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tz-daily-export-btn {
+  min-height: 2.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(61, 46, 26, 0.4);
+  border-radius: 0.4rem;
+  background: #e7d5b0;
+  color: #2c2114;
+  font: 600 0.85rem/1 "Segoe UI", system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.tz-daily-export-btn--close {
+  margin-left: auto;
+  background: #d9c39a;
+}
+
+.tz-daily-export-status {
+  margin: 0;
+  min-height: 1.1rem;
+  font-size: 0.8rem;
+}
+
 .tz-profile-dialog__hit {
   position: absolute;
   padding: 0;
