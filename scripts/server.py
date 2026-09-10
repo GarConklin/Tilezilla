@@ -113,6 +113,7 @@ from lib.progress_store import (  # noqa: E402
     progress_response,
     record_solve,
     start_daily_attempt,
+    submit_daily_leaderboard_result,
 )
 from lib.session_auth import verify_session_cookie  # noqa: E402
 from lib.system_info import (  # noqa: E402
@@ -361,6 +362,41 @@ class Handler(SimpleHTTPRequestHandler):
         challenge_date = str(payload.get("challengeDate") or "").strip()
         level_id = str(payload.get("levelId") or "").strip()
         result = start_daily_attempt(user["id"], challenge_date, level_id)
+        status = 200 if result.get("ok") else 400
+        self._send_json(status, result)
+
+    def _handle_post_daily_leaderboard_submit(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        challenge_date = str(payload.get("challengeDate") or "").strip()
+        level_id = str(payload.get("levelId") or "").strip()
+        try:
+            completion_time_seconds = int(
+                payload.get("completionTimeSeconds")
+                or payload.get("elapsedSec")
+                or 0
+            )
+        except (TypeError, ValueError):
+            completion_time_seconds = 0
+        try:
+            hints_used_count = int(payload.get("hintsUsedCount") or 0)
+        except (TypeError, ValueError):
+            hints_used_count = 0
+        solution_id = payload.get("solutionId")
+        solution_index = payload.get("solutionIndex")
+        result = submit_daily_leaderboard_result(
+            user["id"],
+            challenge_date=challenge_date,
+            level_id=level_id,
+            completion_time_seconds=completion_time_seconds,
+            hints_used_count=hints_used_count,
+            solution_id=solution_id if solution_id is not None else None,
+            solution_index=solution_index if solution_index is not None else None,
+        )
         status = 200 if result.get("ok") else 400
         self._send_json(status, result)
 
@@ -791,6 +827,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/daily-attempt/start":
             self._handle_post_daily_attempt_start()
+            return
+        if parsed.path == "/api/daily-leaderboard/submit":
+            self._handle_post_daily_leaderboard_submit()
             return
         if parsed.path == "/api/progress/migrate":
             self._handle_post_progress_migrate()

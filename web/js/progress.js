@@ -494,6 +494,12 @@ export class Progress {
       .sort((a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0));
   }
 
+  /** Local daily rows still waiting for MySQL (phone may show these; PC cannot). */
+  listPendingLeaderboardResults() {
+    const store = this.loadDailyResults();
+    return Object.values(store).filter((row) => row?.serverSyncPending === true);
+  }
+
   // -- Reset --
 
   resetLevel(levelId) {

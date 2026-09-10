@@ -407,6 +407,100 @@ export function flushPendingSolvesOnLeave() {
   return { ok: true, flushed: 0, remaining: pending.length };
 }
 
+/**
+ * Push local-only daily leaderboard rows to MySQL so every device sees the same board.
+ * @param {import('./progress.js').Progress} [progress]
+ * @param {{ includeConfirmedMissing?: boolean, challengeDate?: string|null }} [opts]
+ */
+export async function submitPendingDailyLeaderboard(progress = null, opts = {}) {
+  if (!progress?.loadDailyResults) {
+    return { ok: true, flushed: 0, remaining: 0 };
+  }
+  const store = progress.loadDailyResults() || {};
+  const dateFilter = opts.challengeDate ? String(opts.challengeDate).trim() : null;
+  const includeConfirmedMissing = opts.includeConfirmedMissing !== false;
+  const candidates = Object.values(store).filter((row) => {
+    if (!row?.challengeDate || row.userId == null) return false;
+    if (dateFilter && String(row.challengeDate) !== dateFilter) return false;
+    if (row.serverSyncPending === true) return true;
+    // Heal phone-only ghosts that were falsely marked confirmed earlier.
+    return includeConfirmedMissing && Math.max(0, Number(row.completionTimeSeconds) || 0) > 0;
+  });
+  if (!candidates.length) return { ok: true, flushed: 0, remaining: 0 };
+
+  let flushed = 0;
+  for (const row of candidates) {
+    const challengeDate = String(row?.challengeDate || '').trim();
+    const levelId = String(row?.levelId || '').trim().replace(/\.json$/i, '');
+    const completionTimeSeconds = Math.max(0, Number(row?.completionTimeSeconds) || 0);
+    const userId = row?.userId;
+    if (!challengeDate || !levelId || completionTimeSeconds <= 0 || userId == null) continue;
+
+    // Skip rows already present on the server for this date (avoid needless POSTs).
+    if (row.serverSyncPending !== true) {
+      try {
+        const check = await fetch(
+          `/api/daily-leaderboard?date=${encodeURIComponent(challengeDate)}`,
+          {
+            credentials: 'include',
+            cache: 'no-store',
+            signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
+          },
+        );
+        if (check.ok) {
+          const json = await check.json().catch(() => ({}));
+          const onServer = Array.isArray(json?.rows)
+            && json.rows.some((r) => {
+              const rid = String(r.userId ?? r.user_id ?? '').trim();
+              const rname = String(r.username || '').trim().toLowerCase();
+              const uid = String(userId).trim();
+              const uname = String(row.username || '').trim().toLowerCase();
+              return (rid && rid === uid) || (uname && rname === uname);
+            });
+          if (onServer) {
+            progress.confirmLeaderboardResult?.(challengeDate, userId, completionTimeSeconds);
+            continue;
+          }
+        }
+      } catch {
+        /* fall through and attempt submit */
+      }
+    }
+
+    try {
+      const res = await fetch('/api/daily-leaderboard/submit', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challengeDate,
+          levelId,
+          completionTimeSeconds,
+          hintsUsedCount: Math.max(0, Number(row?.hintsUsedCount) || 0),
+          // Local store keeps 0-based catalog index in solutionId.
+          solutionIndex: Number.isFinite(Number(row?.solutionId)) ? Number(row.solutionId) : null,
+        }),
+        signal: AbortSignal.timeout(networkFetchTimeoutMs(15000)),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok || payload?.ok === false) {
+        console.warn('Daily leaderboard submit:', payload?.error || res.status);
+        continue;
+      }
+      progress.confirmLeaderboardResult?.(
+        challengeDate,
+        userId,
+        Number(payload.completionTimeSeconds) || completionTimeSeconds,
+      );
+      flushed += 1;
+    } catch (err) {
+      console.warn('Daily leaderboard submit failed:', err);
+    }
+  }
+  const remaining = progress.listPendingLeaderboardResults?.()?.length || 0;
+  return { ok: remaining === 0, flushed, remaining };
+}
+
 let pendingFlushBound = false;
 let resumeSyncInFlight = null;
 let lastResumeSyncAt = 0;
@@ -433,7 +527,10 @@ export function bindPendingSolveFlush(progress = null) {
     lastResumeSyncAt = now;
     resumeSyncInFlight = (async () => {
       await flushPendingSolves();
-      if (progress) await refreshProgressFromServer(progress);
+      if (progress) {
+        await submitPendingDailyLeaderboard(progress);
+        await refreshProgressFromServer(progress);
+      }
     })()
       .catch((err) => console.warn('Progress resume sync failed:', err))
       .finally(() => { resumeSyncInFlight = null; });

@@ -1486,6 +1486,133 @@ def _iso_date(value: Any) -> str:
     return str(value or "").strip()
 
 
+def submit_daily_leaderboard_result(
+    user_id: int | str,
+    *,
+    challenge_date: str,
+    level_id: str,
+    completion_time_seconds: int,
+    hints_used_count: int = 0,
+    solution_id: Optional[int] = None,
+    solution_index: Optional[int] = None,
+) -> dict[str, Any]:
+    """Upsert one player's daily_results row (cross-device leaderboard source of truth).
+
+    Used when the phone recorded a local daily time but MySQL never received it
+    (failed solve sync, or solve sync ok without leaderboard_saved).
+    """
+    date_key = str(challenge_date or "").strip()
+    level = str(level_id or "").strip().replace(".json", "")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return {"ok": False, "error": "invalid-date"}
+    if not level:
+        return {"ok": False, "error": "levelId required"}
+    sec = max(0, int(completion_time_seconds or 0))
+    if sec <= 0:
+        return {"ok": False, "error": "completionTimeSeconds required"}
+    hint_count = max(0, int(hints_used_count or 0))
+    sid: Optional[int] = None
+    if solution_id is not None and str(solution_id) != "":
+        try:
+            sid = max(1, int(solution_id))
+        except (TypeError, ValueError):
+            sid = None
+    if sid is None and solution_index is not None and str(solution_index) != "":
+        try:
+            sid = max(1, int(solution_index) + 1)
+        except (TypeError, ValueError):
+            sid = None
+    if sid is None:
+        sid = 1
+
+    uid = int(user_id)
+    try:
+        conn = _mysql_connect()
+    except Exception as err:
+        return {"ok": False, "error": f"sql-connect-failed: {err}"}
+
+    now = datetime.now().replace(microsecond=0)
+    try:
+        with conn.cursor() as cur:
+            # Prefer the scheduled daily puzzle id when known.
+            cur.execute(
+                "SELECT level_id FROM daily_challenges WHERE challenge_date = %s LIMIT 1",
+                (date_key,),
+            )
+            challenge = cur.fetchone()
+            scheduled = str((challenge or {}).get("level_id") or "").strip().replace(".json", "")
+            if scheduled and scheduled != level:
+                return {
+                    "ok": False,
+                    "error": "level-mismatch",
+                    "expectedLevelId": scheduled,
+                    "levelId": level,
+                }
+
+            cur.execute(
+                """
+                INSERT INTO daily_results (
+                    challenge_date, user_id, completion_time_seconds,
+                    solution_id, completed_at, hints_used_count
+                ) VALUES (%s, %s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    completion_time_seconds = IF(
+                        completion_time_seconds <= 0
+                        OR VALUES(completion_time_seconds) < completion_time_seconds,
+                        VALUES(completion_time_seconds),
+                        completion_time_seconds
+                    ),
+                    hints_used_count = IF(
+                        completion_time_seconds <= 0
+                        OR VALUES(completion_time_seconds) < completion_time_seconds,
+                        VALUES(hints_used_count),
+                        hints_used_count
+                    ),
+                    solution_id = IF(
+                        completion_time_seconds <= 0
+                        OR VALUES(completion_time_seconds) < completion_time_seconds,
+                        VALUES(solution_id),
+                        solution_id
+                    )
+                """,
+                (date_key, uid, sec, sid, now, hint_count),
+            )
+            cur.execute(
+                """
+                SELECT completion_time_seconds AS time_seconds,
+                       hints_used_count AS hints_used_count,
+                       solution_id AS solution_id
+                FROM daily_results
+                WHERE challenge_date = %s AND user_id = %s
+                LIMIT 1
+                """,
+                (date_key, uid),
+            )
+            row = cur.fetchone() or {}
+        conn.commit()
+    except Exception as err:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return {"ok": False, "error": f"sql-write-failed: {err}"}
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+    return {
+        "ok": True,
+        "challengeDate": date_key,
+        "levelId": scheduled or level,
+        "completionTimeSeconds": int(row.get("time_seconds") or sec),
+        "hintsUsedCount": max(0, int(row.get("hints_used_count") or hint_count)),
+        "solutionId": int(row.get("solution_id") or sid),
+        "leaderboardSubmitted": True,
+    }
+
+
 def daily_leaderboard_for_date(
     repo_root: Path,  # noqa: ARG001
     challenge_date: str,

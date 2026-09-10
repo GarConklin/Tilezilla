@@ -2707,21 +2707,35 @@ async function processSolutionFound(lv, res, placements) {
 
       if (submitDailyLeaderboard && syncResult?.ok) {
         const confirmed = !!syncResult.leaderboardSubmitted;
-        if (confirmed || wantsDailyLeaderboard) {
+        // Only clear local pending when MySQL actually accepted the daily row.
+        // Otherwise phone keeps a local-only ghost that PC will never see.
+        if (confirmed) {
           let confirmedSec = authoritativeElapsed;
-          if (wantsDailyLeaderboard && Number.isFinite(syncResult.completionTimeSeconds)) {
+          if (Number.isFinite(syncResult.completionTimeSeconds)) {
             confirmedSec = Math.max(0, Number(syncResult.completionTimeSeconds));
-          } else if (!wantsDailyLeaderboard) {
-            confirmedSec = Math.max(0, Number(localDaily?.completionTimeSeconds) || 0);
           }
           progress?.confirmLeaderboardResult?.(
             challengeDate,
             dailyUserId,
             confirmedSec || null,
           );
-          if (wantsDailyLeaderboard && confirmedSec > 0) {
+          if (confirmedSec > 0) {
             timer?.updateBest?.(confirmedSec, lv.id);
           }
+        } else {
+          try {
+            const { submitPendingDailyLeaderboard } = await import('./tilezilla-progress-sync.js');
+            await submitPendingDailyLeaderboard(progress);
+          } catch (err) {
+            console.warn('Daily leaderboard resubmit:', err);
+          }
+        }
+      } else if (submitDailyLeaderboard && !syncResult?.ok) {
+        try {
+          const { submitPendingDailyLeaderboard } = await import('./tilezilla-progress-sync.js');
+          await submitPendingDailyLeaderboard(progress);
+        } catch (err) {
+          console.warn('Daily leaderboard resubmit after solve fail:', err);
         }
       }
 

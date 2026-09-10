@@ -529,11 +529,25 @@ function mergeLeaderboardRowSets(serverRows, localRows) {
 /**
  * Today's cross-user leaderboard — prefers MySQL via /api/daily-leaderboard.
  * Falls back to localStorage for offline / guest dev.
+ * Registered local-only rows are flushed to MySQL first so phone/PC stay in sync.
  */
 export async function fetchLeaderboardRows(progress, challengeDate = todayChallengeDateIso()) {
   const dateKey = String(challengeDate || todayChallengeDateIso()).trim();
+
+  // Push any phone-local daily times that never reached MySQL before we paint.
+  try {
+    const { submitPendingDailyLeaderboard } = await import('./tilezilla-progress-sync.js');
+    await submitPendingDailyLeaderboard(progress, {
+      challengeDate: dateKey,
+      includeConfirmedMissing: true,
+    });
+  } catch (err) {
+    console.warn('Daily leaderboard pending flush:', err);
+  }
+
   let rows = [];
   let apiLevelId = '';
+  let apiOk = false;
   try {
     const res = await fetch(`/api/daily-leaderboard?date=${encodeURIComponent(dateKey)}`, {
       credentials: 'include',
@@ -543,6 +557,7 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
     if (res.ok) {
       const json = await res.json();
       if (json?.ok && Array.isArray(json.rows)) {
+        apiOk = true;
         apiLevelId = String(json.levelId || '').replace(/\.json$/i, '');
         rows = json.rows.map((row) => ({
           userId: row.userId ?? row.user_id ?? '',
@@ -560,8 +575,20 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
   } catch {
     /* offline — use local rows */
   }
+
+  // When MySQL answered, do not invent registered rows from this browser's
+  // localStorage — that is what made phone show a score PC could not see.
+  // Local merge only when the API is unavailable, or for still-pending sync.
   const localRows = fetchLocalLeaderboardRows(progress, dateKey);
-  rows = mergeLeaderboardRowSets(rows, localRows);
+  if (!apiOk) {
+    rows = mergeLeaderboardRowSets(rows, localRows);
+  } else {
+    const pendingLocal = localRows.filter((row) => row?.serverSyncPending === true);
+    if (pendingLocal.length) {
+      rows = mergeLeaderboardRowSets(rows, pendingLocal);
+    }
+  }
+
   const preview = getGuestLeaderboardPreview();
   if (preview) {
     rows = mergeGuestPreviewIntoRows(rows, preview, dateKey);
