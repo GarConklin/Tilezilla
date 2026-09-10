@@ -970,7 +970,9 @@ def sync_mysql_after_solve(
             _upsert_level_summary_sql(cur, user_id, level_id, found)
             _refresh_player_progress_sql(cur, user_id)
 
-            if leaderboard_saved and challenge_date and not bonus:
+            # Daily board is first eligible finish for that calendar day — keep the
+            # row even if catalog match tagged the placement as bonus (phone ghost case).
+            if leaderboard_saved and challenge_date:
                 solution_id = (int(index) + 1) if index is not None else 1
                 now = datetime.now().replace(microsecond=0)
                 cur.execute(
