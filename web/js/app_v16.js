@@ -2447,7 +2447,7 @@ async function runCheckSolution() {
     setCheckMessage('No level selected.', 'checkWarn');
     return;
   }
-  const knownSolutions = await loadKnownSolutionsForLevel(lv);
+  const knownSolutions = await loadKnownSolutionsForCheck(lv);
   if (progress?.rematchFoundCatalogIndices) {
     progress.rematchFoundCatalogIndices(lv.id, knownSolutions, lv.board);
   }
@@ -2464,6 +2464,21 @@ async function runCheckSolution() {
   // Catalog match is authoritative — compare to solutions on file before geometry rules
   // that can reject layouts the solver stored (e.g. multi-path SH/ET adjacency).
   const catalogRes = progress.checkSolution(lv.id, placements, knownSolutions);
+  // If this level has known routes but the solve file never loaded, do not call it a
+  // "bonus" — that ghosted daily leaderboard rows when cellular dropped /solves/*.json.
+  if (
+    catalogRes?.bonus
+    && !Number.isFinite(catalogRes?.index)
+    && !knownSolutions.length
+    && totalKnownForLevel(lv) > 0
+  ) {
+    window.__invalidSolve?.hide?.();
+    setCheckMessage(
+      'Could not load the solution catalog for this puzzle. Check your connection and tap Check again.',
+      'checkWarn',
+    );
+    return;
+  }
   if (catalogRes.duplicate) {
     window.__invalidSolve?.hide?.();
     playSfx('solveOk');
@@ -3622,12 +3637,13 @@ function dedupeKnownSolutionsForLevel(solutions, level){
   return kept.length < solutions.length ? kept : solutions;
 }
 
-async function loadKnownSolutionsForLevel(level){
+async function loadKnownSolutionsForLevel(level, { forceReload = false } = {}){
   const file = level?.solvesFile;
   if(!file){
     if(level?.id) state.solutionCountByLevelId[level.id] = 0;
     return [];
   }
+  if(forceReload) solveDocCache.delete(file);
   if(solveDocCache.has(file)){
     const sols = dedupeKnownSolutionsForLevel(solveDocCache.get(file), level);
     if(level?.id) state.solutionCountByLevelId[level.id] = Array.isArray(sols) ? sols.length : 0;
@@ -3650,6 +3666,18 @@ async function loadKnownSolutionsForLevel(level){
     console.warn('solve file unavailable', file, e);
     return [];
   }
+}
+
+/**
+ * Prefer a loaded catalog. If the level claims N>0 known routes but the solve
+ * file failed (common on cellular), retry once — never invent a "bonus".
+ */
+async function loadKnownSolutionsForCheck(level) {
+  let sols = await loadKnownSolutionsForLevel(level);
+  const expected = totalKnownForLevel(level);
+  if (sols.length || expected <= 0) return sols;
+  sols = await loadKnownSolutionsForLevel(level, { forceReload: true });
+  return sols;
 }
 
 function totalKnownForLevel(lev){
