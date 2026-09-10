@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1a3d3a" />
   <title>Tilezilla — Main screen v2</title>
-  <link rel="stylesheet" href="css/tilezilla-shell.css?v=20260910b" />
+  <link rel="stylesheet" href="css/tilezilla-shell.css?v=20260910c" />
   <link rel="stylesheet" href="css/profile-passport-layout.css" />
 </head>
 <body>
@@ -750,14 +750,6 @@
         <p class="auth-screen__profile-stat" data-profile-slot="latestDiscovery" id="profileOverlayLatestDiscovery">—</p>
         <p class="auth-screen__profile-stat" data-profile-slot="totalPlayTime" id="profileOverlayPlayTime">—</p>
         <p class="tz-profile-dialog__guest-note" id="profileOverlayGuestNote" data-profile-slot="guestNote" hidden>Playing as guest</p>
-        <button
-          type="button"
-          class="tz-profile-export-daily"
-          id="profileOverlayExportDaily"
-          hidden
-        >
-          Export phone daily scores
-        </button>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-daily" id="profileOverlayNavDaily" aria-label="Daily Challenge"></button>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-adventure" id="profileOverlayNavAdventure" aria-label="Adventure Path"></button>
         <button type="button" class="tz-profile-dialog__hit tz-profile-dialog__hit--nav-random" id="profileOverlayNavRandom" aria-label="Random Puzzle"></button>
@@ -769,23 +761,6 @@
           <img src="/img/X-gold-rnd-btn.png" alt="" />
         </button>
       </main>
-    </div>
-  </div>
-
-  <div class="tz-daily-export-root" id="dailyExportRoot" hidden>
-    <button type="button" class="tz-daily-export-root__backdrop" id="dailyExportBackdrop" aria-label="Close"></button>
-    <div class="tz-daily-export-dialog" role="dialog" aria-modal="true" aria-labelledby="dailyExportTitle">
-      <h2 id="dailyExportTitle">Local daily scores (this phone)</h2>
-      <p class="tz-daily-export-note" id="dailyExportNote">
-        Select all text below, copy, and send it so we can restore any days missing on the PC / server.
-      </p>
-      <textarea id="dailyExportText" class="tz-daily-export-text" readonly rows="14"></textarea>
-      <div class="tz-daily-export-actions">
-        <button type="button" class="tz-daily-export-btn" id="dailyExportSelectAll">Select all</button>
-        <button type="button" class="tz-daily-export-btn" id="dailyExportCopy">Copy</button>
-        <button type="button" class="tz-daily-export-btn tz-daily-export-btn--close" id="dailyExportClose">Close</button>
-      </div>
-      <p class="tz-daily-export-status" id="dailyExportStatus" aria-live="polite"></p>
     </div>
   </div>
 
@@ -1477,6 +1452,6 @@
     void guardGameEntry();
   </script>
   <script type="module" src="js/app_v16.js?v=20260803b"></script>
-  <script type="module" src="js/tilezilla-bootstrap.js?v=20260910b"></script>
+  <script type="module" src="js/tilezilla-bootstrap.js?v=20260910c"></script>
 </body>
 </html>
