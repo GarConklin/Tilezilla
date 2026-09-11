@@ -1,0 +1,14 @@
+[Unit]
+Description=Tilezilla production weekly soft restart (web/gateway/auth)
+Documentation=file:///opt/tilezilla/Docs/deploy-ubuntu.md
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/tilezilla
+ExecStart=/opt/tilezilla/scripts/weekly-restart-production.sh
+Nice=10
+StandardOutput=journal
+StandardError=journal
+User=root
