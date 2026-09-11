@@ -1,10 +1,10 @@
 [Unit]
-Description=Run Tilezilla soft restart every Tuesday morning
+Description=Run Tilezilla soft restart every Wednesday morning
 Documentation=file:///opt/tilezilla/Docs/deploy-ubuntu.md
 
 [Timer]
-# Local VPS timezone — Tuesday 04:10
-OnCalendar=Tue *-*-* 04:10:00
+# Local VPS timezone — Wednesday 03:00
+OnCalendar=Wed *-*-* 03:00:00
 Persistent=true
 RandomizedDelaySec=5m
 Unit=tilezilla-weekly-restart.service

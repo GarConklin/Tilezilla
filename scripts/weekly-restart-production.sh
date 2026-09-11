@@ -7,7 +7,7 @@
 #   ./scripts/weekly-restart-production.sh
 #   ./scripts/weekly-restart-production.sh --with-mysql   # rare; full stack bounce
 #
-# Install timer (Tuesday 04:10 local):
+# Install timer (Wednesday 03:00 local):
 #   sudo ./scripts/install-production-weekly-restart.sh
 #
 set -euo pipefail

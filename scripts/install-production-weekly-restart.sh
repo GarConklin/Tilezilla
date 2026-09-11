@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install systemd timer for weekly Tilezilla soft restart (Tuesday ~04:10).
+# Install systemd timer for weekly Tilezilla soft restart (Wednesday ~03:00).
 #
 # Usage (on Ubuntu VPS):
 #   cd /opt/tilezilla
@@ -47,7 +47,7 @@ echo ""
 echo "Installed weekly restart timer"
 echo "  User:        $RUN_AS_USER"
 echo "  Working dir: $INSTALL_ROOT"
-echo "  Schedule:    Tuesday 04:10 (VPS local time) + up to 5m jitter"
+echo "  Schedule:    Wednesday 03:00 (VPS local time) + up to 5m jitter"
 echo "  Restarts:    gateway, web, php-auth (MySQL stays up)"
 echo ""
 echo "Next run:      systemctl list-timers $TIMER_NAME"

@@ -342,7 +342,7 @@ No trailing spaces in `.env.production` values — e.g. `MYSQL_PASSWORD=foo ` wi
 
 ---
 
-## Weekly soft restart (Tuesday)
+## Weekly soft restart (Wednesday)
 
 If the game web process slowly leaks threads / CPU over days, schedule a soft restart of **web + gateway + auth** (MySQL stays up):
 
@@ -353,7 +353,7 @@ chmod +x scripts/weekly-restart-production.sh scripts/install-production-weekly-
 sudo ./scripts/install-production-weekly-restart.sh
 ```
 
-- Runs **every Tuesday ~04:10** (VPS local time, plus up to 5 minutes jitter)
+- Runs **every Wednesday ~03:00** (VPS local time, plus up to 5 minutes jitter)
 - Log: `data/weekly-restart.log` and `journalctl -u tilezilla-weekly-restart`
 - Manual once: `sudo systemctl start tilezilla-weekly-restart.service`
 - Next fire time: `systemctl list-timers tilezilla-weekly-restart.timer`
