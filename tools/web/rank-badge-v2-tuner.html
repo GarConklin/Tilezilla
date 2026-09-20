@@ -151,6 +151,10 @@
     .actions button.danger {
       background: rgba(90, 40, 40, 0.55);
     }
+    .actions button.is-mode-on {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.18);
+    }
 
     .status {
       margin-top: 8px;
@@ -347,7 +351,8 @@
   <p class="lead">
     Step 1 — compose <code>BG</code> + <code>Nc</code> tile + silver roman <code>slvr-1…15</code>.
     Not wired into the game yet. Planned climb: <strong>15 puzzles → next roman</strong>, then next rank back at I
-    (55 ranks × 15). Tune numeral placement here; tile nudge/scale shared for all ranks.
+    (55 ranks × 15).     Romans <strong>1–15 are shared</strong> across ranks. Tile + band shift save
+    <strong>per BG band</strong> (1–10 … 51–55) so 51–55 can sit differently.
     <a href="/tools/tuners.html">Tuners</a> ·
     <a href="/tools/rank-sublevel-tuner.html">Old sublevel tuner</a>
   </p>
@@ -386,7 +391,17 @@
       </div>
       <input type="range" id="numW" min="0.5" max="1.5" step="0.01" value="1" />
 
-      <h2>Rank tile (shared)</h2>
+      <h2>This BG band <span id="bandLabel" style="color:#8fd49a;text-transform:none;letter-spacing:0;">51–55</span></h2>
+      <p style="margin:0 0 8px;font-size:0.68rem;color:#a8b8b4;line-height:1.4;">
+        Tile + numeral shift save for the current band only. Switch to rank 51+ to tune that offset without changing 1–50.
+      </p>
+
+      <label>Drag / arrow target</label>
+      <div class="actions" style="margin:0 0 10px;">
+        <button type="button" id="btnModeRoman" class="is-mode-on">Roman (shared)</button>
+        <button type="button" id="btnModeBand">Band shift</button>
+      </div>
+
       <div class="row">
         <label for="tileScale">Tile scale</label>
         <output id="tileScaleOut">0.90</output>
@@ -406,6 +421,18 @@
       <input type="range" id="tileY" min="-30" max="30" step="1" value="0" />
 
       <div class="row">
+        <label for="bandShiftX">Band numeral shift X</label>
+        <output id="bandShiftXOut">0</output>
+      </div>
+      <input type="range" id="bandShiftX" min="-40" max="40" step="1" value="0" />
+
+      <div class="row">
+        <label for="bandShiftY">Band numeral shift Y</label>
+        <output id="bandShiftYOut">0</output>
+      </div>
+      <input type="range" id="bandShiftY" min="-50" max="50" step="1" value="0" />
+
+      <div class="row">
         <label for="previewScale">Preview zoom</label>
         <output id="previewScaleOut">3.0</output>
       </div>
@@ -414,6 +441,7 @@
       <div class="actions">
         <button type="button" id="btnSave">Save JSON</button>
         <button type="button" id="btnResetNum">Reset this roman</button>
+        <button type="button" id="btnResetBand">Reset this band</button>
         <button type="button" id="btnCopyDefaults" class="danger">Copy → all 15</button>
       </div>
       <p class="status" id="status"></p>
@@ -440,7 +468,7 @@
         </div>
         <p class="readout" id="readout">—</p>
         <p class="mock-stage__hint">
-          Drag to nudge · arrows nudge · [ ] height · - = width · Shift+←/→ roman · PgUp/PgDn rank
+          Drag to nudge · <strong>B</strong> toggles roman vs band shift · Shift+←/→ roman · PgUp/PgDn rank
         </p>
         <ul class="keys">
           <li>BG bands: 1–10 · 11–20 · 21–30 · 31–40 · 41–50 · 51–55</li>
@@ -475,19 +503,23 @@
     const LAYOUT_URL = '/data/rank_badge_v2_layout.json';
     const SAVE_URL = '/api/dev/save-rank-badge-v2-layout';
 
+    const BAND_KEYS = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-55'];
     const DEFAULTS = {
       version: 1,
       art: { bgW: 115, bgH: 145 },
       tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
       defaults: { h: 52, nudgeX: 0, nudgeY: 6, wScale: 1 },
       numerals: {},
+      bands: {},
     };
 
     let layout = structuredClone(DEFAULTS);
     let rankId = 1;
     let subLevel = 1;
     let previewScale = 3;
+    let nudgeMode = 'roman'; // 'roman' | 'band'
     let dirty = new Set();
+    let dirtyBands = new Set();
     let saveTimer = null;
     let drag = null;
 
@@ -501,6 +533,7 @@
       imgNum: document.getElementById('imgNum'),
       readout: document.getElementById('readout'),
       status: document.getElementById('status'),
+      bandLabel: document.getElementById('bandLabel'),
       romanStrip: document.getElementById('romanStrip'),
       rankStrip: document.getElementById('rankStrip'),
       recordBody: document.getElementById('recordBody'),
@@ -512,6 +545,8 @@
       tileScale: document.getElementById('tileScale'),
       tileX: document.getElementById('tileX'),
       tileY: document.getElementById('tileY'),
+      bandShiftX: document.getElementById('bandShiftX'),
+      bandShiftY: document.getElementById('bandShiftY'),
       previewScale: document.getElementById('previewScale'),
       numHOut: document.getElementById('numHOut'),
       numXOut: document.getElementById('numXOut'),
@@ -520,19 +555,28 @@
       tileScaleOut: document.getElementById('tileScaleOut'),
       tileXOut: document.getElementById('tileXOut'),
       tileYOut: document.getElementById('tileYOut'),
+      bandShiftXOut: document.getElementById('bandShiftXOut'),
+      bandShiftYOut: document.getElementById('bandShiftYOut'),
       previewScaleOut: document.getElementById('previewScaleOut'),
       btnSave: document.getElementById('btnSave'),
       btnResetNum: document.getElementById('btnResetNum'),
+      btnResetBand: document.getElementById('btnResetBand'),
       btnCopyDefaults: document.getElementById('btnCopyDefaults'),
+      btnModeRoman: document.getElementById('btnModeRoman'),
+      btnModeBand: document.getElementById('btnModeBand'),
     };
 
+    function bandKeyForRank(r) {
+      if (r <= 10) return '1-10';
+      if (r <= 20) return '11-20';
+      if (r <= 30) return '21-30';
+      if (r <= 40) return '31-40';
+      if (r <= 50) return '41-50';
+      return '51-55';
+    }
+
     function bgForRank(r) {
-      if (r <= 10) return '/img/ranks/1-10bg.png';
-      if (r <= 20) return '/img/ranks/11-20bg.png';
-      if (r <= 30) return '/img/ranks/21-30bg.png';
-      if (r <= 40) return '/img/ranks/31-40bg.png';
-      if (r <= 50) return '/img/ranks/41-50bg.png';
-      return '/img/ranks/51-55bg.png';
+      return `/img/ranks/${bandKeyForRank(r)}bg.png`;
     }
 
     function tilePath(r) {
@@ -547,6 +591,34 @@
       return ROMANS[n - 1] || String(n);
     }
 
+    function getBandEntry(key) {
+      return layout.bands?.[key] || {};
+    }
+
+    function ensureBandEntry(key) {
+      if (!layout.bands) layout.bands = {};
+      if (!layout.bands[key]) layout.bands[key] = {};
+      return layout.bands[key];
+    }
+
+    function getTileForBand(key) {
+      const base = { ...DEFAULTS.tile, ...(layout.tile || {}) };
+      const over = getBandEntry(key).tile || {};
+      return {
+        scale: Number(over.scale ?? base.scale),
+        nudgeX: Number(over.nudgeX ?? base.nudgeX),
+        nudgeY: Number(over.nudgeY ?? base.nudgeY),
+      };
+    }
+
+    function getNumeralShiftForBand(key) {
+      const over = getBandEntry(key).numeralShift || {};
+      return {
+        nudgeX: Number(over.nudgeX ?? 0),
+        nudgeY: Number(over.nudgeY ?? 0),
+      };
+    }
+
     function getNumeral(n) {
       const key = String(n);
       const def = { ...DEFAULTS.defaults, ...(layout.defaults || {}) };
@@ -556,6 +628,16 @@
         nudgeX: Number(over.nudgeX ?? def.nudgeX),
         nudgeY: Number(over.nudgeY ?? def.nudgeY),
         wScale: Number(over.wScale ?? def.wScale),
+      };
+    }
+
+    function getResolvedNumeral(n, rank) {
+      const L = getNumeral(n);
+      const shift = getNumeralShiftForBand(bandKeyForRank(rank));
+      return {
+        ...L,
+        nudgeX: L.nudgeX + shift.nudgeX,
+        nudgeY: L.nudgeY + shift.nudgeY,
       };
     }
 
@@ -576,21 +658,58 @@
       scheduleSave();
     }
 
-    function patchTile(patch) {
-      layout.tile = { ...(layout.tile || DEFAULTS.tile), ...patch };
+    function patchBandTile(patch) {
+      const key = bandKeyForRank(rankId);
+      const band = ensureBandEntry(key);
+      const next = { ...getTileForBand(key), ...patch };
+      const base = { ...DEFAULTS.tile, ...(layout.tile || {}) };
+      const diff = {};
+      for (const k of ['scale', 'nudgeX', 'nudgeY']) {
+        if (next[k] !== base[k]) diff[k] = next[k];
+      }
+      if (Object.keys(diff).length) band.tile = diff;
+      else delete band.tile;
+      if (!band.tile && !band.numeralShift) delete layout.bands[key];
+      dirtyBands.add(key);
       refresh();
       scheduleSave();
+    }
+
+    function patchBandShift(patch) {
+      const key = bandKeyForRank(rankId);
+      const band = ensureBandEntry(key);
+      const next = { ...getNumeralShiftForBand(key), ...patch };
+      const diff = {};
+      for (const k of ['nudgeX', 'nudgeY']) {
+        if (next[k] !== 0) diff[k] = next[k];
+      }
+      if (Object.keys(diff).length) band.numeralShift = diff;
+      else delete band.numeralShift;
+      if (!band.tile && !band.numeralShift) delete layout.bands[key];
+      dirtyBands.add(key);
+      refresh();
+      scheduleSave();
+    }
+
+    function setNudgeMode(mode) {
+      nudgeMode = mode;
+      els.btnModeRoman.classList.toggle('is-mode-on', mode === 'roman');
+      els.btnModeBand.classList.toggle('is-mode-on', mode === 'band');
+      els.status.textContent = mode === 'band'
+        ? `Nudge target: band shift (${bandKeyForRank(rankId)})`
+        : 'Nudge target: shared roman';
     }
 
     function exportLayout() {
       const out = {
         version: 1,
-        note: layout.note || DEFAULTS.note ||
-          'New rank badge stack (prep only). BG + Nc + slvr 1-15.',
+        note: layout.note ||
+          'New rank badge stack (prep only). BG + Nc + slvr 1-15. Bands hold per-BG tile/shift.',
         art: { ...(layout.art || DEFAULTS.art) },
         tile: { ...(layout.tile || DEFAULTS.tile) },
         defaults: { ...(layout.defaults || DEFAULTS.defaults) },
         numerals: {},
+        bands: {},
       };
       for (let n = 1; n <= 15; n += 1) {
         const L = getNumeral(n);
@@ -601,13 +720,23 @@
         }
         if (Object.keys(diff).length) out.numerals[String(n)] = diff;
       }
+      for (const key of BAND_KEYS) {
+        const entry = getBandEntry(key);
+        const bandOut = {};
+        if (entry.tile && Object.keys(entry.tile).length) bandOut.tile = { ...entry.tile };
+        if (entry.numeralShift && Object.keys(entry.numeralShift).length) {
+          bandOut.numeralShift = { ...entry.numeralShift };
+        }
+        if (Object.keys(bandOut).length) out.bands[key] = bandOut;
+      }
       return out;
     }
 
     function applyStackVars(el, { rank, level, scale }) {
       const art = layout.art || DEFAULTS.art;
-      const tile = layout.tile || DEFAULTS.tile;
-      const L = getNumeral(level);
+      const band = bandKeyForRank(rank);
+      const tile = getTileForBand(band);
+      const L = getResolvedNumeral(level, rank);
       el.style.setProperty('--art-w', String(art.bgW || 115));
       el.style.setProperty('--art-h', String(art.bgH || 145));
       el.style.setProperty('--preview-scale', String(scale));
@@ -644,7 +773,10 @@
 
     function syncSliders() {
       const L = getNumeral(subLevel);
-      const tile = layout.tile || DEFAULTS.tile;
+      const band = bandKeyForRank(rankId);
+      const tile = getTileForBand(band);
+      const shift = getNumeralShiftForBand(band);
+      els.bandLabel.textContent = dirtyBands.has(band) ? `${band} •` : band;
       els.numH.value = String(L.h);
       els.numX.value = String(L.nudgeX);
       els.numY.value = String(L.nudgeY);
@@ -652,6 +784,8 @@
       els.tileScale.value = String(tile.scale ?? 0.9);
       els.tileX.value = String(tile.nudgeX ?? 0);
       els.tileY.value = String(tile.nudgeY ?? 0);
+      els.bandShiftX.value = String(shift.nudgeX);
+      els.bandShiftY.value = String(shift.nudgeY);
       els.previewScale.value = String(previewScale);
       els.numHOut.textContent = String(L.h);
       els.numXOut.textContent = String(L.nudgeX);
@@ -660,6 +794,8 @@
       els.tileScaleOut.textContent = Number(tile.scale ?? 0.9).toFixed(2);
       els.tileXOut.textContent = String(tile.nudgeX ?? 0);
       els.tileYOut.textContent = String(tile.nudgeY ?? 0);
+      els.bandShiftXOut.textContent = String(shift.nudgeX);
+      els.bandShiftYOut.textContent = String(shift.nudgeY);
       els.previewScaleOut.textContent = previewScale.toFixed(1);
     }
 
@@ -669,10 +805,15 @@
       syncSliders();
 
       const L = getNumeral(subLevel);
-      const tile = layout.tile || DEFAULTS.tile;
+      const R = getResolvedNumeral(subLevel, rankId);
+      const band = bandKeyForRank(rankId);
+      const tile = getTileForBand(band);
+      const shift = getNumeralShiftForBand(band);
       els.readout.innerHTML =
-        `<strong>Rank ${rankId}</strong> · ${romanFor(subLevel)} (${subLevel})` +
-        ` · num h:${L.h} x:${L.nudgeX} y:${L.nudgeY} w:${Number(L.wScale).toFixed(2)}` +
+        `<strong>Rank ${rankId}</strong> · band ${band} · ${romanFor(subLevel)} (${subLevel})` +
+        ` · roman h:${L.h} x:${L.nudgeX} y:${L.nudgeY}` +
+        ` · shift ${shift.nudgeX},${shift.nudgeY}` +
+        ` · shown x:${R.nudgeX} y:${R.nudgeY}` +
         ` · tile s:${Number(tile.scale ?? 0.9).toFixed(2)}`;
 
       for (const btn of els.levelGrid.querySelectorAll('.level-btn')) {
@@ -681,7 +822,6 @@
         btn.classList.toggle('is-dirty', dirty.has(n));
       }
 
-      // roman strip
       els.romanStrip.replaceChildren();
       for (let n = 1; n <= 15; n += 1) {
         const item = document.createElement('button');
@@ -698,7 +838,6 @@
         els.romanStrip.appendChild(item);
       }
 
-      // rank strip
       els.rankStrip.replaceChildren();
       for (const r of SAMPLE_RANKS) {
         const item = document.createElement('button');
@@ -706,7 +845,8 @@
         item.className = 'strip-item' + (r === rankId ? ' is-active' : '');
         item.appendChild(makeMiniStack(r, subLevel));
         const lab = document.createElement('span');
-        lab.textContent = `R${r}`;
+        const bk = bandKeyForRank(r);
+        lab.textContent = `R${r}${dirtyBands.has(bk) ? ' •' : ''}`;
         item.appendChild(lab);
         item.addEventListener('click', () => {
           rankId = r;
@@ -715,7 +855,6 @@
         els.rankStrip.appendChild(item);
       }
 
-      // table
       els.recordBody.replaceChildren();
       for (let n = 1; n <= 15; n += 1) {
         const rowL = getNumeral(n);
@@ -809,18 +948,27 @@
         patchNumeral(subLevel, { wScale: Number(els.numW.value) });
       });
       els.tileScale.addEventListener('input', () => {
-        patchTile({ scale: Number(els.tileScale.value) });
+        patchBandTile({ scale: Number(els.tileScale.value) });
       });
       els.tileX.addEventListener('input', () => {
-        patchTile({ nudgeX: Number(els.tileX.value) });
+        patchBandTile({ nudgeX: Number(els.tileX.value) });
       });
       els.tileY.addEventListener('input', () => {
-        patchTile({ nudgeY: Number(els.tileY.value) });
+        patchBandTile({ nudgeY: Number(els.tileY.value) });
+      });
+      els.bandShiftX.addEventListener('input', () => {
+        patchBandShift({ nudgeX: Number(els.bandShiftX.value) });
+      });
+      els.bandShiftY.addEventListener('input', () => {
+        patchBandShift({ nudgeY: Number(els.bandShiftY.value) });
       });
       els.previewScale.addEventListener('input', () => {
         previewScale = Number(els.previewScale.value) || 3;
         refresh();
       });
+
+      els.btnModeRoman.addEventListener('click', () => setNudgeMode('roman'));
+      els.btnModeBand.addEventListener('click', () => setNudgeMode('band'));
 
       els.btnSave.addEventListener('click', () => void saveToFile());
       els.btnResetNum.addEventListener('click', () => {
@@ -830,6 +978,14 @@
         refresh();
         scheduleSave();
         els.status.textContent = `Reset ${romanFor(subLevel)} to defaults`;
+      });
+      els.btnResetBand.addEventListener('click', () => {
+        const key = bandKeyForRank(rankId);
+        if (layout.bands) delete layout.bands[key];
+        dirtyBands.delete(key);
+        refresh();
+        scheduleSave();
+        els.status.textContent = `Reset band ${key} (tile + shift)`;
       });
       els.btnCopyDefaults.addEventListener('click', () => {
         const src = getNumeral(subLevel);
@@ -842,25 +998,28 @@
         els.status.textContent = `Defaults set from ${romanFor(subLevel)}; cleared per-roman overrides`;
       });
 
-      // drag numeral
       els.stage.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         els.stage.setPointerCapture(e.pointerId);
-        drag = {
-          x: e.clientX,
-          y: e.clientY,
-          nudgeX: getNumeral(subLevel).nudgeX,
-          nudgeY: getNumeral(subLevel).nudgeY,
-        };
+        const band = bandKeyForRank(rankId);
+        if (nudgeMode === 'band') {
+          const shift = getNumeralShiftForBand(band);
+          drag = { kind: 'band', x: e.clientX, y: e.clientY, nudgeX: shift.nudgeX, nudgeY: shift.nudgeY };
+        } else {
+          const L = getNumeral(subLevel);
+          drag = { kind: 'roman', x: e.clientX, y: e.clientY, nudgeX: L.nudgeX, nudgeY: L.nudgeY };
+        }
       });
       els.stage.addEventListener('pointermove', (e) => {
         if (!drag) return;
         const dx = (e.clientX - drag.x) / previewScale;
         const dy = (e.clientY - drag.y) / previewScale;
-        patchNumeral(subLevel, {
+        const patch = {
           nudgeX: Math.round(drag.nudgeX + dx),
           nudgeY: Math.round(drag.nudgeY + dy),
-        });
+        };
+        if (drag.kind === 'band') patchBandShift(patch);
+        else patchNumeral(subLevel, patch);
       });
       els.stage.addEventListener('pointerup', () => { drag = null; });
       els.stage.addEventListener('pointercancel', () => { drag = null; });
@@ -893,20 +1052,34 @@
           refresh();
           return;
         }
+        if (e.key === 'b' || e.key === 'B') {
+          e.preventDefault();
+          setNudgeMode(nudgeMode === 'band' ? 'roman' : 'band');
+          return;
+        }
 
         const L = getNumeral(subLevel);
+        const shift = getNumeralShiftForBand(bandKeyForRank(rankId));
+        const applyNudge = (dx, dy) => {
+          if (nudgeMode === 'band') {
+            patchBandShift({ nudgeX: shift.nudgeX + dx, nudgeY: shift.nudgeY + dy });
+          } else {
+            patchNumeral(subLevel, { nudgeX: L.nudgeX + dx, nudgeY: L.nudgeY + dy });
+          }
+        };
+
         if (e.key === 'ArrowUp') {
           e.preventDefault();
-          patchNumeral(subLevel, { nudgeY: L.nudgeY - NUDGE_STEP });
+          applyNudge(0, -NUDGE_STEP);
         } else if (e.key === 'ArrowDown') {
           e.preventDefault();
-          patchNumeral(subLevel, { nudgeY: L.nudgeY + NUDGE_STEP });
+          applyNudge(0, NUDGE_STEP);
         } else if (e.key === 'ArrowLeft') {
           e.preventDefault();
-          patchNumeral(subLevel, { nudgeX: L.nudgeX - NUDGE_STEP });
+          applyNudge(-NUDGE_STEP, 0);
         } else if (e.key === 'ArrowRight') {
           e.preventDefault();
-          patchNumeral(subLevel, { nudgeX: L.nudgeX + NUDGE_STEP });
+          applyNudge(NUDGE_STEP, 0);
         } else if (e.key === '[') {
           e.preventDefault();
           patchNumeral(subLevel, { h: Math.max(20, L.h - H_STEP) });
@@ -936,14 +1109,17 @@
             tile: { ...DEFAULTS.tile, ...(data.tile || {}) },
             defaults: { ...DEFAULTS.defaults, ...(data.defaults || {}) },
             numerals: data.numerals || {},
+            bands: data.bands || {},
           };
+          for (const key of Object.keys(layout.bands || {})) dirtyBands.add(key);
         }
       } catch {
         /* keep defaults */
       }
+      setNudgeMode('roman');
       refresh();
       els.stage.focus();
-      els.status.textContent = 'Ready — prep only, not in game yet';
+      els.status.textContent = 'Ready — romans shared; tile/shift per BG band';
     }
 
     void boot();

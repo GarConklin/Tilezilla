@@ -1731,6 +1731,8 @@ def validate_reset_hint_tiles_layout(payload: object) -> str | None:
 RANK_AWARD_ITEM_KEYS = ("continue",)
 RANK_BADGE_V2_NUMERAL_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
 RANK_BADGE_V2_TILE_KEYS = ("scale", "nudgeX", "nudgeY")
+RANK_BADGE_V2_SHIFT_KEYS = ("nudgeX", "nudgeY")
+RANK_BADGE_V2_BAND_KEYS = ("1-10", "11-20", "21-30", "31-40", "41-50", "51-55")
 
 
 def validate_rank_badge_v2_layout(payload: object) -> str | None:
@@ -1775,6 +1777,36 @@ def validate_rank_badge_v2_layout(payload: object) -> str | None:
                     return f"Unknown numerals.{lvl_key} key: {key}"
                 if not isinstance(val, (int, float)):
                     return f"numerals.{lvl_key}.{key} must be a number"
+    bands = payload.get("bands")
+    if bands is not None:
+        if not isinstance(bands, dict):
+            return "bands must be an object"
+        for band_key, entry in bands.items():
+            if band_key not in RANK_BADGE_V2_BAND_KEYS:
+                return f"Unknown band key: {band_key}"
+            if not isinstance(entry, dict):
+                return f"bands.{band_key} must be an object"
+            band_tile = entry.get("tile")
+            if band_tile is not None:
+                if not isinstance(band_tile, dict):
+                    return f"bands.{band_key}.tile must be an object"
+                for key, val in band_tile.items():
+                    if key not in RANK_BADGE_V2_TILE_KEYS:
+                        return f"Unknown bands.{band_key}.tile key: {key}"
+                    if not isinstance(val, (int, float)):
+                        return f"bands.{band_key}.tile.{key} must be a number"
+            shift = entry.get("numeralShift")
+            if shift is not None:
+                if not isinstance(shift, dict):
+                    return f"bands.{band_key}.numeralShift must be an object"
+                for key, val in shift.items():
+                    if key not in RANK_BADGE_V2_SHIFT_KEYS:
+                        return f"Unknown bands.{band_key}.numeralShift key: {key}"
+                    if not isinstance(val, (int, float)):
+                        return f"bands.{band_key}.numeralShift.{key} must be a number"
+            for extra in entry:
+                if extra not in ("tile", "numeralShift"):
+                    return f"Unknown bands.{band_key} key: {extra}"
     return None
 
 
