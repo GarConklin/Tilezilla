@@ -55,7 +55,7 @@ export function showRankAwardPopup({ rankId } = {}) {
       return;
     }
 
-    const n = Math.max(1, Math.min(9, Math.round(Number(rankId) || 1)));
+    const n = Math.max(1, Math.round(Number(rankId) || 1));
     const art = $('rankAwardArt');
     if (art) {
       art.src = rankAwardPlaqueSrc(n);

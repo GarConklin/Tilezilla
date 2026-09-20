@@ -1,4 +1,6 @@
-/** One-time dismissible passport update news (localStorage). */
+/** Passport update news — DB for registered users, localStorage for guests. */
+
+import { AUTH_API, fetchServerSession } from './tilezilla-auth.js';
 
 const NEWS_URL = '/data/passport_news.json';
 const STORAGE_PREFIX = 'tz-passport-news:';
@@ -34,10 +36,38 @@ export function dismissPassportNews(announcementId, userKey = currentUserKey()) 
   }
 }
 
-export async function loadPassportNews() {
+async function loadStaticPassportNews() {
   const res = await fetch(`${NEWS_URL}?t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to load passport news');
   return res.json();
+}
+
+async function fetchUnreadServerMessages() {
+  const session = await fetchServerSession();
+  if (!session?.ok || !session.user?.id) return null;
+
+  const res = await fetch(`${AUTH_API}/passport-messages.php`, {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error('Failed to load passport messages');
+  const data = await res.json();
+  if (!data?.success || !Array.isArray(data.messages)) return [];
+  return data.messages;
+}
+
+async function markServerMessageRead(messageId) {
+  try {
+    await fetch(`${AUTH_API}/passport-messages.php`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message_id: messageId }),
+    });
+  } catch {
+    /* offline — local dismiss still applied */
+  }
 }
 
 function ensureModal() {
@@ -69,23 +99,7 @@ function hideModal(root) {
   root.setAttribute('aria-hidden', 'true');
 }
 
-/**
- * Show passport news if active and not yet dismissed for this user.
- * Call when the passport / profile overlay opens.
- */
-export async function maybeShowPassportNews({ userKey } = {}) {
-  let news;
-  try {
-    news = await loadPassportNews();
-  } catch (err) {
-    console.warn('Passport news:', err);
-    return false;
-  }
-  if (!news?.active || !news?.id) return false;
-
-  const who = userKey ?? currentUserKey();
-  if (isPassportNewsDismissed(news.id, who)) return false;
-
+function showMessageModal(news, { onDismiss } = {}) {
   const root = ensureModal();
   const title = root.querySelector('#passportNewsTitle');
   const body = root.querySelector('#passportNewsBody');
@@ -94,7 +108,7 @@ export async function maybeShowPassportNews({ userKey } = {}) {
   if (body) body.textContent = news.body || '';
 
   const dismiss = () => {
-    dismissPassportNews(news.id, who);
+    onDismiss?.();
     hideModal(root);
   };
 
@@ -107,4 +121,42 @@ export async function maybeShowPassportNews({ userKey } = {}) {
   root.setAttribute('aria-hidden', 'false');
   btn?.focus?.();
   return true;
+}
+
+/**
+ * Show passport news if active and not yet dismissed for this user.
+ * Registered users: DB unread queue. Guests: static JSON + localStorage.
+ */
+export async function maybeShowPassportNews({ userKey } = {}) {
+  const who = userKey ?? currentUserKey();
+
+  try {
+    const serverMessages = await fetchUnreadServerMessages();
+    if (Array.isArray(serverMessages)) {
+      const next = serverMessages[0];
+      if (!next?.id) return false;
+      return showMessageModal(next, {
+        onDismiss: () => {
+          dismissPassportNews(String(next.id), who);
+          void markServerMessageRead(next.id);
+        },
+      });
+    }
+  } catch (err) {
+    console.warn('Passport news (server):', err);
+  }
+
+  let news;
+  try {
+    news = await loadStaticPassportNews();
+  } catch (err) {
+    console.warn('Passport news:', err);
+    return false;
+  }
+  if (!news?.active || !news?.id) return false;
+  if (isPassportNewsDismissed(news.id, who)) return false;
+
+  return showMessageModal(news, {
+    onDismiss: () => dismissPassportNews(news.id, who),
+  });
 }

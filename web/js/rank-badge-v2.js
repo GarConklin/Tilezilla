@@ -106,6 +106,13 @@ function getResolvedNumeral(layout, n, rank) {
   };
 }
 
+/** Avoid re-requesting the same asset when the stack is reapplied. */
+function setImgSrcIfChanged(img, src) {
+  if (!img || !src) return;
+  if (img.getAttribute('src') === src) return;
+  img.src = src;
+}
+
 /** Ensure stack has bg / tile / num img children (migrates legacy markup). */
 export function ensureRankBadgeV2Stack(stackEl) {
   if (!stackEl) return null;
@@ -120,6 +127,7 @@ export function ensureRankBadgeV2Stack(stackEl) {
     bg.className = 'badge-stack__bg';
     bg.alt = '';
     bg.draggable = false;
+    bg.decoding = 'async';
     stackEl.insertBefore(bg, stackEl.firstChild);
   }
   if (!tile) {
@@ -129,6 +137,7 @@ export function ensureRankBadgeV2Stack(stackEl) {
       || document.createElement('img');
     tile.classList.add('badge-stack__tile');
     tile.draggable = false;
+    tile.decoding = 'async';
     if (!tile.parentElement) stackEl.appendChild(tile);
   }
   if (!num) {
@@ -138,6 +147,7 @@ export function ensureRankBadgeV2Stack(stackEl) {
       || document.createElement('img');
     num.classList.add('badge-stack__num');
     num.draggable = false;
+    num.decoding = 'async';
     if (!num.parentElement) stackEl.appendChild(num);
   }
 
@@ -190,10 +200,11 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   const roman = romanForSubLevel(subLevel);
   const rankName = opts.rankName || `Rank ${rankId}`;
 
-  parts.bg.src = bgPathForRank(rankId);
-  parts.tile.src = tilePathForRank(rankId);
+  // Only the current BG + Nc + roman — never preload other ranks/bands.
+  setImgSrcIfChanged(parts.bg, bgPathForRank(rankId));
+  setImgSrcIfChanged(parts.tile, tilePathForRank(rankId));
   parts.tile.alt = `${rankName} rank`;
-  parts.num.src = numeralPath(subLevel, romanStyle);
+  setImgSrcIfChanged(parts.num, numeralPath(subLevel, romanStyle));
   parts.num.alt = `Sublevel ${roman}`;
 
   stackEl.dataset.rankId = String(rankId);

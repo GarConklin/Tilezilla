@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3d3a" />
+  <title>Tilezilla — Passport Messages</title>
+  <link rel="stylesheet" href="css/auth-screen.css" />
+  <link rel="stylesheet" href="css/admin-users.css" />
+  <link rel="stylesheet" href="css/admin-messages.css" />
+</head>
+<body class="admin-users-page admin-messages-page">
+  <div class="admin-users__bg tz-bg" aria-hidden="true">
+    <div class="tz-bg__sky"></div>
+    <div class="tz-bg__water">
+      <div class="tz-bg__water-layer tz-bg__water-layer--a"></div>
+      <div class="tz-bg__water-layer tz-bg__water-layer--b"></div>
+    </div>
+  </div>
+
+  <header class="admin-users__header">
+    <a class="admin-users__back" href="/tilezilla-v2.html">← Back to game</a>
+    <h1 class="admin-users__title">Passport messages</h1>
+    <p class="admin-users__subtitle" id="adminStatus">Checking access…</p>
+    <nav class="admin-messages__nav">
+      <a class="admin-users__back" href="/admin-users.html">Users</a>
+      <span aria-hidden="true">·</span>
+      <span>Messages</span>
+    </nav>
+  </header>
+
+  <main class="admin-users__main admin-messages__main" id="adminMain" hidden>
+    <section class="admin-users__panel">
+      <h2 class="admin-users__detail-title">New message</h2>
+      <form class="admin-users__form" id="createMessageForm">
+        <label>Title <input name="title" maxlength="200" required placeholder="Badge update" /></label>
+        <label>Body <textarea name="body" rows="4" required placeholder="What players should know…"></textarea></label>
+        <label class="admin-users__check"><input name="active" type="checkbox" checked /> Active (show to players who have not read it)</label>
+        <button type="submit" class="admin-users__btn admin-users__btn--primary">Publish message</button>
+      </form>
+    </section>
+
+    <section class="admin-users__panel">
+      <div class="admin-users__toolbar">
+        <h2 class="admin-users__detail-title" style="margin:0">All messages</h2>
+        <button type="button" class="admin-users__btn" id="refreshMessagesBtn">Refresh</button>
+      </div>
+      <div class="admin-messages__list" id="messagesList"></div>
+    </section>
+  </main>
+
+  <p class="admin-users__flash" id="adminFlash" hidden role="status"></p>
+
+  <script type="module" src="./js/admin-messages.js"></script>
+</body>
+</html>

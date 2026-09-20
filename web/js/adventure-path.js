@@ -452,42 +452,43 @@ function findPuzzleInPath(path, levelId) {
 
 export const RANK_AWARD_PLAQUE_COUNT = 9;
 
+/** Band-start ranks that still get the plaque fanfare after the early ranks. */
+export const RANK_AWARD_BAND_MILESTONES = Object.freeze([11, 21, 31, 41, 51]);
 
-
-/** Rank advancement plaque art — RankAwardPlacque1.png … RankAwardPlacque9.png */
-
-export function rankAwardPlaqueSrc(rankId) {
-
-  const n = Math.max(1, Math.min(RANK_AWARD_PLAQUE_COUNT, Math.round(Number(rankId) || 1)));
-
-  return `/img/ranks/RankAwardPlacque${n}.png`;
-
+/**
+ * Fanfare for early ranks 2–9 (plaque art 1–9), then only at band crossings
+ * 11 / 21 / 31 / 41 / 51 — not every rank after that.
+ */
+export function shouldShowRankAwardForRank(rankId) {
+  const r = Math.round(Number(rankId) || 0);
+  if (r >= 2 && r <= 9) return true;
+  return RANK_AWARD_BAND_MILESTONES.includes(r);
 }
 
-
+/** Rank advancement plaque art — RankAwardPlacque1.png … RankAwardPlacque9.png */
+export function rankAwardPlaqueSrc(rankId) {
+  const r = Math.max(1, Math.round(Number(rankId) || 1));
+  let n;
+  if (r <= RANK_AWARD_PLAQUE_COUNT) {
+    n = r;
+  } else {
+    // Band milestones reuse plaque art by decade (11→2 … 51→6).
+    n = Math.max(1, Math.min(RANK_AWARD_PLAQUE_COUNT, Math.floor((r - 1) / 10) + 1));
+  }
+  return `/img/ranks/RankAwardPlacque${n}.png`;
+}
 
 /** Next rank when advancing after this level crosses a rank boundary; else null. */
-
 export function getRankAdvancementAfterLevel(path, levelId, progress, levelContext = {}) {
-
   if (!path || !levelId || !progress) return null;
-
   const currentHit = findPuzzleInPath(path, levelId);
-
   if (!currentHit?.step) return null;
-
   const currentRank = currentHit.step.rankId;
-
   const nextLoc = findNextUnsolved(progress, path, { afterLevelId: levelId, levelContext });
-
   if (!nextLoc?.step) return null;
-
   const nextRank = nextLoc.step.rankId;
-
   if (nextRank > currentRank) return nextRank;
-
   return null;
-
 }
 
 

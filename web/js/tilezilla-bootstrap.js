@@ -178,6 +178,7 @@ import {
   findNextUnsolved,
   getPuzzleRequirement,
   getRankAdvancementAfterLevel,
+  shouldShowRankAwardForRank,
   getAdvIdForLevel,
   getRankPanelState,
   isAdventurePuzzleComplete,
@@ -658,7 +659,7 @@ async function maybeShowRankAwardThenAdvance(app) {
     app?.progress,
     levelContext,
   );
-  if (rankId) {
+  if (rankId && shouldShowRankAwardForRank(rankId)) {
     await showRankAwardPopup({ rankId });
   }
   await advanceAdventurePath(app);
