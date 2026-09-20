@@ -2668,6 +2668,95 @@ button {
   height: var(--tz-rank-badge-h);
 }
 
+/* Layered badge v2 (BG + Nc + roman) — art box scaled by --preview-scale */
+.tz-rank-badge-stack.tz-rank-badge-v2,
+.tz-rank-badge-v2.badge-stack {
+  position: relative;
+  width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
+  height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
+  flex: 0 0 auto;
+  max-width: none;
+}
+
+.tz-rank-panel .tz-rank-badge-stack.tz-rank-badge-v2 {
+  position: absolute;
+  top: var(--tz-rank-badge-top);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.badge-stack__bg,
+.badge-stack__tile,
+.badge-stack__num {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.badge-stack__bg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.badge-stack__tile {
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: calc(100% * var(--tile-scale, 0.9));
+  max-width: 96%;
+  object-fit: contain;
+  transform:
+    translate(
+      calc(-50% + var(--tile-nudge-x, 0) * var(--preview-scale, 1) * 1px),
+      calc(-50% + var(--tile-nudge-y, 0) * var(--preview-scale, 1) * 1px)
+    );
+  transform-origin: center center;
+}
+
+/* Override legacy flat-badge img rules inside a v2 stack */
+.tz-rank-badge-v2 .tz-rank-badge__img.badge-stack__tile,
+.tz-rank-badge-v2 .badge-stack__tile {
+  max-width: 96%;
+  height: calc(100% * var(--tile-scale, 0.9));
+  object-position: center center;
+}
+
+.badge-stack__num {
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: calc(var(--num-h, 52) * var(--preview-scale, 1) * 1px);
+  object-fit: contain;
+  transform:
+    translate(
+      calc(-50% + var(--num-nudge-x, 0) * var(--preview-scale, 1) * 1px),
+      calc(-50% + var(--num-nudge-y, 0) * var(--preview-scale, 1) * 1px)
+    )
+    scaleX(var(--num-w-scale, 1));
+  transform-origin: center center;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+  z-index: 2;
+}
+
+.tz-rank-badge-v2 .tz-rank-sublevel__img.badge-stack__num,
+.tz-rank-badge-v2 .badge-stack__num {
+  /* cancel legacy anchor-at-bottom-of-badge positioning */
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+}
+
+.tz-preview-v2-user-data__badge-stack.tz-rank-badge-v2 {
+  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
+  top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-badge-stack-h-art, 42) / var(--tz-user-data-art-h, 72) * 100%);
+  /* percent slot; JS sets --preview-scale from rendered height */
+}
+
 .tz-rank-badge__img {
   display: block;
   width: auto;
@@ -9761,3 +9850,70 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 /* Small phones scale the whole stage via JS zoom; layout numbers stay at 390×844 */
 
 /* zoom / scale applied on .tz-stage by tilezilla-bootstrap.js */
+
+/* Passport one-time update news */
+.tz-passport-news {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.tz-passport-news[hidden] {
+  display: none !important;
+}
+
+.tz-passport-news__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 10, 0.55);
+}
+
+.tz-passport-news__card {
+  position: relative;
+  z-index: 1;
+  width: min(340px, 92vw);
+  padding: 22px 20px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 95, 0.45);
+  background: linear-gradient(165deg, #2a3a34 0%, #1a2420 100%);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  color: var(--tz-cream, #f3efe4);
+  text-align: center;
+}
+
+.tz-passport-news__title {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tz-gold-bright, #e8b923);
+}
+
+.tz-passport-news__body {
+  margin: 0 0 18px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(243, 239, 228, 0.92);
+}
+
+.tz-passport-news__btn {
+  appearance: none;
+  border: 1px solid rgba(212, 175, 95, 0.55);
+  background: rgba(61, 122, 114, 0.45);
+  color: var(--tz-cream, #f3efe4);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tz-passport-news__btn:hover,
+.tz-passport-news__btn:focus-visible {
+  background: rgba(61, 122, 114, 0.7);
+  outline: none;
+}

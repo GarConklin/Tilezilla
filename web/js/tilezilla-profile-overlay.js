@@ -14,6 +14,7 @@ import {
 import { refreshProfileOverlayLayoutFromDisk } from './auth-screen-layout.js';
 import { refreshProfilePassportStats } from './profile-passport-data.js';
 import { refreshProfileRankIcons } from './profile-rank-icons.js';
+import { maybeShowPassportNews } from './passport-news.js';
 
 function $(id) {
   return document.getElementById(id);
@@ -139,6 +140,9 @@ export async function openProfileOverlay() {
   openProfileOverlayPopup();
   void refreshProfileOverlayStats(overlayRoot || document).catch((err) => {
     console.warn('Profile overlay stats:', err);
+  });
+  void maybeShowPassportNews().catch((err) => {
+    console.warn('Passport news:', err);
   });
 }
 

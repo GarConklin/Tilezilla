@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "New rank badge stack (prep only). BG bands + Nc tiles + slvr-1..15. Progression: 15 puzzles per rank, then next rank at I.",
+  "note": "Live rank badge stack. BG bands + Nc tiles + gld/slvr 1-15. Tuned via rank-badge-v2-tuner.",
   "art": {
     "bgW": 115,
     "bgH": 145
@@ -16,5 +16,81 @@
     "nudgeY": 6,
     "wScale": 1
   },
-  "numerals": {}
+  "numerals": {
+    "1": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38,
+      "wScale": 0.97
+    },
+    "2": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "3": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "4": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "5": {
+      "h": 21,
+      "nudgeY": 38
+    },
+    "6": {
+      "h": 20,
+      "nudgeY": 38
+    },
+    "7": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "8": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "9": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "10": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "11": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "12": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "13": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "14": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    },
+    "15": {
+      "h": 20,
+      "nudgeX": 1,
+      "nudgeY": 38
+    }
+  },
+  "bands": {}
 }

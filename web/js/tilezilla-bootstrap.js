@@ -166,11 +166,10 @@ import { initDevelopmentMenu } from './tilezilla-development-menu.js';
 import { syncDevUserUi } from './tilezilla-dev-user.js';
 import { syncAdminUi } from './tilezilla-admin.js';
 import {
-  applySublevelIconElement,
   clearSublevelLayoutCache,
-  loadSublevelIconLayout,
   romanForSubLevel,
 } from './sublevel-icon.js';
+import { applyRankBadgeV2Async } from './rank-badge-v2.js';
 import {
   adventureLevelContext,
   adventureSolveCount,
@@ -928,29 +927,29 @@ async function updateRankPanel(app) {
   const progressTrack = document.querySelector('.tz-rank-panel .tz-progress__track');
   const roman = romanForSubLevel(rankState.subLevel);
 
-  if (badge) {
-    badge.src = rank.badge_image;
-    badge.alt = `${rank.rank_name} rank`;
+  const badgeOpts = {
+    rankId: rank?.rank_id || 1,
+    subLevel: rankState.subLevel,
+    romanStyle: rank?.sublevel_badge || 'gld',
+    rankName: rank?.rank_name || 'Wanderer',
+  };
+
+  let usedV2 = false;
+  if (subLevelEl) {
+    usedV2 = await applyRankBadgeV2Async(subLevelEl, badgeOpts);
   }
-  if (subIcon) {
-    try {
-      const layout = await loadSublevelIconLayout();
-      applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, layout);
-      if (MAIN_V2_SHELL) {
-        const v2Sub = $('previewV2SubLevelIcon');
-        if (v2Sub) applySublevelIconElement(v2Sub, rankState.subLevel, rank.sublevel_badge, layout);
-      }
-    } catch (err) {
-      console.warn('Sublevel icon layout:', err);
-      applySublevelIconElement(subIcon, rankState.subLevel, rank.sublevel_badge, null);
-      if (MAIN_V2_SHELL) {
-        const v2Sub = $('previewV2SubLevelIcon');
-        if (v2Sub) applySublevelIconElement(v2Sub, rankState.subLevel, rank.sublevel_badge, null);
-      }
+  if (!usedV2) {
+    if (badge && rank?.badge_image) {
+      badge.src = rank.badge_image;
+      badge.alt = `${rank.rank_name} rank`;
     }
-    subIcon.alt = `Sublevel ${roman}`;
+    if (subIcon) {
+      subIcon.src = `/img/ranks/${rank?.sublevel_badge || 'gld'}-${Math.max(1, Math.min(15, rankState.subLevel || 1))}.png`;
+      subIcon.alt = `Sublevel ${roman}`;
+    }
+    if (subLevelEl) subLevelEl.setAttribute('aria-label', `Sublevel ${roman}`);
   }
-  if (subLevelEl) subLevelEl.setAttribute('aria-label', `Sublevel ${roman}`);
+
   if (fill) fill.style.width = `${pct}%`;
   if (text) text.textContent = `${pct}%`;
   if (progressTrack) {
@@ -962,23 +961,25 @@ async function updateRankPanel(app) {
   }
 
   if (MAIN_V2_SHELL) {
-    const v2Badge = $('previewV2RankBadge');
     const v2Pct = $('previewV2ProgressPct');
     const v2Fill = $('previewV2RankProgressFill');
     const v2Track = document.querySelector('.tz-preview-v2-progress__track');
-    const v2Sub = $('previewV2SubLevelIcon');
     const v2SubWrap = $('previewV2SubLevel');
-    if (v2Badge && badge) {
-      v2Badge.src = badge.src;
-      v2Badge.alt = badge.alt;
-    }
-    if (v2Sub && subIcon) {
-      v2Sub.src = subIcon.src;
-      v2Sub.alt = subIcon.alt;
-      v2Sub.style.cssText = subIcon.style.cssText;
-    }
-    if (v2SubWrap && subLevelEl) {
-      v2SubWrap.setAttribute('aria-label', subLevelEl.getAttribute('aria-label') || `Sublevel ${roman}`);
+    if (v2SubWrap) {
+      const ok = await applyRankBadgeV2Async(v2SubWrap, badgeOpts);
+      if (!ok && usedV2 === false) {
+        /* legacy copy already handled above for status; mirror paths */
+        const v2Badge = $('previewV2RankBadge');
+        const v2Sub = $('previewV2SubLevelIcon');
+        if (v2Badge && badge) {
+          v2Badge.src = badge.src;
+          v2Badge.alt = badge.alt;
+        }
+        if (v2Sub && subIcon) {
+          v2Sub.src = subIcon.src;
+          v2Sub.alt = subIcon.alt;
+        }
+      }
     }
     if (v2Fill) v2Fill.style.width = `${pct}%`;
     if (v2Pct) v2Pct.textContent = `${pct}%`;

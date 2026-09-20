@@ -46,18 +46,21 @@
         <section class="tz-status" aria-label="Game status">
           <article class="tz-panel tz-rank-panel" aria-label="Rank">
             <div class="tz-rank-panel__body">
-              <div class="tz-rank-badge-stack" id="rankSubLevel" aria-label="Sublevel I">
+              <div class="tz-rank-badge-stack tz-rank-badge-v2 badge-stack" id="rankSubLevel" aria-label="Sublevel I">
+                <img class="badge-stack__bg" alt="" draggable="false" />
                 <img
                   id="rankBadgeImg"
-                  class="tz-rank-badge__img"
-                  src="/img/ranks/Wanderer.png"
+                  class="badge-stack__tile tz-rank-badge__img"
+                  src="/img/ranks/1c.png"
                   alt="Wanderer rank"
+                  draggable="false"
                 />
                 <img
                   id="rankSubLevelIcon"
-                  class="tz-rank-sublevel__img"
+                  class="badge-stack__num tz-rank-sublevel__img"
                   src="/img/ranks/gld-1.png"
                   alt="Sublevel I"
+                  draggable="false"
                 />
               </div>
               <div class="tz-rank-panel__lower">
@@ -156,20 +159,23 @@
         <section class="tz-preview-section" aria-label="Tile preview">
           <div class="tz-preview-frame">
             <div class="tz-preview-v2-data tz-preview-v2-user-data" aria-label="User rank data" role="button" tabindex="0">
-              <div class="tz-preview-v2-user-data__badge-stack" id="previewV2SubLevel" aria-label="Sublevel I">
+              <div class="tz-preview-v2-user-data__badge-stack tz-rank-badge-v2 badge-stack" id="previewV2SubLevel" aria-label="Sublevel I">
+                <img class="badge-stack__bg" alt="" draggable="false" />
                 <img
                   id="previewV2RankBadge"
-                  class="tz-preview-v2-user-data__badge"
-                  src="/img/ranks/Wanderer.png"
+                  class="badge-stack__tile tz-preview-v2-user-data__badge"
+                  src="/img/ranks/1c.png"
                   alt=""
+                  draggable="false"
+                />
+                <img
+                  id="previewV2SubLevelIcon"
+                  class="badge-stack__num tz-preview-v2-user-data__sublevel"
+                  src="/img/ranks/gld-1.png"
+                  alt=""
+                  draggable="false"
                 />
               </div>
-              <img
-                id="previewV2SubLevelIcon"
-                class="tz-preview-v2-user-data__sublevel"
-                src="/img/ranks/gld-1.png"
-                alt=""
-              />
               <div
                 class="tz-preview-v2-progress__track tz-preview-v2-user-data__progress-track"
                 role="progressbar"
@@ -728,9 +734,10 @@
         <p class="tz-profile-dialog__name" id="profileOverlayName" data-profile-slot="profileName">Explorer</p>
         <div class="auth-screen__profile-rank-stack" aria-label="Rank and sublevel">
           <div class="tz-preview-v2-user-data__badge-stack">
-            <div class="tz-rank-badge-stack">
-              <img class="tz-rank-badge__img" id="profileOverlayRankBadge" alt="" />
-              <img class="tz-rank-sublevel__img" id="profileOverlaySublevelIcon" alt="" />
+            <div class="tz-rank-badge-stack tz-rank-badge-v2 badge-stack" id="profileOverlayRankStack">
+              <img class="badge-stack__bg" alt="" draggable="false" />
+              <img class="badge-stack__tile tz-rank-badge__img" id="profileOverlayRankBadge" alt="" draggable="false" />
+              <img class="badge-stack__num tz-rank-sublevel__img" id="profileOverlaySublevelIcon" alt="" draggable="false" />
             </div>
           </div>
         </div>

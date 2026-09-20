@@ -199,14 +199,10 @@ async function refreshPuzzleInfoFields() {
 
     const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
 
-    if (badge && rank?.badge_image) {
-
-      badge.src = rank.badge_image;
-
+    if (badge && rank) {
+      badge.src = `/img/ranks/${rank.rank_id || 1}c.png`;
       badge.alt = `${rank.rank_name || 'Rank'} badge`;
-
       badge.hidden = false;
-
     }
 
     if (roman) roman.textContent = romanForSubLevel(rankState.subLevel);

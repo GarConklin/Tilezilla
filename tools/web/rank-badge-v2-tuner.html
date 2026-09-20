@@ -891,6 +891,11 @@
         els.status.textContent = quiet
           ? 'Auto-saved to data/rank_badge_v2_layout.json'
           : 'Saved to data/rank_badge_v2_layout.json';
+        try {
+          window.dispatchEvent(new CustomEvent('tilezilla:rank-badge-v2-layout-saved'));
+        } catch {
+          /* ignore */
+        }
         return true;
       } catch (err) {
         els.status.textContent = `Save failed — ${err.message || err}`;
