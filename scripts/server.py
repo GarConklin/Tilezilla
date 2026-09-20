@@ -139,6 +139,29 @@ def adventure_path_api_response() -> tuple[int, dict]:
     }
 
 
+# Adventure path is ~2MB and was rebuilt from MySQL on every request (no gzip).
+# Cache encoded bodies in-process; weekly soft restart clears them.
+_adventure_path_bodies: dict[str, bytes] | None = None
+
+
+def clear_adventure_path_cache() -> None:
+    global _adventure_path_bodies
+    _adventure_path_bodies = None
+
+
+def adventure_path_response_bodies() -> tuple[bytes, bytes]:
+    """Return (raw_json_bytes, gzip_bytes) for GET /api/adventure/path."""
+    global _adventure_path_bodies
+    if _adventure_path_bodies is not None:
+        return _adventure_path_bodies["raw"], _adventure_path_bodies["gzip"]
+
+    status, payload = adventure_path_api_response()
+    raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    gz = gzip.compress(raw, compresslevel=6) if status == 200 else raw
+    _adventure_path_bodies = {"raw": raw, "gzip": gz}
+    return raw, gz
+
+
 def system_info_api_response() -> tuple[int, dict]:
     info = load_system_info_from_mysql(ROOT)
     if info:
@@ -442,12 +465,20 @@ class Handler(SimpleHTTPRequestHandler):
             if self._send_gzip_file(Path(self.translate_path(req_path))):
                 return
         if parsed.path == "/api/adventure/path":
-            status, payload = adventure_path_api_response()
-            body = json.dumps(payload).encode("utf-8")
-            self.send_response(status)
+            raw, gz = adventure_path_response_bodies()
+            accept = self.headers.get("Accept-Encoding", "")
+            use_gzip = "gzip" in accept.lower() and len(gz) < len(raw)
+            body = gz if use_gzip else raw
+            self.send_response(200)
             self.send_header("Content-Type", "application/json")
+            if use_gzip:
+                self.send_header("Content-Encoding", "gzip")
+                self.send_header("Vary", "Accept-Encoding")
             self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
+            # Path changes only on map import — allow short browser/CDN reuse.
+            self.send_header("Cache-Control", "public, max-age=300")
+            # Bypass Handler.end_headers no-store for this payload.
+            SimpleHTTPRequestHandler.end_headers(self)
             self.wfile.write(body)
             return
         if req_path.startswith("/api/level/"):

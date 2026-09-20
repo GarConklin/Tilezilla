@@ -289,7 +289,7 @@ export function buildAdventurePath(entries) {
 
 export async function loadAdventurePathFromJson() {
   try {
-    const res = await fetch('/data/adventure_path.json', { cache: 'no-store' });
+    const res = await fetch('/data/adventure_path.json', { cache: 'default' });
     if (!res.ok) return null;
     const doc = await res.json();
     return adventurePathFromDocument(doc);
@@ -301,7 +301,7 @@ export async function loadAdventurePathFromJson() {
 
 export async function loadAdventurePathFromMysql() {
   try {
-    const res = await fetch('/api/adventure/path', { cache: 'no-store' });
+    const res = await fetch('/api/adventure/path', { cache: 'default' });
     if (!res.ok) return null;
     const payload = await res.json();
     if (!payload?.ok || !payload?.path) return null;
@@ -326,15 +326,16 @@ export async function loadAdventurePath() {
 
   if (pathCache) return pathCache;
 
-  const mysqlPath = await loadAdventurePathFromMysql();
-  if (mysqlPath?.flat?.length) {
-    pathCache = mysqlPath;
-    return pathCache;
-  }
-
+  // Prefer static gzipped JSON when present (nginx/python gzip /data/*.json).
   const jsonPath = await loadAdventurePathFromJson();
   if (jsonPath?.flat?.length) {
     pathCache = jsonPath;
+    return pathCache;
+  }
+
+  const mysqlPath = await loadAdventurePathFromMysql();
+  if (mysqlPath?.flat?.length) {
+    pathCache = mysqlPath;
     return pathCache;
   }
 
