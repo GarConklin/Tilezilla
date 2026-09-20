@@ -13,6 +13,7 @@ class LevelSystemStep(TypedDict):
     sub_level: int
     levels_required: int
     adv_id_start: int
+    challenge_adv_id: int
 
 
 class ProgressionRow(TypedDict):
@@ -46,6 +47,12 @@ def load_level_system_steps(csv_path: Path | None = None, repo_root: Path | None
             sub = (raw.get("Sub_Lvl") or raw.get("sub_lvl") or "").strip()
             amt = (raw.get("pzzle_amt") or raw.get("Pzzle_amt") or "").strip()
             adv_start = (raw.get("Adv_ID_Start") or raw.get("adv_id_start") or "").strip()
+            challenge = (
+                raw.get("Challenge_Adv_ID")
+                or raw.get("challenge_adv_id")
+                or raw.get("Adv_ID_End")
+                or ""
+            ).strip()
             if not base or not sub or not amt:
                 continue
             if not re.match(r"^L\d+$", base, re.I) or not sub.isdigit():
@@ -55,12 +62,20 @@ def load_level_system_steps(csv_path: Path | None = None, repo_root: Path | None
                 raise ValueError(
                     f"Non-positive pzzle_amt at {base}-{sub}: {levels_required}"
                 )
+            start_id = int(adv_start) if adv_start else 0
+            if challenge:
+                challenge_id = int(challenge)
+            elif start_id:
+                challenge_id = start_id + levels_required - 1
+            else:
+                challenge_id = 0
             rows.append(
                 {
                     "rank_id": parse_rank_code(base),
                     "sub_level": int(sub),
                     "levels_required": levels_required,
-                    "adv_id_start": int(adv_start) if adv_start else 0,
+                    "adv_id_start": start_id,
+                    "challenge_adv_id": challenge_id,
                 }
             )
 
