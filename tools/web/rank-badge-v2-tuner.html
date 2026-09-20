@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="/tools/js/dev-localhost-ipv4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tilezilla — Rank badge v2 tuner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #f4ecd8;
+      background: #142c28;
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+      color: #e8b923;
+    }
+
+    .lead {
+      margin: 0 0 16px;
+      font-size: 0.82rem;
+      color: #a8b8b4;
+      line-height: 1.45;
+      max-width: 58rem;
+    }
+
+    .lead a { color: #8fd49a; }
+    .lead code {
+      font-size: 0.78em;
+      color: #c4a35a;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(20, 48, 44, 0.85);
+      border: 1.5px solid rgba(196, 163, 90, 0.35);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4a35a;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      color: #a8b8b4;
+      margin-bottom: 4px;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #f4ecd8;
+      font: inherit;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .row output {
+      font-family: ui-monospace, monospace;
+      font-size: 0.72rem;
+      color: #8fd49a;
+      min-width: 3.2rem;
+      text-align: right;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .level-btn {
+      padding: 6px 2px;
+      border-radius: 5px;
+      border: 1px solid rgba(196, 163, 90, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.68rem;
+      cursor: pointer;
+    }
+
+    .level-btn:hover { border-color: rgba(232, 185, 35, 0.5); }
+
+    .level-btn.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.15);
+    }
+
+    .level-btn.is-dirty::after {
+      content: ' •';
+      color: #8fd49a;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .actions button {
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.4);
+      background: rgba(45, 90, 61, 0.55);
+      color: #f4ecd8;
+      font: inherit;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .actions button:hover { border-color: #e8b923; }
+    .actions button.danger {
+      background: rgba(90, 40, 40, 0.55);
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: #8fd49a;
+      min-height: 1.2em;
+    }
+
+    .mock-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 12px 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 2px dashed rgba(196, 163, 90, 0.35);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+
+    .mock-stage:focus {
+      border-color: #e8b923;
+      box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.25);
+    }
+
+    .mock-stage__hint {
+      margin: 0;
+      font-size: 0.68rem;
+      color: #a8b8b4;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .badge-stack {
+      position: relative;
+      width: calc(var(--art-w) * var(--preview-scale) * 1px);
+      height: calc(var(--art-h) * var(--preview-scale) * 1px);
+      flex: 0 0 auto;
+    }
+
+    .badge-stack__bg,
+    .badge-stack__tile,
+    .badge-stack__num {
+      position: absolute;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .badge-stack__bg {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+
+    .badge-stack__tile {
+      left: 50%;
+      top: 50%;
+      width: auto;
+      height: calc(100% * var(--tile-scale, 0.9));
+      max-width: 96%;
+      object-fit: contain;
+      transform:
+        translate(
+          calc(-50% + var(--tile-nudge-x, 0) * var(--preview-scale) * 1px),
+          calc(-50% + var(--tile-nudge-y, 0) * var(--preview-scale) * 1px)
+        );
+    }
+
+    .badge-stack__num {
+      left: 50%;
+      top: 50%;
+      width: auto;
+      height: calc(var(--num-h, 52) * var(--preview-scale) * 1px);
+      object-fit: contain;
+      transform:
+        translate(
+          calc(-50% + var(--num-nudge-x, 0) * var(--preview-scale) * 1px),
+          calc(-50% + var(--num-nudge-y, 0) * var(--preview-scale) * 1px)
+        )
+        scaleX(var(--num-w-scale, 1));
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+    }
+
+    .readout {
+      margin: 0;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      color: #8fd49a;
+      text-align: center;
+    }
+
+    .readout strong { color: #e8b923; }
+
+    .keys {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.65rem;
+      color: #7a8a86;
+      line-height: 1.5;
+    }
+
+    .strip {
+      margin-top: 14px;
+    }
+
+    .strip h2 { margin-bottom: 8px; }
+
+    .strip-scroll {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .strip-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+    }
+
+    .strip-item:hover { border-color: rgba(232, 185, 35, 0.4); }
+    .strip-item.is-active {
+      border-color: #e8b923;
+      background: rgba(232, 185, 35, 0.1);
+    }
+
+    .strip-item .mini {
+      --preview-scale: 1.15;
+      width: calc(var(--art-w) * var(--preview-scale) * 1px);
+      height: calc(var(--art-h) * var(--preview-scale) * 1px);
+    }
+
+    .strip-item span {
+      font-size: 0.62rem;
+      color: #a8b8b4;
+    }
+
+    .record-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.68rem;
+      margin-top: 8px;
+    }
+
+    .record-table th,
+    .record-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid rgba(196, 163, 90, 0.18);
+      text-align: right;
+    }
+
+    .record-table th:first-child,
+    .record-table td:first-child {
+      text-align: left;
+    }
+
+    .record-table tr.is-active td {
+      background: rgba(232, 185, 35, 0.1);
+      color: #e8b923;
+    }
+
+    .record-table tr {
+      cursor: pointer;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.3);
+      background: rgba(0, 0, 0, 0.35);
+      color: #c8e6c9;
+      font-family: ui-monospace, monospace;
+      font-size: 0.68rem;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rank badge v2 tuner</h1>
+  <p class="lead">
+    Step 1 — compose <code>BG</code> + <code>Nc</code> tile + silver roman <code>slvr-1…15</code>.
+    Not wired into the game yet. Planned climb: <strong>15 puzzles → next roman</strong>, then next rank back at I
+    (55 ranks × 15). Tune numeral placement here; tile nudge/scale shared for all ranks.
+    <a href="/tools/tuners.html">Tuners</a> ·
+    <a href="/tools/rank-sublevel-tuner.html">Old sublevel tuner</a>
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Rank &amp; roman</h2>
+      <label for="rankSelect">Rank (1–55)</label>
+      <select id="rankSelect"></select>
+
+      <label>Sublevel (roman I–XV)</label>
+      <div class="level-grid" id="levelGrid"></div>
+
+      <h2>Silver numeral</h2>
+      <div class="row">
+        <label for="numH">Height (art px)</label>
+        <output id="numHOut">52</output>
+      </div>
+      <input type="range" id="numH" min="20" max="110" step="1" value="52" />
+
+      <div class="row">
+        <label for="numX">Nudge X</label>
+        <output id="numXOut">0</output>
+      </div>
+      <input type="range" id="numX" min="-40" max="40" step="1" value="0" />
+
+      <div class="row">
+        <label for="numY">Nudge Y</label>
+        <output id="numYOut">0</output>
+      </div>
+      <input type="range" id="numY" min="-50" max="50" step="1" value="0" />
+
+      <div class="row">
+        <label for="numW">Width scale</label>
+        <output id="numWOut">1.00</output>
+      </div>
+      <input type="range" id="numW" min="0.5" max="1.5" step="0.01" value="1" />
+
+      <h2>Rank tile (shared)</h2>
+      <div class="row">
+        <label for="tileScale">Tile scale</label>
+        <output id="tileScaleOut">0.90</output>
+      </div>
+      <input type="range" id="tileScale" min="0.6" max="1.15" step="0.01" value="0.9" />
+
+      <div class="row">
+        <label for="tileX">Tile nudge X</label>
+        <output id="tileXOut">0</output>
+      </div>
+      <input type="range" id="tileX" min="-20" max="20" step="1" value="0" />
+
+      <div class="row">
+        <label for="tileY">Tile nudge Y</label>
+        <output id="tileYOut">0</output>
+      </div>
+      <input type="range" id="tileY" min="-30" max="30" step="1" value="0" />
+
+      <div class="row">
+        <label for="previewScale">Preview zoom</label>
+        <output id="previewScaleOut">3.0</output>
+      </div>
+      <input type="range" id="previewScale" min="1.5" max="5" step="0.1" value="3" />
+
+      <div class="actions">
+        <button type="button" id="btnSave">Save JSON</button>
+        <button type="button" id="btnResetNum">Reset this roman</button>
+        <button type="button" id="btnCopyDefaults" class="danger">Copy → all 15</button>
+      </div>
+      <p class="status" id="status"></p>
+
+      <h2>Per-roman values</h2>
+      <table class="record-table">
+        <thead>
+          <tr><th>#</th><th>h</th><th>x</th><th>y</th><th>w</th></tr>
+        </thead>
+        <tbody id="recordBody"></tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="panel mock-stage" id="stage" tabindex="0">
+        <div
+          class="badge-stack"
+          id="badgeStack"
+          style="--art-w: 115; --art-h: 145; --preview-scale: 3;"
+        >
+          <img class="badge-stack__bg" id="imgBg" alt="" draggable="false" />
+          <img class="badge-stack__tile" id="imgTile" alt="" draggable="false" />
+          <img class="badge-stack__num" id="imgNum" alt="" draggable="false" />
+        </div>
+        <p class="readout" id="readout">—</p>
+        <p class="mock-stage__hint">
+          Drag to nudge · arrows nudge · [ ] height · - = width · Shift+←/→ roman · PgUp/PgDn rank
+        </p>
+        <ul class="keys">
+          <li>BG bands: 1–10 · 11–20 · 21–30 · 31–40 · 41–50 · 51–55</li>
+          <li>Tiles: <code>img/ranks/1c.png</code> … <code>55c.png</code></li>
+          <li>Silver: <code>slvr-1.png</code> … <code>slvr-15.png</code> (I–XV)</li>
+        </ul>
+      </div>
+
+      <div class="panel strip">
+        <h2>All romans on this rank</h2>
+        <div class="strip-scroll" id="romanStrip"></div>
+      </div>
+
+      <div class="panel strip">
+        <h2>Sample ranks at current roman</h2>
+        <div class="strip-scroll" id="rankStrip"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Layout JSON</h2>
+        <textarea id="jsonOut" readonly spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const ROMANS = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV'];
+    const SAMPLE_RANKS = [1, 5, 10, 11, 15, 20, 21, 30, 31, 40, 41, 50, 51, 55];
+    const NUDGE_STEP = 1;
+    const H_STEP = 1;
+    const W_STEP = 0.02;
+    const LAYOUT_URL = '/data/rank_badge_v2_layout.json';
+    const SAVE_URL = '/api/dev/save-rank-badge-v2-layout';
+
+    const DEFAULTS = {
+      version: 1,
+      art: { bgW: 115, bgH: 145 },
+      tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
+      defaults: { h: 52, nudgeX: 0, nudgeY: 6, wScale: 1 },
+      numerals: {},
+    };
+
+    let layout = structuredClone(DEFAULTS);
+    let rankId = 1;
+    let subLevel = 1;
+    let previewScale = 3;
+    let dirty = new Set();
+    let saveTimer = null;
+    let drag = null;
+
+    const els = {
+      rankSelect: document.getElementById('rankSelect'),
+      levelGrid: document.getElementById('levelGrid'),
+      stage: document.getElementById('stage'),
+      badgeStack: document.getElementById('badgeStack'),
+      imgBg: document.getElementById('imgBg'),
+      imgTile: document.getElementById('imgTile'),
+      imgNum: document.getElementById('imgNum'),
+      readout: document.getElementById('readout'),
+      status: document.getElementById('status'),
+      romanStrip: document.getElementById('romanStrip'),
+      rankStrip: document.getElementById('rankStrip'),
+      recordBody: document.getElementById('recordBody'),
+      jsonOut: document.getElementById('jsonOut'),
+      numH: document.getElementById('numH'),
+      numX: document.getElementById('numX'),
+      numY: document.getElementById('numY'),
+      numW: document.getElementById('numW'),
+      tileScale: document.getElementById('tileScale'),
+      tileX: document.getElementById('tileX'),
+      tileY: document.getElementById('tileY'),
+      previewScale: document.getElementById('previewScale'),
+      numHOut: document.getElementById('numHOut'),
+      numXOut: document.getElementById('numXOut'),
+      numYOut: document.getElementById('numYOut'),
+      numWOut: document.getElementById('numWOut'),
+      tileScaleOut: document.getElementById('tileScaleOut'),
+      tileXOut: document.getElementById('tileXOut'),
+      tileYOut: document.getElementById('tileYOut'),
+      previewScaleOut: document.getElementById('previewScaleOut'),
+      btnSave: document.getElementById('btnSave'),
+      btnResetNum: document.getElementById('btnResetNum'),
+      btnCopyDefaults: document.getElementById('btnCopyDefaults'),
+    };
+
+    function bgForRank(r) {
+      if (r <= 10) return '/img/ranks/1-10bg.png';
+      if (r <= 20) return '/img/ranks/11-20bg.png';
+      if (r <= 30) return '/img/ranks/21-30bg.png';
+      if (r <= 40) return '/img/ranks/31-40bg.png';
+      if (r <= 50) return '/img/ranks/41-50bg.png';
+      return '/img/ranks/51-55bg.png';
+    }
+
+    function tilePath(r) {
+      return `/img/ranks/${r}c.png`;
+    }
+
+    function numPath(n) {
+      return `/img/ranks/slvr-${n}.png`;
+    }
+
+    function romanFor(n) {
+      return ROMANS[n - 1] || String(n);
+    }
+
+    function getNumeral(n) {
+      const key = String(n);
+      const def = { ...DEFAULTS.defaults, ...(layout.defaults || {}) };
+      const over = layout.numerals?.[key] || {};
+      return {
+        h: Number(over.h ?? def.h),
+        nudgeX: Number(over.nudgeX ?? def.nudgeX),
+        nudgeY: Number(over.nudgeY ?? def.nudgeY),
+        wScale: Number(over.wScale ?? def.wScale),
+      };
+    }
+
+    function ensureNumeral(n) {
+      const key = String(n);
+      if (!layout.numerals) layout.numerals = {};
+      if (!layout.numerals[key]) {
+        layout.numerals[key] = { ...getNumeral(n) };
+      }
+      return layout.numerals[key];
+    }
+
+    function patchNumeral(n, patch, { markDirty = true } = {}) {
+      const entry = ensureNumeral(n);
+      Object.assign(entry, patch);
+      if (markDirty) dirty.add(n);
+      refresh();
+      scheduleSave();
+    }
+
+    function patchTile(patch) {
+      layout.tile = { ...(layout.tile || DEFAULTS.tile), ...patch };
+      refresh();
+      scheduleSave();
+    }
+
+    function exportLayout() {
+      const out = {
+        version: 1,
+        note: layout.note || DEFAULTS.note ||
+          'New rank badge stack (prep only). BG + Nc + slvr 1-15.',
+        art: { ...(layout.art || DEFAULTS.art) },
+        tile: { ...(layout.tile || DEFAULTS.tile) },
+        defaults: { ...(layout.defaults || DEFAULTS.defaults) },
+        numerals: {},
+      };
+      for (let n = 1; n <= 15; n += 1) {
+        const L = getNumeral(n);
+        const def = out.defaults;
+        const diff = {};
+        for (const k of ['h', 'nudgeX', 'nudgeY', 'wScale']) {
+          if (L[k] !== def[k]) diff[k] = L[k];
+        }
+        if (Object.keys(diff).length) out.numerals[String(n)] = diff;
+      }
+      return out;
+    }
+
+    function applyStackVars(el, { rank, level, scale }) {
+      const art = layout.art || DEFAULTS.art;
+      const tile = layout.tile || DEFAULTS.tile;
+      const L = getNumeral(level);
+      el.style.setProperty('--art-w', String(art.bgW || 115));
+      el.style.setProperty('--art-h', String(art.bgH || 145));
+      el.style.setProperty('--preview-scale', String(scale));
+      el.style.setProperty('--tile-scale', String(tile.scale ?? 0.9));
+      el.style.setProperty('--tile-nudge-x', String(tile.nudgeX ?? 0));
+      el.style.setProperty('--tile-nudge-y', String(tile.nudgeY ?? 0));
+      el.style.setProperty('--num-h', String(L.h));
+      el.style.setProperty('--num-nudge-x', String(L.nudgeX));
+      el.style.setProperty('--num-nudge-y', String(L.nudgeY));
+      el.style.setProperty('--num-w-scale', String(L.wScale));
+
+      const bg = el.querySelector('.badge-stack__bg');
+      const tileImg = el.querySelector('.badge-stack__tile');
+      const num = el.querySelector('.badge-stack__num');
+      if (bg) bg.src = bgForRank(rank);
+      if (tileImg) tileImg.src = tilePath(rank);
+      if (num) {
+        num.src = numPath(level);
+        num.alt = romanFor(level);
+      }
+    }
+
+    function makeMiniStack(rank, level) {
+      const wrap = document.createElement('div');
+      wrap.className = 'badge-stack mini';
+      wrap.innerHTML = `
+        <img class="badge-stack__bg" alt="" draggable="false" />
+        <img class="badge-stack__tile" alt="" draggable="false" />
+        <img class="badge-stack__num" alt="" draggable="false" />
+      `;
+      applyStackVars(wrap, { rank, level, scale: 1.15 });
+      return wrap;
+    }
+
+    function syncSliders() {
+      const L = getNumeral(subLevel);
+      const tile = layout.tile || DEFAULTS.tile;
+      els.numH.value = String(L.h);
+      els.numX.value = String(L.nudgeX);
+      els.numY.value = String(L.nudgeY);
+      els.numW.value = String(L.wScale);
+      els.tileScale.value = String(tile.scale ?? 0.9);
+      els.tileX.value = String(tile.nudgeX ?? 0);
+      els.tileY.value = String(tile.nudgeY ?? 0);
+      els.previewScale.value = String(previewScale);
+      els.numHOut.textContent = String(L.h);
+      els.numXOut.textContent = String(L.nudgeX);
+      els.numYOut.textContent = String(L.nudgeY);
+      els.numWOut.textContent = Number(L.wScale).toFixed(2);
+      els.tileScaleOut.textContent = Number(tile.scale ?? 0.9).toFixed(2);
+      els.tileXOut.textContent = String(tile.nudgeX ?? 0);
+      els.tileYOut.textContent = String(tile.nudgeY ?? 0);
+      els.previewScaleOut.textContent = previewScale.toFixed(1);
+    }
+
+    function refresh() {
+      els.rankSelect.value = String(rankId);
+      applyStackVars(els.badgeStack, { rank: rankId, level: subLevel, scale: previewScale });
+      syncSliders();
+
+      const L = getNumeral(subLevel);
+      const tile = layout.tile || DEFAULTS.tile;
+      els.readout.innerHTML =
+        `<strong>Rank ${rankId}</strong> · ${romanFor(subLevel)} (${subLevel})` +
+        ` · num h:${L.h} x:${L.nudgeX} y:${L.nudgeY} w:${Number(L.wScale).toFixed(2)}` +
+        ` · tile s:${Number(tile.scale ?? 0.9).toFixed(2)}`;
+
+      for (const btn of els.levelGrid.querySelectorAll('.level-btn')) {
+        const n = Number(btn.dataset.level);
+        btn.classList.toggle('is-active', n === subLevel);
+        btn.classList.toggle('is-dirty', dirty.has(n));
+      }
+
+      // roman strip
+      els.romanStrip.replaceChildren();
+      for (let n = 1; n <= 15; n += 1) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'strip-item' + (n === subLevel ? ' is-active' : '');
+        item.appendChild(makeMiniStack(rankId, n));
+        const lab = document.createElement('span');
+        lab.textContent = `${n} ${romanFor(n)}`;
+        item.appendChild(lab);
+        item.addEventListener('click', () => {
+          subLevel = n;
+          refresh();
+        });
+        els.romanStrip.appendChild(item);
+      }
+
+      // rank strip
+      els.rankStrip.replaceChildren();
+      for (const r of SAMPLE_RANKS) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'strip-item' + (r === rankId ? ' is-active' : '');
+        item.appendChild(makeMiniStack(r, subLevel));
+        const lab = document.createElement('span');
+        lab.textContent = `R${r}`;
+        item.appendChild(lab);
+        item.addEventListener('click', () => {
+          rankId = r;
+          refresh();
+        });
+        els.rankStrip.appendChild(item);
+      }
+
+      // table
+      els.recordBody.replaceChildren();
+      for (let n = 1; n <= 15; n += 1) {
+        const rowL = getNumeral(n);
+        const tr = document.createElement('tr');
+        tr.dataset.level = String(n);
+        if (n === subLevel) tr.classList.add('is-active');
+        tr.innerHTML =
+          `<td>${n} ${romanFor(n)}${dirty.has(n) ? ' •' : ''}</td>` +
+          `<td>${rowL.h}</td><td>${rowL.nudgeX}</td><td>${rowL.nudgeY}</td>` +
+          `<td>${Number(rowL.wScale).toFixed(2)}</td>`;
+        tr.addEventListener('click', () => {
+          subLevel = n;
+          refresh();
+        });
+        els.recordBody.appendChild(tr);
+      }
+
+      els.jsonOut.value = JSON.stringify(exportLayout(), null, 2);
+    }
+
+    async function saveToFile({ quiet = false } = {}) {
+      try {
+        const res = await fetch(SAVE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(exportLayout()),
+        });
+        if (!res.ok) {
+          if (res.status === 501) {
+            throw new Error('Stale/missing save API — restart: python scripts/server.py');
+          }
+          throw new Error((await res.text()) || `HTTP ${res.status}`);
+        }
+        els.status.textContent = quiet
+          ? 'Auto-saved to data/rank_badge_v2_layout.json'
+          : 'Saved to data/rank_badge_v2_layout.json';
+        return true;
+      } catch (err) {
+        els.status.textContent = `Save failed — ${err.message || err}`;
+        return false;
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => void saveToFile({ quiet: true }), 700);
+    }
+
+    function buildUi() {
+      for (let r = 1; r <= 55; r += 1) {
+        const opt = document.createElement('option');
+        opt.value = String(r);
+        const band =
+          r <= 10 ? '1–10' :
+          r <= 20 ? '11–20' :
+          r <= 30 ? '21–30' :
+          r <= 40 ? '31–40' :
+          r <= 50 ? '41–50' : '51–55';
+        opt.textContent = `Rank ${r}  (BG ${band})`;
+        els.rankSelect.appendChild(opt);
+      }
+
+      for (let n = 1; n <= 15; n += 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'level-btn';
+        btn.dataset.level = String(n);
+        btn.textContent = `${n} ${romanFor(n)}`;
+        btn.addEventListener('click', () => {
+          subLevel = n;
+          refresh();
+        });
+        els.levelGrid.appendChild(btn);
+      }
+
+      els.rankSelect.addEventListener('change', () => {
+        rankId = Number(els.rankSelect.value) || 1;
+        refresh();
+      });
+
+      els.numH.addEventListener('input', () => {
+        patchNumeral(subLevel, { h: Number(els.numH.value) });
+      });
+      els.numX.addEventListener('input', () => {
+        patchNumeral(subLevel, { nudgeX: Number(els.numX.value) });
+      });
+      els.numY.addEventListener('input', () => {
+        patchNumeral(subLevel, { nudgeY: Number(els.numY.value) });
+      });
+      els.numW.addEventListener('input', () => {
+        patchNumeral(subLevel, { wScale: Number(els.numW.value) });
+      });
+      els.tileScale.addEventListener('input', () => {
+        patchTile({ scale: Number(els.tileScale.value) });
+      });
+      els.tileX.addEventListener('input', () => {
+        patchTile({ nudgeX: Number(els.tileX.value) });
+      });
+      els.tileY.addEventListener('input', () => {
+        patchTile({ nudgeY: Number(els.tileY.value) });
+      });
+      els.previewScale.addEventListener('input', () => {
+        previewScale = Number(els.previewScale.value) || 3;
+        refresh();
+      });
+
+      els.btnSave.addEventListener('click', () => void saveToFile());
+      els.btnResetNum.addEventListener('click', () => {
+        const key = String(subLevel);
+        if (layout.numerals) delete layout.numerals[key];
+        dirty.delete(subLevel);
+        refresh();
+        scheduleSave();
+        els.status.textContent = `Reset ${romanFor(subLevel)} to defaults`;
+      });
+      els.btnCopyDefaults.addEventListener('click', () => {
+        const src = getNumeral(subLevel);
+        layout.defaults = { ...src };
+        layout.numerals = {};
+        dirty.clear();
+        for (let n = 1; n <= 15; n += 1) dirty.add(n);
+        refresh();
+        scheduleSave();
+        els.status.textContent = `Defaults set from ${romanFor(subLevel)}; cleared per-roman overrides`;
+      });
+
+      // drag numeral
+      els.stage.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        els.stage.setPointerCapture(e.pointerId);
+        drag = {
+          x: e.clientX,
+          y: e.clientY,
+          nudgeX: getNumeral(subLevel).nudgeX,
+          nudgeY: getNumeral(subLevel).nudgeY,
+        };
+      });
+      els.stage.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        const dx = (e.clientX - drag.x) / previewScale;
+        const dy = (e.clientY - drag.y) / previewScale;
+        patchNumeral(subLevel, {
+          nudgeX: Math.round(drag.nudgeX + dx),
+          nudgeY: Math.round(drag.nudgeY + dy),
+        });
+      });
+      els.stage.addEventListener('pointerup', () => { drag = null; });
+      els.stage.addEventListener('pointercancel', () => { drag = null; });
+
+      window.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+
+        if (e.key === 'ArrowLeft' && e.shiftKey) {
+          e.preventDefault();
+          subLevel = subLevel <= 1 ? 15 : subLevel - 1;
+          refresh();
+          return;
+        }
+        if (e.key === 'ArrowRight' && e.shiftKey) {
+          e.preventDefault();
+          subLevel = subLevel >= 15 ? 1 : subLevel + 1;
+          refresh();
+          return;
+        }
+        if (e.key === 'PageUp') {
+          e.preventDefault();
+          rankId = Math.min(55, rankId + 1);
+          refresh();
+          return;
+        }
+        if (e.key === 'PageDown') {
+          e.preventDefault();
+          rankId = Math.max(1, rankId - 1);
+          refresh();
+          return;
+        }
+
+        const L = getNumeral(subLevel);
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          patchNumeral(subLevel, { nudgeY: L.nudgeY - NUDGE_STEP });
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          patchNumeral(subLevel, { nudgeY: L.nudgeY + NUDGE_STEP });
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          patchNumeral(subLevel, { nudgeX: L.nudgeX - NUDGE_STEP });
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          patchNumeral(subLevel, { nudgeX: L.nudgeX + NUDGE_STEP });
+        } else if (e.key === '[') {
+          e.preventDefault();
+          patchNumeral(subLevel, { h: Math.max(20, L.h - H_STEP) });
+        } else if (e.key === ']') {
+          e.preventDefault();
+          patchNumeral(subLevel, { h: Math.min(110, L.h + H_STEP) });
+        } else if (e.key === '-' || e.key === '_') {
+          e.preventDefault();
+          patchNumeral(subLevel, { wScale: Math.max(0.5, +(L.wScale - W_STEP).toFixed(2)) });
+        } else if (e.key === '=' || e.key === '+') {
+          e.preventDefault();
+          patchNumeral(subLevel, { wScale: Math.min(1.5, +(L.wScale + W_STEP).toFixed(2)) });
+        }
+      });
+    }
+
+    async function boot() {
+      buildUi();
+      try {
+        const res = await fetch(`${LAYOUT_URL}?t=${Date.now()}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          layout = {
+            ...structuredClone(DEFAULTS),
+            ...data,
+            art: { ...DEFAULTS.art, ...(data.art || {}) },
+            tile: { ...DEFAULTS.tile, ...(data.tile || {}) },
+            defaults: { ...DEFAULTS.defaults, ...(data.defaults || {}) },
+            numerals: data.numerals || {},
+          };
+        }
+      } catch {
+        /* keep defaults */
+      }
+      refresh();
+      els.stage.focus();
+      els.status.textContent = 'Ready — prep only, not in game yet';
+    }
+
+    void boot();
+  </script>
+</body>
+</html>

@@ -76,6 +76,7 @@ AUTH_SCREEN_LAYOUT_PATH = ROOT / "data" / "auth_screen_layout.json"
 AUTH_ERROR_LAYOUT_PATH = ROOT / "data" / "auth_error_layout.json"
 FORGOT_PASSWORD_LAYOUT_PATH = ROOT / "data" / "forgot_password_layout.json"
 RANK_AWARD_LAYOUT_PATH = ROOT / "data" / "rank_award_layout.json"
+RANK_BADGE_V2_LAYOUT_PATH = ROOT / "data" / "rank_badge_v2_layout.json"
 CHALLENGE_BEGIN_LAYOUT_PATH = ROOT / "data" / "challenge_begin_layout.json"
 MAIN_SCREEN_V2_LAYOUT_PATH = ROOT / "data" / "main_screen_v2_layout.json"
 LAYOUT_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
@@ -792,6 +793,16 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if parsed.path == "/api/dev/save-rank-badge-v2-layout":
+            body = json.dumps(
+                {"ok": True, "writable": True, "path": "data/rank_badge_v2_layout.json"}
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/dev/save-challenge-begin-layout":
             body = json.dumps(
                 {"ok": True, "writable": True, "path": "data/challenge_begin_layout.json"}
@@ -935,6 +946,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if parsed.path == "/api/dev/save-rank-award-layout":
             self._save_json_layout(parsed, RANK_AWARD_LAYOUT_PATH, validate_rank_award_layout)
+            return
+        if parsed.path == "/api/dev/save-rank-badge-v2-layout":
+            self._save_json_layout(parsed, RANK_BADGE_V2_LAYOUT_PATH, validate_rank_badge_v2_layout)
             return
         if parsed.path == "/api/dev/save-challenge-begin-layout":
             self._save_json_layout(parsed, CHALLENGE_BEGIN_LAYOUT_PATH, validate_challenge_begin_layout)
@@ -1715,6 +1729,53 @@ def validate_reset_hint_tiles_layout(payload: object) -> str | None:
 
 
 RANK_AWARD_ITEM_KEYS = ("continue",)
+RANK_BADGE_V2_NUMERAL_KEYS = ("h", "nudgeX", "nudgeY", "wScale")
+RANK_BADGE_V2_TILE_KEYS = ("scale", "nudgeX", "nudgeY")
+
+
+def validate_rank_badge_v2_layout(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return "Root must be a JSON object"
+    defaults = payload.get("defaults")
+    if defaults is not None:
+        if not isinstance(defaults, dict):
+            return "defaults must be an object"
+        for key, val in defaults.items():
+            if key not in RANK_BADGE_V2_NUMERAL_KEYS:
+                return f"Unknown defaults key: {key}"
+            if not isinstance(val, (int, float)):
+                return f"defaults.{key} must be a number"
+    tile = payload.get("tile")
+    if tile is not None:
+        if not isinstance(tile, dict):
+            return "tile must be an object"
+        for key, val in tile.items():
+            if key not in RANK_BADGE_V2_TILE_KEYS:
+                return f"Unknown tile key: {key}"
+            if not isinstance(val, (int, float)):
+                return f"tile.{key} must be a number"
+    art = payload.get("art")
+    if art is not None:
+        if not isinstance(art, dict):
+            return "art must be an object"
+        for key in ("bgW", "bgH"):
+            if key in art and not isinstance(art[key], (int, float)):
+                return f"art.{key} must be a number"
+    numerals = payload.get("numerals")
+    if numerals is not None:
+        if not isinstance(numerals, dict):
+            return "numerals must be an object"
+        for lvl_key, overrides in numerals.items():
+            if not str(lvl_key).isdigit() or not (1 <= int(lvl_key) <= 15):
+                return f"Invalid numeral key: {lvl_key}"
+            if not isinstance(overrides, dict):
+                return f"numerals.{lvl_key} must be an object"
+            for key, val in overrides.items():
+                if key not in RANK_BADGE_V2_NUMERAL_KEYS:
+                    return f"Unknown numerals.{lvl_key} key: {key}"
+                if not isinstance(val, (int, float)):
+                    return f"numerals.{lvl_key}.{key} must be a number"
+    return None
 
 
 def validate_rank_award_layout(payload: object) -> str | None:
@@ -2018,6 +2079,7 @@ def main() -> None:
     print("Auth error tuner save API: POST /api/dev/save-auth-error-layout")
     print("Forgot password tuner save API: POST /api/dev/save-forgot-password-layout")
     print("Rank award popup tuner save API: POST /api/dev/save-rank-award-layout")
+    print("Rank badge v2 tuner save API: POST /api/dev/save-rank-badge-v2-layout")
     print("Challenge begin tuner save API: POST /api/dev/save-challenge-begin-layout")
     server.serve_forever()
 

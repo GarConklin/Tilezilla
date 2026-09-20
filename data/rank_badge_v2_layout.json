@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "note": "New rank badge stack (prep only). BG bands + Nc tiles + slvr-1..15. Progression: 15 puzzles per rank, then next rank at I.",
+  "art": {
+    "bgW": 115,
+    "bgH": 145
+  },
+  "tile": {
+    "scale": 0.9,
+    "nudgeX": 0,
+    "nudgeY": -2
+  },
+  "defaults": {
+    "h": 52,
+    "nudgeX": 0,
+    "nudgeY": 6,
+    "wScale": 1
+  },
+  "numerals": {}
+}
