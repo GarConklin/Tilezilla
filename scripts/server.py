@@ -1048,7 +1048,7 @@ def validate_sublevel_layout(payload: object) -> str | None:
             if not isinstance(cat_levels, dict):
                 return f"levels.{cat} must be an object"
             for lvl_key, overrides in cat_levels.items():
-                if not str(lvl_key).isdigit() or not (1 <= int(lvl_key) <= 10):
+                if not str(lvl_key).isdigit() or not (1 <= int(lvl_key) <= 15):
                     return f"Invalid sublevel key: {lvl_key}"
                 if not isinstance(overrides, dict):
                     return f"levels.{cat}.{lvl_key} must be an object"

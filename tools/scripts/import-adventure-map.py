@@ -6,9 +6,10 @@ Authoritative source: data/adventure_solution_distribution.csv
   CH-lvl=T   → challenge puzzle; ends a ranked step (L1-1 … L9-10 only)
   level_id   → FK target in levels
 
-Ranked adventure stops at L9-10 (90 steps). Rows after the L9-10 challenge
-→ adventure_postgame_puzzle. Extra CH-lvl=T markers in postgame are challenge
-gates (every ~100 puzzles), not new ranks.
+Ranked adventure stops at L9-10 historically; current LevelSystem uses
+L1–L55 × 15 sublevels (STEPS_PER_RANK). Ranked cap follows
+ADVENTURE_RANK_COUNT × STEPS_PER_RANK from adventure_ranks.json + constants.
+Rows after the last ranked challenge → adventure_postgame_puzzle.
 
 Populates:
   adventure_rank, adventure_progression, adventure_puzzle, adventure_postgame_puzzle
@@ -36,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.adventure_ranks import ADVENTURE_RANK_COUNT, load_adventure_ranks
 from lib.level_system import derive_progression_from_level_system, load_level_system_steps
 
-STEPS_PER_RANK = 10
+STEPS_PER_RANK = 15
 
 
 def connect():
@@ -100,7 +101,7 @@ def build_adventure_rows(
     if len(challenge_adv) > max_ranked_steps:
         extra = challenge_adv[max_ranked_steps:]
         warnings.append(
-            f"Ranked adventure caps at L{ADVENTURE_RANK_COUNT}-10 (Adv_ID {ranked_challenge_adv[-1]}); "
+            f"Ranked adventure caps at L{ADVENTURE_RANK_COUNT}-{STEPS_PER_RANK} (Adv_ID {ranked_challenge_adv[-1]}); "
             f"{len(extra)} later CH-lvl=T marker(s) at Adv_ID {extra} are postgame challenge gates"
         )
 
@@ -327,7 +328,7 @@ def main() -> None:
         f"L{last_mapped['rank_id']}-{last_mapped['sub_level']}" if last_mapped else "?"
     )
     print(f"mapped ranked steps in CSV: {mapped_steps} (through {last_mapped_label})")
-    print(f"postgame puzzles (after ranked L{ADVENTURE_RANK_COUNT}-10): {len(postgame)}")
+    print(f"postgame puzzles (after ranked L{ADVENTURE_RANK_COUNT}-{STEPS_PER_RANK}): {len(postgame)}")
     print(f"total puzzle rows: {len(puzzles) + len(postgame)}")
     print(f"challenges in map: {sum(1 for p in puzzles if p['is_challenge'])}")
     if progression:

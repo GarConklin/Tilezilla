@@ -14,7 +14,10 @@ export function clearSublevelLayoutCache() {
 }
 
 export function romanForSubLevel(subLevel) {
-  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  const numerals = [
+    'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
+    'XI', 'XII', 'XIII', 'XIV', 'XV',
+  ];
   return numerals[(subLevel || 1) - 1] || String(subLevel);
 }
 
@@ -24,7 +27,7 @@ export function normalizeSublevelBadge(value) {
 }
 
 export function subLevelIconPath(subLevel, badge = 'gld') {
-  const n = Math.max(1, Math.min(10, Number(subLevel) || 1));
+  const n = Math.max(1, Math.min(15, Number(subLevel) || 1));
   return `/img/ranks/${normalizeSublevelBadge(badge)}-${n}.png`;
 }
 
@@ -37,7 +40,7 @@ export async function loadSublevelIconLayout({ force = false } = {}) {
 }
 
 export function getSublevelIconLayout(subLevel, badge, layout) {
-  const n = Math.max(1, Math.min(10, Number(subLevel) || 1));
+  const n = Math.max(1, Math.min(15, Number(subLevel) || 1));
   const cat = normalizeSublevelBadge(badge);
   const def = { ...DEFAULT_LAYOUT, ...(layout?.defaults || {}) };
   const levelOverrides = layout?.levels?.[cat]?.[String(n)]
@@ -55,7 +58,7 @@ export function applySublevelIconElement(img, subLevel, badge, layout) {
   img.style.setProperty('--tz-rank-sublevel-nudge-x', `${L.nudgeX}px`);
   img.style.setProperty('--tz-rank-sublevel-nudge-y', `${L.nudgeY}px`);
   img.style.setProperty('--tz-rank-sublevel-w-scale', String(L.wScale));
-  img.dataset.sublevel = String(Math.max(1, Math.min(10, Number(subLevel) || 1)));
+  img.dataset.sublevel = String(Math.max(1, Math.min(15, Number(subLevel) || 1)));
   img.dataset.sublevelBadge = cat;
 }
 
@@ -93,7 +96,7 @@ export function applySublevelIconOnBadgeStack(img, subLevel, badge, layout) {
   img.style.setProperty('--tz-rank-sublevel-nudge-x', `${L.nudgeX * scale}px`);
   img.style.setProperty('--tz-rank-sublevel-nudge-y', `${L.nudgeY * scale}px`);
   img.style.setProperty('--tz-rank-sublevel-w-scale', String(L.wScale));
-  img.dataset.sublevel = String(Math.max(1, Math.min(10, Number(subLevel) || 1)));
+  img.dataset.sublevel = String(Math.max(1, Math.min(15, Number(subLevel) || 1)));
   img.dataset.sublevelBadge = cat;
 }
 

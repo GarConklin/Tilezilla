@@ -16,7 +16,7 @@
 
 
 
-const STEPS_PER_RANK = 10;
+const STEPS_PER_RANK = 15;
 
 
 
@@ -745,7 +745,7 @@ export function cacheServerAdventureRank(rank) {
   if (!Number.isFinite(rankId) || rankId <= 0 || !Number.isFinite(subLevel) || subLevel <= 0) return;
   window.__serverAdventureRank = {
     rankId,
-    subLevel: Math.max(1, Math.min(10, subLevel)),
+    subLevel: Math.max(1, Math.min(STEPS_PER_RANK, subLevel)),
     rankName: rank.rankName || null,
   };
 }

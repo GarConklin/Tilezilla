@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-STEPS_PER_RANK = 10
+STEPS_PER_RANK = 15
 
 
 def step_to_rank_sub(step_index: int) -> Tuple[int, int]:
