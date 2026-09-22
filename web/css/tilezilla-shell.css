@@ -1919,10 +1919,10 @@ button {
   z-index: 1;
   overflow: visible;
   box-sizing: border-box;
-  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
+  left: calc(var(--tz-user-data-badge-stack-x-art, 20) / var(--tz-user-data-art-w, 104) * 100%);
   top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-badge-stack-h-art, 42) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-badge-stack-w-art, 64) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-badge-stack-h-art, 52) / var(--tz-user-data-art-h, 72) * 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1993,20 +1993,20 @@ button {
 .tz-preview-v2-user-data__progress-track {
   position: absolute;
   z-index: 1;
-  left: calc(var(--tz-user-data-progress-track-x-art, 4) / var(--tz-user-data-art-w, 104) * 100%);
-  top: calc(var(--tz-user-data-progress-track-y-art, 54) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-progress-track-w-art, 96) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-progress-track-h-art, 5) / var(--tz-user-data-art-h, 72) * 100%);
+  left: calc(var(--tz-user-data-progress-track-x-art, 30) / var(--tz-user-data-art-w, 104) * 100%);
+  top: calc(var(--tz-user-data-progress-track-y-art, 58) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-progress-track-w-art, 70) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-progress-track-h-art, 10) / var(--tz-user-data-art-h, 72) * 100%);
   margin: 0;
 }
 
 .tz-preview-v2-user-data__progress-text {
   position: absolute;
   z-index: 1;
-  left: calc(var(--tz-user-data-progress-text-x-art, 4) / var(--tz-user-data-art-w, 104) * 100%);
-  top: calc(var(--tz-user-data-progress-text-y-art, 62) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-progress-text-w-art, 96) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-progress-text-h-art, 10) / var(--tz-user-data-art-h, 72) * 100%);
+  left: calc(var(--tz-user-data-progress-text-x-art, 2) / var(--tz-user-data-art-w, 104) * 100%);
+  top: calc(var(--tz-user-data-progress-text-y-art, 56) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-progress-text-w-art, 30) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-progress-text-h-art, 12) / var(--tz-user-data-art-h, 72) * 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2777,15 +2777,15 @@ button {
 }
 
 .tz-preview-v2-user-data__badge-stack > .tz-rank-badge-v2.badge-stack {
-  /* Art box sized by JS --preview-scale + surfaces.preview; slot is only the frame. */
+  /* Fill the layout slot (same on phone + PC) — do not lock absolute px from a cold measure. */
   position: relative;
   left: auto;
   top: auto;
-  width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
-  height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
+  width: auto;
+  height: calc(100% * var(--surface-fill-scale, 1));
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: var(--art-w, 115) / var(--art-h, 145);
-  max-width: none;
-  max-height: none;
   flex: 0 0 auto;
   overflow: hidden;
   transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
