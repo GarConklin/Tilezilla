@@ -98,10 +98,10 @@
   },
   "surfaces": {
     "preview": {
-      "fit": "contain",
-      "scale": 1,
+      "fit": "width",
+      "scale": 1.06,
       "nudgeX": 0,
-      "nudgeY": 2,
+      "nudgeY": 0,
       "bgScale": 1,
       "bgNudgeX": 0,
       "bgNudgeY": 0

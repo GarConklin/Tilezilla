@@ -1919,10 +1919,10 @@ button {
   z-index: 1;
   overflow: visible;
   box-sizing: border-box;
-  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
+  left: calc(var(--tz-user-data-badge-stack-x-art, 2) / var(--tz-user-data-art-w, 104) * 100%);
   top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-badge-stack-h-art, 54) / var(--tz-user-data-art-h, 72) * 100%);
+  width: calc(var(--tz-user-data-badge-stack-w-art, 100) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-badge-stack-h-art, 56) / var(--tz-user-data-art-h, 72) * 100%);
   display: block;
 }
 
@@ -2775,23 +2775,23 @@ button {
 }
 
 .tz-preview-v2-user-data__badge-stack > .tz-rank-badge-v2.badge-stack {
-  /* Contain-fit the art box inside the slot — works under phone-preview transform scale. */
+  /* Width-first fit so the badge reads larger on the phone canvas (taller art was height-limited). */
   position: absolute !important;
   left: 0;
   right: 0;
   top: 0;
-  bottom: 0;
-  width: auto !important;
+  bottom: auto;
+  width: 100% !important;
   height: auto !important;
   max-width: 100%;
-  max-height: 100%;
-  margin: auto;
+  max-height: none;
+  margin: 0 auto;
   aspect-ratio: var(--art-w, 115) / var(--art-h, 145);
   flex: none;
-  overflow: hidden;
+  overflow: visible;
   transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
     scale(var(--surface-fill-scale, 1));
-  transform-origin: center center;
+  transform-origin: top center;
 }
 
 .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2,

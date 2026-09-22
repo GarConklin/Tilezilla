@@ -5,10 +5,10 @@
   },
   "items": {
     "badgeStack": {
-      "x": 8,
+      "x": 2,
       "y": 0,
-      "w": 88,
-      "h": 54
+      "w": 100,
+      "h": 56
     },
     "sublevelIcon": {
       "x": 44,
