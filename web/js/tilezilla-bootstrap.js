@@ -185,6 +185,8 @@ import {
   isPuzzleSatisfied,
   loadAdventurePath,
   mergeServerAdventureRank,
+  hydrateServerAdventureRankFromCache,
+  cacheComputedAdventureRank,
   resolveAdventureResume,
 } from './adventure-path.js';
 import { applyUiScale, wireUiScaleListeners, tryFitWindowToViewportLock, isViewportLocked, TZ_DESIGN_WIDTH } from './tilezilla-ui-scale.js';
@@ -195,6 +197,10 @@ import { ensureCatalogReady, isCatalogReady, loadLevelStatsIndex, networkFetchTi
 const $ = (id) => document.getElementById(id);
 
 const MAIN_V2_SHELL = Boolean(document.querySelector('.tz-main-v2-app'));
+
+// Overlap the large adventure_path.json fetch with the rest of shell boot.
+hydrateServerAdventureRankFromCache();
+void loadAdventurePath();
 
 /** Fixed cell size; largest board 5×6 → 275×330. Frame size is in tilezilla-shell.css. */
 const TZ_CELL_PX = 55;
@@ -950,10 +956,47 @@ async function updateRankPanel(app, opts = {}) {
   const pathPromise = loadAdventurePath();
   const ranksPromise = loadAdventureRanks();
   const ranks = await ranksPromise;
+  const previewUserData = document.querySelector('.tz-preview-v2-user-data');
 
-  // Instant stack paint from server rank cache while the 3MB path JSON loads.
-  const serverRank = typeof window !== 'undefined' ? window.__serverAdventureRank : null;
-  if (serverRank?.rankId && serverRank?.subLevel && MAIN_V2_SHELL) {
+  const revealPreviewRank = () => {
+    previewUserData?.classList.add('is-rank-ready');
+  };
+
+  const paintPreviewBadge = async (badgeOpts, { revealProgress = null } = {}) => {
+    if (!MAIN_V2_SHELL) return false;
+    const v2SubWrap = $('previewV2SubLevel');
+    const v2Slot = $('previewV2BadgeSlot');
+    if (!v2SubWrap) return false;
+    const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
+    if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
+    const ok = await applyRankBadgeV2Async(v2SubWrap, {
+      ...badgeOpts,
+      surface: 'preview',
+      waitForImages: true,
+    });
+    requestAnimationFrame(() => {
+      void applyRankBadgeV2Async(v2SubWrap, { ...badgeOpts, surface: 'preview' });
+    });
+    if (revealProgress) {
+      const v2Pct = $('previewV2ProgressPct');
+      const v2Fill = $('previewV2RankProgressFill');
+      const v2Track = document.querySelector('.tz-preview-v2-progress__track');
+      if (v2Fill) v2Fill.style.width = `${revealProgress.pct}%`;
+      if (v2Pct) v2Pct.textContent = `${revealProgress.pct}%`;
+      if (v2Track) {
+        v2Track.setAttribute('aria-valuenow', String(revealProgress.pct));
+        v2Track.setAttribute('aria-label', `Sublevel progress ${revealProgress.pct}%`);
+      }
+    }
+    if (ok) revealPreviewRank();
+    return ok;
+  };
+
+  // Instant stack paint from server/session cache while the 3MB path JSON loads.
+  const serverRank =
+    (typeof window !== 'undefined' ? window.__serverAdventureRank : null)
+    || hydrateServerAdventureRankFromCache();
+  if (serverRank?.rankId && serverRank?.subLevel) {
     const earlyRank = ranks.find((r) => r.rank_id === serverRank.rankId) || ranks[0];
     const earlyOpts = {
       rankId: earlyRank?.rank_id || serverRank.rankId,
@@ -961,17 +1004,18 @@ async function updateRankPanel(app, opts = {}) {
       romanStyle: 'slvr',
       rankName: earlyRank?.rank_name || serverRank.rankName || 'Wanderer',
     };
-    const v2SubWrap = $('previewV2SubLevel');
-    const v2Slot = $('previewV2BadgeSlot');
     const subLevelEl = $('rankSubLevel');
     if (subLevelEl) {
       void applyRankBadgeV2Async(subLevelEl, { ...earlyOpts, surface: 'rankPanel' });
     }
-    if (v2SubWrap) {
-      const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
-      if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
-      void applyRankBadgeV2Async(v2SubWrap, { ...earlyOpts, surface: 'preview' });
-    }
+    const earlyTotal = Math.max(1, Number(serverRank.stepTotal) || 1);
+    const earlyCurrent = Math.max(0, Math.min(Number(serverRank.stepProgress) || 0, earlyTotal));
+    const earlyPct = Number.isFinite(Number(serverRank.stepTotal))
+      ? formatStepPercent(earlyCurrent, earlyTotal)
+      : null;
+    void paintPreviewBadge(earlyOpts, {
+      revealProgress: earlyPct != null ? { pct: earlyPct } : null,
+    });
   }
 
   const path = await pathPromise;
@@ -1029,43 +1073,23 @@ async function updateRankPanel(app, opts = {}) {
   }
 
   if (MAIN_V2_SHELL) {
-    const v2Pct = $('previewV2ProgressPct');
-    const v2Fill = $('previewV2RankProgressFill');
-    const v2Track = document.querySelector('.tz-preview-v2-progress__track');
-    const v2SubWrap = $('previewV2SubLevel');
-    const v2Slot = $('previewV2BadgeSlot');
-    if (v2SubWrap) {
-      const paintPreview = async () => {
-        const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
-        if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
-        return applyRankBadgeV2Async(v2SubWrap, { ...badgeOpts, surface: 'preview' });
-      };
-      const ok = await paintPreview();
-      // Remeasure after layout — first paint often runs before the user_data slot has size.
-      requestAnimationFrame(() => {
-        void paintPreview();
-      });
-      if (!ok && usedV2 === false) {
-        const v2Badge = $('previewV2RankBadge');
-        const v2Sub = $('previewV2SubLevelIcon');
-        if (v2Badge && badge) {
-          v2Badge.src = badge.src;
-          v2Badge.alt = badge.alt;
-        }
-        if (v2Sub && subIcon) {
-          v2Sub.src = subIcon.src;
-          v2Sub.alt = subIcon.alt;
-        }
+    const ok = await paintPreviewBadge(badgeOpts, { revealProgress: { pct } });
+    if (!ok && usedV2 === false) {
+      const v2Badge = $('previewV2RankBadge');
+      const v2Sub = $('previewV2SubLevelIcon');
+      if (v2Badge && badge) {
+        v2Badge.src = badge.src;
+        v2Badge.alt = badge.alt;
       }
-    }
-    if (v2Fill) v2Fill.style.width = `${pct}%`;
-    if (v2Pct) v2Pct.textContent = `${pct}%`;
-    if (v2Track) {
-      v2Track.setAttribute('aria-valuenow', String(pct));
-      v2Track.setAttribute('aria-label', `Sublevel progress ${pct}%`);
+      if (v2Sub && subIcon) {
+        v2Sub.src = subIcon.src;
+        v2Sub.alt = subIcon.alt;
+      }
+      revealPreviewRank();
     }
   }
 
+  cacheComputedAdventureRank(rankState, rank?.rank_name || null);
   void refreshProfileRankIcons(app?.progress || window.__app?.progress);
 
   // Refine once catalog/context is ready (does not block first badge paint).

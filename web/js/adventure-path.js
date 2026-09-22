@@ -734,17 +734,73 @@ export function getRankPanelState(progress, path, levelContext = {}) {
 
 
 
+const ADVENTURE_RANK_CACHE_KEY = 'tz_adventure_rank_v1';
+
+function persistAdventureRankCache(entry) {
+  if (typeof window === 'undefined' || !entry?.rankId) return;
+  try {
+    sessionStorage.setItem(ADVENTURE_RANK_CACHE_KEY, JSON.stringify(entry));
+  } catch {
+    /* private mode / quota */
+  }
+}
+
+/** Restore last-known rank for instant preview badge paint (avoids waiting on 3MB path). */
+export function hydrateServerAdventureRankFromCache() {
+  if (typeof window === 'undefined') return null;
+  if (window.__serverAdventureRank?.rankId) return window.__serverAdventureRank;
+  try {
+    const raw = sessionStorage.getItem(ADVENTURE_RANK_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const rankId = Number(parsed?.rankId);
+    const subLevel = Number(parsed?.subLevel);
+    if (!Number.isFinite(rankId) || rankId <= 0 || !Number.isFinite(subLevel) || subLevel <= 0) return null;
+    const entry = {
+      rankId,
+      subLevel: Math.max(1, Math.min(STEPS_PER_RANK, subLevel)),
+      rankName: parsed.rankName || null,
+      stepProgress: Number.isFinite(Number(parsed.stepProgress)) ? Number(parsed.stepProgress) : undefined,
+      stepTotal: Number.isFinite(Number(parsed.stepTotal)) ? Number(parsed.stepTotal) : undefined,
+    };
+    window.__serverAdventureRank = entry;
+    return entry;
+  } catch {
+    return null;
+  }
+}
+
 /** Cache authoritative rank from MySQL (leaderboard / solve sync). */
 export function cacheServerAdventureRank(rank) {
   if (typeof window === 'undefined' || !rank) return;
   const rankId = Number(rank.rankId);
   const subLevel = Number(rank.subLevel);
   if (!Number.isFinite(rankId) || rankId <= 0 || !Number.isFinite(subLevel) || subLevel <= 0) return;
+  const prev = window.__serverAdventureRank || {};
   window.__serverAdventureRank = {
     rankId,
     subLevel: Math.max(1, Math.min(STEPS_PER_RANK, subLevel)),
-    rankName: rank.rankName || null,
+    rankName: rank.rankName || prev.rankName || null,
+    stepProgress: Number.isFinite(Number(rank.stepProgress))
+      ? Number(rank.stepProgress)
+      : prev.stepProgress,
+    stepTotal: Number.isFinite(Number(rank.stepTotal))
+      ? Number(rank.stepTotal)
+      : prev.stepTotal,
   };
+  persistAdventureRankCache(window.__serverAdventureRank);
+}
+
+/** Persist computed panel rank (badge + progress) for next cold paint. */
+export function cacheComputedAdventureRank(rankState, rankName = null) {
+  if (!rankState?.rankId) return;
+  cacheServerAdventureRank({
+    rankId: rankState.rankId,
+    subLevel: rankState.subLevel,
+    rankName,
+    stepProgress: rankState.stepProgress,
+    stepTotal: rankState.stepTotal,
+  });
 }
 
 /** Prefer server rank for badge/sublevel when available (matches leaderboard). */

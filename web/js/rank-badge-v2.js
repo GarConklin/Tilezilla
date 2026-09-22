@@ -275,13 +275,34 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   return true;
 }
 
+async function waitForBadgeImages(stackEl) {
+  const parts = ensureRankBadgeV2Stack(stackEl);
+  if (!parts) return;
+  const imgs = [parts.bg, parts.tile, parts.num].filter(Boolean);
+  await Promise.all(imgs.map((img) => {
+    if (!img.getAttribute('src')) return Promise.resolve();
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    if (typeof img.decode === 'function') {
+      return img.decode().catch(() => undefined);
+    }
+    return new Promise((resolve) => {
+      const done = () => resolve();
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  }));
+}
+
 /**
  * Load layout then apply. Returns false on failure (caller may use legacy path).
+ * When opts.waitForImages is true, resolves after bg/tile/roman have decoded.
  */
 export async function applyRankBadgeV2Async(stackEl, opts = {}) {
   try {
     const layout = opts.layout || (await loadRankBadgeV2Layout());
-    return applyRankBadgeV2(stackEl, { ...opts, layout });
+    const ok = applyRankBadgeV2(stackEl, { ...opts, layout });
+    if (ok && opts.waitForImages) await waitForBadgeImages(stackEl);
+    return ok;
   } catch (err) {
     console.warn('Rank badge v2:', err);
     return false;

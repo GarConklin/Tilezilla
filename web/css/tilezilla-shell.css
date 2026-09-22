@@ -1928,6 +1928,18 @@ button {
   justify-content: center;
 }
 
+/* Hide empty outline + 0% until badge images and progress are ready. */
+.tz-main-v2-app .tz-preview-v2-user-data:not(.is-rank-ready) .tz-preview-v2-user-data__badge-stack,
+.tz-main-v2-app .tz-preview-v2-user-data:not(.is-rank-ready) .tz-preview-v2-user-data__progress-track,
+.tz-main-v2-app .tz-preview-v2-user-data:not(.is-rank-ready) .tz-preview-v2-user-data__progress-text {
+  visibility: hidden;
+}
+
+.tz-rank-badge-v2.badge-stack img:not([src]),
+.tz-rank-badge-v2.badge-stack img[src=''] {
+  visibility: hidden;
+}
+
 /* Legacy flat badge (non-v2) */
 .tz-preview-v2-user-data__badge-stack:not(:has(.tz-rank-badge-v2)) .tz-preview-v2-user-data__badge,
 .tz-preview-v2-user-data__badge {
