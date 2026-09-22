@@ -931,7 +931,8 @@ async function updateRankPanel(app) {
   const badgeOpts = {
     rankId: rank?.rank_id || 1,
     subLevel: rankState.subLevel,
-    romanStyle: rank?.sublevel_badge || 'gld',
+    // Layered badge v2 always uses silver romans (tuner / Nc plaque art).
+    romanStyle: 'slvr',
     rankName: rank?.rank_name || 'Wanderer',
   };
 
@@ -966,7 +967,10 @@ async function updateRankPanel(app) {
     const v2Fill = $('previewV2RankProgressFill');
     const v2Track = document.querySelector('.tz-preview-v2-progress__track');
     const v2SubWrap = $('previewV2SubLevel');
+    const v2Slot = $('previewV2BadgeSlot');
     if (v2SubWrap) {
+      const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
+      if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
       const ok = await applyRankBadgeV2Async(v2SubWrap, badgeOpts);
       if (!ok && usedV2 === false) {
         /* legacy copy already handled above for status; mirror paths */

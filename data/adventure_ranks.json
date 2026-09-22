@@ -5,7 +5,7 @@
     "rank_name": "Wanderer",
     "rank_description": "Every great journey begins with a single step.",
     "badge_image": "/img/ranks/Wanderer.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 1
   },
   {
@@ -14,7 +14,7 @@
     "rank_name": "Pathfinder",
     "rank_description": "The first routes emerge from the wilderness.",
     "badge_image": "/img/ranks/Pathfinder.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 2
   },
   {
@@ -32,7 +32,7 @@
     "rank_name": "Trailblazer",
     "rank_description": "New trails are forged through determination.",
     "badge_image": "/img/ranks/Trailblazer.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 4
   },
   {
@@ -50,7 +50,7 @@
     "rank_name": "Expeditioner",
     "rank_description": "No challenge is too distant or difficult.",
     "badge_image": "/img/ranks/Expeditioner.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 6
   },
   {
@@ -59,7 +59,7 @@
     "rank_name": "Adventurer",
     "rank_description": "The unknown becomes opportunity.",
     "badge_image": "/img/ranks/Adventurer.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 7
   },
   {
@@ -68,7 +68,7 @@
     "rank_name": "Pioneer",
     "rank_description": "A leader among those who seek new routes.",
     "badge_image": "/img/ranks/Pioneer.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 8
   },
   {
@@ -77,7 +77,7 @@
     "rank_name": "Legend",
     "rank_description": "Your name is etched among the greatest explorers.",
     "badge_image": "/img/ranks/Legend.png",
-    "sublevel_badge": "gld",
+    "sublevel_badge": "slvr",
     "display_order": 9
   }
 ]

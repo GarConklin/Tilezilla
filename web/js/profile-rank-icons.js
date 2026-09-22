@@ -86,7 +86,7 @@ async function applyPassportRankState(stacks, progress) {
   const opts = {
     rankId: resolved.rank?.rank_id || 1,
     subLevel: resolved.subLevel,
-    romanStyle: resolved.badge || 'gld',
+    romanStyle: 'slvr',
     rankName: resolved.rank?.rank_name || 'Wanderer',
   };
 
@@ -104,7 +104,7 @@ async function applyPassportRankState(stacks, progress) {
       }
       if (num) {
         const n = Math.max(1, Math.min(15, resolved.subLevel || 1));
-        num.src = `/img/ranks/${resolved.badge || 'gld'}-${n}.png`;
+        num.src = `/img/ranks/slvr-${n}.png`;
         num.alt = `Sublevel ${romanForSubLevel(resolved.subLevel)}`;
       }
     }

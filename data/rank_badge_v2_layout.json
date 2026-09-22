@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Live rank badge stack. BG bands + Nc tiles + gld/slvr 1-15. Tuned via rank-badge-v2-tuner.",
+  "note": "Live rank badge stack. BG bands + Nc tiles + silver (slvr) 1-15. Tuned via rank-badge-v2-tuner.",
   "art": {
     "bgW": 115,
     "bgH": 145
