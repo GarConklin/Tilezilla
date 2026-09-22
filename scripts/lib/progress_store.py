@@ -788,6 +788,49 @@ def _daily_challenge_level_id(challenge_date: str) -> Optional[str]:
         conn.close()
 
 
+def daily_challenge_for_date(challenge_date: str) -> dict[str, Any]:
+    """Today's (or any day's) scheduled daily — same MySQL row the leaderboard uses."""
+    date_key = str(challenge_date or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_key):
+        return {"ok": False, "error": "invalid-date"}
+
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"ok": False, "error": "db-unavailable"}
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT challenge_date, level_id, total_solutions, notes
+                FROM daily_challenges
+                WHERE challenge_date = %s
+                LIMIT 1
+                """,
+                (date_key,),
+            )
+            row = cur.fetchone()
+            if not row:
+                return {"ok": False, "error": "not-found", "date": date_key}
+            level_id = str(row.get("level_id") or "").strip().replace(".json", "")
+            if not level_id:
+                return {"ok": False, "error": "empty-level", "date": date_key}
+            total = row.get("total_solutions")
+            return {
+                "ok": True,
+                "date": date_key,
+                "levelId": level_id,
+                "totalSolutions": int(total) if total is not None else 0,
+                "notes": str(row.get("notes") or "") or None,
+                "source": "mysql",
+            }
+    except Exception:
+        return {"ok": False, "error": "query-failed", "date": date_key}
+    finally:
+        conn.close()
+
+
 def start_daily_attempt(
     user_id: int | str,
     challenge_date: str,

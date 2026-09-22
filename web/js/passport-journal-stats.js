@@ -27,6 +27,20 @@ function parseDailyCsvDate(value) {
 export async function fetchChallengeLevelIdForDate(challengeDateIso = todayIso()) {
   const dateKey = String(challengeDateIso || todayIso()).trim();
   try {
+    const res = await fetch(`/api/daily-challenge?date=${encodeURIComponent(dateKey)}`, {
+      credentials: 'include',
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.ok && json.levelId) {
+        return String(json.levelId).replace(/\.json$/i, '') || null;
+      }
+    }
+  } catch {
+    /* fall through to CSV */
+  }
+  try {
     const csv = await fetch(`/data/daily_challenges_import.csv?t=${dateKey}`, { cache: 'no-store' }).then((r) =>
       r.ok ? r.text() : '',
     );

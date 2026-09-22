@@ -351,32 +351,69 @@ function parseDailyCsv(text) {
   return rows;
 }
 
-async function resolveDailyChallenge(app) {
-  const today = todayIso();
-  let row = null;
+async function resolveDailyChallengeFromMysql(today) {
+  try {
+    const res = await fetch(`/api/daily-challenge?date=${encodeURIComponent(today)}`, {
+      credentials: 'include',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(8000)),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (!json?.ok || !json.levelId) return null;
+    return {
+      date: String(json.date || today).slice(0, 10),
+      levelId: String(json.levelId).replace(/\.json$/i, ''),
+      totalSolutions: Number(json.totalSolutions) || 0,
+      source: 'mysql',
+    };
+  } catch (e) {
+    console.warn('Daily challenge API unavailable', e);
+    return null;
+  }
+}
+
+async function resolveDailyChallengeFromCsv(today) {
   try {
     const csv = await fetch(`/data/daily_challenges_import.csv?t=${today}`, {
       signal: AbortSignal.timeout(networkFetchTimeoutMs(12000)),
     }).then((r) => r.text());
     const rows = parseDailyCsv(csv);
-    row = rows.find((r) => {
+    const row = rows.find((r) => {
       const rowDate = parseDailyCsvDate(r.date) || r.date;
       return rowDate === today;
-    }) || rows[0] || null;
+    }) || null;
+    if (!row?.levelId) return null;
+    return {
+      date: parseDailyCsvDate(row.date) || row.date || today,
+      levelId: row.levelId,
+      totalSolutions: Number(row.totalSolutions) || 0,
+      source: 'csv',
+    };
   } catch (e) {
     console.warn('Daily challenge CSV unavailable', e);
+    return null;
   }
+}
+
+async function resolveDailyChallenge(app) {
+  const today = todayIso();
+  // Prefer MySQL (same table as daily leaderboard) so board + LB never diverge.
+  const row = (await resolveDailyChallengeFromMysql(today))
+    || (await resolveDailyChallengeFromCsv(today));
 
   if (row?.levelId) {
     const level = await resolveCatalogLevel(app, row.levelId);
     if (level) {
-      const dateIso = parseDailyCsvDate(row.date) || row.date;
+      const dateIso = parseDailyCsvDate(row.date) || row.date || today;
       return {
         level,
         meta: {
-          ...row,
           date: dateIso,
+          levelId: row.levelId,
+          totalSolutions: row.totalSolutions || level.totalUniqueSolutions || 0,
           leaderboardEligible: dateIso === today,
+          source: row.source || 'unknown',
         },
       };
     }
@@ -390,6 +427,7 @@ async function resolveDailyChallenge(app) {
       levelId: fallback?.id,
       totalSolutions: fallback?.totalUniqueSolutions || 0,
       leaderboardEligible: true,
+      source: 'fallback',
     },
   };
 }
@@ -3597,8 +3635,54 @@ function refreshMainScreenV2LayoutsOnReturn() {
 
 window.addEventListener('focus', refreshMainScreenV2LayoutsOnReturn);
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') refreshMainScreenV2LayoutsOnReturn();
+  if (document.visibilityState === 'visible') {
+    refreshMainScreenV2LayoutsOnReturn();
+    void maybeReloadDailyAfterMidnight();
+  }
 });
+window.addEventListener('focus', () => {
+  void maybeReloadDailyAfterMidnight();
+});
+
+/** If the calendar day rolled while the tab stayed open, swap to today's MySQL daily. */
+let dailyRolloverCheckBusy = false;
+async function maybeReloadDailyAfterMidnight() {
+  if (dailyRolloverCheckBusy) return;
+  const appRoot = document.querySelector('.tz-app');
+  if (appRoot?.dataset?.screen !== 'daily-challenge') return;
+  const meta = window.__dailyChallengeMeta;
+  const metaDate = parseDailyCsvDate(meta?.date) || meta?.date;
+  const today = todayIso();
+  if (!metaDate || metaDate === today) {
+    // Same calendar day — still verify level matches MySQL (CSV/DB drift).
+    if (!meta?.levelId) return;
+    try {
+      const live = await resolveDailyChallengeFromMysql(today);
+      if (live?.levelId && live.levelId !== meta.levelId) {
+        dailyRolloverCheckBusy = true;
+        try {
+          const app = window.__app;
+          if (app) await loadDailyPuzzle(app);
+        } finally {
+          dailyRolloverCheckBusy = false;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    return;
+  }
+  dailyRolloverCheckBusy = true;
+  try {
+    const app = window.__app;
+    if (app) {
+      showGameMessage('New daily challenge — loading today\'s puzzle…', 'info');
+      await loadDailyPuzzle(app);
+    }
+  } finally {
+    dailyRolloverCheckBusy = false;
+  }
+}
 
 async function refreshMainScreenV2LayoutFromDisk() {
   if (!MAIN_V2_SHELL) return;

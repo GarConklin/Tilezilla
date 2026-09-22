@@ -11,7 +11,7 @@ from __future__ import annotations
 import gzip
 import json
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -108,6 +108,7 @@ from lib.level_catalog import lookup_level  # noqa: E402
 from lib.progress_store import (  # noqa: E402
     adventure_leaderboard,
     all_time_best_daily,
+    daily_challenge_for_date,
     daily_leaderboard_for_date,
     merge_progress,
     migrate_progress,
@@ -501,6 +502,14 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/progress":
             self._handle_get_progress()
             return
+        if parsed.path == "/api/daily-challenge":
+            qs = parse_qs(parsed.query or "")
+            date_raw = (qs.get("date") or [""])[0].strip()
+            if not date_raw:
+                # Prefer client-local date; UTC midnight can disagree with the player.
+                date_raw = date.today().isoformat()
+            self._send_json(200, daily_challenge_for_date(date_raw))
+            return
         if parsed.path == "/api/daily-leaderboard/best":
             self._send_json(200, all_time_best_daily(ROOT))
             return
@@ -508,7 +517,7 @@ class Handler(SimpleHTTPRequestHandler):
             qs = parse_qs(parsed.query or "")
             date_raw = (qs.get("date") or [""])[0].strip()
             if not date_raw:
-                date_raw = datetime.now(timezone.utc).date().isoformat()
+                date_raw = date.today().isoformat()
             self._send_json(200, daily_leaderboard_for_date(ROOT, date_raw))
             return
         if parsed.path == "/api/adventure-leaderboard":
@@ -2125,6 +2134,7 @@ def main() -> None:
     print("Adventure path API: GET /api/adventure/path")
     print("System info API: GET /api/system-info")
     print("Player progress API: GET /api/progress")
+    print("Daily challenge API: GET /api/daily-challenge?date=YYYY-MM-DD")
     print("Daily leaderboard API: GET /api/daily-leaderboard?date=YYYY-MM-DD")
     print("Daily leaderboard API: GET /api/daily-leaderboard/best")
     print("Adventure leaderboard API: GET /api/adventure-leaderboard")
