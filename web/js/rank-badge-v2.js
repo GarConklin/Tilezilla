@@ -172,23 +172,6 @@ function resolveSurfaceScale(stackEl, artW, artH, surface = {}, explicitScale) {
   return Math.max(0.05, base * mult);
 }
 
-/** Keep --preview-scale in sync with the CSS-sized preview stack (phone-safe). */
-function syncPreviewScaleFromBox(stackEl, artH) {
-  if (!stackEl || !(artH > 0)) return;
-  const apply = () => {
-    const h = stackEl.getBoundingClientRect().height;
-    if (h > 4) stackEl.style.setProperty('--preview-scale', String(h / artH));
-  };
-  apply();
-  requestAnimationFrame(apply);
-  if (typeof ResizeObserver === 'undefined') return;
-  if (stackEl._tzBadgeScaleRo) return;
-  const slot = stackEl.parentElement || stackEl;
-  const ro = new ResizeObserver(() => apply());
-  ro.observe(slot);
-  stackEl._tzBadgeScaleRo = ro;
-}
-
 /** Ensure stack has bg / tile / num img children (migrates legacy markup). */
 export function ensureRankBadgeV2Stack(stackEl) {
   if (!stackEl) return null;
@@ -249,14 +232,12 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   const band = bandKeyForRank(rankId);
   const tileLayout = getTileForBand(layout, band);
   const L = getResolvedNumeral(layout, subLevel, rankId);
-  const surfaceKey = String(opts.surface || 'preview');
-  const surface = getSurfaceLayout(layout, surfaceKey);
+  const surface = getSurfaceLayout(layout, opts.surface || 'preview');
   const parts = ensureRankBadgeV2Stack(stackEl);
   if (!parts) return false;
 
   const artW = art.bgW || 115;
   const artH = art.bgH || 145;
-  const slotFit = surfaceKey === 'preview';
   const scale = resolveSurfaceScale(stackEl, artW, artH, surface, opts.scale);
 
   stackEl.style.setProperty('--art-w', String(artW));
@@ -274,13 +255,6 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.style.setProperty('--bg-scale', String(surface.bgScale || 1));
   stackEl.style.setProperty('--bg-nudge-x', String(surface.bgNudgeX || 0));
   stackEl.style.setProperty('--bg-nudge-y', String(surface.bgNudgeY || 0));
-  if (slotFit) {
-    stackEl.style.setProperty('--surface-fill-scale', String(surface.scale > 0 ? surface.scale : 1));
-    stackEl.classList.add('tz-rank-badge-v2--slot-fit');
-    syncPreviewScaleFromBox(stackEl, artH);
-  } else {
-    stackEl.classList.remove('tz-rank-badge-v2--slot-fit');
-  }
 
   const roman = romanForSubLevel(subLevel);
   const rankName = opts.rankName || `Rank ${rankId}`;
@@ -295,7 +269,7 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.dataset.rankId = String(rankId);
   stackEl.dataset.sublevel = String(subLevel);
   stackEl.dataset.sublevelBadge = romanStyle;
-  stackEl.dataset.surface = surfaceKey;
+  stackEl.dataset.surface = String(opts.surface || 'preview');
   stackEl.setAttribute('aria-label', `${rankName}, sublevel ${roman}`);
 
   return true;

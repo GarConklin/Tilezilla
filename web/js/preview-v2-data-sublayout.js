@@ -16,10 +16,10 @@ export const PREVIEW_V2_DATA_SECTIONS = {
       progressText: { label: 'Progress %', cssKey: 'progress-text' },
     },
     defaults: {
-      badgeStack: { x: 2, y: 0, w: 100, h: 56 },
-      sublevelIcon: { x: 44, y: 38, w: 16, h: 10 },
-      progressTrack: { x: 30, y: 58, w: 70, h: 10 },
-      progressText: { x: 2, y: 56, w: 30, h: 12 },
+      badgeStack: { x: 8, y: 0, w: 88, h: 42 },
+      sublevelIcon: { x: 30, y: 30, w: 44, h: 24 },
+      progressTrack: { x: 4, y: 54, w: 96, h: 5 },
+      progressText: { x: 4, y: 62, w: 96, h: 10 },
     },
   },
   gameData: {

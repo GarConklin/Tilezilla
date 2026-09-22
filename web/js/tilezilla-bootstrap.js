@@ -965,7 +965,10 @@ async function updateRankPanel(app, opts = {}) {
   const paintPreviewBadge = async (badgeOpts, { revealProgress = null } = {}) => {
     if (!MAIN_V2_SHELL) return false;
     const v2SubWrap = $('previewV2SubLevel');
+    const v2Slot = $('previewV2BadgeSlot');
     if (!v2SubWrap) return false;
+    const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
+    if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
     const ok = await applyRankBadgeV2Async(v2SubWrap, {
       ...badgeOpts,
       surface: 'preview',
