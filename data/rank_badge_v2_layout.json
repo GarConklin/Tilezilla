@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Live rank badge stack. Tune at /tools/rank-badge-v2-tuner.html — use Simulated preview tile for surfaces.preview (bg crop + place). Romans shared; passport/rankPanel untouched unless you edit those surfaces.",
+  "note": "Live rank badge stack. Tune at /tools/rank-badge-v2-tuner.html \u2014 use Simulated preview tile for surfaces.preview (bg crop + place). Romans shared; passport/rankPanel untouched unless you edit those surfaces.",
   "art": {
     "bgW": 115,
     "bgH": 145
@@ -17,10 +17,85 @@
     "wScale": 1
   },
   "numerals": {
-    "1": { "wScale": 0.97 },
-    "5": { "h": 21 }
+    "1": {
+      "nudgeX": 0,
+      "nudgeY": 36,
+      "wScale": 0.97
+    },
+    "2": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "3": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "4": {
+      "nudgeY": 36
+    },
+    "5": {
+      "h": 21,
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "6": {
+      "nudgeX": -2,
+      "nudgeY": 36
+    },
+    "7": {
+      "nudgeX": -1,
+      "nudgeY": 36
+    },
+    "8": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "9": {
+      "nudgeY": 36
+    },
+    "10": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "11": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "12": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "13": {
+      "nudgeX": 0,
+      "nudgeY": 36
+    },
+    "14": {
+      "nudgeY": 36
+    },
+    "15": {
+      "nudgeY": 36
+    }
   },
-  "bands": {},
+  "bands": {
+    "21-30": {
+      "numeralShift": {
+        "nudgeY": -1
+      }
+    },
+    "31-40": {
+      "numeralShift": {
+        "nudgeX": -1
+      }
+    },
+    "51-55": {
+      "tile": {
+        "scale": 0.89
+      },
+      "numeralShift": {
+        "nudgeY": 3
+      }
+    }
+  },
   "surfaces": {
     "preview": {
       "fit": "contain",
