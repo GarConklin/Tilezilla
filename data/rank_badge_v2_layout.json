@@ -99,9 +99,9 @@
   "surfaces": {
     "preview": {
       "fit": "contain",
-      "scale": 0.85,
+      "scale": 0.83,
       "nudgeX": 0,
-      "nudgeY": 5,
+      "nudgeY": 7,
       "bgScale": 1,
       "bgNudgeX": 0,
       "bgNudgeY": 0
