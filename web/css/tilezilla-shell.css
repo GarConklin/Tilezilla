@@ -1833,7 +1833,7 @@ button {
 .tz-preview-v2-timer-data {
   left: calc(var(--tz-preview-timer-data-x-art, 14) / var(--tz-preview-art-w, 390) * 100%);
   top: calc(var(--tz-preview-timer-data-y-art, 166) / var(--tz-preview-art-h, 259) * 100%);
-  width: calc(var(--tz-preview-timer-data-w-art, 58) / var(--tz-preview-art-w, 390) * 100%);
+  width: calc(var(--tz-preview-timer-data-w-art, 60) / var(--tz-preview-art-w, 390) * 100%);
   height: calc(var(--tz-preview-timer-data-h-art, 44) / var(--tz-preview-art-h, 259) * 100%);
   min-height: 1px;
 }
@@ -2179,48 +2179,48 @@ button {
 }
 
 .tz-preview-v2-timer-data__item--current {
-  left: calc(var(--tz-timer-data-current-x-art, 0) / var(--tz-timer-data-art-w, 58) * 100%);
-  top: calc(var(--tz-timer-data-current-y-art, 2) / var(--tz-timer-data-art-h, 44) * 100%);
-  width: calc(var(--tz-timer-data-current-w-art, 58) / var(--tz-timer-data-art-w, 58) * 100%);
-  height: calc(var(--tz-timer-data-current-h-art, 20) / var(--tz-timer-data-art-h, 44) * 100%);
+  left: calc(var(--tz-timer-data-current-x-art, 15) / var(--tz-timer-data-art-w, 60) * 100%);
+  top: calc(var(--tz-timer-data-current-y-art, 15) / var(--tz-timer-data-art-h, 44) * 100%);
+  width: calc(var(--tz-timer-data-current-w-art, 40) / var(--tz-timer-data-art-w, 60) * 100%);
+  height: calc(var(--tz-timer-data-current-h-art, 14) / var(--tz-timer-data-art-h, 44) * 100%);
   align-items: var(--tz-timer-data-current-align, center);
   justify-content: var(--tz-timer-data-current-justify, flex-end);
-  font-size: calc(1em * var(--tz-timer-data-current-font-scale, 1));
+  font-size: calc(1em * var(--tz-timer-data-current-font-scale, 0.85));
 }
 
 .tz-preview-v2-timer-data__item--best {
-  left: calc(var(--tz-timer-data-best-x-art, 0) / var(--tz-timer-data-art-w, 58) * 100%);
-  top: calc(var(--tz-timer-data-best-y-art, 22) / var(--tz-timer-data-art-h, 44) * 100%);
-  width: calc(var(--tz-timer-data-best-w-art, 58) / var(--tz-timer-data-art-w, 58) * 100%);
-  height: calc(var(--tz-timer-data-best-h-art, 19) / var(--tz-timer-data-art-h, 44) * 100%);
+  left: calc(var(--tz-timer-data-best-x-art, 17) / var(--tz-timer-data-art-w, 60) * 100%);
+  top: calc(var(--tz-timer-data-best-y-art, 31) / var(--tz-timer-data-art-h, 44) * 100%);
+  width: calc(var(--tz-timer-data-best-w-art, 38) / var(--tz-timer-data-art-w, 60) * 100%);
+  height: calc(var(--tz-timer-data-best-h-art, 8) / var(--tz-timer-data-art-h, 44) * 100%);
   align-items: var(--tz-timer-data-best-align, center);
   justify-content: var(--tz-timer-data-best-justify, flex-end);
-  font-size: calc(0.92em * var(--tz-timer-data-best-font-scale, 1));
+  font-size: calc(0.92em * var(--tz-timer-data-best-font-scale, 0.92));
   opacity: 0.92;
 }
 
 .tz-preview-v2-game-data__type {
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-size: calc(0.85em * var(--tz-game-data-type-font-scale, 1));
+  font-size: calc(0.85em * var(--tz-game-data-type-font-scale, 0.75));
   opacity: 0.9;
 }
 
 .tz-preview-v2-game-data__date {
   font-variant-numeric: tabular-nums;
-  font-size: calc(0.95em * var(--tz-game-data-date-font-scale, 1));
+  font-size: calc(0.95em * var(--tz-game-data-date-font-scale, 0.85));
 }
 
 .tz-preview-v2-game-data__adv-id {
   font-variant-numeric: tabular-nums;
-  font-size: calc(0.92em * var(--tz-game-data-adv-id-font-scale, 1));
+  font-size: calc(0.92em * var(--tz-game-data-adv-id-font-scale, 0.92));
   font-weight: 600;
   letter-spacing: 0.03em;
 }
 
 .tz-preview-v2-game-data__id {
   font-variant-numeric: tabular-nums;
-  font-size: calc(0.92em * var(--tz-game-data-id-font-scale, 1));
+  font-size: calc(0.92em * var(--tz-game-data-id-font-scale, 1.05));
   font-weight: 700;
   font-family: ui-monospace, monospace;
   color: var(--tz-gold-bright);

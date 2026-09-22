@@ -2937,6 +2937,7 @@ async function applyShellLayouts() {
         applyCartographersJournalLayout(cartographersJournalLayout);
       }
       if (hintRulesLayout) applyHintRulesLayout(hintRulesLayout);
+      await applyAllPreviewV2DataSublayouts();
       requestAnimationFrame(() => {
         updateMainV2BoardFit();
         syncHintRulesWindowGeometry();
@@ -2991,6 +2992,7 @@ async function applyDeferredShellLayouts() {
   }
   if (MAIN_V2_SHELL) {
     try {
+      // Already applied in applyShellLayouts; refresh if tuner saved mid-session.
       await applyAllPreviewV2DataSublayouts();
       requestAnimationFrame(() => updateMainV2BoardFit());
     } catch (err) {

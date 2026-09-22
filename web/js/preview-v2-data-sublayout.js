@@ -38,10 +38,10 @@ export const PREVIEW_V2_DATA_SECTIONS = {
     },
     textLayout: true,
     defaults: {
-      gameType: { x: 0, y: 2, w: 70, h: 14, fontScale: 1, justify: 'center', align: 'center' },
-      gameDate: { x: 0, y: 15, w: 70, h: 14, fontScale: 1, justify: 'center', align: 'center' },
+      gameType: { x: 0, y: 2, w: 70, h: 14, fontScale: 0.75, justify: 'center', align: 'center' },
+      gameDate: { x: 0, y: 15, w: 70, h: 14, fontScale: 0.85, justify: 'center', align: 'center' },
       advId: { x: 0, y: 15, w: 70, h: 14, fontScale: 0.92, justify: 'center', align: 'center' },
-      puzzleId: { x: 0, y: 29, w: 70, h: 15, fontScale: 1, justify: 'center', align: 'center' },
+      puzzleId: { x: 0, y: 29, w: 70, h: 15, fontScale: 1.05, justify: 'center', align: 'center' },
     },
   },
   infoData: {
@@ -71,15 +71,15 @@ export const PREVIEW_V2_DATA_SECTIONS = {
     lsKey: 'tilezilla:layouts:timer-data-v2',
     lsPendingKey: 'tilezilla:layouts:timer-data-v2:pending',
     cssPrefix: 'timer-data',
-    frame: { w: 58, h: 44 },
+    frame: { w: 60, h: 44 },
     items: {
       timerCurrent: { label: 'Current time', cssKey: 'current' },
       timerBest: { label: 'Best time', cssKey: 'best' },
     },
     textLayout: true,
     defaults: {
-      timerCurrent: { x: 0, y: 2, w: 58, h: 20, fontScale: 1, justify: 'flex-end', align: 'center' },
-      timerBest: { x: 0, y: 22, w: 58, h: 19, fontScale: 0.92, justify: 'flex-end', align: 'center' },
+      timerCurrent: { x: 15, y: 15, w: 40, h: 14, fontScale: 0.85, justify: 'flex-end', align: 'center' },
+      timerBest: { x: 17, y: 31, w: 38, h: 8, fontScale: 0.92, justify: 'flex-end', align: 'center' },
     },
   },
 };
@@ -91,7 +91,7 @@ const layoutCache = new Map();
 const LEGACY_FRAMES = {
   gameData: { legacy: { w: 154, h: 54 }, current: { w: 70, h: 46 }, defaultItemH: 14 },
   infoData: { legacy: { w: 154, h: 18 }, current: { w: 68, h: 46 }, defaultItemH: 14 },
-  timerData: { legacy: { w: 104, h: 52 }, current: { w: 58, h: 44 }, defaultItemH: 20 },
+  timerData: { legacy: { w: 104, h: 52 }, current: { w: 60, h: 44 }, defaultItemH: 20 },
 };
 
 function migrateLegacyDataLayout(sectionKey, layout) {
