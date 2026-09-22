@@ -12,9 +12,9 @@ const DEFAULTS = {
   numerals: {},
   bands: {},
   surfaces: {
-    preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
-    passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
-    rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+    preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+    passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+    rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
   },
 };
 
@@ -129,6 +129,9 @@ export function getSurfaceLayout(layout, surfaceKey = 'preview') {
     scale: Number(over.scale ?? base.scale) || 1,
     nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
     nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
+    bgScale: Number(over.bgScale ?? base.bgScale) || 1,
+    bgNudgeX: Number(over.bgNudgeX ?? base.bgNudgeX) || 0,
+    bgNudgeY: Number(over.bgNudgeY ?? base.bgNudgeY) || 0,
   };
 }
 
@@ -249,6 +252,9 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.style.setProperty('--num-w-scale', String(L.wScale));
   stackEl.style.setProperty('--surface-nudge-x', `${surface.nudgeX}px`);
   stackEl.style.setProperty('--surface-nudge-y', `${surface.nudgeY}px`);
+  stackEl.style.setProperty('--bg-scale', String(surface.bgScale || 1));
+  stackEl.style.setProperty('--bg-nudge-x', String(surface.bgNudgeX || 0));
+  stackEl.style.setProperty('--bg-nudge-y', String(surface.bgNudgeY || 0));
 
   const roman = romanForSubLevel(subLevel);
   const rankName = opts.rankName || `Rank ${rankId}`;

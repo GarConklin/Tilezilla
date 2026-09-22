@@ -211,8 +211,75 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      object-position: center center;
+      object-fit: cover;
+      object-position:
+        calc(50% + var(--bg-nudge-x, 0) * 1%)
+        calc(50% + var(--bg-nudge-y, 0) * 1%);
+      transform: scale(var(--bg-scale, 1));
+      transform-origin: center center;
+    }
+
+    .badge-stack {
+      overflow: hidden;
+    }
+
+    .sim-preview__frame {
+      position: relative;
+      width: min(100%, 280px);
+      aspect-ratio: 104 / 72;
+      margin: 0 auto;
+      border-radius: 6px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      background:
+        linear-gradient(160deg, rgba(40, 28, 18, 0.95), rgba(18, 22, 20, 0.98));
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+    }
+
+    .sim-preview__badge-slot {
+      position: absolute;
+      left: calc(20 / 104 * 100%);
+      top: calc(0 / 72 * 100%);
+      width: calc(64 / 104 * 100%);
+      height: calc(52 / 72 * 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      outline: 1px dashed rgba(143, 212, 154, 0.35);
+    }
+
+    .sim-preview__badge-slot .badge-stack {
+      width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
+      height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
+      transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
+    }
+
+    .sim-preview__progress {
+      position: absolute;
+      left: calc(2 / 104 * 100%);
+      top: calc(56 / 72 * 100%);
+      width: calc(100 / 104 * 100%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: #e8f5e9;
+      font-family: ui-monospace, monospace;
+    }
+
+    .sim-preview__bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .sim-preview__bar > i {
+      display: block;
+      height: 100%;
+      width: 97%;
+      background: linear-gradient(90deg, #2d5a3d, #c4a35a);
     }
 
     .badge-stack__tile {
@@ -470,6 +537,21 @@
         <output id="surfaceYOut">0</output>
       </div>
       <input type="range" id="surfaceY" min="-40" max="40" step="1" value="0" />
+      <div class="row">
+        <label for="bgScale">BG crop zoom</label>
+        <output id="bgScaleOut">1.00</output>
+      </div>
+      <input type="range" id="bgScale" min="1" max="1.8" step="0.01" value="1" />
+      <div class="row">
+        <label for="bgX">BG pan X</label>
+        <output id="bgXOut">0</output>
+      </div>
+      <input type="range" id="bgX" min="-40" max="40" step="1" value="0" />
+      <div class="row">
+        <label for="bgY">BG pan Y</label>
+        <output id="bgYOut">0</output>
+      </div>
+      <input type="range" id="bgY" min="-40" max="40" step="1" value="0" />
 
       <div class="actions">
         <button type="button" id="btnSave">Save JSON</button>
@@ -511,6 +593,28 @@
         </ul>
       </div>
 
+      <div class="panel sim-preview" id="simPreviewPanel">
+        <h2>Simulated preview tile (user_data)</h2>
+        <p style="margin:0 0 10px;font-size:0.68rem;color:#a8b8b4;line-height:1.4;">
+          Same slot aspect as the live PREVIEW TILE badge window. Tune <strong>preview</strong> surface
+          (scale / nudge / BG crop) here — Save writes <code>surfaces.preview</code> for the game.
+        </p>
+        <div class="sim-preview__frame" id="simFrame">
+          <div class="sim-preview__badge-slot" id="simBadgeSlot">
+            <div class="badge-stack tz-rank-badge-v2" id="simBadgeStack">
+              <img class="badge-stack__bg" alt="" draggable="false" />
+              <img class="badge-stack__tile" alt="" draggable="false" />
+              <img class="badge-stack__num" alt="" draggable="false" />
+            </div>
+          </div>
+          <div class="sim-preview__progress">
+            <span>97%</span>
+            <div class="sim-preview__bar"><i></i></div>
+          </div>
+        </div>
+        <p class="readout" id="simReadout">—</p>
+      </div>
+
       <div class="panel strip">
         <h2>All romans on this rank</h2>
         <div class="strip-scroll" id="romanStrip"></div>
@@ -547,9 +651,9 @@
       numerals: {},
       bands: {},
       surfaces: {
-        preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
-        passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
-        rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+        preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
       },
     };
 
@@ -608,6 +712,15 @@
       surfaceScaleOut: document.getElementById('surfaceScaleOut'),
       surfaceXOut: document.getElementById('surfaceXOut'),
       surfaceYOut: document.getElementById('surfaceYOut'),
+      bgScale: document.getElementById('bgScale'),
+      bgX: document.getElementById('bgX'),
+      bgY: document.getElementById('bgY'),
+      bgScaleOut: document.getElementById('bgScaleOut'),
+      bgXOut: document.getElementById('bgXOut'),
+      bgYOut: document.getElementById('bgYOut'),
+      simBadgeSlot: document.getElementById('simBadgeSlot'),
+      simBadgeStack: document.getElementById('simBadgeStack'),
+      simReadout: document.getElementById('simReadout'),
       btnSave: document.getElementById('btnSave'),
       btnResetNum: document.getElementById('btnResetNum'),
       btnResetBand: document.getElementById('btnResetBand'),
@@ -678,6 +791,9 @@
         scale: Number(over.scale ?? base.scale) || 1,
         nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
         nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
+        bgScale: Number(over.bgScale ?? base.bgScale) || 1,
+        bgNudgeX: Number(over.bgNudgeX ?? base.bgNudgeX) || 0,
+        bgNudgeY: Number(over.bgNudgeY ?? base.bgNudgeY) || 0,
       };
     }
 
@@ -803,16 +919,25 @@
       for (const key of SURFACE_KEYS) {
         const S = getSurface(key);
         // Always write each surface so live slots have an explicit block to edit.
-        out.surfaces[key] = { fit: S.fit, scale: S.scale, nudgeX: S.nudgeX, nudgeY: S.nudgeY };
+        out.surfaces[key] = {
+          fit: S.fit,
+          scale: S.scale,
+          nudgeX: S.nudgeX,
+          nudgeY: S.nudgeY,
+          bgScale: S.bgScale,
+          bgNudgeX: S.bgNudgeX,
+          bgNudgeY: S.bgNudgeY,
+        };
       }
       return out;
     }
 
-    function applyStackVars(el, { rank, level, scale }) {
+    function applyStackVars(el, { rank, level, scale, surface } = {}) {
       const art = layout.art || DEFAULTS.art;
       const band = bandKeyForRank(rank);
       const tile = getTileForBand(band);
       const L = getResolvedNumeral(level, rank);
+      const S = surface || { bgScale: 1, bgNudgeX: 0, bgNudgeY: 0, nudgeX: 0, nudgeY: 0 };
       el.style.setProperty('--art-w', String(art.bgW || 115));
       el.style.setProperty('--art-h', String(art.bgH || 145));
       el.style.setProperty('--preview-scale', String(scale));
@@ -823,6 +948,11 @@
       el.style.setProperty('--num-nudge-x', String(L.nudgeX));
       el.style.setProperty('--num-nudge-y', String(L.nudgeY));
       el.style.setProperty('--num-w-scale', String(L.wScale));
+      el.style.setProperty('--bg-scale', String(S.bgScale || 1));
+      el.style.setProperty('--bg-nudge-x', String(S.bgNudgeX || 0));
+      el.style.setProperty('--bg-nudge-y', String(S.bgNudgeY || 0));
+      el.style.setProperty('--surface-nudge-x', `${S.nudgeX || 0}px`);
+      el.style.setProperty('--surface-nudge-y', `${S.nudgeY || 0}px`);
 
       const bg = el.querySelector('.badge-stack__bg');
       const tileImg = el.querySelector('.badge-stack__tile');
@@ -833,6 +963,38 @@
         num.src = numPath(level);
         num.alt = romanFor(level);
       }
+    }
+
+    function resolveSimScale(slotEl, artW, artH, surface) {
+      const rect = slotEl.getBoundingClientRect();
+      const w = rect.width > 4 ? rect.width : artW;
+      const h = rect.height > 4 ? rect.height : artH * 0.4;
+      const fit = surface.fit || 'contain';
+      let base;
+      if (fit === 'height') base = h / artH;
+      else if (fit === 'width') base = w / artW;
+      else base = Math.min(w / artW, h / artH);
+      const mult = Number(surface.scale) > 0 ? Number(surface.scale) : 1;
+      return Math.max(0.05, base * mult);
+    }
+
+    function refreshSimPreview() {
+      const slot = els.simBadgeSlot;
+      const stack = els.simBadgeStack;
+      if (!slot || !stack) return;
+      const art = layout.art || DEFAULTS.art;
+      const S = getSurface('preview');
+      const scale = resolveSimScale(slot, art.bgW || 115, art.bgH || 145, S);
+      applyStackVars(stack, {
+        rank: rankId,
+        level: subLevel,
+        scale,
+        surface: S,
+      });
+      els.simReadout.textContent =
+        `preview · scale ${scale.toFixed(3)} · surf ×${S.scale.toFixed(2)}` +
+        ` · nudge ${S.nudgeX},${S.nudgeY}` +
+        ` · bg ×${S.bgScale.toFixed(2)} pan ${S.bgNudgeX},${S.bgNudgeY}`;
     }
 
     function makeMiniStack(rank, level) {
@@ -883,12 +1045,24 @@
       els.surfaceScaleOut.textContent = Number(S.scale).toFixed(2);
       els.surfaceXOut.textContent = String(S.nudgeX);
       els.surfaceYOut.textContent = String(S.nudgeY);
+      els.bgScale.value = String(S.bgScale);
+      els.bgX.value = String(S.bgNudgeX);
+      els.bgY.value = String(S.bgNudgeY);
+      els.bgScaleOut.textContent = Number(S.bgScale).toFixed(2);
+      els.bgXOut.textContent = String(S.bgNudgeX);
+      els.bgYOut.textContent = String(S.bgNudgeY);
     }
 
     function refresh() {
       els.rankSelect.value = String(rankId);
-      applyStackVars(els.badgeStack, { rank: rankId, level: subLevel, scale: previewScale });
+      applyStackVars(els.badgeStack, {
+        rank: rankId,
+        level: subLevel,
+        scale: previewScale,
+        surface: getSurface(surfaceKey),
+      });
       syncSliders();
+      refreshSimPreview();
 
       const L = getNumeral(subLevel);
       const R = getResolvedNumeral(subLevel, rankId);
@@ -1075,6 +1249,15 @@
       els.surfaceY.addEventListener('input', () => {
         patchSurface({ nudgeY: Number(els.surfaceY.value) || 0 });
       });
+      els.bgScale.addEventListener('input', () => {
+        patchSurface({ bgScale: Number(els.bgScale.value) || 1 });
+      });
+      els.bgX.addEventListener('input', () => {
+        patchSurface({ bgNudgeX: Number(els.bgX.value) || 0 });
+      });
+      els.bgY.addEventListener('input', () => {
+        patchSurface({ bgNudgeY: Number(els.bgY.value) || 0 });
+      });
 
       els.btnModeRoman.addEventListener('click', () => setNudgeMode('roman'));
       els.btnModeBand.addEventListener('click', () => setNudgeMode('band'));
@@ -1238,8 +1421,9 @@
       }
       setNudgeMode('roman');
       refresh();
+      requestAnimationFrame(() => refreshSimPreview());
       els.stage.focus();
-      els.status.textContent = 'Ready — romans shared; surfaces place preview/passport/rankPanel';
+      els.status.textContent = 'Ready — use Simulated preview tile to place surfaces.preview';
     }
 
     void boot();

@@ -1844,7 +1844,7 @@ def validate_rank_badge_v2_layout(payload: object) -> str | None:
             return "surfaces must be an object"
         allowed_surfaces = ("preview", "passport", "rankPanel")
         allowed_fit = ("contain", "width", "height")
-        surface_keys = ("fit", "scale", "nudgeX", "nudgeY")
+        surface_keys = ("fit", "scale", "nudgeX", "nudgeY", "bgScale", "bgNudgeX", "bgNudgeY")
         for surf_key, entry in surfaces.items():
             if surf_key not in allowed_surfaces:
                 return f"Unknown surfaces key: {surf_key}"

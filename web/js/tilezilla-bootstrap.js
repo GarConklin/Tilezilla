@@ -906,15 +906,43 @@ async function loadAdventureRanks() {
   return adventureRanksCache;
 }
 
-async function updateRankPanel(app) {
-  const path = await loadAdventurePath();
-  const levelContext = await ensureAdventureLevelContext(app);
+async function updateRankPanel(app, opts = {}) {
+  // Do NOT await catalog readiness here — that can block up to 30s and leaves the
+  // preview badge blank on daily first paint.
+  const pathPromise = loadAdventurePath();
+  const ranksPromise = loadAdventureRanks();
+  const ranks = await ranksPromise;
+
+  // Instant stack paint from server rank cache while the 3MB path JSON loads.
+  const serverRank = typeof window !== 'undefined' ? window.__serverAdventureRank : null;
+  if (serverRank?.rankId && serverRank?.subLevel && MAIN_V2_SHELL) {
+    const earlyRank = ranks.find((r) => r.rank_id === serverRank.rankId) || ranks[0];
+    const earlyOpts = {
+      rankId: earlyRank?.rank_id || serverRank.rankId,
+      subLevel: serverRank.subLevel,
+      romanStyle: 'slvr',
+      rankName: earlyRank?.rank_name || serverRank.rankName || 'Wanderer',
+    };
+    const v2SubWrap = $('previewV2SubLevel');
+    const v2Slot = $('previewV2BadgeSlot');
+    const subLevelEl = $('rankSubLevel');
+    if (subLevelEl) {
+      void applyRankBadgeV2Async(subLevelEl, { ...earlyOpts, surface: 'rankPanel' });
+    }
+    if (v2SubWrap) {
+      const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
+      if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
+      void applyRankBadgeV2Async(v2SubWrap, { ...earlyOpts, surface: 'preview' });
+    }
+  }
+
+  const path = await pathPromise;
+  const levelContext = adventureLevelContext(app);
   const rankState = mergeServerAdventureRank(getRankPanelState(
     app?.progress || window.__app?.progress,
     path,
     levelContext,
   ));
-  const ranks = await loadAdventureRanks();
   const rank = ranks.find((r) => r.rank_id === rankState.rankId) || ranks[0];
   const total = Math.max(1, rankState.stepTotal || 1);
   const current = Math.max(0, Math.min(rankState.stepProgress || 0, total));
@@ -969,11 +997,17 @@ async function updateRankPanel(app) {
     const v2SubWrap = $('previewV2SubLevel');
     const v2Slot = $('previewV2BadgeSlot');
     if (v2SubWrap) {
-      const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
-      if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
-      const ok = await applyRankBadgeV2Async(v2SubWrap, { ...badgeOpts, surface: 'preview' });
+      const paintPreview = async () => {
+        const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
+        if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
+        return applyRankBadgeV2Async(v2SubWrap, { ...badgeOpts, surface: 'preview' });
+      };
+      const ok = await paintPreview();
+      // Remeasure after layout — first paint often runs before the user_data slot has size.
+      requestAnimationFrame(() => {
+        void paintPreview();
+      });
       if (!ok && usedV2 === false) {
-        /* legacy copy already handled above for status; mirror paths */
         const v2Badge = $('previewV2RankBadge');
         const v2Sub = $('previewV2SubLevelIcon');
         if (v2Badge && badge) {
@@ -995,6 +1029,29 @@ async function updateRankPanel(app) {
   }
 
   void refreshProfileRankIcons(app?.progress || window.__app?.progress);
+
+  // Refine once catalog/context is ready (does not block first badge paint).
+  if (opts.refine === false) return;
+  void (async () => {
+    try {
+      const ctx = await ensureAdventureLevelContext(app);
+      const refined = mergeServerAdventureRank(getRankPanelState(
+        app?.progress || window.__app?.progress,
+        path,
+        ctx,
+      ));
+      if (
+        refined.rankId !== rankState.rankId
+        || refined.subLevel !== rankState.subLevel
+        || Number(refined.stepProgress) !== Number(rankState.stepProgress)
+        || Number(refined.stepTotal) !== Number(rankState.stepTotal)
+      ) {
+        await updateRankPanel(app, { refine: false });
+      }
+    } catch {
+      /* ignore */
+    }
+  })();
 }
 
 function formatHintTokenLabel(app) {

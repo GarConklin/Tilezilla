@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Live rank badge stack. Tune numerals/tile/bands + surfaces at /tools/rank-badge-v2-tuner.html. surfaces.preview places the art box in the user_data preview slot; passport/rankPanel use the same numeral JSON.",
+  "note": "Live rank badge stack. Tune at /tools/rank-badge-v2-tuner.html — use Simulated preview tile for surfaces.preview (bg crop + place). Romans shared; passport/rankPanel untouched unless you edit those surfaces.",
   "art": {
     "bgW": 115,
     "bgH": 145
@@ -24,21 +24,30 @@
   "surfaces": {
     "preview": {
       "fit": "contain",
-      "scale": 0.88,
+      "scale": 0.92,
       "nudgeX": 0,
-      "nudgeY": -4
+      "nudgeY": 0,
+      "bgScale": 1,
+      "bgNudgeX": 0,
+      "bgNudgeY": 0
     },
     "passport": {
       "fit": "contain",
       "scale": 1,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": 0,
+      "bgScale": 1,
+      "bgNudgeX": 0,
+      "bgNudgeY": 0
     },
     "rankPanel": {
       "fit": "contain",
       "scale": 1,
       "nudgeX": 0,
-      "nudgeY": 0
+      "nudgeY": 0,
+      "bgScale": 1,
+      "bgNudgeX": 0,
+      "bgNudgeY": 0
     }
   }
 }
