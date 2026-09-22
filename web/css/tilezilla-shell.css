@@ -3363,7 +3363,9 @@ body.tz-modal-open .tz-shell-boot-loader {
   z-index: 0;
 }
 
-.tz-preview-renderer__stage[hidden] {
+.tz-preview-renderer__stage[hidden],
+.tz-preview-renderer__stage:not([src]),
+.tz-preview-renderer__stage[src=''] {
   display: none !important;
 }
 

@@ -3369,9 +3369,8 @@ async function init() {
     .catch((err) => {
       console.warn('Menu layout (early):', err);
     });
-  // Unhide chrome immediately; layouts finish in the background (do not block puzzle boot).
-  finishShellBoot();
-  void applyShellLayouts().catch((err) => {
+  // Keep is-shell-booting until layouts apply — otherwise empty preview slot flashes a white halo.
+  const layoutsReady = applyShellLayouts().catch((err) => {
     console.warn('Shell layouts:', err);
   });
   const earlyUrlParams = new URLSearchParams(window.location.search);
@@ -3467,6 +3466,7 @@ async function init() {
 
   if (deferBootPuzzle) {
     appRoot?.setAttribute('data-screen', 'profile-picker');
+    await layoutsReady;
     finishShellBoot();
     // Warm catalog + today's daily bucket behind the passport picker (cellular cold start).
     void (async () => {
@@ -3495,6 +3495,7 @@ async function init() {
   }
 
   if (!deferBootPuzzle) {
+    await layoutsReady;
     appRoot?.classList.remove('is-shell-booting');
     if (bootLoading) bootLoading.hidden = true;
     try {
@@ -3544,6 +3545,7 @@ async function init() {
     applyGuestChrome(appRef);
     void deferredShellWarmup(appRef, authState, { progressHydrated });
   } finally {
+    await layoutsReady;
     finishShellBoot();
   }
 }
