@@ -1919,13 +1919,11 @@ button {
   z-index: 1;
   overflow: visible;
   box-sizing: border-box;
-  left: calc(var(--tz-user-data-badge-stack-x-art, 20) / var(--tz-user-data-art-w, 104) * 100%);
+  left: calc(var(--tz-user-data-badge-stack-x-art, 8) / var(--tz-user-data-art-w, 104) * 100%);
   top: calc(var(--tz-user-data-badge-stack-y-art, 0) / var(--tz-user-data-art-h, 72) * 100%);
-  width: calc(var(--tz-user-data-badge-stack-w-art, 64) / var(--tz-user-data-art-w, 104) * 100%);
-  height: calc(var(--tz-user-data-badge-stack-h-art, 52) / var(--tz-user-data-art-h, 72) * 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
+  height: calc(var(--tz-user-data-badge-stack-h-art, 54) / var(--tz-user-data-art-h, 72) * 100%);
+  display: block;
 }
 
 /* Hide empty outline + 0% until badge images and progress are ready. */
@@ -2777,18 +2775,23 @@ button {
 }
 
 .tz-preview-v2-user-data__badge-stack > .tz-rank-badge-v2.badge-stack {
-  /* Fill the layout slot (same on phone + PC) — do not lock absolute px from a cold measure. */
-  position: relative;
-  left: auto;
-  top: auto;
-  width: auto;
-  height: calc(100% * var(--surface-fill-scale, 1));
+  /* Contain-fit the art box inside the slot — works under phone-preview transform scale. */
+  position: absolute !important;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: auto !important;
+  height: auto !important;
   max-width: 100%;
   max-height: 100%;
+  margin: auto;
   aspect-ratio: var(--art-w, 115) / var(--art-h, 145);
-  flex: 0 0 auto;
+  flex: none;
   overflow: hidden;
-  transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
+  transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
+    scale(var(--surface-fill-scale, 1));
+  transform-origin: center center;
 }
 
 .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2,
