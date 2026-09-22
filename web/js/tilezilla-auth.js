@@ -89,6 +89,9 @@ export function applyServerSession(user) {
       /* ignore */
     }
   }
+  if (user.play_seconds != null) {
+    window.__tilezillaPlaySeconds = Math.max(0, Number(user.play_seconds) || 0);
+  }
 }
 
 export function applyRegisteredUserToApp(app, user) {

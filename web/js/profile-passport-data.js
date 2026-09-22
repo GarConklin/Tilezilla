@@ -193,6 +193,32 @@ function mostSolvedLevelId(progress) {
 
 const MEMBER_SINCE_KEY = 'tilezilla_member_since';
 
+function sumLocalProgressPlaySeconds(progress) {
+  const data = progress?.data;
+  if (!data || typeof data !== 'object') return 0;
+  let total = 0;
+  for (const entry of Object.values(data)) {
+    const found = entry?.found;
+    if (!Array.isArray(found)) continue;
+    for (const f of found) {
+      const sec = Number(f?.completionTimeSeconds);
+      if (Number.isFinite(sec) && sec > 0) {
+        total += Math.floor(sec);
+        continue;
+      }
+      const ms = Number(f?.elapsedMs);
+      if (Number.isFinite(ms) && ms > 0) total += Math.floor(ms / 1000);
+    }
+  }
+  return total;
+}
+
+function resolvePersonalPlaySeconds(progress, sessionPlaySeconds) {
+  const fromSession = Math.max(0, Math.floor(Number(sessionPlaySeconds) || 0));
+  const fromProgress = sumLocalProgressPlaySeconds(progress);
+  return Math.max(fromSession, fromProgress);
+}
+
 function formatMemberSinceFromIso(iso) {
   if (!iso) return null;
   const raw = String(iso).trim();
@@ -264,9 +290,12 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
   passportStatsPromise = (async () => {
     try {
       const { fetchServerSession } = await import('./tilezilla-auth.js');
-      const session = await fetchServerSession();
+      const session = await fetchServerSession({ force: true });
       if (session?.ok && session.user?.created_at) {
         window.__tilezillaMemberSinceIso = String(session.user.created_at);
+      }
+      if (session?.ok && session.user?.play_seconds != null) {
+        window.__tilezillaPlaySeconds = Math.max(0, Number(session.user.play_seconds) || 0);
       }
     } catch {
       /* offline / guest */
@@ -360,7 +389,10 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
       recentDailyCompleted: hydratedRecent || mock.recentDailyCompleted,
       mostSolvedPuzzle: hydratedMostSolved || mock.mostSolvedPuzzle,
       latestDiscovery: hydratedRecent || mock.latestDiscovery,
-      totalPlaySeconds: systemStats?.totalPlaySeconds,
+      totalPlaySeconds: resolvePersonalPlaySeconds(
+        hydratedProgress,
+        window.__tilezillaPlaySeconds,
+      ),
     });
     syncGuestNoteSlot(root);
   })();

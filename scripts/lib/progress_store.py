@@ -941,6 +941,61 @@ def _resolve_leaderboard_time(
     )
 
 
+def _add_user_play_seconds(cur, user_id: int, seconds: int) -> None:
+    """Accumulate adventure + daily solve time on the player's profile."""
+    sec = max(0, int(seconds or 0))
+    if sec <= 0:
+        return
+        cur.execute(
+            """
+            INSERT INTO tile_profiles (words_user_id, `rank`, hint_tokens, current_streak, best_streak, play_seconds)
+            VALUES (%s, 'Connector', 5, 0, 0, %s)
+            ON DUPLICATE KEY UPDATE play_seconds = COALESCE(play_seconds, 0) + %s
+            """,
+            (int(user_id), sec, sec),
+        )
+
+
+def get_user_play_seconds(user_id: int | str) -> int:
+    """Player's accumulated play time; backfill from daily_results when counter is empty."""
+    uid = int(user_id)
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return 0
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COALESCE(play_seconds, 0) AS s FROM tile_profiles WHERE words_user_id = %s LIMIT 1",
+                (uid,),
+            )
+            row = cur.fetchone() or {}
+            play = int(row.get("s") or 0)
+            if play > 0:
+                return play
+            cur.execute(
+                "SELECT COALESCE(SUM(completion_time_seconds), 0) AS s FROM daily_results WHERE user_id = %s",
+                (uid,),
+            )
+            daily = int((cur.fetchone() or {}).get("s") or 0)
+            if daily > 0:
+                _add_user_play_seconds(cur, uid, daily)
+                conn.commit()
+                return daily
+        return 0
+    except Exception:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return 0
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
 def sync_mysql_after_solve(
     repo_root: Path,  # noqa: ARG001
     user_id: int,
@@ -1131,6 +1186,8 @@ def record_solve(
 
         with conn.cursor() as cur:
             _upsert_found_entry_sql(cur, uid, level_id, entry)
+            if completion_time_seconds > 0:
+                _add_user_play_seconds(cur, uid, completion_time_seconds)
         sync_mysql_after_solve(
             repo_root,
             uid,
@@ -1579,6 +1636,10 @@ def submit_daily_leaderboard_result(
                 """,
                 (date_key, uid, sec, sid, now, hint_count),
             )
+            # First daily finish for this date: count the time toward play total.
+            # MySQL: 1 = inserted, 2 = updated existing row.
+            if cur.rowcount == 1:
+                _add_user_play_seconds(cur, uid, sec)
             cur.execute(
                 """
                 SELECT completion_time_seconds AS time_seconds,

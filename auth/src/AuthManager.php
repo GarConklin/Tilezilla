@@ -198,9 +198,12 @@ class AuthManager {
 
     public function getUserById($userId) {
         $stmt = $this->conn->prepare(
-            "SELECT user_id, username, player_name, email, paid, status, is_admin, created_at, last_login,
-                    active_until, email_verified, guest_code, hint_tokens
-             FROM users WHERE user_id = ?"
+            "SELECT u.user_id, u.username, u.player_name, u.email, u.paid, u.status, u.is_admin, u.created_at, u.last_login,
+                    u.active_until, u.email_verified, u.guest_code, u.hint_tokens,
+                    COALESCE(tp.play_seconds, 0) AS play_seconds
+             FROM users u
+             LEFT JOIN tile_profiles tp ON tp.words_user_id = u.user_id
+             WHERE u.user_id = ?"
         );
         $stmt->bind_param("i", $userId);
         $stmt->execute();
