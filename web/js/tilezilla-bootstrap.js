@@ -1987,11 +1987,14 @@ function closeBottomMenuV2() {
   const drawer = $('bottomMenuDrawer');
   const open = $('bottomMenuOpenBtn');
   const close = $('bottomMenuCloseBtn');
-  if (!drawer || !open) return;
+  if (!drawer) return;
   drawer.hidden = true;
-  open.hidden = false;
+  // Expand tab stays hidden — menu opens from the hamburger only.
+  if (open) {
+    open.hidden = true;
+    open.setAttribute('aria-expanded', 'false');
+  }
   if (close) close.hidden = true;
-  open.setAttribute('aria-expanded', 'false');
   document.querySelector('.tz-app')?.classList.remove('is-bottom-menu-open');
 }
 
@@ -2012,12 +2015,14 @@ function openBottomMenuV2() {
   const drawer = $('bottomMenuDrawer');
   const open = $('bottomMenuOpenBtn');
   const close = $('bottomMenuCloseBtn');
-  if (!drawer || !open) return;
+  if (!drawer) return;
   syncBottomNavFromAppScreen();
   drawer.hidden = false;
-  open.hidden = true;
+  if (open) {
+    open.hidden = true;
+    open.setAttribute('aria-expanded', 'true');
+  }
   if (close) close.hidden = false;
-  open.setAttribute('aria-expanded', 'true');
   document.querySelector('.tz-app')?.classList.add('is-bottom-menu-open');
 }
 
@@ -2045,14 +2050,7 @@ async function activateStartMode(app, screen) {
 function wireBottomMenuV2() {
   if (!MAIN_V2_SHELL) return;
   window.__openBottomMenuV2 = openBottomMenuV2;
-  const openBtn = $('bottomMenuOpenBtn');
-  if (openBtn) {
-    openBtn.setAttribute('title', 'Hold to open menu');
-    openBtn.setAttribute('aria-label', 'Hold to open bottom menu');
-    bindLongPress(openBtn, () => {
-      openBottomMenuV2();
-    }, { ms: 500 });
-  }
+  // Expand tab is hidden; hamburger (menuBottomMenuBtn) calls __openBottomMenuV2.
   $('bottomMenuCloseBtn')?.addEventListener('click', closeBottomMenuV2);
 }
 

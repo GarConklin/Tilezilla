@@ -1697,6 +1697,8 @@ button {
 }
 
 .tz-bottom-menu-v2__tab--open {
+  /* Expand tab retired — open only via hamburger (menuBottomMenuBtn). */
+  display: none !important;
   left: var(--tz-msv2-bottom-menu-tab-x, 22%);
   top: var(--tz-msv2-bottom-menu-tab-y, 96.2%);
   width: var(--tz-msv2-bottom-menu-tab-w, 56%);
