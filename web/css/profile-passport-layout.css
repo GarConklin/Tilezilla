@@ -76,7 +76,7 @@
   visibility: hidden;
 }
 
-/* Passport rank slot — badge stack shrink-wraps art; sublevel anchors to stack (rank-sublevel-tuner). */
+/* Passport rank slot — outer flex box; inner v2 stack keeps art aspect. */
 .auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack > .tz-preview-v2-user-data__badge-stack {
   position: absolute;
@@ -105,16 +105,22 @@
   --tz-rank-sublevel-anchor-y: 0.78;
 }
 
+/*
+ * Layered badge v2 on passport: keep art-box sizing from --art-w/--art-h/--preview-scale.
+ * Do NOT stretch to 100%×100% (that separates BG vs tile and parks the roman off the plaque).
+ */
 .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2 {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
+  width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
+  height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
+  max-width: 100%;
+  max-height: 100%;
+  flex: 0 0 auto;
 }
 
-.auth-screen__profile-rank-stack .tz-rank-badge__img,
-.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge__img {
+/* Legacy flat-badge rules — only for non-v2 stacks */
+.auth-screen__profile-rank-stack .tz-rank-badge-stack:not(.tz-rank-badge-v2) .tz-rank-badge__img,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack:not(.tz-rank-badge-v2) .tz-rank-badge__img {
   display: block;
   width: auto;
   max-width: 100%;
@@ -127,8 +133,8 @@
   pointer-events: none;
 }
 
-.auth-screen__profile-rank-stack .tz-rank-sublevel__img,
-.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-sublevel__img {
+.auth-screen__profile-rank-stack .tz-rank-badge-stack:not(.tz-rank-badge-v2) .tz-rank-sublevel__img,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack:not(.tz-rank-badge-v2) .tz-rank-sublevel__img {
   position: absolute;
   left: 50%;
   top: calc(100% * var(--tz-rank-sublevel-anchor-y, 0.78));
@@ -147,6 +153,50 @@
     scaleX(var(--tz-rank-sublevel-w-scale, 1));
   transform-origin: center center;
   pointer-events: none;
+}
+
+/* v2 tile + roman — beat any leftover passport img rules */
+.auth-screen__profile-rank-stack .tz-rank-badge-v2 .badge-stack__tile,
+.auth-screen__profile-rank-stack .tz-rank-badge-v2 .tz-rank-badge__img.badge-stack__tile,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-v2 .badge-stack__tile,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-v2 .tz-rank-badge__img.badge-stack__tile {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  max-width: 96%;
+  height: calc(100% * var(--tile-scale, 0.9));
+  max-height: none;
+  object-fit: contain;
+  object-position: center center;
+  transform:
+    translate(
+      calc(-50% + var(--tile-nudge-x, 0) * var(--preview-scale, 1) * 1px),
+      calc(-50% + var(--tile-nudge-y, 0) * var(--preview-scale, 1) * 1px)
+    );
+  transform-origin: center center;
+}
+
+.auth-screen__profile-rank-stack .tz-rank-badge-v2 .badge-stack__num,
+.auth-screen__profile-rank-stack .tz-rank-badge-v2 .tz-rank-sublevel__img.badge-stack__num,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-v2 .badge-stack__num,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-v2 .tz-rank-sublevel__img.badge-stack__num {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: auto;
+  max-width: none;
+  height: calc(var(--num-h, 52) * var(--preview-scale, 1) * 1px);
+  object-fit: contain;
+  object-position: center center;
+  transform:
+    translate(
+      calc(-50% + var(--num-nudge-x, 0) * var(--preview-scale, 1) * 1px),
+      calc(-50% + var(--num-nudge-y, 0) * var(--preview-scale, 1) * 1px)
+    )
+    scaleX(var(--num-w-scale, 1));
+  transform-origin: center center;
 }
 
 /* Legacy preview user_data markup (pre rank-bubble stack) */

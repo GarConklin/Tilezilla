@@ -160,9 +160,11 @@ export function ensureRankBadgeV2Stack(stackEl) {
 
 function resolvePreviewScale(stackEl, artH, explicitScale) {
   if (Number.isFinite(explicitScale) && explicitScale > 0) return explicitScale;
+  // Prefer explicit slot height (passport sets this from the layout box).
   const cssH = parseFloat(getComputedStyle(stackEl).getPropertyValue('--tz-rank-badge-h'));
+  if (Number.isFinite(cssH) && cssH > 0) return cssH / artH;
   const boxH = stackEl.getBoundingClientRect().height;
-  const target = (boxH > 8 ? boxH : 0) || (Number.isFinite(cssH) && cssH > 0 ? cssH : 0) || artH * 0.4;
+  const target = (boxH > 8 ? boxH : 0) || artH * 0.4;
   return target / artH;
 }
 

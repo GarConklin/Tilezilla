@@ -48,7 +48,8 @@ function setRankStacksReady(stacks, ready) {
 
 function syncPassportRankBadgeHeights(stacks) {
   for (const stack of stacks) {
-    const h = stack.getBoundingClientRect().height;
+    const wrap = stack.closest('.auth-screen__profile-rank-stack');
+    const h = (wrap || stack).getBoundingClientRect().height;
     if (h > 0) {
       stack.style.setProperty('--tz-rank-badge-h', `${h}px`);
     }
@@ -88,6 +89,9 @@ async function applyPassportRankState(stacks, progress) {
     romanStyle: resolved.badge || 'gld',
     rankName: resolved.rank?.rank_name || 'Wanderer',
   };
+
+  // Size from the passport layout slot before first paint (not the stack's prior size).
+  syncPassportRankBadgeHeights(stacks);
 
   for (const stack of stacks) {
     const ok = await applyRankBadgeV2Async(stack, opts);
