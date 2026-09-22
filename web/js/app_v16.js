@@ -26,6 +26,7 @@ import {
   buildDuplicatePayload as buildDiscoveryDuplicatePayload,
 } from './tilezilla-discovery-record.js';
 import { resolveDailyCompletionFallback, todayChallengeDateIso } from './records-data.js';
+import { getAttemptMoveCount, recordBoardMove, resetAttemptStats } from './tilezilla-attempt-stats.js';
 
 const CONFIG = {
   rows: 6,
@@ -2432,6 +2433,7 @@ function showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions) {
         levelId: lv.id,
         completionTimeSeconds: outcome.elapsedSec,
         hintsUsedCount: outcome.hintsUsedCount ?? (outcome.hintsUsed ? 1 : 0),
+        moveCount: Math.max(0, Number(outcome.moveCount) || 0),
       };
     }
   }
@@ -2560,6 +2562,8 @@ async function processSolutionFound(lv, res, placements) {
   const guestSession = window.__tilezillaGuest?.isGuestUser?.();
   const timer = window.__puzzleTimer;
   const elapsedSec = timer?.stop?.() ?? 0;
+  const moveCount = getAttemptMoveCount();
+  resetAttemptStats();
   const hintsUsed = puzzleAttemptUsedHints();
   const hintsUsedCount = Math.max(
     0,
@@ -2584,6 +2588,7 @@ async function processSolutionFound(lv, res, placements) {
     return {
       msg,
       elapsedSec,
+      moveCount,
       hintsUsedCount,
       hintsUsed,
       tokensEarned: 0,
@@ -2629,6 +2634,7 @@ async function processSolutionFound(lv, res, placements) {
         completionTimeSeconds: elapsedSec,
         hintsUsed,
         hintsUsedCount,
+        moveCount,
         exampleRouteViewed,
         completedAt: new Date().toISOString(),
         serverSyncPending: true,
@@ -2654,6 +2660,7 @@ async function processSolutionFound(lv, res, placements) {
       completionTimeSeconds: submitDailyLeaderboard ? leaderboardTimeSec : elapsedSec,
       hintsUsed,
       hintsUsedCount,
+      moveCount,
       exampleRouteViewed,
       leaderboardSubmitted: submitDailyLeaderboard,
       challengeDate: submitDailyLeaderboard ? challengeDate : null,
@@ -2665,10 +2672,18 @@ async function processSolutionFound(lv, res, placements) {
     completionTimeSeconds: authoritativeElapsed,
     hintsUsed,
     hintsUsedCount,
+    moveCount,
     exampleRouteViewed,
     leaderboardSubmitted: submitDailyLeaderboard || !!dailyAlreadyRecorded,
     serverSynced: false,
   });
+  if (authoritativeElapsed > 0) {
+    window.__tilezillaPlaySeconds = Math.max(
+      0,
+      (Number(window.__tilezillaPlaySeconds) || 0) + authoritativeElapsed,
+    );
+  }
+  window.__tilezillaPlayCount = Math.max(0, (Number(window.__tilezillaPlayCount) || 0) + 1);
   window.__syncPlayerChrome?.();
 
   if (submitDailyLeaderboard) {
@@ -2793,6 +2808,9 @@ async function processSolutionFound(lv, res, placements) {
   if (authoritativeElapsed > 0) {
     msg += ` Time: ${formatCompletionTime(authoritativeElapsed)}.`;
   }
+  if (moveCount > 0) {
+    msg += ` Moves: ${moveCount}.`;
+  }
   if (wantsDailyLeaderboard || leaderboardSubmitted) {
     msg += ' Recorded for leaderboard.';
   } else if (!leaderboardEligible && exampleRouteViewed) {
@@ -2814,7 +2832,15 @@ async function processSolutionFound(lv, res, placements) {
     msg += ` ${bonusNotes.join(' · ')}.`;
   }
 
-  return { msg, elapsedSec: authoritativeElapsed, hintsUsed, leaderboardSubmitted, bonusNotes, tokensEarned };
+  return {
+    msg,
+    elapsedSec: authoritativeElapsed,
+    moveCount,
+    hintsUsed,
+    leaderboardSubmitted,
+    bonusNotes,
+    tokensEarned,
+  };
 }
 
 function getHintCost(hintType) {
@@ -3259,6 +3285,7 @@ async function placeSelectedPaletteTileAt(r, c) {
   renderActivePreview();
   rebuildOccFromTiles();
   playSfx('tilePlace');
+  recordBoardMove();
   await renderTiles();
   clearHover();
   if (typeof window.__app?.onManualTilePlaced === 'function') {
@@ -3336,6 +3363,7 @@ async function rotateBy(delta) {
     if (updateTilePlacement(t.id, t.r, t.c, nextDeg)) {
       state.deg = nextDeg;
       rotHud.textContent = nextDeg + '';
+      recordBoardMove();
       playSfx(delta > 0 ? 'spinCWTile' : 'spinCCWTile');
       await renderTiles();
       return;

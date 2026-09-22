@@ -48,6 +48,13 @@ function formatTime(sec) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
+function formatTimeWithMoves(sec, moveCount) {
+  const time = formatTime(sec);
+  const moves = Math.max(0, Number(moveCount) || 0);
+  if (moves <= 0) return time;
+  return `${time}\n${moves} move${moves === 1 ? '' : 's'}`;
+}
+
 function parseFoundAt(value) {
   if (!value) return null;
   try {
@@ -256,7 +263,7 @@ export function applyDiscoveryRecordContent(payload, ids = DISCOVERY_RECORD_IDS)
     setFieldText('solutionTotal', payload.challengeProgress, ids);
     setFieldText('puzzleId', payload.levelId, ids);
     setFieldText('solutionFound', payload.solutionNumber, ids);
-    setFieldText('time', formatTime(payload.elapsedSec), ids);
+    setFieldText('time', formatTimeWithMoves(payload.elapsedSec, payload.moveCount), ids);
     setFieldText('tokens', Math.max(0, payload.tokensEarned || 0), ids);
 
     const viewFoundBtn = fieldEl('btnViewFound', ids);
@@ -425,6 +432,7 @@ function buildNewPayload(level, res, outcome, foundCount, totalKnown) {
     solutionNumber: solutionLabel(res),
     solutionIndex: Number.isFinite(res?.index) ? res.index : null,
     elapsedSec: outcome?.elapsedSec ?? 0,
+    moveCount: Math.max(0, Number(outcome?.moveCount) || 0),
     tokensEarned: outcome?.tokensEarned ?? 0,
   };
 }

@@ -173,11 +173,17 @@ export function applyCommunityDiscoveryStats(root, values = {}) {
   setJournalSlot(root, 'recentDailyCompleted', values.recentDailyCompleted ?? mock.recentDailyCompleted);
   setJournalSlot(root, 'mostSolvedPuzzle', values.mostSolvedPuzzle ?? mock.mostSolvedPuzzle);
   setJournalSlot(root, 'latestDiscovery', values.latestDiscovery ?? mock.latestDiscovery);
-  setJournalSlot(
-    root,
-    'totalPlayTime',
-    values.totalPlayTime ?? (values.totalPlaySeconds != null ? formatPlayTime(values.totalPlaySeconds) : mock.totalPlayTime),
-  );
+  const playSeconds = values.totalPlaySeconds;
+  const playCount = values.playCount ?? values.totalPlayCount;
+  let playLabel = values.totalPlayTime;
+  if (playLabel == null && playSeconds != null) {
+    playLabel = formatPlayTime(playSeconds);
+    const n = Math.max(0, Number(playCount) || 0);
+    if (n > 0) {
+      playLabel = `${playLabel} · ${n} play${n === 1 ? '' : 's'}`;
+    }
+  }
+  setJournalSlot(root, 'totalPlayTime', playLabel ?? mock.totalPlayTime);
 }
 
 /** Fill both journal pages on login / logged-in passport screens. */

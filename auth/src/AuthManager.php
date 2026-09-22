@@ -200,7 +200,8 @@ class AuthManager {
         $stmt = $this->conn->prepare(
             "SELECT u.user_id, u.username, u.player_name, u.email, u.paid, u.status, u.is_admin, u.created_at, u.last_login,
                     u.active_until, u.email_verified, u.guest_code, u.hint_tokens,
-                    COALESCE(tp.play_seconds, 0) AS play_seconds
+                    COALESCE(tp.play_seconds, 0) AS play_seconds,
+                    COALESCE(tp.play_count, 0) AS play_count
              FROM users u
              LEFT JOIN tile_profiles tp ON tp.words_user_id = u.user_id
              WHERE u.user_id = ?"

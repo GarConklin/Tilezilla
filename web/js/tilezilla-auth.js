@@ -92,6 +92,9 @@ export function applyServerSession(user) {
   if (user.play_seconds != null) {
     window.__tilezillaPlaySeconds = Math.max(0, Number(user.play_seconds) || 0);
   }
+  if (user.play_count != null) {
+    window.__tilezillaPlayCount = Math.max(0, Number(user.play_count) || 0);
+  }
 }
 
 export function applyRegisteredUserToApp(app, user) {

@@ -32,6 +32,7 @@ try {
             'guest_code' => GuestManager::normalizeGuestCode($user['guest_code'] ?? '') ?: null,
             'created_at' => $user['created_at'] ?? null,
             'play_seconds' => (int)($user['play_seconds'] ?? 0),
+            'play_count' => (int)($user['play_count'] ?? 0),
         ],
     ]);
 } catch (Exception $e) {

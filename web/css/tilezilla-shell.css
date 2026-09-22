@@ -3729,7 +3729,7 @@ body.tz-modal-open .tz-shell-boot-loader {
   top: var(--tz-discovery-time-y);
   font-size: calc(clamp(7px, 3.1cqw, 13px) * var(--tz-discovery-time-font-scale, 1));
   max-width: 46%;
-  white-space: normal;
+  white-space: pre-line;
   text-align: center;
   line-height: 1.15;
 }

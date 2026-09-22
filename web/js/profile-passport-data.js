@@ -297,6 +297,9 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
       if (session?.ok && session.user?.play_seconds != null) {
         window.__tilezillaPlaySeconds = Math.max(0, Number(session.user.play_seconds) || 0);
       }
+      if (session?.ok && session.user?.play_count != null) {
+        window.__tilezillaPlayCount = Math.max(0, Number(session.user.play_count) || 0);
+      }
     } catch {
       /* offline / guest */
     }
@@ -320,6 +323,14 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
     setProfileSlot(root, 'recentDailyCompleted', recent || mock.recentDailyCompleted);
     setProfileSlot(root, 'mostSolvedPuzzle', mostSolved || mock.mostSolvedPuzzle);
     setProfileSlot(root, 'latestDiscovery', recent || mock.latestDiscovery);
+    applyCommunityDiscoveryStats(root, {
+      recentPuzzleSolved: recent || mock.recentPuzzleSolved,
+      recentDailyCompleted: recent || mock.recentDailyCompleted,
+      mostSolvedPuzzle: mostSolved || mock.mostSolvedPuzzle,
+      latestDiscovery: recent || mock.latestDiscovery,
+      totalPlaySeconds: resolvePersonalPlaySeconds(progress, window.__tilezillaPlaySeconds),
+      playCount: Math.max(0, Number(window.__tilezillaPlayCount) || 0),
+    });
     syncGuestNoteSlot(root);
 
     if (!skipHydrate) await ensurePassportDataHydrated();
@@ -393,6 +404,7 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
         hydratedProgress,
         window.__tilezillaPlaySeconds,
       ),
+      playCount: Math.max(0, Number(window.__tilezillaPlayCount) || 0),
     });
     syncGuestNoteSlot(root);
   })();

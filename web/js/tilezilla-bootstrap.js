@@ -2592,6 +2592,9 @@ function resetPuzzleTimer() {
     puzzleTimerInterval = null;
   }
   updatePuzzleTimerDisplay(0);
+  void import('./tilezilla-attempt-stats.js').then(({ resetAttemptStats }) => {
+    resetAttemptStats();
+  }).catch(() => { /* ignore */ });
 }
 
 /**

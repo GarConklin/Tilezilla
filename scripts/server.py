@@ -411,6 +411,10 @@ class Handler(SimpleHTTPRequestHandler):
             hints_used_count = int(payload.get("hintsUsedCount") or 0)
         except (TypeError, ValueError):
             hints_used_count = 0
+        try:
+            move_count = int(payload.get("moveCount") or payload.get("moves") or 0)
+        except (TypeError, ValueError):
+            move_count = 0
         solution_id = payload.get("solutionId")
         solution_index = payload.get("solutionIndex")
         result = submit_daily_leaderboard_result(
@@ -419,6 +423,7 @@ class Handler(SimpleHTTPRequestHandler):
             level_id=level_id,
             completion_time_seconds=completion_time_seconds,
             hints_used_count=hints_used_count,
+            move_count=move_count,
             solution_id=solution_id if solution_id is not None else None,
             solution_index=solution_index if solution_index is not None else None,
         )

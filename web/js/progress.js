@@ -363,6 +363,9 @@ export class Progress {
       hintsUsedCount: Number.isFinite(Number(meta.hintsUsedCount))
         ? Math.max(0, Number(meta.hintsUsedCount))
         : (meta.hintsUsed ? 1 : 0),
+      moveCount: Number.isFinite(Number(meta.moveCount))
+        ? Math.max(0, Number(meta.moveCount))
+        : 0,
       exampleRouteViewed: !!meta.exampleRouteViewed,
       leaderboardSubmitted: !!meta.leaderboardSubmitted,
       serverSynced: meta.serverSynced !== false,
@@ -426,6 +429,7 @@ export class Progress {
       completionTimeSeconds,
       hintsUsed = false,
       hintsUsedCount,
+      moveCount = 0,
       exampleRouteViewed = false,
       completedAt,
       serverSyncPending = true,
@@ -439,6 +443,7 @@ export class Progress {
     const hintCount = Number.isFinite(Number(hintsUsedCount))
       ? Math.max(0, Number(hintsUsedCount))
       : (hintsUsed ? 1 : 0);
+    const moves = Math.max(0, Number(moveCount) || 0);
     const store = this.loadDailyResults();
     const rowKey = `${challengeDate}:${userId}`;
     const existing = store[rowKey];
@@ -457,6 +462,7 @@ export class Progress {
       completionTimeSeconds: sec,
       hintsUsed: hintCount > 0,
       hintsUsedCount: hintCount,
+      moveCount: moves,
       exampleRouteViewed: !!exampleRouteViewed,
       completedAt: completedAt || new Date().toISOString(),
       serverSyncPending: !!serverSyncPending,
@@ -491,7 +497,11 @@ export class Progress {
     const store = this.loadDailyResults();
     return Object.values(store)
       .filter((row) => row?.challengeDate === challengeDate)
-      .sort((a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0));
+      .sort((a, b) => {
+        const timeDiff = (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0);
+        if (timeDiff) return timeDiff;
+        return (a.moveCount || 0) - (b.moveCount || 0);
+      });
   }
 
   /** Local daily rows still waiting for MySQL (phone may show these; PC cannot). */

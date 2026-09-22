@@ -22,6 +22,13 @@ export function hintBucket(row) {
   return 0;
 }
 
+/** Same time → fewer moves ranks first (daily LB tiebreak). */
+export function compareLeaderboardByTimeThenMoves(a, b) {
+  const timeDiff = (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0);
+  if (timeDiff) return timeDiff;
+  return (Number(a?.moveCount) || 0) - (Number(b?.moveCount) || 0);
+}
+
 export function formatDailyChallengeDate(iso) {
   if (!iso) return '—';
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso).trim());
@@ -379,7 +386,7 @@ async function resolveDailyCompletionFromApi(progress, levelId, dateKey, userId,
   const row = (rows || [])
     .filter((r) => normalizeLevelId(r.levelId) === levelKey)
     .filter((r) => isLeaderboardRowForCurrentUser(r, userId, username))
-    .sort((a, b) => (Number(a?.completionTimeSeconds) || 0) - (Number(b?.completionTimeSeconds) || 0))[0];
+    .sort(compareLeaderboardByTimeThenMoves)[0];
   return rowToDailyFallback(row);
 }
 
@@ -431,13 +438,12 @@ export function mergeGuestPreviewIntoRows(rows, preview, challengeDate = todayCh
     username: 'You',
     completionTimeSeconds: Math.max(0, Number(preview.completionTimeSeconds) || 0),
     hintsUsedCount: Math.max(0, Number(preview.hintsUsedCount) || 0),
+    moveCount: Math.max(0, Number(preview.moveCount) || 0),
     levelId: preview.levelId || '',
     challengeDate: dateKey,
     isGuestPreview: true,
   };
-  return [...rows, guestRow].sort(
-    (a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0),
-  );
+  return [...rows, guestRow].sort(compareLeaderboardByTimeThenMoves);
 }
 
 export function resolveGuestPlacementSummary(partitions, preview) {
@@ -500,6 +506,7 @@ function mergeLeaderboardRowSets(serverRows, localRows) {
         : (Number(row?.solutionId) > 0 ? Number(row.solutionId) - 1 : null),
       solutionId: row?.solutionId ?? null,
       hintsUsedCount: Math.max(0, Number(row?.hintsUsedCount) || 0),
+      moveCount: Math.max(0, Number(row?.moveCount) || 0),
       levelId: row.levelId || '',
       challengeDate: row.challengeDate || '',
       completedAt: row.completedAt || null,
@@ -521,9 +528,7 @@ function mergeLeaderboardRowSets(serverRows, localRows) {
     remember(row);
   }
 
-  return [...byUser.values()].sort(
-    (a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0),
-  );
+  return [...byUser.values()].sort(compareLeaderboardByTimeThenMoves);
 }
 
 /**
@@ -608,10 +613,9 @@ export function partitionLeaderboardByHints(rows) {
     else if (bucket === 1) one.push(row);
     else zero.push(row);
   }
-  const byTime = (a, b) => (a.completionTimeSeconds || 0) - (b.completionTimeSeconds || 0);
-  zero.sort(byTime);
-  one.sort(byTime);
-  two.sort(byTime);
+  zero.sort(compareLeaderboardByTimeThenMoves);
+  one.sort(compareLeaderboardByTimeThenMoves);
+  two.sort(compareLeaderboardByTimeThenMoves);
   return { zero, one, two };
 }
 

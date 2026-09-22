@@ -66,11 +66,19 @@ export async function fetchServerProgress() {
       return { ok: false, error: payload?.error || `HTTP ${res.status}` };
     }
     if (payload.adventureRank) cacheServerAdventureRank(payload.adventureRank);
+    if (payload.playSeconds != null) {
+      window.__tilezillaPlaySeconds = Math.max(0, Number(payload.playSeconds) || 0);
+    }
+    if (payload.playCount != null) {
+      window.__tilezillaPlayCount = Math.max(0, Number(payload.playCount) || 0);
+    }
     return {
       ok: true,
       data: payload.data || {},
       updatedAt: payload.updatedAt || null,
       adventureRank: payload.adventureRank || null,
+      playSeconds: payload.playSeconds ?? null,
+      playCount: payload.playCount ?? null,
     };
   } catch (err) {
     return { ok: false, error: String(err?.message || err) };
@@ -477,6 +485,7 @@ export async function submitPendingDailyLeaderboard(progress = null, opts = {}) 
           levelId,
           completionTimeSeconds,
           hintsUsedCount: Math.max(0, Number(row?.hintsUsedCount) || 0),
+          moveCount: Math.max(0, Number(row?.moveCount) || 0),
           // Local store keeps 0-based catalog index in solutionId.
           solutionIndex: Number.isFinite(Number(row?.solutionId)) ? Number(row.solutionId) : null,
         }),

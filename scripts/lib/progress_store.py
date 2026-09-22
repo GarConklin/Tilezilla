@@ -160,6 +160,7 @@ def _row_to_found_entry(row: dict[str, Any]) -> dict[str, Any]:
             index = None
     sec = max(0, int(row.get("completion_time_seconds") or 0))
     hints = max(0, int(row.get("hints_used_count") or 0))
+    moves = max(0, int(row.get("move_count") or 0))
     # Null-index rows with placements are pending rematch — never expose as bonus
     # or the client under-counts "N of total".
     is_bonus = bool(row.get("is_bonus")) and index is None and not placements
@@ -171,6 +172,7 @@ def _row_to_found_entry(row: dict[str, Any]) -> dict[str, Any]:
         "completionTimeSeconds": sec,
         "hintsUsed": hints > 0,
         "hintsUsedCount": hints,
+        "moveCount": moves,
         "exampleRouteViewed": bool(row.get("example_route_viewed")),
         "leaderboardSubmitted": bool(row.get("leaderboard_submitted")),
         "foundAt": _found_at_iso(row.get("found_at")),
@@ -188,7 +190,7 @@ def _assemble_progress_from_sql(user_id: int) -> dict[str, Any]:
             cur.execute(
                 """
                 SELECT level_id, solution_index, is_bonus, placements_json,
-                       completion_time_seconds, hints_used_count,
+                       completion_time_seconds, hints_used_count, move_count,
                        example_route_viewed, leaderboard_submitted, found_at
                 FROM user_found_solutions
                 WHERE user_id = %s
@@ -274,14 +276,15 @@ def _upsert_found_entry_sql(
     if hints is None:
         hints = 1 if entry.get("hintsUsed") else 0
     hints = max(0, int(hints or 0))
+    moves = max(0, int(entry.get("moveCount") or entry.get("moves") or 0))
     found_at = _parse_found_at(entry.get("foundAt"))
     cur.execute(
         """
         INSERT IGNORE INTO user_found_solutions (
             user_id, level_id, solution_index, is_bonus, equiv_hash,
-            placements_json, completion_time_seconds, hints_used_count,
+            placements_json, completion_time_seconds, hints_used_count, move_count,
             example_route_viewed, leaderboard_submitted, found_at
-        ) VALUES (%s, %s, %s, %s, %s, CAST(%s AS JSON), %s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, CAST(%s AS JSON), %s, %s, %s, %s, %s, %s)
         """,
         (
             user_id,
@@ -292,6 +295,7 @@ def _upsert_found_entry_sql(
             json.dumps(placements, separators=(",", ":")),
             sec,
             hints,
+            moves,
             1 if entry.get("exampleRouteViewed") else 0,
             1 if entry.get("leaderboardSubmitted") else 0,
             found_at,
@@ -989,14 +993,49 @@ def _add_user_play_seconds(cur, user_id: int, seconds: int) -> None:
     sec = max(0, int(seconds or 0))
     if sec <= 0:
         return
-        cur.execute(
-            """
-            INSERT INTO tile_profiles (words_user_id, `rank`, hint_tokens, current_streak, best_streak, play_seconds)
-            VALUES (%s, 'Connector', 5, 0, 0, %s)
-            ON DUPLICATE KEY UPDATE play_seconds = COALESCE(play_seconds, 0) + %s
-            """,
-            (int(user_id), sec, sec),
-        )
+    uid = int(user_id)
+    cur.execute(
+        """
+        UPDATE tile_profiles
+        SET play_seconds = COALESCE(play_seconds, 0) + %s
+        WHERE words_user_id = %s
+        """,
+        (sec, uid),
+    )
+    if cur.rowcount:
+        return
+    cur.execute(
+        """
+        INSERT INTO tile_profiles (words_user_id, `rank`, hint_tokens, current_streak, best_streak, play_seconds)
+        VALUES (%s, 'Connector', 5, 0, 0, %s)
+        """,
+        (uid, sec),
+    )
+
+
+def _add_user_play_count(cur, user_id: int, count: int = 1) -> None:
+    """Increment lifetime puzzle-play count on the player's profile."""
+    n = max(0, int(count or 0))
+    if n <= 0:
+        return
+    uid = int(user_id)
+    cur.execute(
+        """
+        UPDATE tile_profiles
+        SET play_count = COALESCE(play_count, 0) + %s
+        WHERE words_user_id = %s
+        """,
+        (n, uid),
+    )
+    if cur.rowcount:
+        return
+    cur.execute(
+        """
+        INSERT INTO tile_profiles (words_user_id, `rank`, hint_tokens, current_streak, best_streak, play_seconds, play_count)
+        VALUES (%s, 'Connector', 5, 0, 0, 0, %s)
+        """,
+        (uid, n),
+    )
 
 
 def get_user_play_seconds(user_id: int | str) -> int:
@@ -1039,6 +1078,30 @@ def get_user_play_seconds(user_id: int | str) -> int:
             pass
 
 
+def get_user_play_count(user_id: int | str) -> int:
+    """Lifetime completed puzzle attempts recorded on the profile."""
+    uid = int(user_id)
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return 0
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COALESCE(play_count, 0) AS c FROM tile_profiles WHERE words_user_id = %s LIMIT 1",
+                (uid,),
+            )
+            row = cur.fetchone() or {}
+            return max(0, int(row.get("c") or 0))
+    except Exception:
+        return 0
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
 def sync_mysql_after_solve(
     repo_root: Path,  # noqa: ARG001
     user_id: int,
@@ -1051,6 +1114,7 @@ def sync_mysql_after_solve(
     challenge_date: Optional[str] = None,
     leaderboard_saved: bool = False,
     hints_used_count: int = 0,
+    move_count: int = 0,
     conn=None,
 ) -> None:
     """Update summary tables for this level only — never rebuild the whole journal."""
@@ -1062,6 +1126,7 @@ def sync_mysql_after_solve(
             return
 
     hint_count = max(0, int(hints_used_count or 0))
+    moves = max(0, int(move_count or 0))
     try:
         with conn.cursor() as cur:
             found = _load_level_found_from_sql(cur, user_id, level_id)
@@ -1077,8 +1142,8 @@ def sync_mysql_after_solve(
                     """
                     INSERT IGNORE INTO daily_results (
                         challenge_date, user_id, completion_time_seconds,
-                        solution_id, completed_at, hints_used_count
-                    ) VALUES (%s, %s, %s, %s, %s, %s)
+                        solution_id, completed_at, hints_used_count, move_count
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """,
                     (
                         challenge_date,
@@ -1087,6 +1152,7 @@ def sync_mysql_after_solve(
                         solution_id,
                         now,
                         hint_count,
+                        moves,
                     ),
                 )
         if owns_conn:
@@ -1136,6 +1202,7 @@ def record_solve(
     if hints_used_count is None:
         hints_used_count = 1 if meta.get("hintsUsed") else 0
     hints_used_count = max(0, int(hints_used_count or 0))
+    move_count = max(0, int(meta.get("moveCount") or meta.get("moves") or 0))
 
     # One-time JSON import if needed — do not assemble the full journal on every solve.
     _ensure_sql_progress_seeded(repo_root, uid)
@@ -1170,6 +1237,7 @@ def record_solve(
         "completionTimeSeconds": completion_time_seconds,
         "hintsUsed": hints_used_count > 0,
         "hintsUsedCount": hints_used_count,
+        "moveCount": move_count,
         "exampleRouteViewed": bool(meta.get("exampleRouteViewed")),
         "leaderboardSubmitted": leaderboard_saved,
         "foundAt": found_at,
@@ -1195,6 +1263,7 @@ def record_solve(
 
         if existing_row:
             idx = existing_row.get("solution_index")
+            # Duplicate find — do not inflate lifetime play time / play count.
             if leaderboard_saved and challenge_date:
                 sync_mysql_after_solve(
                     repo_root,
@@ -1207,6 +1276,7 @@ def record_solve(
                     challenge_date=challenge_date,
                     leaderboard_saved=leaderboard_saved,
                     hints_used_count=hints_used_count,
+                    move_count=move_count,
                     conn=conn,
                 )
             conn.commit()
@@ -1217,6 +1287,7 @@ def record_solve(
                 "bonus": bool(existing_row.get("is_bonus")),
                 "foundAt": _found_at_iso(existing_row.get("found_at")),
                 "completionTimeSeconds": completion_time_seconds,
+                "moveCount": move_count,
                 "leaderboardSubmitted": bool(leaderboard_saved and challenge_date),
             }
             if server_completion_time_seconds is not None:
@@ -1231,6 +1302,7 @@ def record_solve(
             _upsert_found_entry_sql(cur, uid, level_id, entry)
             if completion_time_seconds > 0:
                 _add_user_play_seconds(cur, uid, completion_time_seconds)
+            _add_user_play_count(cur, uid, 1)
         sync_mysql_after_solve(
             repo_root,
             uid,
@@ -1242,6 +1314,7 @@ def record_solve(
             challenge_date=challenge_date,
             leaderboard_saved=leaderboard_saved,
             hints_used_count=hints_used_count,
+            move_count=move_count,
             conn=conn,
         )
         conn.commit()
@@ -1264,6 +1337,7 @@ def record_solve(
         "bonus": bonus,
         "foundAt": found_at,
         "completionTimeSeconds": completion_time_seconds,
+        "moveCount": move_count,
         "leaderboardSubmitted": bool(leaderboard_saved),
     }
     if server_completion_time_seconds is not None:
@@ -1529,6 +1603,12 @@ def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
     payload: dict[str, Any] = {"ok": True, "data": data, "updatedAt": updated_at}
     if adventure_rank:
         payload["adventureRank"] = adventure_rank
+    try:
+        payload["playSeconds"] = get_user_play_seconds(user_id)
+        payload["playCount"] = get_user_play_count(user_id)
+    except Exception:
+        payload["playSeconds"] = 0
+        payload["playCount"] = 0
     return payload
 
 
@@ -1595,6 +1675,7 @@ def submit_daily_leaderboard_result(
     level_id: str,
     completion_time_seconds: int,
     hints_used_count: int = 0,
+    move_count: int = 0,
     solution_id: Optional[int] = None,
     solution_index: Optional[int] = None,
 ) -> dict[str, Any]:
@@ -1613,6 +1694,7 @@ def submit_daily_leaderboard_result(
     if sec <= 0:
         return {"ok": False, "error": "completionTimeSeconds required"}
     hint_count = max(0, int(hints_used_count or 0))
+    moves = max(0, int(move_count or 0))
     sid: Optional[int] = None
     if solution_id is not None and str(solution_id) != "":
         try:
@@ -1655,8 +1737,8 @@ def submit_daily_leaderboard_result(
                 """
                 INSERT INTO daily_results (
                     challenge_date, user_id, completion_time_seconds,
-                    solution_id, completed_at, hints_used_count
-                ) VALUES (%s, %s, %s, %s, %s, %s)
+                    solution_id, completed_at, hints_used_count, move_count
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
                     completion_time_seconds = IF(
                         completion_time_seconds <= 0
@@ -1670,6 +1752,12 @@ def submit_daily_leaderboard_result(
                         VALUES(hints_used_count),
                         hints_used_count
                     ),
+                    move_count = IF(
+                        completion_time_seconds <= 0
+                        OR VALUES(completion_time_seconds) < completion_time_seconds,
+                        VALUES(move_count),
+                        move_count
+                    ),
                     solution_id = IF(
                         completion_time_seconds <= 0
                         OR VALUES(completion_time_seconds) < completion_time_seconds,
@@ -1677,7 +1765,7 @@ def submit_daily_leaderboard_result(
                         solution_id
                     )
                 """,
-                (date_key, uid, sec, sid, now, hint_count),
+                (date_key, uid, sec, sid, now, hint_count, moves),
             )
             # First daily finish for this date: count the time toward play total.
             # MySQL: 1 = inserted, 2 = updated existing row.
@@ -1687,6 +1775,7 @@ def submit_daily_leaderboard_result(
                 """
                 SELECT completion_time_seconds AS time_seconds,
                        hints_used_count AS hints_used_count,
+                       move_count AS move_count,
                        solution_id AS solution_id
                 FROM daily_results
                 WHERE challenge_date = %s AND user_id = %s
@@ -1714,6 +1803,7 @@ def submit_daily_leaderboard_result(
         "levelId": scheduled or level,
         "completionTimeSeconds": int(row.get("time_seconds") or sec),
         "hintsUsedCount": max(0, int(row.get("hints_used_count") or hint_count)),
+        "moveCount": max(0, int(row.get("move_count") or moves)),
         "solutionId": int(row.get("solution_id") or sid),
         "leaderboardSubmitted": True,
     }
@@ -1753,12 +1843,15 @@ def daily_leaderboard_for_date(
                     dr.completion_time_seconds AS time_seconds,
                     dr.solution_id             AS solution_id,
                     dr.hints_used_count        AS hints_used_count,
+                    dr.move_count              AS move_count,
                     dr.completed_at            AS completed_at
                 FROM daily_results dr
                 LEFT JOIN users u ON u.user_id = dr.user_id
                 WHERE dr.challenge_date = %s
                   AND dr.completion_time_seconds > 0
-                ORDER BY dr.completion_time_seconds ASC, dr.completed_at ASC
+                ORDER BY dr.completion_time_seconds ASC,
+                         dr.move_count ASC,
+                         dr.completed_at ASC
                 """,
                 (date_key,),
             )
@@ -1774,6 +1867,7 @@ def daily_leaderboard_for_date(
                         "completionTimeSeconds": int(row.get("time_seconds") or 0),
                         "solutionId": int(row.get("solution_id") or 0) or None,
                         "hintsUsedCount": max(0, int(row.get("hints_used_count") or 0)),
+                        "moveCount": max(0, int(row.get("move_count") or 0)),
                         "levelId": level_id,
                         "challengeDate": date_key,
                         "completedAt": _iso_date(row.get("completed_at")),
