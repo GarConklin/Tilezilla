@@ -452,29 +452,24 @@ function findPuzzleInPath(path, levelId) {
 
 export const RANK_AWARD_PLAQUE_COUNT = 9;
 
-/** Band-start ranks that still get the plaque fanfare after the early ranks. */
+/**
+ * Badge-band starts (same bands as rank-badge-v2: 1–10, 11–20, …, 51–55).
+ * Fanfare plays when entering a new band — not on every rank.
+ */
 export const RANK_AWARD_BAND_MILESTONES = Object.freeze([11, 21, 31, 41, 51]);
 
-/**
- * Fanfare for early ranks 2–9 (plaque art 1–9), then only at band crossings
- * 11 / 21 / 31 / 41 / 51 — not every rank after that.
- */
+/** True when advancing into a new badge band (11 / 21 / 31 / 41 / 51). */
 export function shouldShowRankAwardForRank(rankId) {
   const r = Math.round(Number(rankId) || 0);
-  if (r >= 2 && r <= 9) return true;
   return RANK_AWARD_BAND_MILESTONES.includes(r);
 }
 
 /** Rank advancement plaque art — RankAwardPlacque1.png … RankAwardPlacque9.png */
 export function rankAwardPlaqueSrc(rankId) {
   const r = Math.max(1, Math.round(Number(rankId) || 1));
-  let n;
-  if (r <= RANK_AWARD_PLAQUE_COUNT) {
-    n = r;
-  } else {
-    // Band milestones reuse plaque art by decade (11→2 … 51→6).
-    n = Math.max(1, Math.min(RANK_AWARD_PLAQUE_COUNT, Math.floor((r - 1) / 10) + 1));
-  }
+  // Map band index → plaque art: 11→2, 21→3, … 51→6 (clamp 1–9).
+  const bandIndex = Math.max(1, Math.floor((r - 1) / 10) + 1);
+  const n = Math.max(1, Math.min(RANK_AWARD_PLAQUE_COUNT, bandIndex));
   return `/img/ranks/RankAwardPlacque${n}.png`;
 }
 
