@@ -30,6 +30,7 @@ try {
             'hint_tokens' => (int)($user['hint_tokens'] ?? 0),
             'player_name' => $user['player_name'] ?? $user['username'],
             'guest_code' => GuestManager::normalizeGuestCode($user['guest_code'] ?? '') ?: null,
+            'created_at' => $user['created_at'] ?? null,
         ],
     ]);
 } catch (Exception $e) {

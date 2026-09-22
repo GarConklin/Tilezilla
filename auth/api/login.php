@@ -21,12 +21,12 @@ try {
     $isEmail = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL);
     if ($isEmail) {
         $stmt = $conn->prepare(
-            "SELECT user_id, username, email, password_hash, paid, status, is_admin, active_until, email_verified, guest_code, hint_tokens
+            "SELECT user_id, username, email, password_hash, paid, status, is_admin, active_until, email_verified, guest_code, hint_tokens, created_at
              FROM users WHERE email = ?"
         );
     } else {
         $stmt = $conn->prepare(
-            "SELECT user_id, username, email, password_hash, paid, status, is_admin, active_until, email_verified, guest_code, hint_tokens
+            "SELECT user_id, username, email, password_hash, paid, status, is_admin, active_until, email_verified, guest_code, hint_tokens, created_at
              FROM users WHERE username = ?"
         );
     }
@@ -82,6 +82,7 @@ try {
             'is_admin' => (bool)($row['is_admin'] ?? false),
             'hint_tokens' => (int)($row['hint_tokens'] ?? 0),
             'guest_code' => $guestCode ?: null,
+            'created_at' => $row['created_at'] ?? null,
         ],
     ]);
 } catch (Exception $e) {

@@ -191,15 +191,39 @@ function mostSolvedLevelId(progress) {
   return bestCount > 0 ? bestId : null;
 }
 
+const MEMBER_SINCE_KEY = 'tilezilla_member_since';
+
+function formatMemberSinceFromIso(iso) {
+  if (!iso) return null;
+  const raw = String(iso).trim();
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+}
+
 function formatMemberSince() {
   try {
-    const raw = localStorage.getItem('tilezilla_member_since');
+    const fromSession = formatMemberSinceFromIso(window.__tilezillaMemberSinceIso);
+    if (fromSession) {
+      try {
+        localStorage.setItem(MEMBER_SINCE_KEY, fromSession);
+      } catch {
+        /* ignore */
+      }
+      return fromSession;
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    const raw = localStorage.getItem(MEMBER_SINCE_KEY);
     if (raw) return raw;
   } catch {
     /* ignore */
   }
-  const now = new Date();
-  return now.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+  return '—';
 }
 
 function registeredUserId() {
@@ -238,6 +262,16 @@ export async function refreshProfilePassportStats({ root = document, skipHydrate
   }
 
   passportStatsPromise = (async () => {
+    try {
+      const { fetchServerSession } = await import('./tilezilla-auth.js');
+      const session = await fetchServerSession();
+      if (session?.ok && session.user?.created_at) {
+        window.__tilezillaMemberSinceIso = String(session.user.created_at);
+      }
+    } catch {
+      /* offline / guest */
+    }
+
     const progress = resolvePassportProgress();
     const mock = PROFILE_LAYOUT_MOCK;
     const dailyMeta = window.__dailyChallengeMeta;

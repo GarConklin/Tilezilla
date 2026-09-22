@@ -72,6 +72,23 @@ export function applyServerSession(user) {
   if (user.guest_code) {
     setConvertedGuestCode(user.guest_code);
   }
+  if (user.created_at) {
+    try {
+      window.__tilezillaMemberSinceIso = String(user.created_at);
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(user.created_at).trim());
+      if (m) {
+        const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        if (!Number.isNaN(d.getTime())) {
+          localStorage.setItem(
+            'tilezilla_member_since',
+            d.toLocaleString('en-US', { month: 'short', year: 'numeric' }),
+          );
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 export function applyRegisteredUserToApp(app, user) {

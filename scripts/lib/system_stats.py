@@ -22,17 +22,41 @@ def _mysql_connect(database: str):
 
 
 def count_registered_users(conn_words) -> int:
+    """Active explorer accounts — all users except suspended/expired/deleted."""
     with conn_words.cursor() as cur:
         cur.execute(
             """
             SELECT COUNT(*) AS n
             FROM users
-            WHERE email_verified = 1
-              AND status NOT IN ('suspended', 'expired')
+            WHERE COALESCE(status, 'registered') NOT IN ('suspended', 'expired', 'deleted')
             """
         )
         row = cur.fetchone() or {}
     return int(row.get("n") or 0)
+
+
+def sum_play_seconds(conn_tile) -> int:
+    """Community play time: profile counters, else daily leaderboard times as fallback."""
+    total = 0
+    with conn_tile.cursor() as cur:
+        for table in ("tile_profiles", "guest_users"):
+            try:
+                cur.execute(f"SELECT COALESCE(SUM(play_seconds), 0) AS s FROM {table}")
+                row = cur.fetchone() or {}
+                total += int(row.get("s") or 0)
+            except Exception:
+                pass
+        if total > 0:
+            return total
+        try:
+            cur.execute(
+                "SELECT COALESCE(SUM(completion_time_seconds), 0) AS s FROM daily_results"
+            )
+            row = cur.fetchone() or {}
+            total = int(row.get("s") or 0)
+        except Exception:
+            pass
+    return total
 
 
 def count_adventure_catalog(conn_tile) -> dict[str, int]:
@@ -93,19 +117,6 @@ def count_adventure_catalog(conn_tile) -> dict[str, int]:
         "ranks_to_earn": ranks,
         "challenge_gates": gates,
     }
-
-
-def sum_play_seconds(conn_tile) -> int:
-    total = 0
-    with conn_tile.cursor() as cur:
-        for table in ("tile_profiles", "guest_users"):
-            try:
-                cur.execute(f"SELECT COALESCE(SUM(play_seconds), 0) AS s FROM {table}")
-                row = cur.fetchone() or {}
-                total += int(row.get("s") or 0)
-            except Exception:
-                pass
-    return total
 
 
 def compute_system_stats() -> dict[str, Any]:
