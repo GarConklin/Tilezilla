@@ -938,7 +938,7 @@ async function updateRankPanel(app) {
 
   let usedV2 = false;
   if (subLevelEl) {
-    usedV2 = await applyRankBadgeV2Async(subLevelEl, badgeOpts);
+    usedV2 = await applyRankBadgeV2Async(subLevelEl, { ...badgeOpts, surface: 'rankPanel' });
   }
   if (!usedV2) {
     if (badge && rank?.badge_image) {
@@ -971,7 +971,7 @@ async function updateRankPanel(app) {
     if (v2SubWrap) {
       const slotH = (v2Slot || v2SubWrap).getBoundingClientRect().height;
       if (slotH > 0) v2SubWrap.style.setProperty('--tz-rank-badge-h', `${slotH}px`);
-      const ok = await applyRankBadgeV2Async(v2SubWrap, badgeOpts);
+      const ok = await applyRankBadgeV2Async(v2SubWrap, { ...badgeOpts, surface: 'preview' });
       if (!ok && usedV2 === false) {
         /* legacy copy already handled above for status; mirror paths */
         const v2Badge = $('previewV2RankBadge');

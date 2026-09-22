@@ -211,7 +211,8 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: contain;
+      object-position: center center;
     }
 
     .badge-stack__tile {
@@ -349,12 +350,11 @@
 <body>
   <h1>Rank badge v2 tuner</h1>
   <p class="lead">
-    Step 1 — compose <code>BG</code> + <code>Nc</code> tile + silver roman <code>slvr-1…15</code>.
-    Not wired into the game yet. Planned climb: <strong>15 puzzles → next roman</strong>, then next rank back at I
-    (55 ranks × 15).     Romans <strong>1–15 are shared</strong> across ranks. Tile + band shift save
-    <strong>per BG band</strong> (1–10 … 51–55) so 51–55 can sit differently.
-    <a href="/tools/tuners.html">Tuners</a> ·
-    <a href="/tools/rank-sublevel-tuner.html">Old sublevel tuner</a>
+    Compose <code>BG</code> + <code>Nc</code> tile + silver roman <code>slvr-1…15</code>.
+    Romans <strong>1–15 are shared</strong> (passport + preview + rank panel all read this JSON).
+    Use <strong>UI surfaces</strong> below to place/scale the badge in the preview tile window
+    (<code>surfaces.preview</code>) — same file drives live placement.
+    <a href="/tools/tuners.html">Tuners</a>
   </p>
 
   <div class="layout">
@@ -369,21 +369,21 @@
       <h2>Silver numeral</h2>
       <div class="row">
         <label for="numH">Height (art px)</label>
-        <output id="numHOut">52</output>
+        <output id="numHOut">20</output>
       </div>
-      <input type="range" id="numH" min="20" max="110" step="1" value="52" />
+      <input type="range" id="numH" min="12" max="110" step="1" value="20" />
 
       <div class="row">
         <label for="numX">Nudge X</label>
-        <output id="numXOut">0</output>
+        <output id="numXOut">1</output>
       </div>
-      <input type="range" id="numX" min="-40" max="40" step="1" value="0" />
+      <input type="range" id="numX" min="-40" max="40" step="1" value="1" />
 
       <div class="row">
         <label for="numY">Nudge Y</label>
-        <output id="numYOut">0</output>
+        <output id="numYOut">38</output>
       </div>
-      <input type="range" id="numY" min="-50" max="50" step="1" value="0" />
+      <input type="range" id="numY" min="-50" max="60" step="1" value="38" />
 
       <div class="row">
         <label for="numW">Width scale</label>
@@ -438,10 +438,44 @@
       </div>
       <input type="range" id="previewScale" min="1.5" max="5" step="0.1" value="3" />
 
+      <h2>UI surface <span id="surfaceLabel" style="color:#8fd49a;text-transform:none;letter-spacing:0;">preview</span></h2>
+      <p style="margin:0 0 8px;font-size:0.68rem;color:#a8b8b4;line-height:1.4;">
+        Places the art box inside each live slot. Start with <strong>preview</strong> (user_data tile),
+        then reuse / tweak passport &amp; rankPanel. Saved under <code>surfaces.*</code> in the JSON.
+      </p>
+      <label for="surfaceSelect">Surface</label>
+      <select id="surfaceSelect">
+        <option value="preview">preview (user_data tile)</option>
+        <option value="passport">passport</option>
+        <option value="rankPanel">rankPanel</option>
+      </select>
+      <label for="surfaceFit">Fit</label>
+      <select id="surfaceFit">
+        <option value="contain">contain</option>
+        <option value="width">width</option>
+        <option value="height">height</option>
+      </select>
+      <div class="row">
+        <label for="surfaceScale">Scale mult</label>
+        <output id="surfaceScaleOut">1.00</output>
+      </div>
+      <input type="range" id="surfaceScale" min="0.5" max="1.25" step="0.01" value="1" />
+      <div class="row">
+        <label for="surfaceX">Nudge X (px)</label>
+        <output id="surfaceXOut">0</output>
+      </div>
+      <input type="range" id="surfaceX" min="-40" max="40" step="1" value="0" />
+      <div class="row">
+        <label for="surfaceY">Nudge Y (px)</label>
+        <output id="surfaceYOut">0</output>
+      </div>
+      <input type="range" id="surfaceY" min="-40" max="40" step="1" value="0" />
+
       <div class="actions">
         <button type="button" id="btnSave">Save JSON</button>
         <button type="button" id="btnResetNum">Reset this roman</button>
         <button type="button" id="btnResetBand">Reset this band</button>
+        <button type="button" id="btnResetSurface">Reset this surface</button>
         <button type="button" id="btnCopyDefaults" class="danger">Copy → all 15</button>
       </div>
       <p class="status" id="status"></p>
@@ -504,19 +538,26 @@
     const SAVE_URL = '/api/dev/save-rank-badge-v2-layout';
 
     const BAND_KEYS = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-55'];
+    const SURFACE_KEYS = ['preview', 'passport', 'rankPanel'];
     const DEFAULTS = {
       version: 1,
       art: { bgW: 115, bgH: 145 },
       tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
-      defaults: { h: 52, nudgeX: 0, nudgeY: 6, wScale: 1 },
+      defaults: { h: 20, nudgeX: 1, nudgeY: 38, wScale: 1 },
       numerals: {},
       bands: {},
+      surfaces: {
+        preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+        passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+        rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+      },
     };
 
     let layout = structuredClone(DEFAULTS);
     let rankId = 1;
     let subLevel = 1;
     let previewScale = 3;
+    let surfaceKey = 'preview';
     let nudgeMode = 'roman'; // 'roman' | 'band'
     let dirty = new Set();
     let dirtyBands = new Set();
@@ -558,9 +599,19 @@
       bandShiftXOut: document.getElementById('bandShiftXOut'),
       bandShiftYOut: document.getElementById('bandShiftYOut'),
       previewScaleOut: document.getElementById('previewScaleOut'),
+      surfaceLabel: document.getElementById('surfaceLabel'),
+      surfaceSelect: document.getElementById('surfaceSelect'),
+      surfaceFit: document.getElementById('surfaceFit'),
+      surfaceScale: document.getElementById('surfaceScale'),
+      surfaceX: document.getElementById('surfaceX'),
+      surfaceY: document.getElementById('surfaceY'),
+      surfaceScaleOut: document.getElementById('surfaceScaleOut'),
+      surfaceXOut: document.getElementById('surfaceXOut'),
+      surfaceYOut: document.getElementById('surfaceYOut'),
       btnSave: document.getElementById('btnSave'),
       btnResetNum: document.getElementById('btnResetNum'),
       btnResetBand: document.getElementById('btnResetBand'),
+      btnResetSurface: document.getElementById('btnResetSurface'),
       btnCopyDefaults: document.getElementById('btnCopyDefaults'),
       btnModeRoman: document.getElementById('btnModeRoman'),
       btnModeBand: document.getElementById('btnModeBand'),
@@ -617,6 +668,25 @@
         nudgeX: Number(over.nudgeX ?? 0),
         nudgeY: Number(over.nudgeY ?? 0),
       };
+    }
+
+    function getSurface(key = surfaceKey) {
+      const base = DEFAULTS.surfaces[key] || DEFAULTS.surfaces.preview;
+      const over = layout.surfaces?.[key] || {};
+      return {
+        fit: over.fit === 'width' || over.fit === 'height' ? over.fit : 'contain',
+        scale: Number(over.scale ?? base.scale) || 1,
+        nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
+        nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
+      };
+    }
+
+    function patchSurface(patch) {
+      if (!layout.surfaces) layout.surfaces = structuredClone(DEFAULTS.surfaces);
+      const cur = getSurface(surfaceKey);
+      layout.surfaces[surfaceKey] = { ...cur, ...patch };
+      refresh();
+      scheduleSave();
     }
 
     function getNumeral(n) {
@@ -704,12 +774,13 @@
       const out = {
         version: 1,
         note: layout.note ||
-          'New rank badge stack (prep only). BG + Nc + slvr 1-15. Bands hold per-BG tile/shift.',
+          'Live rank badge stack. Tune at /tools/rank-badge-v2-tuner.html — numerals shared; surfaces.* place each UI slot.',
         art: { ...(layout.art || DEFAULTS.art) },
         tile: { ...(layout.tile || DEFAULTS.tile) },
         defaults: { ...(layout.defaults || DEFAULTS.defaults) },
         numerals: {},
         bands: {},
+        surfaces: {},
       };
       for (let n = 1; n <= 15; n += 1) {
         const L = getNumeral(n);
@@ -728,6 +799,11 @@
           bandOut.numeralShift = { ...entry.numeralShift };
         }
         if (Object.keys(bandOut).length) out.bands[key] = bandOut;
+      }
+      for (const key of SURFACE_KEYS) {
+        const S = getSurface(key);
+        // Always write each surface so live slots have an explicit block to edit.
+        out.surfaces[key] = { fit: S.fit, scale: S.scale, nudgeX: S.nudgeX, nudgeY: S.nudgeY };
       }
       return out;
     }
@@ -797,6 +873,16 @@
       els.bandShiftXOut.textContent = String(shift.nudgeX);
       els.bandShiftYOut.textContent = String(shift.nudgeY);
       els.previewScaleOut.textContent = previewScale.toFixed(1);
+      const S = getSurface(surfaceKey);
+      els.surfaceLabel.textContent = surfaceKey;
+      els.surfaceSelect.value = surfaceKey;
+      els.surfaceFit.value = S.fit;
+      els.surfaceScale.value = String(S.scale);
+      els.surfaceX.value = String(S.nudgeX);
+      els.surfaceY.value = String(S.nudgeY);
+      els.surfaceScaleOut.textContent = Number(S.scale).toFixed(2);
+      els.surfaceXOut.textContent = String(S.nudgeX);
+      els.surfaceYOut.textContent = String(S.nudgeY);
     }
 
     function refresh() {
@@ -814,7 +900,8 @@
         ` · roman h:${L.h} x:${L.nudgeX} y:${L.nudgeY}` +
         ` · shift ${shift.nudgeX},${shift.nudgeY}` +
         ` · shown x:${R.nudgeX} y:${R.nudgeY}` +
-        ` · tile s:${Number(tile.scale ?? 0.9).toFixed(2)}`;
+        ` · tile s:${Number(tile.scale ?? 0.9).toFixed(2)}` +
+        ` · surface ${surfaceKey} ×${Number(getSurface().scale).toFixed(2)}`;
 
       for (const btn of els.levelGrid.querySelectorAll('.level-btn')) {
         const n = Number(btn.dataset.level);
@@ -972,6 +1059,23 @@
         refresh();
       });
 
+      els.surfaceSelect.addEventListener('change', () => {
+        surfaceKey = els.surfaceSelect.value || 'preview';
+        refresh();
+      });
+      els.surfaceFit.addEventListener('change', () => {
+        patchSurface({ fit: els.surfaceFit.value || 'contain' });
+      });
+      els.surfaceScale.addEventListener('input', () => {
+        patchSurface({ scale: Number(els.surfaceScale.value) || 1 });
+      });
+      els.surfaceX.addEventListener('input', () => {
+        patchSurface({ nudgeX: Number(els.surfaceX.value) || 0 });
+      });
+      els.surfaceY.addEventListener('input', () => {
+        patchSurface({ nudgeY: Number(els.surfaceY.value) || 0 });
+      });
+
       els.btnModeRoman.addEventListener('click', () => setNudgeMode('roman'));
       els.btnModeBand.addEventListener('click', () => setNudgeMode('band'));
 
@@ -991,6 +1095,13 @@
         refresh();
         scheduleSave();
         els.status.textContent = `Reset band ${key} (tile + shift)`;
+      });
+      els.btnResetSurface.addEventListener('click', () => {
+        if (!layout.surfaces) layout.surfaces = structuredClone(DEFAULTS.surfaces);
+        layout.surfaces[surfaceKey] = { ...DEFAULTS.surfaces[surfaceKey] };
+        refresh();
+        scheduleSave();
+        els.status.textContent = `Reset surface ${surfaceKey}`;
       });
       els.btnCopyDefaults.addEventListener('click', () => {
         const src = getNumeral(subLevel);
@@ -1115,6 +1226,10 @@
             defaults: { ...DEFAULTS.defaults, ...(data.defaults || {}) },
             numerals: data.numerals || {},
             bands: data.bands || {},
+            surfaces: {
+              ...structuredClone(DEFAULTS.surfaces),
+              ...(data.surfaces || {}),
+            },
           };
           for (const key of Object.keys(layout.bands || {})) dirtyBands.add(key);
         }
@@ -1124,7 +1239,7 @@
       setNudgeMode('roman');
       refresh();
       els.stage.focus();
-      els.status.textContent = 'Ready — romans shared; tile/shift per BG band';
+      els.status.textContent = 'Ready — romans shared; surfaces place preview/passport/rankPanel';
     }
 
     void boot();

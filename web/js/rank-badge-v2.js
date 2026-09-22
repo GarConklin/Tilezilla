@@ -1,4 +1,4 @@
-/** Live rank badge v2: BG band + Nc tile + gld/slvr roman (from tuner layout). */
+/** Live rank badge v2: BG band + Nc tile + silver roman (from tuner layout). */
 
 import { romanForSubLevel, normalizeSublevelBadge } from './sublevel-icon.js';
 
@@ -8,9 +8,14 @@ const DEFAULTS = {
   version: 1,
   art: { bgW: 115, bgH: 145 },
   tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
-  defaults: { h: 52, nudgeX: 0, nudgeY: 6, wScale: 1 },
+  defaults: { h: 20, nudgeX: 1, nudgeY: 38, wScale: 1 },
   numerals: {},
   bands: {},
+  surfaces: {
+    preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+    passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+    rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0 },
+  },
 };
 
 let layoutCache = null;
@@ -27,7 +32,16 @@ export async function loadRankBadgeV2Layout({ force = false } = {}) {
   layoutPromise = (async () => {
     const res = await fetch(`${LAYOUT_URL}?t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load rank badge v2 layout');
-    layoutCache = { ...DEFAULTS, ...(await res.json()) };
+    const raw = await res.json();
+    layoutCache = {
+      ...DEFAULTS,
+      ...raw,
+      surfaces: {
+        preview: { ...DEFAULTS.surfaces.preview, ...(raw.surfaces?.preview || {}) },
+        passport: { ...DEFAULTS.surfaces.passport, ...(raw.surfaces?.passport || {}) },
+        rankPanel: { ...DEFAULTS.surfaces.rankPanel, ...(raw.surfaces?.rankPanel || {}) },
+      },
+    };
     return layoutCache;
   })();
   try {
@@ -106,11 +120,53 @@ function getResolvedNumeral(layout, n, rank) {
   };
 }
 
+export function getSurfaceLayout(layout, surfaceKey = 'preview') {
+  const key = String(surfaceKey || 'preview');
+  const base = DEFAULTS.surfaces[key] || DEFAULTS.surfaces.preview;
+  const over = layout?.surfaces?.[key] || {};
+  return {
+    fit: over.fit === 'height' || over.fit === 'width' ? over.fit : 'contain',
+    scale: Number(over.scale ?? base.scale) || 1,
+    nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
+    nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
+  };
+}
+
 /** Avoid re-requesting the same asset when the stack is reapplied. */
 function setImgSrcIfChanged(img, src) {
   if (!img || !src) return;
   if (img.getAttribute('src') === src) return;
   img.src = src;
+}
+
+/**
+ * Fit art (bgW×bgH) into the layout slot. Prefer parent slot when stack is nested.
+ * @param {HTMLElement} stackEl
+ * @param {number} artW
+ * @param {number} artH
+ * @param {{ fit?: string, scale?: number }} surface
+ * @param {number} [explicitScale]
+ */
+function resolveSurfaceScale(stackEl, artW, artH, surface = {}, explicitScale) {
+  if (Number.isFinite(explicitScale) && explicitScale > 0) return explicitScale;
+  const slot =
+    stackEl.parentElement?.classList?.contains('tz-preview-v2-user-data__badge-stack')
+    || stackEl.parentElement?.classList?.contains('auth-screen__profile-rank-stack')
+      ? stackEl.parentElement
+      : (stackEl.closest('.tz-preview-v2-user-data__badge-stack, .auth-screen__profile-rank-stack') || stackEl);
+  const rect = slot.getBoundingClientRect();
+  const cssH = parseFloat(getComputedStyle(stackEl).getPropertyValue('--tz-rank-badge-h'));
+  const w = rect.width > 4 ? rect.width : artW;
+  const h = rect.height > 4
+    ? rect.height
+    : (Number.isFinite(cssH) && cssH > 0 ? cssH : artH * 0.4);
+  const fit = surface.fit || 'contain';
+  let base;
+  if (fit === 'height') base = h / artH;
+  else if (fit === 'width') base = w / artW;
+  else base = Math.min(w / artW, h / artH);
+  const mult = Number(surface.scale) > 0 ? Number(surface.scale) : 1;
+  return Math.max(0.05, base * mult);
 }
 
 /** Ensure stack has bg / tile / num img children (migrates legacy markup). */
@@ -158,20 +214,10 @@ export function ensureRankBadgeV2Stack(stackEl) {
   return { bg, tile, num };
 }
 
-function resolvePreviewScale(stackEl, artH, explicitScale) {
-  if (Number.isFinite(explicitScale) && explicitScale > 0) return explicitScale;
-  // Prefer explicit slot height (passport sets this from the layout box).
-  const cssH = parseFloat(getComputedStyle(stackEl).getPropertyValue('--tz-rank-badge-h'));
-  if (Number.isFinite(cssH) && cssH > 0) return cssH / artH;
-  const boxH = stackEl.getBoundingClientRect().height;
-  const target = (boxH > 8 ? boxH : 0) || artH * 0.4;
-  return target / artH;
-}
-
 /**
  * Apply layered badge to a stack element.
  * @param {HTMLElement} stackEl
- * @param {{ rankId: number, subLevel: number, romanStyle?: string, rankName?: string, scale?: number, layout?: object }} opts
+ * @param {{ rankId: number, subLevel: number, romanStyle?: string, rankName?: string, scale?: number, layout?: object, surface?: string }} opts
  */
 export function applyRankBadgeV2(stackEl, opts = {}) {
   if (!stackEl) return false;
@@ -183,13 +229,16 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   const band = bandKeyForRank(rankId);
   const tileLayout = getTileForBand(layout, band);
   const L = getResolvedNumeral(layout, subLevel, rankId);
+  const surface = getSurfaceLayout(layout, opts.surface || 'preview');
   const parts = ensureRankBadgeV2Stack(stackEl);
   if (!parts) return false;
 
-  const scale = resolvePreviewScale(stackEl, art.bgH || 145, opts.scale);
+  const artW = art.bgW || 115;
+  const artH = art.bgH || 145;
+  const scale = resolveSurfaceScale(stackEl, artW, artH, surface, opts.scale);
 
-  stackEl.style.setProperty('--art-w', String(art.bgW || 115));
-  stackEl.style.setProperty('--art-h', String(art.bgH || 145));
+  stackEl.style.setProperty('--art-w', String(artW));
+  stackEl.style.setProperty('--art-h', String(artH));
   stackEl.style.setProperty('--preview-scale', String(scale));
   stackEl.style.setProperty('--tile-scale', String(tileLayout.scale ?? 0.9));
   stackEl.style.setProperty('--tile-nudge-x', String(tileLayout.nudgeX ?? 0));
@@ -198,6 +247,8 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.style.setProperty('--num-nudge-x', String(L.nudgeX));
   stackEl.style.setProperty('--num-nudge-y', String(L.nudgeY));
   stackEl.style.setProperty('--num-w-scale', String(L.wScale));
+  stackEl.style.setProperty('--surface-nudge-x', `${surface.nudgeX}px`);
+  stackEl.style.setProperty('--surface-nudge-y', `${surface.nudgeY}px`);
 
   const roman = romanForSubLevel(subLevel);
   const rankName = opts.rankName || `Rank ${rankId}`;
@@ -212,6 +263,7 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.dataset.rankId = String(rankId);
   stackEl.dataset.sublevel = String(subLevel);
   stackEl.dataset.sublevelBadge = romanStyle;
+  stackEl.dataset.surface = String(opts.surface || 'preview');
   stackEl.setAttribute('aria-label', `${rankName}, sublevel ${roman}`);
 
   return true;

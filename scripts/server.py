@@ -1838,6 +1838,26 @@ def validate_rank_badge_v2_layout(payload: object) -> str | None:
             for extra in entry:
                 if extra not in ("tile", "numeralShift"):
                     return f"Unknown bands.{band_key} key: {extra}"
+    surfaces = payload.get("surfaces")
+    if surfaces is not None:
+        if not isinstance(surfaces, dict):
+            return "surfaces must be an object"
+        allowed_surfaces = ("preview", "passport", "rankPanel")
+        allowed_fit = ("contain", "width", "height")
+        surface_keys = ("fit", "scale", "nudgeX", "nudgeY")
+        for surf_key, entry in surfaces.items():
+            if surf_key not in allowed_surfaces:
+                return f"Unknown surfaces key: {surf_key}"
+            if not isinstance(entry, dict):
+                return f"surfaces.{surf_key} must be an object"
+            for key, val in entry.items():
+                if key not in surface_keys:
+                    return f"Unknown surfaces.{surf_key} key: {key}"
+                if key == "fit":
+                    if val not in allowed_fit:
+                        return f"surfaces.{surf_key}.fit must be contain|width|height"
+                elif not isinstance(val, (int, float)):
+                    return f"surfaces.{surf_key}.{key} must be a number"
     return None
 
 

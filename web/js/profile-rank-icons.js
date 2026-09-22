@@ -94,7 +94,7 @@ async function applyPassportRankState(stacks, progress) {
   syncPassportRankBadgeHeights(stacks);
 
   for (const stack of stacks) {
-    const ok = await applyRankBadgeV2Async(stack, opts);
+    const ok = await applyRankBadgeV2Async(stack, { ...opts, surface: 'passport' });
     if (!ok && resolved.rank) {
       const tile = stack.querySelector('.badge-stack__tile') || stack.querySelector('.tz-rank-badge__img');
       const num = stack.querySelector('.badge-stack__num') || stack.querySelector('.tz-rank-sublevel__img');
@@ -114,7 +114,7 @@ async function applyPassportRankState(stacks, progress) {
   syncPassportRankBadgeHeights(stacks);
   // Remeasure scale after images/layout settle
   for (const stack of stacks) {
-    await applyRankBadgeV2Async(stack, opts);
+    await applyRankBadgeV2Async(stack, { ...opts, surface: 'passport' });
   }
 }
 

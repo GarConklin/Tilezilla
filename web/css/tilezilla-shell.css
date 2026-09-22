@@ -1922,7 +1922,7 @@ button {
   width: calc(var(--tz-user-data-badge-stack-w-art, 88) / var(--tz-user-data-art-w, 104) * 100%);
   height: calc(var(--tz-user-data-badge-stack-h-art, 42) / var(--tz-user-data-art-h, 72) * 100%);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 }
 
@@ -2676,18 +2676,25 @@ button {
 /* Layered badge v2 (BG + Nc + roman) — art box scaled by --preview-scale */
 .tz-rank-badge-stack.tz-rank-badge-v2,
 .tz-rank-badge-v2.badge-stack {
+  /* Art-box size only — never clamp one axis alone (that breaks roman vs tuner). */
   position: relative;
   width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
   height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
+  aspect-ratio: var(--art-w, 115) / var(--art-h, 145);
   flex: 0 0 auto;
   max-width: none;
+  max-height: none;
+  box-sizing: border-box;
 }
 
 .tz-rank-panel .tz-rank-badge-stack.tz-rank-badge-v2 {
   position: absolute;
   top: var(--tz-rank-badge-top);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(
+    calc(-50% + var(--surface-nudge-x, 0px)),
+    var(--surface-nudge-y, 0px)
+  );
 }
 
 .badge-stack__bg,
@@ -2703,7 +2710,8 @@ button {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: contain;
+  object-position: center center;
 }
 
 .badge-stack__tile {
@@ -2755,16 +2763,23 @@ button {
 }
 
 .tz-preview-v2-user-data__badge-stack > .tz-rank-badge-v2.badge-stack {
-  /* Art box sized by JS --preview-scale; slot above is only the layout frame. */
+  /* Art box sized by JS --preview-scale + surfaces.preview; slot is only the frame. */
   position: relative;
   left: auto;
   top: auto;
   width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
   height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
-  max-width: 100%;
-  max-height: 100%;
+  aspect-ratio: var(--art-w, 115) / var(--art-h, 145);
+  max-width: none;
+  max-height: none;
   flex: 0 0 auto;
   overflow: visible;
+  transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
+}
+
+.auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2,
+.tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2 {
+  transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
 }
 
 .tz-rank-badge__img {

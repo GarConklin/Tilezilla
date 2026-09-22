@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Live rank badge stack. BG bands + Nc tiles + silver (slvr) 1-15. Tuned via rank-badge-v2-tuner.",
+  "note": "Live rank badge stack. Tune numerals/tile/bands + surfaces at /tools/rank-badge-v2-tuner.html. surfaces.preview places the art box in the user_data preview slot; passport/rankPanel use the same numeral JSON.",
   "art": {
     "bgW": 115,
     "bgH": 145
@@ -11,86 +11,34 @@
     "nudgeY": -2
   },
   "defaults": {
-    "h": 52,
-    "nudgeX": 0,
-    "nudgeY": 6,
+    "h": 20,
+    "nudgeX": 1,
+    "nudgeY": 38,
     "wScale": 1
   },
   "numerals": {
-    "1": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38,
-      "wScale": 0.97
-    },
-    "2": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "3": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "4": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "5": {
-      "h": 21,
-      "nudgeY": 38
-    },
-    "6": {
-      "h": 20,
-      "nudgeY": 38
-    },
-    "7": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "8": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "9": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "10": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "11": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "12": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "13": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "14": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    },
-    "15": {
-      "h": 20,
-      "nudgeX": 1,
-      "nudgeY": 38
-    }
+    "1": { "wScale": 0.97 },
+    "5": { "h": 21 }
   },
-  "bands": {}
+  "bands": {},
+  "surfaces": {
+    "preview": {
+      "fit": "contain",
+      "scale": 0.88,
+      "nudgeX": 0,
+      "nudgeY": -4
+    },
+    "passport": {
+      "fit": "contain",
+      "scale": 1,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
+    "rankPanel": {
+      "fit": "contain",
+      "scale": 1,
+      "nudgeX": 0,
+      "nudgeY": 0
+    }
+  }
 }
