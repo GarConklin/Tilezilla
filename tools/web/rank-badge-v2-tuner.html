@@ -297,7 +297,9 @@
         translate(
           calc(-50% + var(--tile-nudge-x, 0) * var(--preview-scale) * 1px),
           calc(-50% + var(--tile-nudge-y, 0) * var(--preview-scale) * 1px)
-        );
+        )
+        scale(var(--tile-w-scale, 1), var(--tile-h-scale, 1));
+      transform-origin: center center;
     }
 
     .badge-stack__num {
@@ -474,19 +476,32 @@
       </div>
 
       <div class="row">
-        <label for="tileScale">Tile scale</label>
+        <label for="tileScale">Icon scale</label>
         <output id="tileScaleOut">0.90</output>
       </div>
       <input type="range" id="tileScale" min="0.6" max="1.15" step="0.01" value="0.9" />
+      <div class="row">
+        <label for="tileWScale">Icon stretch H</label>
+        <output id="tileWScaleOut">1.00</output>
+      </div>
+      <input type="range" id="tileWScale" min="0.5" max="1.8" step="0.01" value="1" />
+      <div class="row">
+        <label for="tileHScale">Icon stretch V</label>
+        <output id="tileHScaleOut">1.00</output>
+      </div>
+      <input type="range" id="tileHScale" min="0.5" max="1.8" step="0.01" value="1" />
+      <p style="margin:-4px 0 10px;font-size:0.65rem;color:#7a8e8a;line-height:1.35;">
+        Icon = the Nc tile (boot / crest). H/V stretch that image only — not the BG plate or roman.
+      </p>
 
       <div class="row">
-        <label for="tileX">Tile nudge X</label>
+        <label for="tileX">Icon nudge X</label>
         <output id="tileXOut">0</output>
       </div>
       <input type="range" id="tileX" min="-20" max="20" step="1" value="0" />
 
       <div class="row">
-        <label for="tileY">Tile nudge Y</label>
+        <label for="tileY">Icon nudge Y</label>
         <output id="tileYOut">0</output>
       </div>
       <input type="range" id="tileY" min="-30" max="30" step="1" value="0" />
@@ -666,7 +681,7 @@
     const DEFAULTS = {
       version: 1,
       art: { bgW: 115, bgH: 145 },
-      tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
+      tile: { scale: 0.9, wScale: 1, hScale: 1, nudgeX: 0, nudgeY: -2 },
       defaults: { h: 20, nudgeX: 1, nudgeY: 38, wScale: 1 },
       numerals: {},
       bands: {},
@@ -710,6 +725,8 @@
       numY: document.getElementById('numY'),
       numW: document.getElementById('numW'),
       tileScale: document.getElementById('tileScale'),
+      tileWScale: document.getElementById('tileWScale'),
+      tileHScale: document.getElementById('tileHScale'),
       tileX: document.getElementById('tileX'),
       tileY: document.getElementById('tileY'),
       bandShiftX: document.getElementById('bandShiftX'),
@@ -720,6 +737,8 @@
       numYOut: document.getElementById('numYOut'),
       numWOut: document.getElementById('numWOut'),
       tileScaleOut: document.getElementById('tileScaleOut'),
+      tileWScaleOut: document.getElementById('tileWScaleOut'),
+      tileHScaleOut: document.getElementById('tileHScaleOut'),
       tileXOut: document.getElementById('tileXOut'),
       tileYOut: document.getElementById('tileYOut'),
       bandShiftXOut: document.getElementById('bandShiftXOut'),
@@ -797,6 +816,8 @@
       const over = getBandEntry(key).tile || {};
       return {
         scale: Number(over.scale ?? base.scale),
+        wScale: Number(over.wScale ?? base.wScale) || 1,
+        hScale: Number(over.hScale ?? base.hScale) || 1,
         nudgeX: Number(over.nudgeX ?? base.nudgeX),
         nudgeY: Number(over.nudgeY ?? base.nudgeY),
       };
@@ -975,6 +996,8 @@
       el.style.setProperty('--art-h', String(art.bgH || 145));
       el.style.setProperty('--preview-scale', String(scale));
       el.style.setProperty('--tile-scale', String(tile.scale ?? 0.9));
+      el.style.setProperty('--tile-w-scale', String(tile.wScale > 0 ? tile.wScale : 1));
+      el.style.setProperty('--tile-h-scale', String(tile.hScale > 0 ? tile.hScale : 1));
       el.style.setProperty('--tile-nudge-x', String(tile.nudgeX ?? 0));
       el.style.setProperty('--tile-nudge-y', String(tile.nudgeY ?? 0));
       el.style.setProperty('--num-h', String(L.h));
@@ -1061,6 +1084,8 @@
       els.numY.value = String(L.nudgeY);
       els.numW.value = String(L.wScale);
       els.tileScale.value = String(tile.scale ?? 0.9);
+      els.tileWScale.value = String(tile.wScale ?? 1);
+      els.tileHScale.value = String(tile.hScale ?? 1);
       els.tileX.value = String(tile.nudgeX ?? 0);
       els.tileY.value = String(tile.nudgeY ?? 0);
       els.bandShiftX.value = String(shift.nudgeX);
@@ -1071,6 +1096,8 @@
       els.numYOut.textContent = String(L.nudgeY);
       els.numWOut.textContent = Number(L.wScale).toFixed(2);
       els.tileScaleOut.textContent = Number(tile.scale ?? 0.9).toFixed(2);
+      els.tileWScaleOut.textContent = Number(tile.wScale ?? 1).toFixed(2);
+      els.tileHScaleOut.textContent = Number(tile.hScale ?? 1).toFixed(2);
       els.tileXOut.textContent = String(tile.nudgeX ?? 0);
       els.tileYOut.textContent = String(tile.nudgeY ?? 0);
       els.bandShiftXOut.textContent = String(shift.nudgeX);
@@ -1119,7 +1146,7 @@
         ` · roman h:${L.h} x:${L.nudgeX} y:${L.nudgeY}` +
         ` · shift ${shift.nudgeX},${shift.nudgeY}` +
         ` · shown x:${R.nudgeX} y:${R.nudgeY}` +
-        ` · tile s:${Number(tile.scale ?? 0.9).toFixed(2)}` +
+        ` · icon s:${Number(tile.scale ?? 0.9).toFixed(2)} H×${Number(tile.wScale ?? 1).toFixed(2)} V×${Number(tile.hScale ?? 1).toFixed(2)}` +
         ` · surface ${surfaceKey} ×${Number(getSurface().scale).toFixed(2)}`;
 
       for (const btn of els.levelGrid.querySelectorAll('.level-btn')) {
@@ -1260,6 +1287,12 @@
       });
       els.tileScale.addEventListener('input', () => {
         patchBandTile({ scale: Number(els.tileScale.value) });
+      });
+      els.tileWScale.addEventListener('input', () => {
+        patchBandTile({ wScale: Number(els.tileWScale.value) || 1 });
+      });
+      els.tileHScale.addEventListener('input', () => {
+        patchBandTile({ hScale: Number(els.tileHScale.value) || 1 });
       });
       els.tileX.addEventListener('input', () => {
         patchBandTile({ nudgeX: Number(els.tileX.value) });

@@ -7,6 +7,8 @@
   },
   "tile": {
     "scale": 0.9,
+    "wScale": 1,
+    "hScale": 1,
     "nudgeX": 0,
     "nudgeY": -2
   },

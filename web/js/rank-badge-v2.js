@@ -7,7 +7,7 @@ const LAYOUT_URL = '/data/rank_badge_v2_layout.json';
 const DEFAULTS = {
   version: 1,
   art: { bgW: 115, bgH: 145 },
-  tile: { scale: 0.9, nudgeX: 0, nudgeY: -2 },
+  tile: { scale: 0.9, wScale: 1, hScale: 1, nudgeX: 0, nudgeY: -2 },
   defaults: { h: 20, nudgeX: 1, nudgeY: 38, wScale: 1 },
   numerals: {},
   bands: {},
@@ -85,6 +85,8 @@ function getTileForBand(layout, key) {
   const over = getBandEntry(layout, key).tile || {};
   return {
     scale: Number(over.scale ?? base.scale),
+    wScale: Number(over.wScale ?? base.wScale) || 1,
+    hScale: Number(over.hScale ?? base.hScale) || 1,
     nudgeX: Number(over.nudgeX ?? base.nudgeX),
     nudgeY: Number(over.nudgeY ?? base.nudgeY),
   };
@@ -246,6 +248,8 @@ export function applyRankBadgeV2(stackEl, opts = {}) {
   stackEl.style.setProperty('--art-h', String(artH));
   stackEl.style.setProperty('--preview-scale', String(scale));
   stackEl.style.setProperty('--tile-scale', String(tileLayout.scale ?? 0.9));
+  stackEl.style.setProperty('--tile-w-scale', String(tileLayout.wScale > 0 ? tileLayout.wScale : 1));
+  stackEl.style.setProperty('--tile-h-scale', String(tileLayout.hScale > 0 ? tileLayout.hScale : 1));
   stackEl.style.setProperty('--tile-nudge-x', String(tileLayout.nudgeX ?? 0));
   stackEl.style.setProperty('--tile-nudge-y', String(tileLayout.nudgeY ?? 0));
   stackEl.style.setProperty('--num-h', String(L.h));

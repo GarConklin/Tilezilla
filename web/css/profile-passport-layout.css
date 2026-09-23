@@ -187,7 +187,8 @@
     translate(
       calc(-50% + var(--tile-nudge-x, 0) * var(--preview-scale, 1) * 1px),
       calc(-50% + var(--tile-nudge-y, 0) * var(--preview-scale, 1) * 1px)
-    );
+    )
+    scale(var(--tile-w-scale, 1), var(--tile-h-scale, 1));
   transform-origin: center center;
 }
 
