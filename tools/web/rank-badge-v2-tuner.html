@@ -900,7 +900,7 @@
       const next = { ...getTileForBand(key), ...patch };
       const base = { ...DEFAULTS.tile, ...(layout.tile || {}) };
       const diff = {};
-      for (const k of ['scale', 'nudgeX', 'nudgeY']) {
+      for (const k of ['scale', 'wScale', 'hScale', 'nudgeX', 'nudgeY']) {
         if (next[k] !== base[k]) diff[k] = next[k];
       }
       if (Object.keys(diff).length) band.tile = diff;
