@@ -119,7 +119,7 @@
   max-height: none;
   flex: 0 0 auto;
   transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
-    scaleX(var(--surface-w-scale, 1));
+    scale(var(--surface-w-scale, 1), var(--surface-h-scale, 1));
   transform-origin: center center;
 }
 

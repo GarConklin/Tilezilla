@@ -196,7 +196,7 @@
       width: calc(var(--art-w) * var(--preview-scale) * 1px);
       height: calc(var(--art-h) * var(--preview-scale) * 1px);
       flex: 0 0 auto;
-      transform: scaleX(var(--surface-w-scale, 1));
+      transform: scale(var(--surface-w-scale, 1), var(--surface-h-scale, 1));
       transform-origin: center center;
     }
 
@@ -254,7 +254,7 @@
       width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
       height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
       transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
-        scaleX(var(--surface-w-scale, 1));
+        scale(var(--surface-w-scale, 1), var(--surface-h-scale, 1));
       transform-origin: center center;
     }
 
@@ -526,12 +526,17 @@
       </div>
       <input type="range" id="surfaceScale" min="0.5" max="1.25" step="0.01" value="1" />
       <div class="row">
-        <label for="surfaceWScale">Stretch wide</label>
+        <label for="surfaceWScale">Stretch H (wide)</label>
         <output id="surfaceWScaleOut">1.00</output>
       </div>
-      <input type="range" id="surfaceWScale" min="0.7" max="1.6" step="0.01" value="1" />
+      <input type="range" id="surfaceWScale" min="0.5" max="1.8" step="0.01" value="1" />
+      <div class="row">
+        <label for="surfaceHScale">Stretch V (tall)</label>
+        <output id="surfaceHScaleOut">1.00</output>
+      </div>
+      <input type="range" id="surfaceHScale" min="0.5" max="1.8" step="0.01" value="1" />
       <p style="margin:-4px 0 10px;font-size:0.65rem;color:#7a8e8a;line-height:1.35;">
-        Horizontal only (scaleX). Use this to fill the slot width without making the badge taller.
+        Independent axes: H = width only, V = height only. Scale mult still sizes both together first.
       </p>
       <div class="row">
         <label for="surfaceX">Nudge X (px)</label>
@@ -666,9 +671,9 @@
       numerals: {},
       bands: {},
       surfaces: {
-        preview: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
-        passport: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
-        rankPanel: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        preview: { fit: 'contain', scale: 1, wScale: 1, hScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        passport: { fit: 'contain', scale: 1, wScale: 1, hScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        rankPanel: { fit: 'contain', scale: 1, wScale: 1, hScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
       },
     };
 
@@ -725,10 +730,12 @@
       surfaceFit: document.getElementById('surfaceFit'),
       surfaceScale: document.getElementById('surfaceScale'),
       surfaceWScale: document.getElementById('surfaceWScale'),
+      surfaceHScale: document.getElementById('surfaceHScale'),
       surfaceX: document.getElementById('surfaceX'),
       surfaceY: document.getElementById('surfaceY'),
       surfaceScaleOut: document.getElementById('surfaceScaleOut'),
       surfaceWScaleOut: document.getElementById('surfaceWScaleOut'),
+      surfaceHScaleOut: document.getElementById('surfaceHScaleOut'),
       surfaceXOut: document.getElementById('surfaceXOut'),
       surfaceYOut: document.getElementById('surfaceYOut'),
       bgScale: document.getElementById('bgScale'),
@@ -810,6 +817,7 @@
         fit: over.fit === 'width' || over.fit === 'height' ? over.fit : 'contain',
         scale: Number(over.scale ?? base.scale) || 1,
         wScale: Number(over.wScale ?? base.wScale) || 1,
+        hScale: Number(over.hScale ?? base.hScale) || 1,
         nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
         nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
         bgScale: Number(over.bgScale ?? base.bgScale) || 1,
@@ -944,6 +952,7 @@
           fit: S.fit,
           scale: S.scale,
           wScale: S.wScale,
+          hScale: S.hScale,
           nudgeX: S.nudgeX,
           nudgeY: S.nudgeY,
           bgScale: S.bgScale,
@@ -960,7 +969,7 @@
       const tile = getTileForBand(band);
       const L = getResolvedNumeral(level, rank);
       const S = surface || {
-        bgScale: 1, bgNudgeX: 0, bgNudgeY: 0, nudgeX: 0, nudgeY: 0, wScale: 1,
+        bgScale: 1, bgNudgeX: 0, bgNudgeY: 0, nudgeX: 0, nudgeY: 0, wScale: 1, hScale: 1,
       };
       el.style.setProperty('--art-w', String(art.bgW || 115));
       el.style.setProperty('--art-h', String(art.bgH || 145));
@@ -978,6 +987,7 @@
       el.style.setProperty('--surface-nudge-x', `${S.nudgeX || 0}px`);
       el.style.setProperty('--surface-nudge-y', `${S.nudgeY || 0}px`);
       el.style.setProperty('--surface-w-scale', String(S.wScale > 0 ? S.wScale : 1));
+      el.style.setProperty('--surface-h-scale', String(S.hScale > 0 ? S.hScale : 1));
 
       const bg = el.querySelector('.badge-stack__bg');
       const tileImg = el.querySelector('.badge-stack__tile');
@@ -1022,7 +1032,7 @@
       });
       els.simReadout.textContent =
         `preview · scale ${scale.toFixed(3)} · surf ×${S.scale.toFixed(2)}` +
-        ` · wide ×${Number(S.wScale).toFixed(2)}` +
+        ` · H×${Number(S.wScale).toFixed(2)} V×${Number(S.hScale).toFixed(2)}` +
         ` · nudge ${S.nudgeX},${S.nudgeY}` +
         ` · bg ×${S.bgScale.toFixed(2)} pan ${S.bgNudgeX},${S.bgNudgeY}` +
         ` · view ×${previewScale.toFixed(1)}`;
@@ -1072,10 +1082,12 @@
       els.surfaceFit.value = S.fit;
       els.surfaceScale.value = String(S.scale);
       els.surfaceWScale.value = String(S.wScale);
+      els.surfaceHScale.value = String(S.hScale);
       els.surfaceX.value = String(S.nudgeX);
       els.surfaceY.value = String(S.nudgeY);
       els.surfaceScaleOut.textContent = Number(S.scale).toFixed(2);
       els.surfaceWScaleOut.textContent = Number(S.wScale).toFixed(2);
+      els.surfaceHScaleOut.textContent = Number(S.hScale).toFixed(2);
       els.surfaceXOut.textContent = String(S.nudgeX);
       els.surfaceYOut.textContent = String(S.nudgeY);
       els.bgScale.value = String(S.bgScale);
@@ -1278,6 +1290,9 @@
       });
       els.surfaceWScale.addEventListener('input', () => {
         patchSurface({ wScale: Number(els.surfaceWScale.value) || 1 });
+      });
+      els.surfaceHScale.addEventListener('input', () => {
+        patchSurface({ hScale: Number(els.surfaceHScale.value) || 1 });
       });
       els.surfaceX.addEventListener('input', () => {
         patchSurface({ nudgeX: Number(els.surfaceX.value) || 0 });

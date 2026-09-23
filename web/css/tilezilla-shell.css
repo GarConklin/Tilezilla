@@ -2789,14 +2789,14 @@ button {
   flex: 0 0 auto;
   overflow: hidden;
   transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
-    scaleX(var(--surface-w-scale, 1));
+    scale(var(--surface-w-scale, 1), var(--surface-h-scale, 1));
   transform-origin: center center;
 }
 
 .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2,
 .tz-profile-dialog__stage .auth-screen__profile-rank-stack .tz-rank-badge-stack.tz-rank-badge-v2 {
   transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
-    scaleX(var(--surface-w-scale, 1));
+    scale(var(--surface-w-scale, 1), var(--surface-h-scale, 1));
   transform-origin: center center;
 }
 
