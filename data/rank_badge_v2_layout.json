@@ -77,6 +77,17 @@
     }
   },
   "bands": {
+    "1-10": {
+      "tile": {
+        "scale": 0.82,
+        "nudgeX": 1,
+        "nudgeY": 1
+      },
+      "numeralShift": {
+        "nudgeX": 2,
+        "nudgeY": 2
+      }
+    },
     "21-30": {
       "numeralShift": {
         "nudgeY": -1
@@ -99,16 +110,18 @@
   "surfaces": {
     "preview": {
       "fit": "contain",
-      "scale": 0.83,
-      "nudgeX": 0,
+      "scale": 1.1,
+      "wScale": 1,
+      "nudgeX": 1,
       "nudgeY": 7,
       "bgScale": 1,
-      "bgNudgeX": 0,
-      "bgNudgeY": 0
+      "bgNudgeX": -37,
+      "bgNudgeY": -24
     },
     "passport": {
       "fit": "contain",
       "scale": 1,
+      "wScale": 1,
       "nudgeX": 0,
       "nudgeY": 0,
       "bgScale": 1,
@@ -118,6 +131,7 @@
     "rankPanel": {
       "fit": "contain",
       "scale": 1,
+      "wScale": 1,
       "nudgeX": 0,
       "nudgeY": 0,
       "bgScale": 1,

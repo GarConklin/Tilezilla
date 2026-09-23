@@ -196,6 +196,8 @@
       width: calc(var(--art-w) * var(--preview-scale) * 1px);
       height: calc(var(--art-h) * var(--preview-scale) * 1px);
       flex: 0 0 auto;
+      transform: scaleX(var(--surface-w-scale, 1));
+      transform-origin: center center;
     }
 
     .badge-stack__bg,
@@ -225,7 +227,7 @@
 
     .sim-preview__frame {
       position: relative;
-      width: min(100%, 280px);
+      width: min(100%, calc(90px * var(--sim-view-size, 3)));
       aspect-ratio: 104 / 72;
       margin: 0 auto;
       border-radius: 6px;
@@ -251,7 +253,9 @@
     .sim-preview__badge-slot .badge-stack {
       width: calc(var(--art-w, 115) * var(--preview-scale, 0.4) * 1px);
       height: calc(var(--art-h, 145) * var(--preview-scale, 0.4) * 1px);
-      transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px));
+      transform: translate(var(--surface-nudge-x, 0px), var(--surface-nudge-y, 0px))
+        scaleX(var(--surface-w-scale, 1));
+      transform-origin: center center;
     }
 
     .sim-preview__progress {
@@ -499,12 +503,6 @@
       </div>
       <input type="range" id="bandShiftY" min="-50" max="50" step="1" value="0" />
 
-      <div class="row">
-        <label for="previewScale">Preview zoom</label>
-        <output id="previewScaleOut">3.0</output>
-      </div>
-      <input type="range" id="previewScale" min="1.5" max="5" step="0.1" value="3" />
-
       <h2>UI surface <span id="surfaceLabel" style="color:#8fd49a;text-transform:none;letter-spacing:0;">preview</span></h2>
       <p style="margin:0 0 8px;font-size:0.68rem;color:#a8b8b4;line-height:1.4;">
         Places the art box inside each live slot. Start with <strong>preview</strong> (user_data tile),
@@ -527,6 +525,14 @@
         <output id="surfaceScaleOut">1.00</output>
       </div>
       <input type="range" id="surfaceScale" min="0.5" max="1.25" step="0.01" value="1" />
+      <div class="row">
+        <label for="surfaceWScale">Stretch wide</label>
+        <output id="surfaceWScaleOut">1.00</output>
+      </div>
+      <input type="range" id="surfaceWScale" min="0.7" max="1.6" step="0.01" value="1" />
+      <p style="margin:-4px 0 10px;font-size:0.65rem;color:#7a8e8a;line-height:1.35;">
+        Horizontal only (scaleX). Use this to fill the slot width without making the badge taller.
+      </p>
       <div class="row">
         <label for="surfaceX">Nudge X (px)</label>
         <output id="surfaceXOut">0</output>
@@ -599,6 +605,15 @@
           Same slot aspect as the live PREVIEW TILE badge window. Tune <strong>preview</strong> surface
           (scale / nudge / BG crop) here — Save writes <code>surfaces.preview</code> for the game.
         </p>
+        <div class="row">
+          <label for="previewScale">Sim view size</label>
+          <output id="previewScaleOut">3.0</output>
+        </div>
+        <input type="range" id="previewScale" min="1.5" max="5" step="0.1" value="3" />
+        <p style="margin:-4px 0 10px;font-size:0.65rem;color:#7a8e8a;line-height:1.35;">
+          Enlarges this simulated window only (easier to see). Does not change saved scale —
+          use <strong>Scale mult</strong> above for that.
+        </p>
         <div class="sim-preview__frame" id="simFrame">
           <div class="sim-preview__badge-slot" id="simBadgeSlot">
             <div class="badge-stack tz-rank-badge-v2" id="simBadgeStack">
@@ -651,9 +666,9 @@
       numerals: {},
       bands: {},
       surfaces: {
-        preview: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
-        passport: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
-        rankPanel: { fit: 'contain', scale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        preview: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        passport: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
+        rankPanel: { fit: 'contain', scale: 1, wScale: 1, nudgeX: 0, nudgeY: 0, bgScale: 1, bgNudgeX: 0, bgNudgeY: 0 },
       },
     };
 
@@ -661,6 +676,8 @@
     let rankId = 1;
     let subLevel = 1;
     let previewScale = 3;
+    /** Big editor stage zoom (roman / tile nudging) — not the simulated preview slot. */
+    const EDITOR_STAGE_SCALE = 3;
     let surfaceKey = 'preview';
     let nudgeMode = 'roman'; // 'roman' | 'band'
     let dirty = new Set();
@@ -707,9 +724,11 @@
       surfaceSelect: document.getElementById('surfaceSelect'),
       surfaceFit: document.getElementById('surfaceFit'),
       surfaceScale: document.getElementById('surfaceScale'),
+      surfaceWScale: document.getElementById('surfaceWScale'),
       surfaceX: document.getElementById('surfaceX'),
       surfaceY: document.getElementById('surfaceY'),
       surfaceScaleOut: document.getElementById('surfaceScaleOut'),
+      surfaceWScaleOut: document.getElementById('surfaceWScaleOut'),
       surfaceXOut: document.getElementById('surfaceXOut'),
       surfaceYOut: document.getElementById('surfaceYOut'),
       bgScale: document.getElementById('bgScale'),
@@ -720,6 +739,7 @@
       bgYOut: document.getElementById('bgYOut'),
       simBadgeSlot: document.getElementById('simBadgeSlot'),
       simBadgeStack: document.getElementById('simBadgeStack'),
+      simFrame: document.getElementById('simFrame'),
       simReadout: document.getElementById('simReadout'),
       btnSave: document.getElementById('btnSave'),
       btnResetNum: document.getElementById('btnResetNum'),
@@ -789,6 +809,7 @@
       return {
         fit: over.fit === 'width' || over.fit === 'height' ? over.fit : 'contain',
         scale: Number(over.scale ?? base.scale) || 1,
+        wScale: Number(over.wScale ?? base.wScale) || 1,
         nudgeX: Number(over.nudgeX ?? base.nudgeX) || 0,
         nudgeY: Number(over.nudgeY ?? base.nudgeY) || 0,
         bgScale: Number(over.bgScale ?? base.bgScale) || 1,
@@ -922,6 +943,7 @@
         out.surfaces[key] = {
           fit: S.fit,
           scale: S.scale,
+          wScale: S.wScale,
           nudgeX: S.nudgeX,
           nudgeY: S.nudgeY,
           bgScale: S.bgScale,
@@ -937,7 +959,9 @@
       const band = bandKeyForRank(rank);
       const tile = getTileForBand(band);
       const L = getResolvedNumeral(level, rank);
-      const S = surface || { bgScale: 1, bgNudgeX: 0, bgNudgeY: 0, nudgeX: 0, nudgeY: 0 };
+      const S = surface || {
+        bgScale: 1, bgNudgeX: 0, bgNudgeY: 0, nudgeX: 0, nudgeY: 0, wScale: 1,
+      };
       el.style.setProperty('--art-w', String(art.bgW || 115));
       el.style.setProperty('--art-h', String(art.bgH || 145));
       el.style.setProperty('--preview-scale', String(scale));
@@ -953,6 +977,7 @@
       el.style.setProperty('--bg-nudge-y', String(S.bgNudgeY || 0));
       el.style.setProperty('--surface-nudge-x', `${S.nudgeX || 0}px`);
       el.style.setProperty('--surface-nudge-y', `${S.nudgeY || 0}px`);
+      el.style.setProperty('--surface-w-scale', String(S.wScale > 0 ? S.wScale : 1));
 
       const bg = el.querySelector('.badge-stack__bg');
       const tileImg = el.querySelector('.badge-stack__tile');
@@ -981,7 +1006,11 @@
     function refreshSimPreview() {
       const slot = els.simBadgeSlot;
       const stack = els.simBadgeStack;
+      const frame = els.simFrame;
       if (!slot || !stack) return;
+      if (frame) {
+        frame.style.setProperty('--sim-view-size', String(previewScale));
+      }
       const art = layout.art || DEFAULTS.art;
       const S = getSurface('preview');
       const scale = resolveSimScale(slot, art.bgW || 115, art.bgH || 145, S);
@@ -993,8 +1022,10 @@
       });
       els.simReadout.textContent =
         `preview · scale ${scale.toFixed(3)} · surf ×${S.scale.toFixed(2)}` +
+        ` · wide ×${Number(S.wScale).toFixed(2)}` +
         ` · nudge ${S.nudgeX},${S.nudgeY}` +
-        ` · bg ×${S.bgScale.toFixed(2)} pan ${S.bgNudgeX},${S.bgNudgeY}`;
+        ` · bg ×${S.bgScale.toFixed(2)} pan ${S.bgNudgeX},${S.bgNudgeY}` +
+        ` · view ×${previewScale.toFixed(1)}`;
     }
 
     function makeMiniStack(rank, level) {
@@ -1040,9 +1071,11 @@
       els.surfaceSelect.value = surfaceKey;
       els.surfaceFit.value = S.fit;
       els.surfaceScale.value = String(S.scale);
+      els.surfaceWScale.value = String(S.wScale);
       els.surfaceX.value = String(S.nudgeX);
       els.surfaceY.value = String(S.nudgeY);
       els.surfaceScaleOut.textContent = Number(S.scale).toFixed(2);
+      els.surfaceWScaleOut.textContent = Number(S.wScale).toFixed(2);
       els.surfaceXOut.textContent = String(S.nudgeX);
       els.surfaceYOut.textContent = String(S.nudgeY);
       els.bgScale.value = String(S.bgScale);
@@ -1058,7 +1091,7 @@
       applyStackVars(els.badgeStack, {
         rank: rankId,
         level: subLevel,
-        scale: previewScale,
+        scale: EDITOR_STAGE_SCALE,
         surface: getSurface(surfaceKey),
       });
       syncSliders();
@@ -1243,6 +1276,9 @@
       els.surfaceScale.addEventListener('input', () => {
         patchSurface({ scale: Number(els.surfaceScale.value) || 1 });
       });
+      els.surfaceWScale.addEventListener('input', () => {
+        patchSurface({ wScale: Number(els.surfaceWScale.value) || 1 });
+      });
       els.surfaceX.addEventListener('input', () => {
         patchSurface({ nudgeX: Number(els.surfaceX.value) || 0 });
       });
@@ -1311,8 +1347,8 @@
       });
       els.stage.addEventListener('pointermove', (e) => {
         if (!drag) return;
-        const dx = (e.clientX - drag.x) / previewScale;
-        const dy = (e.clientY - drag.y) / previewScale;
+        const dx = (e.clientX - drag.x) / EDITOR_STAGE_SCALE;
+        const dy = (e.clientY - drag.y) / EDITOR_STAGE_SCALE;
         const patch = {
           nudgeX: Math.round(drag.nudgeX + dx),
           nudgeY: Math.round(drag.nudgeY + dy),
