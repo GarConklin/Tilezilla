@@ -195,6 +195,14 @@ function allocateSuffix({ found, reservedUsed, localUsed }) {
 
 async function runSizeGenerator(sizeCfg) {
   const cli = parseCli(process.argv);
+  const solverPath = path.join(ROOT, 'solves', 'solve-level.js');
+  if (!fs.existsSync(solverPath)) {
+    throw new Error(
+      `Missing solves/solve-level.js (required). A plain git clone used to omit it because solves/ was gitignored. ` +
+        `On older branches: unzip solves.zip into the repo root (it includes the *.js tools), then re-run. ` +
+        `Do not start an overnight search until a --max-tested smoke run writes at least one solve.`
+    );
+  }
   const palette = readJson(cli.paletteSpec);
   const level = palette.levels && palette.levels[0];
   if (!level || !level.tiles) throw new Error(`Invalid palette spec: ${cli.paletteSpec}`);

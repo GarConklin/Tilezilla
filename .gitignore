@@ -15,8 +15,10 @@ auth/public/api
 # Archived / one-off scripts kept locally only
 unused/
 
-# Level solve JSON trees — distribute via solves.zip instead
-solves/
+# Level solve JSON libraries (large) — ship via solves.zip.
+# Solver tooling (*.js) must stay in git so remote generator VMs work after clone.
+solves/*
+!solves/*.js
 !solves.zip
 
 # Solver enumeration output — see tools/data/solver-runs/README.txt
