@@ -73,10 +73,29 @@ function loadUsedCodesFromBucketFile(bucketPath) {
   return used;
 }
 
+/**
+ * Canonical bag keys already present in a bucket (same shape as generate bagKey).
+ * Used to skip re-solving bags the catalog already owns.
+ * @param {string} bucketPath
+ * @param {(tiles: object) => string} bagKeyFn
+ * @returns {Set<string>}
+ */
+function loadBagKeysFromBucketFile(bucketPath, bagKeyFn) {
+  const fs = require('fs');
+  const keys = new Set();
+  if (!fs.existsSync(bucketPath) || typeof bagKeyFn !== 'function') return keys;
+  const doc = JSON.parse(fs.readFileSync(bucketPath, 'utf8'));
+  for (const L of doc.levels || []) {
+    if (L && L.tiles && typeof L.tiles === 'object') keys.add(bagKeyFn(L.tiles));
+  }
+  return keys;
+}
+
 module.exports = {
   MAX_CODES,
   indexToThreeLetterCode,
   threeLetterCodeToIndex,
   nextThreeLetterCode,
   loadUsedCodesFromBucketFile,
+  loadBagKeysFromBucketFile,
 };

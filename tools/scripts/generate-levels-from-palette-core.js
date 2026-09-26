@@ -8,6 +8,7 @@ const {
   indexToThreeLetterCode,
   nextThreeLetterCode,
   loadUsedCodesFromBucketFile,
+  loadBagKeysFromBucketFile,
 } = require('./lib/three-letter-codes');
 
 const ROOT = path.join(__dirname, '../..');
@@ -242,6 +243,16 @@ async function runSizeGenerator(sizeCfg) {
     );
   }
 
+  /** Skip bags already in the live bucket — no need to re-solve known tile matches. */
+  const seen = new Set();
+  if (cli.reserveCodesFrom) {
+    const knownBags = loadBagKeysFromBucketFile(cli.reserveCodesFrom, bagKey);
+    for (const k of knownBags) seen.add(k);
+    console.error(
+      `[bags] skipping ${knownBags.size} tile bags already in ${path.relative(ROOT, cli.reserveCodesFrom)}`
+    );
+  }
+
   const bucket = {
     schema: 'levels-bucket-v1',
     size: sizeCfg.size,
@@ -273,13 +284,16 @@ async function runSizeGenerator(sizeCfg) {
   let found = 0;
   let unsolved = 0;
   let errors = 0;
-  const seen = new Set();
+  let skippedKnown = 0;
   const t0 = Date.now();
   const active = new Set();
 
   const runOne = async (bag) => {
     const key = bagKey(bag);
-    if (seen.has(key)) return;
+    if (seen.has(key)) {
+      skippedKnown++;
+      return;
+    }
     seen.add(key);
 
     const tmpId = `${sizeCfg.size}-${tier}-TMP-${String(tested + 1).padStart(8, '0')}`;
@@ -360,7 +374,7 @@ async function runSizeGenerator(sizeCfg) {
         const elapsed = (Date.now() - t0) / 1000;
         const rate = tested / Math.max(1, elapsed);
         console.error(
-          `[${sizeCfg.size}/${tier}] tested=${tested} found=${found} unsolved=${unsolved} errors=${errors} rate=${rate.toFixed(2)}/s elapsed=${elapsed.toFixed(1)}s`
+          `[${sizeCfg.size}/${tier}] tested=${tested} found=${found} unsolved=${unsolved} errors=${errors} skippedKnown=${skippedKnown} rate=${rate.toFixed(2)}/s elapsed=${elapsed.toFixed(1)}s`
         );
       }
     }
@@ -371,7 +385,7 @@ async function runSizeGenerator(sizeCfg) {
 
   const elapsed = (Date.now() - t0) / 1000;
   console.error(
-    `DONE ${sizeCfg.size}/${tier}: tested=${tested}, found=${found}, unsolved=${unsolved}, errors=${errors}, elapsed=${elapsed.toFixed(1)}s`
+    `DONE ${sizeCfg.size}/${tier}: tested=${tested}, found=${found}, unsolved=${unsolved}, errors=${errors}, skippedKnown=${skippedKnown}, elapsed=${elapsed.toFixed(1)}s`
   );
   console.error(`Levels: ${path.relative(ROOT, outLevels)}`);
   console.error(`Solves: ${path.relative(ROOT, outSolvesDir)}`);

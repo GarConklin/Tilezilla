@@ -1,89 +1,71 @@
-# Remote palette generators
+# Remote palette generators (5x6 only)
 
-Run from **repo root** on the remote machine (needs `solves/solve-level.js`, `data/tiles/`, palette spec).
+Run from **repo root**. Needs `solves/solve-level.js`, `data/tiles/`, palette + live buckets.
 
 ## Critical: solver must exist after clone
 
-`solves/*.json` stay out of git (use `solves.zip` for libraries). **`solves/*.js` is tracked** so generators work after `git clone`.
-
-On older branches (e.g. `release/v0.99.238`) where only `solves.zip` shipped the JS:
+On `release/v0.99.264+`, `solves/*.js` is in git. On older branches:
 
 ```bash
-unzip -o solves.zip   # creates solves/solve-level.js and helpers
+unzip -o solves.zip
 test -f solves/solve-level.js || exit 1
 ```
 
-**Mandatory smoke before overnight** (must print `found` ≥ 1 within minutes):
+## 3-VM plan (parallel **2** — do not use 8 on small VMs)
+
+All jobs are **5x6** only. Bags already in the live bucket are **skipped** (same tile match = no re-solve). IDs reserved from the live bucket.
+
+| VM | Job | Command |
+|----|-----|---------|
+| 1 | **0B** | `bash tools/scripts/remote-run-5x6-0b.sh` |
+| 2 | **0C** QS/E1/E2 only (no CR/CQ/CT) | `bash tools/scripts/remote-run-5x6-0c-qse1e2.sh` |
+| 3 | **0C** CR/CQ/CT | `bash tools/scripts/remote-run-5x6-0c-crcqct.sh` |
+
+PowerShell equivalents: `remote-run-5x6-0b.ps1`, `remote-run-5x6-0c-qse1e2.ps1`, `remote-run-5x6-0c-crcqct.ps1`.
+
+Default `PARALLEL=2`. Override only if the VM can take it: `PARALLEL=4 bash …`.
+
+### Outputs (no overlap)
+
+| VM | Levels | Solves |
+|----|--------|--------|
+| 1 | `data/levels/generated/5x6-0B.generated.json` | `solves/generated/5x6-0B/` |
+| 2 | `data/levels/generated/5x6-0C-qse1e2.generated.json` | `solves/generated/5x6-0C-qse1e2/` |
+| 3 | `data/levels/generated/5x6-0C-crcqct.generated.json` | `solves/generated/5x6-0C-crcqct/` |
+
+### Mandatory smoke (each VM, before overnight)
 
 ```bash
-node tools/scripts/generate-levels-5x6-0bc-from-palette.js --tier 0B --parallel 4 \
-  --reserve-codes-from data/levels/5x6-0B.json --max-tested 50 --progress-every 10
+MAX_TESTED=50 bash tools/scripts/remote-run-5x6-0b.sh          # VM1
+MAX_TESTED=50 bash tools/scripts/remote-run-5x6-0c-qse1e2.sh   # VM2
+MAX_TESTED=50 bash tools/scripts/remote-run-5x6-0c-crcqct.sh   # VM3
 ```
 
-If `solves/solve-level.js` is missing, the generator now **exits immediately** instead of burning CPU for hours with zero solves.
+Must see `found` ≥ 1 (or only `skippedKnown` climbing if the first bags are already catalogued — then raise `MAX_TESTED` a bit). If `errors` climb and `found` stays 0 with missing solver text, stop.
+
+### Before every overnight
+
+Re-sync from hub:
+
+- `data/levels/5x6-0B.json`
+- `data/levels/5x6-0C.json`
+
+`--reserve-codes-from` both reserves IDs and skips existing tile bags.
+
+### Setup checklist
+
+1. Node.js LTS + git  
+2. `git clone` → checkout branch with solver JS (`release/v0.99.264+`)  
+3. Confirm `test -f solves/solve-level.js`  
+4. Smoke with `MAX_TESTED=50`  
+5. Overnight with default parallel 2  
+
+No Docker/MySQL required on generator VMs.
 
 ## ID suffix fix (2026-06-01)
 
-Generator core no longer uses broken `toAlpha()` (Excel-style ids that reused `AAA` after `AAZ`). New codes follow catalog order: `AAA` … `AZZ` → `ABA` …
+Codes: `AAA` … `AZZ` → `ABA` … (not Excel wrap). Always pass `--reserve-codes-from` for the matching bucket.
 
-Optional when merging into an existing bucket:
+## Do not use `remote-run-all` for these VMs
 
-`--reserve-codes-from data/levels/5x6-0B.json`
-
-## One-command launchers
-
-```powershell
-.\scripts\remote-run-all.ps1
-```
-
-```bash
-bash scripts/remote-run-all.sh
-```
-
-### 5x6-0C with CR / CQ / CT only (remote overnight)
-
-Bags must include at least one of **CR**, **CQ**, or **CT** (QS/E1/E2 alone do not qualify). IDs are reserved against the live `5x6-0C` bucket.
-
-```powershell
-.\tools\scripts\remote-run-5x6-0c-crcqct.ps1
-# or
-.\scripts\remote-run-5x6-0c-crcqct.ps1 -Parallel 12
-```
-
-```bash
-bash tools/scripts/remote-run-5x6-0c-crcqct.sh
-# or
-PARALLEL=12 bash tools/scripts/remote-run-5x6-0c-crcqct.sh
-```
-
-Direct node (same as the launcher):
-
-```bash
-node tools/scripts/generate-levels-5x6-0c-crcqct-from-palette.js --tier 0C --parallel 8 \
-  --reserve-codes-from data/levels/5x6-0C.json --progress-every 50
-```
-
-## Per-tier (Docker — same as `Docs/find solves-levels.txt`)
-
-```bash
-docker compose run --rm web node tools/scripts/generate-levels-5x6-0bc-from-palette.js --tier 0B --parallel 8 --max-tested 1000 --progress-every 50
-docker compose run --rm web node tools/scripts/generate-levels-5x6-0bc-from-palette.js --tier 0C --parallel 8
-docker compose run --rm web node tools/scripts/generate-levels-5x6-0c-crcqct-from-palette.js --tier 0C --parallel 8 --reserve-codes-from data/levels/5x6-0C.json
-docker compose run --rm web node tools/scripts/generate-levels-6x6-from-palette.js --tier 0C --parallel 8
-docker compose run --rm web node tools/scripts/generate-levels-6x6-from-palette.js --tier 0B --parallel 8
-docker compose run --rm web node tools/scripts/generate-levels-6x6-from-palette.js --tier 0A --parallel 8
-```
-
-## Output
-
-- `data/levels/generated/<size>-<tier>.generated.json`
-- `solves/generated/<size>-<tier>/`
-- `data/levels/reports/generate-<size>-<tier>-<timestamp>.ndjson`
-
-## Bad export batches
-
-```bash
-docker compose run --rm web node scripts/recode-batch-fresh-ids.js --size 5x6 --bucket 5x6-0B.json in.txt out.txt
-```
-
-Then ingest with `.\scripts\ingest-solve-batch.ps1 -BatchFile "..."`.
+`remote-run-all` also walks **6x6** tiers. For the 3-VM split above, use only the three `remote-run-5x6-*` scripts.

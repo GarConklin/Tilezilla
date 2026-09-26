@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
-# Remote overnight run: generate 5x6-0C levels that include CR, CQ, or CT.
-# Run from repo root on the remote host.
-#
+# VM3: 5x6-0C with CR/CQ/CT — parallel 2. Run from repo root.
 #   bash tools/scripts/remote-run-5x6-0c-crcqct.sh
-#   PARALLEL=12 MAX_TESTED=5000 bash tools/scripts/remote-run-5x6-0c-crcqct.sh
+#   MAX_TESTED=50 bash tools/scripts/remote-run-5x6-0c-crcqct.sh
 
 set -euo pipefail
 
-PARALLEL="${PARALLEL:-8}"
+PARALLEL="${PARALLEL:-2}"
 MAX_TESTED="${MAX_TESTED:-0}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-50}"
 MAX_SOL_PER_LEVEL="${MAX_SOL_PER_LEVEL:-1}"
@@ -21,6 +19,8 @@ args=(
   --max-sol-per-level "$MAX_SOL_PER_LEVEL"
   --palette-spec "$PALETTE_SPEC"
   --reserve-codes-from "$RESERVE_CODES_FROM"
+  --out-levels data/levels/generated/5x6-0C-crcqct.generated.json
+  --out-solves-dir solves/generated/5x6-0C-crcqct
 )
 
 if [[ "$MAX_TESTED" != "0" ]]; then
@@ -33,6 +33,6 @@ node tools/scripts/generate-levels-5x6-0c-crcqct-from-palette.js "${args[@]}"
 
 echo ""
 echo "Done."
-echo "  Levels: data/levels/generated/5x6-0C.generated.json"
-echo "  Solves: solves/generated/5x6-0C/"
+echo "  Levels: data/levels/generated/5x6-0C-crcqct.generated.json"
+echo "  Solves: solves/generated/5x6-0C-crcqct/"
 echo "Promote later with: node tools/scripts/promote-0c-generated.js"
