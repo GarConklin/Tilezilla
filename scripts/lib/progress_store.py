@@ -37,6 +37,162 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+EXAMPLE_ROUTE_HINT_REASON = "Example Route Hint"
+
+
+def _entry_viewed_example_route(entry: dict[str, Any] | None) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    if entry.get("viewedExampleRoute"):
+        return True
+    rec = entry.get("exampleRoute")
+    return isinstance(rec, dict) and bool(rec.get("used_example_route"))
+
+
+def _example_route_viewed_at(user_id: int, level_id: str) -> Optional[datetime]:
+    """Earliest reveal time. Hint spend counts even if progress meta never synced."""
+    uid = int(user_id)
+    level = str(level_id or "").strip()
+    if not level:
+        return None
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return None
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT created_at FROM hint_transactions
+                WHERE user_id = %s AND reason = %s AND reference_id = %s AND amount < 0
+                ORDER BY created_at ASC
+                LIMIT 1
+                """,
+                (uid, EXAMPLE_ROUTE_HINT_REASON, level),
+            )
+            row = cur.fetchone()
+            if row and isinstance(row.get("created_at"), datetime):
+                return row["created_at"].replace(microsecond=0)
+
+            cur.execute(
+                "SELECT meta_json FROM user_progress_meta WHERE user_id = %s LIMIT 1",
+                (uid,),
+            )
+            meta_row = cur.fetchone()
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+    meta = (meta_row or {}).get("meta_json") if meta_row else None
+    if isinstance(meta, str):
+        try:
+            meta = json.loads(meta)
+        except json.JSONDecodeError:
+            meta = None
+    levels = (meta or {}).get("levels") if isinstance(meta, dict) else None
+    entry = levels.get(level) if isinstance(levels, dict) else None
+    if not _entry_viewed_example_route(entry if isinstance(entry, dict) else None):
+        return None
+    rec = entry.get("exampleRoute") if isinstance(entry, dict) else None
+    viewed = rec.get("viewedAt") if isinstance(rec, dict) else None
+    parsed = _parse_found_at(viewed) if viewed else None
+    return parsed or datetime.now().replace(microsecond=0)
+
+
+def user_viewed_example_route(user_id: int | str, level_id: str) -> bool:
+    return _example_route_viewed_at(int(user_id), level_id) is not None
+
+
+def revoke_credit_after_example_route(user_id: int | str, level_id: str) -> dict[str, Any]:
+    """Drop solves and today's daily row that happened after the route was revealed."""
+    uid = int(user_id)
+    level = str(level_id or "").strip()
+    viewed_at = _example_route_viewed_at(uid, level)
+    if not viewed_at:
+        return {"revokedSolves": 0, "revokedDaily": False}
+    revoked_solves = 0
+    revoked_daily = False
+    today = date.today().isoformat()
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return {"revokedSolves": 0, "revokedDaily": False}
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                DELETE FROM user_found_solutions
+                WHERE user_id = %s AND level_id = %s AND found_at >= %s
+                """,
+                (uid, level, viewed_at.replace(microsecond=0)),
+            )
+            revoked_solves = int(cur.rowcount or 0)
+            scheduled = _daily_challenge_level_id(today)
+            if scheduled and scheduled == level:
+                cur.execute(
+                    """
+                    DELETE FROM daily_results
+                    WHERE user_id = %s AND challenge_date = %s AND completed_at >= %s
+                    """,
+                    (uid, today, viewed_at.replace(microsecond=0)),
+                )
+                revoked_daily = int(cur.rowcount or 0) > 0
+        conn.commit()
+    except Exception:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+    finally:
+        conn.close()
+    return {"revokedSolves": revoked_solves, "revokedDaily": revoked_daily}
+
+
+def mark_example_route_viewed(
+    repo_root: Path,
+    user_id: int | str,
+    level_id: str,
+    placements: Optional[list] = None,
+) -> dict[str, Any]:
+    """Sticky cross-device forfeit. A later solve on another device must not count."""
+    level = str(level_id or "").strip()
+    if not level:
+        return {"ok": False, "error": "levelId required"}
+    uid = int(user_id)
+    data = load_progress(repo_root, uid) or {}
+    entry = data.get(level)
+    if not isinstance(entry, dict):
+        entry = {"found": []}
+        data[level] = entry
+    prev = entry.get("exampleRoute") if isinstance(entry.get("exampleRoute"), dict) else {}
+    stored_placements = placements if isinstance(placements, list) else prev.get("placements") or []
+    entry["viewedExampleRoute"] = True
+    entry["exampleRoute"] = {
+        **prev,
+        "used_example_route": True,
+        "leaderboard_forfeited": True,
+        "hint_completion_reward_forfeited": True,
+        "placements": stored_placements,
+        "viewedAt": prev.get("viewedAt") or _now_iso(),
+    }
+    save_progress(repo_root, uid, data)
+    revoked = revoke_credit_after_example_route(uid, level)
+    return {"ok": True, "levelId": level, "exampleRouteViewed": True, **revoked}
+
+
+def example_route_status(user_id: int | str, level_id: str) -> dict[str, Any]:
+    level = str(level_id or "").strip()
+    viewed_at = _example_route_viewed_at(int(user_id), level) if level else None
+    if viewed_at:
+        revoke_credit_after_example_route(user_id, level)
+    return {
+        "ok": True,
+        "levelId": level,
+        "exampleRouteViewed": viewed_at is not None,
+    }
+
+
 def _equiv_hash(equiv_key: str) -> str:
     return hashlib.sha256(str(equiv_key).encode("utf-8")).hexdigest()
 
@@ -434,11 +590,104 @@ def load_progress(repo_root: Path, user_id: int | str) -> dict[str, Any]:
     return file_data
 
 
+def _example_route_times(user_id: int) -> dict[str, datetime]:
+    """level id → earliest reveal time (hint spend or saved progress meta)."""
+    uid = int(user_id)
+    found: dict[str, datetime] = {}
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return found
+    meta = None
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT reference_id, MIN(created_at) AS created_at
+                FROM hint_transactions
+                WHERE user_id = %s AND reason = %s AND amount < 0
+                  AND reference_id IS NOT NULL AND reference_id <> ''
+                GROUP BY reference_id
+                """,
+                (uid, EXAMPLE_ROUTE_HINT_REASON),
+            )
+            for row in cur.fetchall() or []:
+                level = str(row.get("reference_id") or "").strip()
+                created = row.get("created_at")
+                if level and isinstance(created, datetime):
+                    found[level] = created.replace(microsecond=0)
+            cur.execute(
+                "SELECT meta_json FROM user_progress_meta WHERE user_id = %s LIMIT 1",
+                (uid,),
+            )
+            meta_row = cur.fetchone()
+            meta = (meta_row or {}).get("meta_json") if meta_row else None
+    except Exception:
+        return found
+    finally:
+        conn.close()
+
+    if isinstance(meta, str):
+        try:
+            meta = json.loads(meta)
+        except json.JSONDecodeError:
+            meta = None
+    levels = (meta or {}).get("levels") if isinstance(meta, dict) else None
+    if isinstance(levels, dict):
+        for level, entry in levels.items():
+            if not _entry_viewed_example_route(entry if isinstance(entry, dict) else None):
+                continue
+            if level in found:
+                continue
+            rec = entry.get("exampleRoute") if isinstance(entry, dict) else None
+            viewed = rec.get("viewedAt") if isinstance(rec, dict) else None
+            parsed = _parse_found_at(viewed) if viewed else None
+            found[str(level)] = (parsed or datetime.utcnow()).replace(microsecond=0)
+    return found
+
+
+def _scrub_forfeited_finds(user_id: int, progress_data: dict[str, Any]) -> dict[str, Any]:
+    """A finish after the example route was revealed is not a solve on any device."""
+    if not isinstance(progress_data, dict):
+        return progress_data
+    times = _example_route_times(int(user_id))
+    if not times:
+        return progress_data
+    for level_id, viewed_at in times.items():
+        entry = progress_data.get(level_id)
+        if not isinstance(entry, dict):
+            entry = {"found": []}
+            progress_data[level_id] = entry
+        prev = entry.get("exampleRoute") if isinstance(entry.get("exampleRoute"), dict) else {}
+        entry["viewedExampleRoute"] = True
+        entry["exampleRoute"] = {
+            **prev,
+            "used_example_route": True,
+            "leaderboard_forfeited": True,
+            "hint_completion_reward_forfeited": True,
+            "viewedAt": prev.get("viewedAt") or viewed_at.replace(microsecond=0).isoformat(),
+        }
+        kept = []
+        for found_row in entry.get("found") or []:
+            if not isinstance(found_row, dict):
+                continue
+            raw_at = found_row.get("foundAt")
+            if not raw_at:
+                kept.append(found_row)
+                continue
+            if _parse_found_at(raw_at) >= viewed_at:
+                continue
+            kept.append(found_row)
+        entry["found"] = kept
+    return progress_data
+
+
 def save_progress(repo_root: Path, user_id: int | str, data: dict[str, Any]) -> None:
     """Persist progress blob to MySQL (authoritative). Does not write JSON."""
     if not isinstance(data, dict):
         return
     uid = int(user_id)
+    data = _scrub_forfeited_finds(uid, data)
     import_progress_blob_to_sql(repo_root, uid, data)
     # Apply index fields that may have been repaired in-memory.
     try:
@@ -1187,6 +1436,21 @@ def record_solve(
         return {"ok": False, "error": "placements required"}
 
     uid = int(user_id)
+    if user_viewed_example_route(uid, level_id):
+        revoke_credit_after_example_route(uid, level_id)
+        return {
+            "ok": True,
+            "forfeited": True,
+            "exampleRouteViewed": True,
+            "recorded": False,
+            "duplicate": False,
+            "index": None,
+            "bonus": False,
+            "leaderboardSubmitted": False,
+            "completionTimeSeconds": 0,
+            "moveCount": max(0, int((meta or {}).get("moveCount") or 0)),
+        }
+
     rows, cols = board_size_from_solves(repo_root, level_id)
     playable = playable_placements(placements)
     key_new = equivalence_key(playable, rows, cols)
@@ -1428,11 +1692,27 @@ def merge_progress_blobs(
             continue
 
         merged_entry = {**base_entry, **{k: v for k, v in entry.items() if k != "found"}}
+        if _entry_viewed_example_route(base_entry) or _entry_viewed_example_route(entry):
+            route = {}
+            for src in (base_entry.get("exampleRoute"), entry.get("exampleRoute")):
+                if isinstance(src, dict):
+                    route.update(src)
+            route["used_example_route"] = True
+            route["leaderboard_forfeited"] = True
+            route["hint_completion_reward_forfeited"] = True
+            merged_entry["exampleRoute"] = route
+            merged_entry["viewedExampleRoute"] = True
+        viewed_at = str((merged_entry.get("exampleRoute") or {}).get("viewedAt") or "")
         found_out: list[dict] = list(base_entry.get("found") or [])
         seen = {_found_entry_key(level_id, f) for f in found_out if isinstance(f, dict)}
         for f in entry.get("found") or []:
             if not isinstance(f, dict):
                 continue
+            if merged_entry.get("viewedExampleRoute"):
+                found_at = str(f.get("foundAt") or "")
+                # A finish after the reveal is not a solve. Undated new rows are too.
+                if not found_at or (viewed_at and found_at >= viewed_at):
+                    continue
             key = _found_entry_key(level_id, f)
             if key in seen:
                 continue
@@ -1583,6 +1863,13 @@ def migrate_user_json_file(
 
 def progress_response(repo_root: Path, user_id: int | str) -> dict[str, Any]:
     """Build GET /api/progress payload. Read-only — never repair or rewrite on poll."""
+    try:
+        today = date.today().isoformat()
+        scheduled = _daily_challenge_level_id(today)
+        if scheduled and user_viewed_example_route(user_id, scheduled):
+            revoke_credit_after_example_route(user_id, scheduled)
+    except Exception:
+        pass
     data = load_progress(repo_root, user_id)
     updated_at = _now_iso()
     adventure_rank = None
@@ -1710,6 +1997,15 @@ def submit_daily_leaderboard_result(
         sid = 1
 
     uid = int(user_id)
+    if user_viewed_example_route(uid, level):
+        revoke_credit_after_example_route(uid, level)
+        return {
+            "ok": False,
+            "error": "example-route-viewed",
+            "forfeited": True,
+            "exampleRouteViewed": True,
+        }
+
     try:
         conn = _mysql_connect()
     except Exception as err:

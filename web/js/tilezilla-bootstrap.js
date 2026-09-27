@@ -805,6 +805,20 @@ async function loadLevelOnBoard(app, level) {
     },
   });
   await afterLevelApplied(app);
+  if (level?.id && app.hasViewedExampleRoute && !app.hasViewedExampleRoute(level.id)) {
+    try {
+      const { pullExampleRouteForfeit } = await import('./tilezilla-progress-sync.js');
+      const spoil = await pullExampleRouteForfeit(level.id);
+      if (spoil?.exampleRouteViewed) {
+        app.progress?.markViewedExampleRoute?.(level.id, {
+          leaderboardForfeited: true,
+          hintCompletionRewardForfeited: true,
+        });
+      }
+    } catch {
+      /* phone can still be blocked at solve time */
+    }
+  }
 }
 
 function applyResponsiveBoard(app) {

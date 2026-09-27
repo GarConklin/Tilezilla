@@ -2499,6 +2499,10 @@ async function runCheckSolution() {
     window.__invalidSolve?.hide?.();
     playSfx('levelSuccess');
     const outcome = await processSolutionFound(lv, catalogRes, placements);
+    if (outcome?.forfeited) {
+      setCheckMessage(outcome.msg, 'checkWarn');
+      return;
+    }
     if (isGuestSession()) {
       showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
       return;
@@ -2533,6 +2537,10 @@ async function runCheckSolution() {
   }
 
   const outcome = await processSolutionFound(lv, catalogRes, placements);
+  if (outcome?.forfeited) {
+    setCheckMessage(outcome.msg, 'checkWarn');
+    return;
+  }
   if (isGuestSession()) {
     showGuestDiscoveryRecord(lv, catalogRes, outcome, knownSolutions);
     return;
@@ -2578,6 +2586,35 @@ async function processSolutionFound(lv, res, placements) {
     });
   } catch {
     /* ignore */
+  }
+
+  if (usesServerHints() && lv?.id && !hasViewedExampleRoute(lv.id)) {
+    try {
+      const { pullExampleRouteForfeit } = await import('./tilezilla-progress-sync.js');
+      const spoil = await pullExampleRouteForfeit(lv.id);
+      if (spoil?.exampleRouteViewed) {
+        progress?.markViewedExampleRoute?.(lv.id, {
+          leaderboardForfeited: true,
+          hintCompletionRewardForfeited: true,
+        });
+      }
+    } catch (err) {
+      console.warn('Example-route forfeit check:', err);
+    }
+  }
+
+  if (hasViewedExampleRoute(lv.id)) {
+    return {
+      msg: 'Example route was already viewed. This finish does not count.',
+      elapsedSec,
+      moveCount,
+      hintsUsedCount,
+      hintsUsed,
+      tokensEarned: 0,
+      bonusNotes: [],
+      leaderboardSubmitted: false,
+      forfeited: true,
+    };
   }
 
   if (guestSession) {
@@ -4060,6 +4097,18 @@ async function purchaseExampleRoute() {
       ? placements.map((p) => ({ tile: p.tile, r: p.r, c: p.c, deg: p.deg }))
       : [],
   });
+
+  if (usesServerHints()) {
+    try {
+      const { pushExampleRouteForfeit } = await import('./tilezilla-progress-sync.js');
+      const pushed = await pushExampleRouteForfeit(lv.id, placements || []);
+      if (!pushed?.ok) {
+        console.warn('Example-route forfeit sync:', pushed?.error || pushed);
+      }
+    } catch (err) {
+      console.warn('Example-route forfeit sync:', err);
+    }
+  }
 
   return {
     ok: true,

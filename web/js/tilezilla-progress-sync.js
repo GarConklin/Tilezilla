@@ -50,6 +50,24 @@ export function mergeProgressData(base, incoming) {
       seen.add(key);
     }
     out[levelId] = { ...existing, ...entry, found };
+    if (existing?.exampleRoute?.used_example_route || entry?.exampleRoute?.used_example_route
+      || existing?.viewedExampleRoute || entry?.viewedExampleRoute) {
+      const route = {
+        ...(existing.exampleRoute || {}),
+        ...(entry.exampleRoute || {}),
+        used_example_route: true,
+        leaderboard_forfeited: true,
+        hint_completion_reward_forfeited: true,
+      };
+      const viewedAt = String(route.viewedAt || '');
+      out[levelId].exampleRoute = route;
+      out[levelId].viewedExampleRoute = true;
+      out[levelId].found = found.filter((f) => {
+        const foundAt = String(f?.foundAt || '');
+        if (!foundAt) return false;
+        return !viewedAt || foundAt < viewedAt;
+      });
+    }
   }
   return out;
 }
@@ -104,6 +122,51 @@ export async function mergeProgressToServer(localData) {
     return { ok: true, ...payload };
   } catch (err) {
     return { ok: false, error: String(err) };
+  }
+}
+
+/** Ask the server whether this account already revealed the example route. */
+export async function pullExampleRouteForfeit(levelId) {
+  const id = String(levelId || '').trim();
+  if (!id) return { ok: false, exampleRouteViewed: false };
+  try {
+    const res = await fetch(`/api/progress/example-route?levelId=${encodeURIComponent(id)}`, {
+      credentials: 'include',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(8000)),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload?.ok === false) {
+      return { ok: false, exampleRouteViewed: false, error: payload?.error || `HTTP ${res.status}` };
+    }
+    return { ok: true, exampleRouteViewed: !!payload.exampleRouteViewed, levelId: id };
+  } catch (err) {
+    return { ok: false, exampleRouteViewed: false, error: String(err?.message || err) };
+  }
+}
+
+/** Persist the reveal on the account so another device cannot finish it as a real solve. */
+export async function pushExampleRouteForfeit(levelId, placements = []) {
+  const id = String(levelId || '').trim();
+  if (!id) return { ok: false, error: 'levelId required' };
+  try {
+    const res = await fetch('/api/progress/example-route', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        levelId: id,
+        placements: Array.isArray(placements) ? placements : [],
+      }),
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(8000)),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload?.ok === false) {
+      return { ok: false, error: payload?.error || `HTTP ${res.status}` };
+    }
+    return { ok: true, ...payload };
+  } catch (err) {
+    return { ok: false, error: String(err?.message || err) };
   }
 }
 

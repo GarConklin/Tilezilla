@@ -116,6 +116,8 @@ from lib.progress_store import (  # noqa: E402
     record_solve,
     start_daily_attempt,
     submit_daily_leaderboard_result,
+    mark_example_route_viewed,
+    example_route_status,
 )
 from lib.session_auth import verify_session_cookie  # noqa: E402
 from lib.system_info import (  # noqa: E402
@@ -357,6 +359,27 @@ class Handler(SimpleHTTPRequestHandler):
             return
         self._send_json(200, progress_response(ROOT, user["id"]))
 
+    def _handle_post_example_route(self) -> None:
+        user = self._require_auth_user()
+        if not user:
+            return
+        payload = self._read_json_body()
+        if payload is None:
+            return
+        level_id = str(payload.get("levelId") or "").strip()
+        placements = payload.get("placements")
+        if placements is not None and not isinstance(placements, list):
+            self._send_json(400, {"ok": False, "error": "placements must be an array"})
+            return
+        result = mark_example_route_viewed(
+            ROOT,
+            user["id"],
+            level_id,
+            placements if isinstance(placements, list) else None,
+        )
+        status = 200 if result.get("ok") else 400
+        self._send_json(status, result)
+
     def _handle_post_progress_solve(self) -> None:
         user = self._require_auth_user()
         if not user:
@@ -503,6 +526,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+            return
+        if parsed.path == "/api/progress/example-route":
+            qs = parse_qs(parsed.query or "")
+            level_id = str((qs.get("levelId") or [""])[0] or "").strip()
+            user = self._require_auth_user()
+            if not user:
+                return
+            self._send_json(200, example_route_status(user["id"], level_id))
             return
         if parsed.path == "/api/progress":
             self._handle_get_progress()
@@ -877,6 +908,9 @@ class Handler(SimpleHTTPRequestHandler):
                 return
         if parsed.path == "/api/guest/event":
             self._log_guest_event(parsed)
+            return
+        if parsed.path == "/api/progress/example-route":
+            self._handle_post_example_route()
             return
         if parsed.path == "/api/progress/solve":
             self._handle_post_progress_solve()
