@@ -170,6 +170,31 @@ export async function pushExampleRouteForfeit(levelId, placements = []) {
   }
 }
 
+/** Hint assists already spent on this puzzle from any device. */
+export async function pullLevelHintUse(levelId) {
+  const id = String(levelId || '').trim();
+  if (!id) return { ok: false, hintsUsedCount: 0 };
+  try {
+    const res = await fetch(`/api/progress/hint-use?levelId=${encodeURIComponent(id)}`, {
+      credentials: 'include',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(networkFetchTimeoutMs(8000)),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload?.ok === false) {
+      return { ok: false, hintsUsedCount: 0, error: payload?.error || `HTTP ${res.status}` };
+    }
+    return {
+      ok: true,
+      levelId: id,
+      hintsUsedCount: Math.max(0, Number(payload.hintsUsedCount) || 0),
+      hintsUsed: !!payload.hintsUsed,
+    };
+  } catch (err) {
+    return { ok: false, hintsUsedCount: 0, error: String(err?.message || err) };
+  }
+}
+
 /**
  * On login: load server progress and union with local so neither side loses solves.
  * @param {import('./progress.js').Progress} progress

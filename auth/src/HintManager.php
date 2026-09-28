@@ -106,4 +106,32 @@ class HintManager {
             'transaction_id' => $transactionId,
         ];
     }
+
+    /**
+     * Net hint assists spent on one puzzle (random/start/end, minus refunds).
+     */
+    public function netAssistSpend(int $userId, ?string $referenceId): int {
+        $referenceId = trim((string) $referenceId);
+        if ($referenceId === '') {
+            return 0;
+        }
+        $stmt = $this->conn->prepare(
+            'SELECT COALESCE(-SUM(amount), 0) AS spent
+             FROM hint_transactions
+             WHERE user_id = ? AND reference_id = ?
+               AND reason IN (?, ?, ?, ?)'
+        );
+        if (!$stmt) {
+            return 0;
+        }
+        $random = 'Random Solution Hint';
+        $start = 'Start Tile Hint';
+        $end = 'End Tile Hint';
+        $refund = 'Hint Refund';
+        $stmt->bind_param('issss', $userId, $referenceId, $random, $start, $end, $refund);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return max(0, (int) ($row['spent'] ?? 0));
+    }
 }

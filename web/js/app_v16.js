@@ -2572,6 +2572,29 @@ async function processSolutionFound(lv, res, placements) {
   const elapsedSec = timer?.stop?.() ?? 0;
   const moveCount = getAttemptMoveCount();
   resetAttemptStats();
+
+  if (usesServerHints() && lv?.id) {
+    try {
+      const { pullLevelHintUse, pullExampleRouteForfeit } = await import('./tilezilla-progress-sync.js');
+      const hintUse = await pullLevelHintUse(lv.id);
+      const spent = Math.max(0, Number(hintUse?.hintsUsedCount) || 0);
+      if (spent > (Number(state.hintsUsedThisPuzzle) || 0)) {
+        state.hintsUsedThisPuzzle = spent;
+      }
+      if (!hasViewedExampleRoute(lv.id)) {
+        const spoil = await pullExampleRouteForfeit(lv.id);
+        if (spoil?.exampleRouteViewed) {
+          progress?.markViewedExampleRoute?.(lv.id, {
+            leaderboardForfeited: true,
+            hintCompletionRewardForfeited: true,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Cross-device puzzle check:', err);
+    }
+  }
+
   const hintsUsed = puzzleAttemptUsedHints();
   const hintsUsedCount = Math.max(
     0,
@@ -2586,21 +2609,6 @@ async function processSolutionFound(lv, res, placements) {
     });
   } catch {
     /* ignore */
-  }
-
-  if (usesServerHints() && lv?.id && !hasViewedExampleRoute(lv.id)) {
-    try {
-      const { pullExampleRouteForfeit } = await import('./tilezilla-progress-sync.js');
-      const spoil = await pullExampleRouteForfeit(lv.id);
-      if (spoil?.exampleRouteViewed) {
-        progress?.markViewedExampleRoute?.(lv.id, {
-          leaderboardForfeited: true,
-          hintCompletionRewardForfeited: true,
-        });
-      }
-    } catch (err) {
-      console.warn('Example-route forfeit check:', err);
-    }
   }
 
   if (hasViewedExampleRoute(lv.id)) {

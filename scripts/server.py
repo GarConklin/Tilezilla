@@ -118,6 +118,7 @@ from lib.progress_store import (  # noqa: E402
     submit_daily_leaderboard_result,
     mark_example_route_viewed,
     example_route_status,
+    level_hint_spend_count,
 )
 from lib.session_auth import verify_session_cookie  # noqa: E402
 from lib.system_info import (  # noqa: E402
@@ -526,6 +527,20 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+            return
+        if parsed.path == "/api/progress/hint-use":
+            qs = parse_qs(parsed.query or "")
+            level_id = str((qs.get("levelId") or [""])[0] or "").strip()
+            user = self._require_auth_user()
+            if not user:
+                return
+            spent = level_hint_spend_count(user["id"], level_id)
+            self._send_json(200, {
+                "ok": True,
+                "levelId": level_id,
+                "hintsUsedCount": spent,
+                "hintsUsed": spent > 0,
+            })
             return
         if parsed.path == "/api/progress/example-route":
             qs = parse_qs(parsed.query or "")

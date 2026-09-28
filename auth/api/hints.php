@@ -40,6 +40,18 @@ try {
         $reason = (string) ($input['reason'] ?? '');
         $referenceId = isset($input['reference_id']) ? (string) $input['reference_id'] : null;
 
+        if ($amount > 0 && in_array($reason, ['Puzzle Completion', 'Time Bonus'], true)) {
+            if ($hintManager->netAssistSpend($userId, $referenceId) > 0) {
+                $conn->close();
+                http_response_code(409);
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Hints already used on this puzzle',
+                ]);
+                exit;
+            }
+        }
+
         $result = $hintManager->applyTransaction($userId, $amount, $reason, $referenceId);
         $conn->close();
 

@@ -38,6 +38,39 @@ def _now_iso() -> str:
 
 
 EXAMPLE_ROUTE_HINT_REASON = "Example Route Hint"
+HINT_ASSIST_REASONS = (
+    "Random Solution Hint",
+    "Start Tile Hint",
+    "End Tile Hint",
+    "Hint Refund",
+)
+
+
+def level_hint_spend_count(user_id: int | str, level_id: str) -> int:
+    """Net hint tiles bought for this puzzle on any device (spends minus refunds)."""
+    level = str(level_id or "").strip()
+    if not level:
+        return 0
+    try:
+        conn = _mysql_connect()
+    except Exception:
+        return 0
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT COALESCE(-SUM(amount), 0) AS spent
+                FROM hint_transactions
+                WHERE user_id = %s AND reference_id = %s AND reason IN (%s, %s, %s, %s)
+                """,
+                (int(user_id), level, *HINT_ASSIST_REASONS),
+            )
+            row = cur.fetchone() or {}
+            return max(0, int(row.get("spent") or 0))
+    except Exception:
+        return 0
+    finally:
+        conn.close()
 
 
 def _entry_viewed_example_route(entry: dict[str, Any] | None) -> bool:
@@ -1466,6 +1499,7 @@ def record_solve(
     if hints_used_count is None:
         hints_used_count = 1 if meta.get("hintsUsed") else 0
     hints_used_count = max(0, int(hints_used_count or 0))
+    hints_used_count = max(hints_used_count, level_hint_spend_count(uid, level_id))
     move_count = max(0, int(meta.get("moveCount") or meta.get("moves") or 0))
 
     # One-time JSON import if needed — do not assemble the full journal on every solve.
@@ -1981,6 +2015,7 @@ def submit_daily_leaderboard_result(
     if sec <= 0:
         return {"ok": False, "error": "completionTimeSeconds required"}
     hint_count = max(0, int(hints_used_count or 0))
+    hint_count = max(hint_count, level_hint_spend_count(user_id, level))
     moves = max(0, int(move_count or 0))
     sid: Optional[int] = None
     if solution_id is not None and str(solution_id) != "":

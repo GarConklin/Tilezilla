@@ -819,6 +819,18 @@ async function loadLevelOnBoard(app, level) {
       /* phone can still be blocked at solve time */
     }
   }
+  if (level?.id) {
+    try {
+      const { pullLevelHintUse } = await import('./tilezilla-progress-sync.js');
+      const hintUse = await pullLevelHintUse(level.id);
+      const spent = Math.max(0, Number(hintUse?.hintsUsedCount) || 0);
+      if (spent > (Number(app.state?.hintsUsedThisPuzzle) || 0)) {
+        app.state.hintsUsedThisPuzzle = spent;
+      }
+    } catch {
+      /* solve-time check still applies */
+    }
+  }
 }
 
 function applyResponsiveBoard(app) {
