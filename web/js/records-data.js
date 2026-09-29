@@ -470,7 +470,9 @@ export function setGuestPlacementBanner(root = document, summary = null) {
     return;
   }
   el.hidden = false;
-  const movesNote = summary.moveCount > 0 ? ` in ${summary.moveCount} moves` : '';
+  const movesNote = summary.hintBucket === 0 && summary.moveCount > 0
+    ? ` in ${summary.moveCount} moves`
+    : '';
   const text = `You would have placed #${summary.rank} at ${summary.time}${movesNote} (not saved — sign up to compete)`;
   const slot = el.querySelector('[data-records-slot="guestPlacement"]');
   if (slot) slot.textContent = text;
@@ -866,6 +868,7 @@ export function fetchPersonalBestPartitions(app) {
 export function renderRecordsList(container, entries, {
   mode = 'leaderboard',
   emptyText = 'No times yet.',
+  showMoves = false,
 } = {}) {
   if (!container) return;
   container.replaceChildren();
@@ -902,12 +905,14 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--hints">${escapeHtml(entry.hints ?? String(entry.hintsUsedCount ?? 0))}</span>
       `;
     } else {
-      const moves = entry.moves ?? formatLeaderboardMoves(entry.moveCount);
+      const movesCell = showMoves
+        ? `<span class="tz-records-list__cell tz-records-list__cell--moves" title="Moves">${entry.moves ?? formatLeaderboardMoves(entry.moveCount)}</span>`
+        : '';
       row.innerHTML = `
         <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
         <span class="tz-records-list__cell tz-records-list__cell--user">${escapeHtml(entry.user)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
-        <span class="tz-records-list__cell tz-records-list__cell--moves" title="Moves">${moves}</span>
+        ${movesCell}
       `;
     }
     container.appendChild(row);
@@ -977,7 +982,11 @@ export const MOCK_ADVENTURE_LEADERBOARD_ROWS = {
 };
 
 export function renderMockLeaderboardLists(root = document) {
-  renderRecordsList(root.getElementById?.('recordsListTop') || root.querySelector?.('#recordsListTop'), MOCK_LEADERBOARD_ROWS.zero);
+  renderRecordsList(
+    root.getElementById?.('recordsListTop') || root.querySelector?.('#recordsListTop'),
+    MOCK_LEADERBOARD_ROWS.zero,
+    { showMoves: true },
+  );
   renderRecordsList(root.getElementById?.('recordsListBl') || root.querySelector?.('#recordsListBl'), MOCK_LEADERBOARD_ROWS.one);
   renderRecordsList(root.getElementById?.('recordsListBr') || root.querySelector?.('#recordsListBr'), MOCK_LEADERBOARD_ROWS.two);
 }

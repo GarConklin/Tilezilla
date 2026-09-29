@@ -64,7 +64,7 @@ async function renderLeaderboardLists(progress) {
   const zeroEntries = buildRankedEntries(partitions.zero, rankOpts);
   const oneEntries = buildRankedEntries(partitions.one, rankOpts);
   const twoEntries = buildRankedEntries(partitions.two, rankOpts);
-  renderRecordsList($('recordsListTop'), zeroEntries);
+  renderRecordsList($('recordsListTop'), zeroEntries, { showMoves: true });
   renderRecordsList($('recordsListBl'), oneEntries, { emptyText: 'No 1-hint times yet.' });
   renderRecordsList($('recordsListBr'), twoEntries, { emptyText: 'No 2-hint times yet.' });
 
