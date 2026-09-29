@@ -452,9 +452,12 @@ export function resolveGuestPlacementSummary(partitions, preview) {
   const list = bucket >= 2 ? partitions.two : bucket === 1 ? partitions.one : partitions.zero;
   const idx = list.findIndex((r) => r.isGuestPreview);
   if (idx < 0) return null;
+  const moves = Math.max(0, Number(list[idx].moveCount) || 0);
   return {
     rank: idx + 1,
     time: formatLeaderboardTime(list[idx].completionTimeSeconds),
+    moves: formatLeaderboardMoves(moves),
+    moveCount: moves,
     hintBucket: bucket,
   };
 }
@@ -467,7 +470,8 @@ export function setGuestPlacementBanner(root = document, summary = null) {
     return;
   }
   el.hidden = false;
-  const text = `You would have placed #${summary.rank} at ${summary.time} (not saved — sign up to compete)`;
+  const movesNote = summary.moveCount > 0 ? ` in ${summary.moveCount} moves` : '';
+  const text = `You would have placed #${summary.rank} at ${summary.time}${movesNote} (not saved — sign up to compete)`;
   const slot = el.querySelector('[data-records-slot="guestPlacement"]');
   if (slot) slot.textContent = text;
   else el.textContent = text;
@@ -635,11 +639,19 @@ export function leaderboardDisplayName(row, { currentUserId, currentUsername } =
   return '—';
 }
 
+/** Show a stored move count. Older rows with no count stay blank. */
+export function formatLeaderboardMoves(moveCount) {
+  const moves = Math.max(0, Number(moveCount) || 0);
+  return moves > 0 ? String(moves) : '—';
+}
+
 export function buildRankedEntries(rows, { currentUserId, currentUsername } = {}) {
   return rows.map((row, idx) => ({
     rank: idx + 1,
     user: leaderboardDisplayName(row, { currentUserId, currentUsername }),
     time: formatLeaderboardTime(row.completionTimeSeconds),
+    moves: formatLeaderboardMoves(row.moveCount),
+    moveCount: Math.max(0, Number(row.moveCount) || 0),
     levelId: row.levelId || '',
     hintsUsedCount: hintBucket(row),
     isGuestPreview: !!row.isGuestPreview,
@@ -890,10 +902,12 @@ export function renderRecordsList(container, entries, {
         <span class="tz-records-list__cell tz-records-list__cell--hints">${escapeHtml(entry.hints ?? String(entry.hintsUsedCount ?? 0))}</span>
       `;
     } else {
+      const moves = entry.moves ?? formatLeaderboardMoves(entry.moveCount);
       row.innerHTML = `
         <span class="tz-records-list__cell tz-records-list__cell--rank">${entry.rank}</span>
         <span class="tz-records-list__cell tz-records-list__cell--user">${escapeHtml(entry.user)}</span>
         <span class="tz-records-list__cell tz-records-list__cell--time">${entry.time}</span>
+        <span class="tz-records-list__cell tz-records-list__cell--moves" title="Moves">${moves}</span>
       `;
     }
     container.appendChild(row);
@@ -911,19 +925,19 @@ function escapeHtml(text) {
 /** Mock rows for layout tuner preview. */
 export const MOCK_LEADERBOARD_ROWS = {
   zero: [
-    { rank: 1, user: 'TrailBlazer', time: '2:14' },
-    { rank: 2, user: 'MapMaker', time: '2:47' },
-    { rank: 3, user: 'RouteFinder', time: '3:05' },
-    { rank: 4, user: 'PathWalker', time: '3:22' },
-    { rank: 5, user: 'CompassKid', time: '3:58' },
-    { rank: 6, user: 'TileScout', time: '4:11' },
+    { rank: 1, user: 'TrailBlazer', time: '2:14', moves: '18' },
+    { rank: 2, user: 'MapMaker', time: '2:47', moves: '22' },
+    { rank: 3, user: 'RouteFinder', time: '3:05', moves: '19' },
+    { rank: 4, user: 'PathWalker', time: '3:22', moves: '27' },
+    { rank: 5, user: 'CompassKid', time: '3:58', moves: '31' },
+    { rank: 6, user: 'TileScout', time: '4:11', moves: '24' },
   ],
   one: [
-    { rank: 1, user: 'HintHelper', time: '3:01' },
-    { rank: 2, user: 'NudgeNav', time: '3:44' },
+    { rank: 1, user: 'HintHelper', time: '3:01', moves: '16' },
+    { rank: 2, user: 'NudgeNav', time: '3:44', moves: '21' },
   ],
   two: [
-    { rank: 1, user: 'DoubleHint', time: '4:20' },
+    { rank: 1, user: 'DoubleHint', time: '4:20', moves: '29' },
   ],
 };
 

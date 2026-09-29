@@ -9865,6 +9865,16 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   overflow: visible;
 }
 
+.tz-records-list__cell--moves {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tz-records-panel[data-records-mode="leaderboard"] .tz-records-list__row {
+  grid-template-columns: 14% minmax(0, 1fr) 28% 16%;
+}
+
 .tz-records-list__cell--size {
   text-align: center;
   font-variant-numeric: tabular-nums;
