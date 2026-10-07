@@ -2,7 +2,7 @@
  * Puzzle intro tips — shown when a puzzle bag includes a tile type not yet encountered.
  */
 
-const SKIP_BAG_TILES = new Set(['B1', 'B2', 'E1', 'E2', 'OB', 'SB', '_comment']);
+const SKIP_BAG_TILES = new Set(['B1', 'B2', 'E1', 'E2', 'SB', '_comment']);
 /** Always in every bag — do not trigger the "new tile" message. */
 const TIP_IGNORE_TILES = new Set(['SH', 'ET']);
 

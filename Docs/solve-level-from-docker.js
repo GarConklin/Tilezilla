@@ -11,7 +11,7 @@
  * Usage (repo root on host):
  *   node solves/solve-level.js 5x6-0A-AAA
  *   node solves/solve-level.js 5x6-0A-AAA --compare solves/5x6-0A-AAA.json
- *   node solves/solve-level.js --spec solves/spec-5x6-0A-AAA-OB.json --equate OB=UT --compare solves/5x6-0A-AAA.json
+ *   node solves/solve-level.js --spec solves/spec.json --equate From=To --compare solves/5x6-0A-AAA.json
  *
  * Docker (from directory with docker-compose.yml; . is mounted at /app):
  *   docker compose run --rm web node solves/solve-level.js 5x6-0A-AAA --json-summary --stream-solves-dir solves/reports/my-run
@@ -706,7 +706,7 @@ function uniqueLayoutKey(placements, rows, cols) {
   return mirrorClassKey(placements, rows, cols);
 }
 
-/** Rename tile ids before signing (e.g. OB→UT when comparing to canonical AAA file). */
+/** Rename tile ids before signing (e.g. --equate From=To). */
 function applyTileEquate(placements, equate) {
   if (!equate || !Object.keys(equate).length) return placements;
   return placements.map((p) => ({
@@ -1126,7 +1126,7 @@ function main() {
 
   if (!levelId && !flags.spec) {
     console.error(
-      'Usage: node solves/solve-level.js <level-id> | --spec solves/spec.json | --batch-4x4 [--batch-summary-only] [--compare ...] [--equate OB=UT]'
+      'Usage: node solves/solve-level.js <level-id> | --spec solves/spec.json | --batch-4x4 [--batch-summary-only] [--compare ...] [--equate From=To]'
     );
     process.exit(1);
   }

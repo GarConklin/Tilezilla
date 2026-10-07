@@ -43,18 +43,6 @@
     "r180":   { "A": ["N"], "B": ["N"] },
     "r270":   { "A": ["E"], "B": ["E"] }
   },
-  "OB": {
-    "_comment": "Experimental alias of UT (same wiring); use when labeling tiles OB instead of UT",
-    "count": 0,
-    "shape": [
-      { "id": "A", "dr": 0, "dc": 0 },
-      { "id": "B", "dr": 0, "dc": 1 }
-    ],
-    "r0":   { "A": ["S"], "B": ["S"] },
-    "r90":   { "A": ["W"], "B": ["W"] },
-    "r180":   { "A": ["N"], "B": ["N"] },
-    "r270":   { "A": ["E"], "B": ["E"] }
-  },
   "RC": {
     "count": 2,
     "shape": [
