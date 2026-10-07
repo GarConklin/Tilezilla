@@ -16,6 +16,7 @@
       "LR": "Tiles/rainbow-catapiller/LR-Tile.png",
       "QC": "Tiles/rainbow-catapiller/QC-Tile.png",
       "QS": "Tiles/rainbow-catapiller/QS-Tile.png",
+      "QZ": "Tiles/rainbow-catapiller/QZ-Tile.png",
       "RC": "Tiles/rainbow-catapiller/RC-Tile.png",
       "SH": "Tiles/rainbow-catapiller/SH-Tile.png",
       "SS": "Tiles/rainbow-catapiller/SS-Tile.png",
@@ -43,6 +44,7 @@
       "LR": "Tiles/rainbow-catapiller-clear/LR-Tile.png",
       "QC": "Tiles/rainbow-catapiller-clear/QC-Tile.png",
       "QS": "Tiles/rainbow-catapiller-clear/QS-Tile.png",
+      "QZ": "Tiles/rainbow-catapiller-clear/QZ-Tile.png",
       "RC": "Tiles/rainbow-catapiller-clear/RC-Tile.png",
       "SH": "Tiles/rainbow-catapiller-clear/SH-Tile.png",
       "SS": "Tiles/rainbow-catapiller-clear/SS-Tile.png",
@@ -70,6 +72,7 @@
       "LR": "Tiles/gar-dotgrnew/LR-Tile.png",
       "QC": "Tiles/gar-dotgrnew/QC-Tile.png",
       "QS": "Tiles/gar-dotgrnew/QS-Tile.png",
+      "QZ": "Tiles/gar-dotgrnew/QZ-Tile.png",
       "RC": "Tiles/gar-dotgrnew/RC-Tile.png",
       "SH": "Tiles/gar-dotgrnew/SH-Tile.png",
       "SS": "Tiles/gar-dotgrnew/SS-Tile.png",
@@ -97,6 +100,7 @@
       "LR": "Tiles/gar-dotgr/LR-Tile.png",
       "QC": "Tiles/gar-dotgr/QC-Tile.png",
       "QS": "Tiles/gar-dotgr/QS-Tile.png",
+      "QZ": "Tiles/gar-dotgr/QZ-Tile.png",
       "RC": "Tiles/gar-dotgr/RC-Tile.png",
       "SH": "Tiles/gar-dotgr/SH-Tile.png",
       "SS": "Tiles/gar-dotgr/SS-Tile.png",
@@ -124,6 +128,7 @@
       "LR": "Tiles/gray-backs/LR-Tile.png",
       "QC": "Tiles/gray-backs/QC-Tile.png",
       "QS": "Tiles/gray-backs/QS-Tile.png",
+      "QZ": "Tiles/gray-backs/QZ-Tile.png",
       "RC": "Tiles/gray-backs/RC-Tile.png",
       "SH": "Tiles/gray-backs/SH-Tile.png",
       "SS": "Tiles/gray-backs/SS-Tile.png",
@@ -151,6 +156,7 @@
       "LR": "Tiles/og/LR-Tile.png",
       "QC": "Tiles/og/QC-Tile.png",
       "QS": "Tiles/og/QS-Tile.png",
+      "QZ": "Tiles/og/QZ-Tile.png",
       "RC": "Tiles/og/RC-Tile.png",
       "SH": "Tiles/og/SH-Tile.png",
       "SS": "Tiles/og/SS-Tile.png",
@@ -211,6 +217,9 @@
     },
     "QS": {
       "comment": "Dual independent corners (opposite S-curve pair, 2x1)"
+    },
+    "QZ": {
+      "comment": "Dual independent corners (opposite Z-curve pair, 2x1)"
     },
     "B1-Blocker-G-Tile.png": {
       "comment": "Blocker (1x1)"

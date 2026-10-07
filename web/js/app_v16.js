@@ -4236,7 +4236,7 @@ function classifyTierForLevel(level){
   const tiles = level?.tiles && typeof level.tiles === 'object' ? Object.keys(level.tiles) : [];
   const hasSuperior = tiles.some(t => ['CR','CT','CQ','E1','E2','B2','2SH','2ET'].includes(t));
   if(hasSuperior) return '0C';
-  const hasAdvanced = tiles.some(t => ['SZ','SS','DS','QC','QS','DC'].includes(t));
+  const hasAdvanced = tiles.some(t => ['SZ','SS','DS','QC','QS','QZ','DC'].includes(t));
   if(hasAdvanced) return '0B';
   return '0A';
 }
