@@ -1,5 +1,5 @@
 # Lightweight auth container for local / remote test (no Words mail relay).
-FROM php:8.1-apache
+FROM php:8.4.27-apache
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
