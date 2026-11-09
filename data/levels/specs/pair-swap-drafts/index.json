@@ -1,5 +1,5 @@
 {
-  "note": "Bags that are not in the published catalog. Set 6: UT+DC / SS+LL, plus earlier sets. Not loaded by the game. Solution counts have not been run.",
+  "note": "Bags that are not in the published catalog. Set 6: UT+DC / SS+LL, plus earlier sets. Not loaded by the game. Blockers on odd-cell boards are taken from each draft's source level. Solution status (solved on the swap-named ledger or queued): tools/data/swap-candidates/pair-swap-drafts/draft-status.json.",
   "set": "set-1",
   "count": 6511,
   "tiers": {
@@ -65,6 +65,13 @@
       "sources": [
         "3x5-0B-ABX",
         "3x5-0B-ACO"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -85,6 +92,13 @@
       "sources": [
         "3x5-0B-ABW",
         "3x5-0B-ACN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -105,6 +119,13 @@
       "sources": [
         "3x5-0B-ABZ",
         "3x5-0B-ACR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -125,6 +146,13 @@
       "sources": [
         "3x5-0A-ABV",
         "3x5-0B-ABV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -145,6 +173,13 @@
       "sources": [
         "3x5-0A-ABU",
         "3x5-0B-ABU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -165,6 +200,13 @@
       "sources": [
         "3x5-0B-ABY",
         "3x5-0B-ACQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -185,6 +227,13 @@
       "sources": [
         "3x5-0A-ABL",
         "3x5-0B-AAQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8112,6 +8161,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8134,6 +8190,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8156,6 +8219,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8177,6 +8247,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8198,6 +8275,13 @@
       "sources": [
         "5x5-0B-ANG",
         "5x5-0B-ANS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8221,6 +8305,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8242,6 +8333,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8264,6 +8362,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8285,6 +8390,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8308,6 +8420,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8330,6 +8449,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8352,6 +8478,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8374,6 +8507,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8396,6 +8536,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8417,6 +8564,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8438,6 +8592,13 @@
       "sources": [
         "5x5-0B-ANH",
         "5x5-0B-ANW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8461,6 +8622,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AWT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8483,6 +8651,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AWT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8505,6 +8680,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8526,6 +8708,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8548,6 +8737,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8569,6 +8765,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8591,6 +8794,13 @@
       "sources": [
         "5x5-0A-AIU",
         "5x5-0B-BDX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8613,6 +8823,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8634,6 +8851,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8656,6 +8880,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8678,6 +8909,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8701,6 +8939,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8722,6 +8967,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8744,6 +8996,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ASR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8765,6 +9024,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ASR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8787,6 +9053,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AMR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8807,6 +9080,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AMR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8829,6 +9109,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8850,6 +9137,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8872,6 +9166,13 @@
       "sources": [
         "5x5-0A-AIT",
         "5x5-0B-BDR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8893,6 +9194,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8915,6 +9223,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8937,6 +9252,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8958,6 +9280,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BDF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8978,6 +9307,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0A-AIO"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -8999,6 +9335,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0A-AIO"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9022,6 +9365,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9043,6 +9393,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9066,6 +9423,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9087,6 +9451,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9109,6 +9480,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9131,6 +9509,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9153,6 +9538,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9174,6 +9566,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9197,6 +9596,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9219,6 +9625,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9241,6 +9654,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9263,6 +9683,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9285,6 +9712,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9306,6 +9740,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9328,6 +9769,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9348,6 +9796,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9370,6 +9825,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9391,6 +9853,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9413,6 +9882,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9433,6 +9909,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AXC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9454,6 +9937,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9475,6 +9965,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9495,6 +9992,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AGP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9515,6 +10019,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9537,6 +10048,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9558,6 +10076,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9579,6 +10104,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9599,6 +10131,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9622,6 +10161,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9644,6 +10190,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9666,6 +10219,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9687,6 +10247,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9708,6 +10275,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9730,6 +10304,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9750,6 +10331,13 @@
       "sources": [
         "5x5-0A-AEO",
         "5x5-0B-ANM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9771,6 +10359,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9792,6 +10387,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ANV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9813,6 +10415,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9834,6 +10443,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9856,6 +10472,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9877,6 +10500,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9899,6 +10529,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9919,6 +10556,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9941,6 +10585,13 @@
       "sources": [
         "5x5-0B-BEK",
         "5x5-0B-BFB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9962,6 +10613,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -9981,6 +10639,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BEK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10003,6 +10668,13 @@
       "sources": [
         "5x5-0B-ACY",
         "5x5-0B-BJF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10025,6 +10697,13 @@
       "sources": [
         "5x5-0B-BIP",
         "5x5-0B-BKM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10045,6 +10724,13 @@
       "sources": [
         "5x5-0B-APU",
         "5x5-0B-AQE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10067,6 +10753,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AIG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10090,6 +10783,13 @@
       "sources": [
         "5x5-0B-AII",
         "5x5-0B-ALY"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10112,6 +10812,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AII"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10132,6 +10839,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AII"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10154,6 +10868,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10175,6 +10896,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10197,6 +10925,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10219,6 +10954,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10241,6 +10983,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10262,6 +11011,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10283,6 +11039,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10304,6 +11067,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10325,6 +11095,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AIE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10346,6 +11123,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AIE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10368,6 +11152,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10388,6 +11179,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10410,6 +11208,13 @@
       "sources": [
         "5x5-0B-BAF",
         "5x5-0B-BCA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10432,6 +11237,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AWA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10452,6 +11264,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AWA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10473,6 +11292,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10494,6 +11320,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10515,6 +11348,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10535,6 +11375,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10557,6 +11404,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10578,6 +11432,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10600,6 +11461,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10620,6 +11488,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10641,6 +11516,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10660,6 +11542,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10682,6 +11571,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10703,6 +11599,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10724,6 +11627,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10743,6 +11653,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10764,6 +11681,13 @@
       "sources": [
         "5x5-0B-BAO",
         "5x5-0B-BCS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10787,6 +11711,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AIZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10808,6 +11739,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AIZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10830,6 +11768,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10852,6 +11797,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10874,6 +11826,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10895,6 +11854,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10917,6 +11883,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHY"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10939,6 +11912,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHY"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10962,6 +11942,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -10983,6 +11970,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11003,6 +11997,13 @@
       "sources": [
         "5x5-0B-AON",
         "5x5-0B-APR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11024,6 +12025,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11045,6 +12053,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11068,6 +12083,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11090,6 +12112,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11112,6 +12141,13 @@
       "sources": [
         "5x5-0B-BAI",
         "5x5-0B-BCI"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11135,6 +12171,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11157,6 +12200,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11179,6 +12229,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11201,6 +12258,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11223,6 +12287,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11244,6 +12315,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11266,6 +12344,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11287,6 +12372,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11309,6 +12401,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11330,6 +12429,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11352,6 +12458,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11372,6 +12485,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11395,6 +12515,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11416,6 +12543,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11439,6 +12573,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11460,6 +12601,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11482,6 +12630,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11503,6 +12658,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11525,6 +12687,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11545,6 +12714,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11568,6 +12744,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11589,6 +12772,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11611,6 +12801,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11632,6 +12829,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11654,6 +12858,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11674,6 +12885,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11695,6 +12913,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11716,6 +12941,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11738,6 +12970,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11758,6 +12997,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11778,6 +13024,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11799,6 +13052,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11819,6 +13079,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11840,6 +13107,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BKN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11863,6 +13137,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AZH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11885,6 +13166,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AZH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11908,6 +13196,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AYL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11930,6 +13225,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AZJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11952,6 +13254,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AZJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11973,6 +13282,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AYL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -11996,6 +13312,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AYQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12017,6 +13340,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AYQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12038,6 +13368,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12059,6 +13396,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12080,6 +13424,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQI"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12100,6 +13451,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQI"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12120,6 +13478,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0A-ACE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12142,6 +13507,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AEC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12163,6 +13535,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0A-ACE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12183,6 +13562,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AEC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12205,6 +13591,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AEG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12225,6 +13618,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AEG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12247,6 +13647,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12267,6 +13674,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12288,6 +13702,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12307,6 +13728,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ADZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12329,6 +13757,13 @@
       "sources": [
         "5x5-0A-AJF",
         "5x5-0B-BHT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12351,6 +13786,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12372,6 +13814,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12393,6 +13842,13 @@
       "sources": [
         "5x5-0A-AET",
         "5x5-0B-APH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12416,6 +13872,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BGQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12438,6 +13901,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12460,6 +13930,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12481,6 +13958,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BGQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12503,6 +13987,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12524,6 +14015,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12546,6 +14044,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12566,6 +14071,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12587,6 +14099,13 @@
       "sources": [
         "5x5-0A-AGJ",
         "5x5-0B-ATU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12608,6 +14127,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12628,6 +14154,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APB"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12649,6 +14182,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12670,6 +14210,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BHK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12692,6 +14239,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12714,6 +14268,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12735,6 +14296,13 @@
       "sources": [
         "5x5-0B-AOM",
         "5x5-0B-APP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12756,6 +14324,13 @@
       "sources": [
         "5x5-0B-BGJ",
         "5x5-0B-BIH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12777,6 +14352,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12798,6 +14380,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12819,6 +14408,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12840,6 +14436,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BIF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12861,6 +14464,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12881,6 +14491,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12902,6 +14519,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12921,6 +14545,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12942,6 +14573,13 @@
       "sources": [
         "5x5-0A-ADO",
         "5x5-0B-AJW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12964,6 +14602,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -12984,6 +14629,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ATN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13004,6 +14656,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13024,6 +14683,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQQ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13044,6 +14710,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13063,6 +14736,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13085,6 +14765,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13106,6 +14793,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AHV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13128,6 +14822,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13149,6 +14850,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BFV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13171,6 +14879,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BGA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13192,6 +14907,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BGA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13212,6 +14934,13 @@
       "sources": [
         "5x5-0A-AEQ",
         "5x5-0B-AOD"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13233,6 +14962,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13253,6 +14989,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AOK"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13276,6 +15019,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13298,6 +15048,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13320,6 +15077,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13342,6 +15106,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13364,6 +15135,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13385,6 +15163,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13407,6 +15192,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13428,6 +15220,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BBR"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13451,6 +15250,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13473,6 +15279,13 @@
       "sources": [
         "5x5-0B-BAG",
         "5x5-0B-BBZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13494,6 +15307,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13515,6 +15335,13 @@
       "sources": [
         "5x5-0A-AFW",
         "5x5-0B-ASG"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13537,6 +15364,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13558,6 +15392,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13580,6 +15421,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAW"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13600,6 +15448,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAE"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13621,6 +15476,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AMC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13641,6 +15503,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AMC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13662,6 +15531,13 @@
       "sources": [
         "5x5-0A-AIE",
         "5x5-0B-BBL"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13684,6 +15560,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13706,6 +15589,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BCH"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13728,6 +15618,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13748,6 +15645,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BAX"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13770,6 +15674,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13790,6 +15701,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ARZ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13811,6 +15729,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AFF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13832,6 +15757,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AFF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13854,6 +15786,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13874,6 +15813,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13895,6 +15841,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AFJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13916,6 +15869,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AFJ"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13938,6 +15898,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVY"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13958,6 +15925,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVY"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13979,6 +15953,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -13998,6 +15979,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AVU"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14021,6 +16009,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14042,6 +16037,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJS"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14064,6 +16066,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14085,6 +16094,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJP"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14106,6 +16122,13 @@
       "sources": [
         "5x5-0B-AUE",
         "5x5-0B-AVC"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14126,6 +16149,13 @@
       "sources": [
         "5x5-0A-AFG",
         "5x5-0B-AQT"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14147,6 +16177,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14166,6 +16203,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AUF"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14187,6 +16231,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14206,6 +16257,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-APV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14228,6 +16286,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14248,6 +16313,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJM"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14268,6 +16340,13 @@
       "sources": [
         "5x5-0A-AGP",
         "5x5-0B-AUV"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14288,6 +16367,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14309,6 +16395,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-BJN"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14329,6 +16422,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14349,6 +16449,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-ACA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14369,6 +16476,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -14388,6 +16502,13 @@
       "sourceCount": 1,
       "sources": [
         "5x5-0B-AQA"
+      ],
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
       ]
     },
     {
@@ -43650,7 +45771,13 @@
       "sources": [
         "3x5-0B-AFF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0
+        ]
+      ]
     },
     {
       "file": "pair-swap-02017.json",
@@ -44859,7 +46986,14 @@
       "sources": [
         "5x5-0B-BCX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02072.json",
@@ -44881,7 +47015,14 @@
       "sources": [
         "5x5-0B-BHI"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02073.json",
@@ -44904,7 +47045,14 @@
       "sources": [
         "5x5-0B-BCY"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02074.json",
@@ -44925,7 +47073,14 @@
       "sources": [
         "5x5-0B-AOQ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02075.json",
@@ -44948,7 +47103,14 @@
       "sources": [
         "5x5-0B-AFO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02076.json",
@@ -44972,7 +47134,14 @@
       "sources": [
         "5x5-0B-AWM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02077.json",
@@ -44994,7 +47163,14 @@
       "sources": [
         "5x5-0B-AJE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02078.json",
@@ -45017,7 +47193,14 @@
       "sources": [
         "5x5-0A-AHL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02079.json",
@@ -45040,7 +47223,14 @@
       "sources": [
         "5x5-0A-ACP"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02080.json",
@@ -45064,7 +47254,14 @@
       "sources": [
         "5x5-0B-BCW"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02081.json",
@@ -45085,7 +47282,14 @@
       "sources": [
         "5x5-0A-AEG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02082.json",
@@ -45106,7 +47310,14 @@
       "sources": [
         "5x5-0A-AEF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02083.json",
@@ -45128,7 +47339,14 @@
       "sources": [
         "5x5-0B-BHN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02084.json",
@@ -45149,7 +47367,14 @@
       "sources": [
         "5x5-0B-APG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02085.json",
@@ -45171,7 +47396,14 @@
       "sources": [
         "5x5-0B-BHT"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02086.json",
@@ -45192,7 +47424,14 @@
       "sources": [
         "5x5-0A-AJF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02087.json",
@@ -45212,7 +47451,14 @@
       "sources": [
         "5x5-0A-AEL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02088.json",
@@ -45231,7 +47477,14 @@
       "sources": [
         "5x5-0A-AEG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02089.json",
@@ -45253,7 +47506,14 @@
       "sources": [
         "5x5-0B-ANX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02090.json",
@@ -45277,7 +47537,14 @@
       "sources": [
         "5x5-0B-BDU"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02091.json",
@@ -45299,7 +47566,14 @@
       "sources": [
         "5x5-0B-AQK"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02092.json",
@@ -45322,7 +47596,14 @@
       "sources": [
         "5x5-0B-BDT"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02093.json",
@@ -45345,7 +47626,14 @@
       "sources": [
         "5x5-0B-BEB"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02094.json",
@@ -45367,7 +47655,14 @@
       "sources": [
         "5x5-0B-BDY"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02095.json",
@@ -45390,7 +47685,14 @@
       "sources": [
         "5x5-0B-BDI"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02096.json",
@@ -45412,7 +47714,14 @@
       "sources": [
         "5x5-0B-BDE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02097.json",
@@ -45433,7 +47742,14 @@
       "sources": [
         "5x5-0B-AMN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02098.json",
@@ -45456,7 +47772,14 @@
       "sources": [
         "5x5-0B-AXX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02099.json",
@@ -45479,7 +47802,14 @@
       "sources": [
         "5x5-0B-ARE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02100.json",
@@ -45502,7 +47832,14 @@
       "sources": [
         "5x5-0B-AXU"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02101.json",
@@ -45525,7 +47862,14 @@
       "sources": [
         "5x5-0B-AXF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02102.json",
@@ -45548,7 +47892,14 @@
       "sources": [
         "5x5-0B-AHD"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02103.json",
@@ -45571,7 +47922,14 @@
       "sources": [
         "5x5-0B-BEM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02104.json",
@@ -45594,7 +47952,14 @@
       "sources": [
         "5x5-0B-ATB"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02105.json",
@@ -45617,7 +47982,14 @@
       "sources": [
         "5x5-0B-BFA"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02106.json",
@@ -45640,7 +48012,14 @@
       "sources": [
         "5x5-0B-BEY"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02107.json",
@@ -45663,7 +48042,14 @@
       "sources": [
         "5x5-0B-BEX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02108.json",
@@ -45685,7 +48071,14 @@
       "sources": [
         "5x5-0B-AST"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02109.json",
@@ -45706,7 +48099,14 @@
       "sources": [
         "5x5-0B-ASZ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02110.json",
@@ -45729,7 +48129,14 @@
       "sources": [
         "5x5-0B-BET"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02111.json",
@@ -45751,7 +48158,14 @@
       "sources": [
         "5x5-0B-BFI"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02112.json",
@@ -45773,7 +48187,14 @@
       "sources": [
         "5x5-0B-BES"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02113.json",
@@ -45793,7 +48214,14 @@
       "sources": [
         "5x5-0B-ANN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02114.json",
@@ -45815,7 +48243,14 @@
       "sources": [
         "5x5-0B-BEA"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02115.json",
@@ -45838,7 +48273,14 @@
       "sources": [
         "5x5-0B-AFZ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02116.json",
@@ -45860,7 +48302,14 @@
       "sources": [
         "5x5-0B-ALG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02117.json",
@@ -45883,7 +48332,14 @@
       "sources": [
         "5x5-0B-AFX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02118.json",
@@ -45906,7 +48362,14 @@
       "sources": [
         "5x5-0B-AMS"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02119.json",
@@ -45929,7 +48392,14 @@
       "sources": [
         "5x5-0B-BDO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02120.json",
@@ -45951,7 +48421,14 @@
       "sources": [
         "5x5-0B-BEG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02121.json",
@@ -45974,7 +48451,13 @@
       "sources": [
         "5x5-0B-BKT"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0
+        ]
+      ]
     },
     {
       "file": "pair-swap-02122.json",
@@ -45997,7 +48480,14 @@
       "sources": [
         "5x5-0B-AWN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02123.json",
@@ -46019,7 +48509,14 @@
       "sources": [
         "5x5-0B-AMM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02124.json",
@@ -46041,7 +48538,14 @@
       "sources": [
         "5x5-0B-BDG"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02125.json",
@@ -46062,7 +48566,14 @@
       "sources": [
         "5x5-0B-AMO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02126.json",
@@ -46085,7 +48596,14 @@
       "sources": [
         "5x5-0B-AXV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02127.json",
@@ -46108,7 +48626,14 @@
       "sources": [
         "5x5-0B-AXN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02128.json",
@@ -46130,7 +48655,14 @@
       "sources": [
         "5x5-0B-AGR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02129.json",
@@ -46153,7 +48685,14 @@
       "sources": [
         "5x5-0B-BFC"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02130.json",
@@ -46176,7 +48715,14 @@
       "sources": [
         "5x5-0B-BEZ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02131.json",
@@ -46198,7 +48744,14 @@
       "sources": [
         "5x5-0B-BFM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02132.json",
@@ -46219,7 +48772,14 @@
       "sources": [
         "5x5-0B-ANR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02133.json",
@@ -46239,7 +48799,14 @@
       "sources": [
         "5x5-0B-ANP"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02134.json",
@@ -46263,7 +48830,14 @@
       "sources": [
         "5x5-0B-AWW"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02135.json",
@@ -46286,7 +48860,14 @@
       "sources": [
         "5x5-0B-AWS"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02136.json",
@@ -46309,7 +48890,14 @@
       "sources": [
         "5x5-0A-AHO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02137.json",
@@ -46333,7 +48921,14 @@
       "sources": [
         "5x5-0B-AGA"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02138.json",
@@ -46356,7 +48951,14 @@
       "sources": [
         "5x5-0B-AGL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02139.json",
@@ -46379,7 +48981,14 @@
       "sources": [
         "5x5-0B-AFU"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02140.json",
@@ -46401,7 +49010,14 @@
       "sources": [
         "5x5-0B-AGK"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02141.json",
@@ -46423,7 +49039,14 @@
       "sources": [
         "5x5-0A-ACS"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02142.json",
@@ -46446,7 +49069,14 @@
       "sources": [
         "5x5-0A-AHP"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02143.json",
@@ -46468,7 +49098,14 @@
       "sources": [
         "5x5-0B-AGH"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02144.json",
@@ -46490,7 +49127,14 @@
       "sources": [
         "5x5-0A-ACV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02145.json",
@@ -46512,7 +49156,14 @@
       "sources": [
         "5x5-0A-AHR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02146.json",
@@ -46534,7 +49185,14 @@
       "sources": [
         "5x5-0B-AGE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02147.json",
@@ -46556,7 +49214,14 @@
       "sources": [
         "5x5-0A-AFI"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02148.json",
@@ -46578,7 +49243,14 @@
       "sources": [
         "5x5-0B-ADK"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02149.json",
@@ -46599,7 +49271,14 @@
       "sources": [
         "5x5-0A-ABZ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02150.json",
@@ -46620,7 +49299,14 @@
       "sources": [
         "5x5-0A-ACA"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02151.json",
@@ -46644,7 +49330,14 @@
       "sources": [
         "5x5-0B-BDS"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02152.json",
@@ -46667,7 +49360,14 @@
       "sources": [
         "5x5-0B-BDN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02153.json",
@@ -46690,7 +49390,14 @@
       "sources": [
         "5x5-0B-ASO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02154.json",
@@ -46713,7 +49420,14 @@
       "sources": [
         "5x5-0B-BDP"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02155.json",
@@ -46735,7 +49449,14 @@
       "sources": [
         "5x5-0B-ASR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02156.json",
@@ -46758,7 +49479,14 @@
       "sources": [
         "5x5-0B-BDL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02157.json",
@@ -46780,7 +49508,14 @@
       "sources": [
         "5x5-0B-ASQ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02158.json",
@@ -46802,7 +49537,14 @@
       "sources": [
         "5x5-0B-BEF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02159.json",
@@ -46824,7 +49566,14 @@
       "sources": [
         "5x5-0B-BEE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02160.json",
@@ -46846,7 +49595,14 @@
       "sources": [
         "5x5-0B-BED"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02161.json",
@@ -46867,7 +49623,14 @@
       "sources": [
         "5x5-0A-AGF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02162.json",
@@ -46889,7 +49652,14 @@
       "sources": [
         "5x5-0B-AMZ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02163.json",
@@ -46912,7 +49682,14 @@
       "sources": [
         "5x5-0B-BDX"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02164.json",
@@ -46935,7 +49712,13 @@
       "sources": [
         "5x5-0B-BKV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0
+        ]
+      ]
     },
     {
       "file": "pair-swap-02165.json",
@@ -46958,7 +49741,14 @@
       "sources": [
         "5x5-0B-BDJ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02166.json",
@@ -46980,7 +49770,14 @@
       "sources": [
         "5x5-0A-AIU"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02167.json",
@@ -47001,7 +49798,14 @@
       "sources": [
         "5x5-0A-AFB"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02168.json",
@@ -47023,7 +49827,14 @@
       "sources": [
         "5x5-0B-BDW"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02169.json",
@@ -47045,7 +49856,14 @@
       "sources": [
         "5x5-0A-AIV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02170.json",
@@ -47066,7 +49884,14 @@
       "sources": [
         "5x5-0A-AIW"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02171.json",
@@ -47086,7 +49911,14 @@
       "sources": [
         "5x5-0A-AEL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02172.json",
@@ -47108,7 +49940,14 @@
       "sources": [
         "5x5-0A-ACQ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02173.json",
@@ -47130,7 +49969,14 @@
       "sources": [
         "5x5-0A-AHN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02174.json",
@@ -47152,7 +49998,14 @@
       "sources": [
         "5x5-0A-ACR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02175.json",
@@ -47174,7 +50027,14 @@
       "sources": [
         "5x5-0B-ASN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02176.json",
@@ -47196,7 +50056,14 @@
       "sources": [
         "5x5-0A-AGC"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02177.json",
@@ -47218,7 +50085,14 @@
       "sources": [
         "5x5-0B-BDF"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02178.json",
@@ -47240,7 +50114,14 @@
       "sources": [
         "5x5-0B-BDD"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02179.json",
@@ -47262,7 +50143,14 @@
       "sources": [
         "5x5-0A-AIQ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02180.json",
@@ -47283,7 +50171,14 @@
       "sources": [
         "5x5-0A-AIS"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02181.json",
@@ -47305,7 +50200,14 @@
       "sources": [
         "5x5-0A-AIP"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02182.json",
@@ -47326,7 +50228,14 @@
       "sources": [
         "5x5-0A-AIR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02183.json",
@@ -47346,7 +50255,14 @@
       "sources": [
         "5x5-0A-AEI"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02184.json",
@@ -47367,7 +50283,14 @@
       "sources": [
         "5x5-0A-AIM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02185.json",
@@ -47390,7 +50313,14 @@
       "sources": [
         "5x5-0B-AHE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02186.json",
@@ -47413,7 +50343,14 @@
       "sources": [
         "5x5-0B-AXR"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02187.json",
@@ -47436,7 +50373,14 @@
       "sources": [
         "5x5-0B-AXE"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02188.json",
@@ -47459,7 +50403,14 @@
       "sources": [
         "5x5-0B-AXL"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02189.json",
@@ -47481,7 +50432,14 @@
       "sources": [
         "5x5-0B-AXK"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02190.json",
@@ -47503,7 +50461,14 @@
       "sources": [
         "5x5-0B-AHH"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02191.json",
@@ -47525,7 +50490,14 @@
       "sources": [
         "5x5-0B-ADM"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02192.json",
@@ -47548,7 +50520,14 @@
       "sources": [
         "5x5-0B-ASU"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02193.json",
@@ -47571,7 +50550,14 @@
       "sources": [
         "5x5-0B-BFN"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02194.json",
@@ -47593,7 +50579,14 @@
       "sources": [
         "5x5-0B-ATA"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02195.json",
@@ -47614,7 +50607,14 @@
       "sources": [
         "5x5-0B-ANV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02196.json",
@@ -47636,7 +50636,14 @@
       "sources": [
         "5x5-0B-BEV"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02197.json",
@@ -47658,7 +50665,14 @@
       "sources": [
         "5x5-0B-BEQ"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02198.json",
@@ -47679,7 +50693,14 @@
       "sources": [
         "5x5-0B-ANO"
       ],
-      "set": "set-2"
+      "set": "set-2",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-02199.json",
@@ -69804,7 +72825,14 @@
       "sources": [
         "3x5-1A-AAA"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          2,
+          4,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03192.json",
@@ -72340,7 +75368,14 @@
       "sources": [
         "5x5-0B-AFX"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03310.json",
@@ -72362,7 +75397,14 @@
       "sources": [
         "5x5-0B-AGR"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03311.json",
@@ -72383,7 +75425,14 @@
       "sources": [
         "5x5-0B-AGO"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03312.json",
@@ -72405,7 +75454,14 @@
       "sources": [
         "5x5-0B-AHJ"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03313.json",
@@ -72428,7 +75484,14 @@
       "sources": [
         "5x5-0A-ACA"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03314.json",
@@ -72450,7 +75513,14 @@
       "sources": [
         "5x5-0A-ACU"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03315.json",
@@ -72472,7 +75542,14 @@
       "sources": [
         "5x5-0A-ABM"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03316.json",
@@ -72494,7 +75571,14 @@
       "sources": [
         "5x5-0A-ADA"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03317.json",
@@ -72515,7 +75599,14 @@
       "sources": [
         "5x5-0A-ACY"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03318.json",
@@ -72538,7 +75629,14 @@
       "sources": [
         "5x5-0B-AHG"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03319.json",
@@ -72559,7 +75657,14 @@
       "sources": [
         "5x5-0A-ADB"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03320.json",
@@ -72581,7 +75686,14 @@
       "sources": [
         "5x5-0B-AIR"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03321.json",
@@ -72603,7 +75715,14 @@
       "sources": [
         "5x5-0B-AZK"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03322.json",
@@ -72625,7 +75744,14 @@
       "sources": [
         "5x5-0B-AIN"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03323.json",
@@ -72647,7 +75773,14 @@
       "sources": [
         "5x5-0B-AZM"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03324.json",
@@ -72670,7 +75803,14 @@
       "sources": [
         "5x5-0B-AEH"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03325.json",
@@ -72693,7 +75833,14 @@
       "sources": [
         "5x5-0A-AHF"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03326.json",
@@ -72714,7 +75861,14 @@
       "sources": [
         "5x5-0B-AYO"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03327.json",
@@ -72735,7 +75889,14 @@
       "sources": [
         "5x5-0B-AEF"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03328.json",
@@ -72757,7 +75918,14 @@
       "sources": [
         "5x5-0A-ADG"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03329.json",
@@ -72779,7 +75947,14 @@
       "sources": [
         "5x5-0A-ADJ"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03330.json",
@@ -72801,7 +75976,14 @@
       "sources": [
         "5x5-0B-AYW"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03331.json",
@@ -72822,7 +76004,14 @@
       "sources": [
         "5x5-0B-AJH"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03332.json",
@@ -72843,7 +76032,14 @@
       "sources": [
         "5x5-0A-ADF"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03333.json",
@@ -72865,7 +76061,14 @@
       "sources": [
         "5x5-0A-AHZ"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03334.json",
@@ -72888,7 +76091,13 @@
       "sources": [
         "5x5-0B-BKW"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          2,
+          2
+        ]
+      ]
     },
     {
       "file": "pair-swap-03335.json",
@@ -72910,7 +76119,14 @@
       "sources": [
         "5x5-0B-AIP"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03336.json",
@@ -72931,7 +76147,14 @@
       "sources": [
         "5x5-0B-AYO"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03337.json",
@@ -72952,7 +76175,14 @@
       "sources": [
         "5x5-0B-AHV"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03338.json",
@@ -72974,7 +76204,14 @@
       "sources": [
         "5x5-0B-AFE"
       ],
-      "set": "set-3"
+      "set": "set-3",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-03339.json",
@@ -97816,7 +101053,14 @@
       "sources": [
         "3x5-0B-AAR"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04402.json",
@@ -101767,7 +105011,14 @@
       "sources": [
         "5x5-0B-BEX"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04584.json",
@@ -101790,7 +105041,14 @@
       "sources": [
         "5x5-0B-AXV"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04585.json",
@@ -101813,7 +105071,14 @@
       "sources": [
         "5x5-0B-BBS"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04586.json",
@@ -101836,7 +105101,14 @@
       "sources": [
         "5x5-0B-AZT"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04587.json",
@@ -101859,7 +105131,13 @@
       "sources": [
         "5x5-0B-BKW"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          2,
+          2
+        ]
+      ]
     },
     {
       "file": "pair-swap-04588.json",
@@ -101881,7 +105159,14 @@
       "sources": [
         "5x5-0B-AEF"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04589.json",
@@ -101902,7 +105187,14 @@
       "sources": [
         "5x5-0B-BIE"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04590.json",
@@ -101923,7 +105215,14 @@
       "sources": [
         "5x5-0B-BGB"
       ],
-      "set": "set-4"
+      "set": "set-4",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-04591.json",
@@ -117933,7 +121232,14 @@
       "sources": [
         "3x5-0B-ABO"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05285.json",
@@ -117953,7 +121259,14 @@
       "sources": [
         "3x5-0B-ACQ"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05286.json",
@@ -117972,7 +121285,14 @@
       "sources": [
         "3x5-0B-ABY"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05287.json",
@@ -119125,7 +122445,14 @@
       "sources": [
         "5x5-0B-AFZ"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05339.json",
@@ -119148,7 +122475,14 @@
       "sources": [
         "5x5-0B-BDO"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05340.json",
@@ -119171,7 +122505,14 @@
       "sources": [
         "5x5-0B-AWN"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05341.json",
@@ -119193,7 +122534,14 @@
       "sources": [
         "5x5-0B-AMM"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05342.json",
@@ -119216,7 +122564,14 @@
       "sources": [
         "5x5-0B-AXW"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05343.json",
@@ -119238,7 +122593,14 @@
       "sources": [
         "5x5-0B-AHO"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05344.json",
@@ -119261,7 +122623,14 @@
       "sources": [
         "5x5-0B-AXV"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05345.json",
@@ -119284,7 +122653,14 @@
       "sources": [
         "5x5-0B-AFO"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05346.json",
@@ -119306,7 +122682,14 @@
       "sources": [
         "5x5-0B-ACL"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05347.json",
@@ -119328,7 +122711,14 @@
       "sources": [
         "5x5-0B-AQE"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05348.json",
@@ -119350,7 +122740,14 @@
       "sources": [
         "5x5-0B-APU"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05349.json",
@@ -119374,7 +122771,14 @@
       "sources": [
         "5x5-0B-BAC"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05350.json",
@@ -119397,7 +122801,14 @@
       "sources": [
         "5x5-0B-ACR"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05351.json",
@@ -119419,7 +122830,14 @@
       "sources": [
         "5x5-0B-ADA"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05352.json",
@@ -119441,7 +122859,14 @@
       "sources": [
         "5x5-0B-AIP"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05353.json",
@@ -119463,7 +122888,14 @@
       "sources": [
         "5x5-0B-BHT"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05354.json",
@@ -119484,7 +122916,14 @@
       "sources": [
         "5x5-0B-BIG"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05355.json",
@@ -119505,7 +122944,14 @@
       "sources": [
         "5x5-0B-APP"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05356.json",
@@ -119525,7 +122971,14 @@
       "sources": [
         "5x5-0B-AOM"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05357.json",
@@ -119548,7 +123001,14 @@
       "sources": [
         "5x5-0B-AHS"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05358.json",
@@ -119569,7 +123029,14 @@
       "sources": [
         "5x5-0B-BGC"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05359.json",
@@ -119591,7 +123058,14 @@
       "sources": [
         "5x5-0B-BAY"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05360.json",
@@ -119613,7 +123087,14 @@
       "sources": [
         "5x5-0B-AEZ"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05361.json",
@@ -119637,7 +123118,14 @@
       "sources": [
         "5x5-0B-ACS"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05362.json",
@@ -119660,7 +123148,14 @@
       "sources": [
         "5x5-0B-ACM"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05363.json",
@@ -119682,7 +123177,14 @@
       "sources": [
         "5x5-0B-ACH"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05364.json",
@@ -119704,7 +123206,14 @@
       "sources": [
         "5x5-0B-AUY"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05365.json",
@@ -119727,7 +123236,14 @@
       "sources": [
         "5x5-0B-AIN"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05366.json",
@@ -119750,7 +123266,14 @@
       "sources": [
         "5x5-0B-ART"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05367.json",
@@ -119773,7 +123296,14 @@
       "sources": [
         "5x5-0B-AYS"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05368.json",
@@ -119796,7 +123326,14 @@
       "sources": [
         "5x5-0B-AZU"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05369.json",
@@ -119819,7 +123356,14 @@
       "sources": [
         "5x5-0B-AIZ"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05370.json",
@@ -119842,7 +123386,14 @@
       "sources": [
         "5x5-0B-AZT"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05371.json",
@@ -119864,7 +123415,14 @@
       "sources": [
         "5x5-0B-AEE"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05372.json",
@@ -119887,7 +123445,14 @@
       "sources": [
         "5x5-0B-BIA"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05373.json",
@@ -119909,7 +123474,14 @@
       "sources": [
         "5x5-0B-APL"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05374.json",
@@ -119931,7 +123503,14 @@
       "sources": [
         "5x5-0B-BHR"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05375.json",
@@ -119954,7 +123533,14 @@
       "sources": [
         "5x5-0B-AYA"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05376.json",
@@ -119976,7 +123562,14 @@
       "sources": [
         "5x5-0B-AYH"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05377.json",
@@ -119998,7 +123591,14 @@
       "sources": [
         "5x5-0B-AIB"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05378.json",
@@ -120018,7 +123618,14 @@
       "sources": [
         "5x5-0B-AOH"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05379.json",
@@ -120040,7 +123647,14 @@
       "sources": [
         "5x5-0B-AMD"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05380.json",
@@ -120062,7 +123676,14 @@
       "sources": [
         "5x5-0B-AMA"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05381.json",
@@ -120084,7 +123705,14 @@
       "sources": [
         "5x5-0B-AEX"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05382.json",
@@ -120106,7 +123734,14 @@
       "sources": [
         "5x5-0B-ACO"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05383.json",
@@ -120128,7 +123763,14 @@
       "sources": [
         "5x5-0B-ACG"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05384.json",
@@ -120150,7 +123792,14 @@
       "sources": [
         "5x5-0B-BIR"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05385.json",
@@ -120171,7 +123820,14 @@
       "sources": [
         "5x5-0B-APZ"
       ],
-      "set": "set-5"
+      "set": "set-5",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-05386.json",
@@ -141859,7 +145515,14 @@
       "sources": [
         "3x5-0B-AAU"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06335.json",
@@ -142502,7 +146165,14 @@
       "sources": [
         "5x5-0B-BEA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06364.json",
@@ -142524,7 +146194,14 @@
       "sources": [
         "5x5-0B-BDZ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06365.json",
@@ -142545,7 +146222,14 @@
       "sources": [
         "5x5-0B-ADO"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06366.json",
@@ -142567,7 +146251,14 @@
       "sources": [
         "5x5-0B-BFE"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06367.json",
@@ -142590,7 +146281,14 @@
       "sources": [
         "5x5-0B-BFP"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06368.json",
@@ -142610,7 +146308,14 @@
       "sources": [
         "5x5-0B-AAI"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06369.json",
@@ -142632,7 +146337,14 @@
       "sources": [
         "5x5-0B-BFH"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06370.json",
@@ -142654,7 +146366,14 @@
       "sources": [
         "5x5-0B-BEU"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06371.json",
@@ -142678,7 +146397,14 @@
       "sources": [
         "5x5-0B-AWV"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06372.json",
@@ -142701,7 +146427,14 @@
       "sources": [
         "5x5-0B-AMT"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06373.json",
@@ -142724,7 +146457,14 @@
       "sources": [
         "5x5-0B-BDI"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06374.json",
@@ -142748,7 +146488,14 @@
       "sources": [
         "5x5-0B-AXF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06375.json",
@@ -142771,7 +146518,14 @@
       "sources": [
         "5x5-0B-BEY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06376.json",
@@ -142792,7 +146546,14 @@
       "sources": [
         "5x5-0B-ANT"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06377.json",
@@ -142813,7 +146574,14 @@
       "sources": [
         "5x5-0B-ANS"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06378.json",
@@ -142836,7 +146604,14 @@
       "sources": [
         "5x5-0B-ADA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06379.json",
@@ -142858,7 +146633,14 @@
       "sources": [
         "5x5-0B-AIO"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06380.json",
@@ -142880,7 +146662,14 @@
       "sources": [
         "5x5-0B-BHK"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06381.json",
@@ -142903,7 +146692,14 @@
       "sources": [
         "5x5-0B-AOW"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06382.json",
@@ -142924,7 +146720,14 @@
       "sources": [
         "5x5-0B-ATU"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06383.json",
@@ -142944,7 +146747,14 @@
       "sources": [
         "5x5-0B-ADV"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06384.json",
@@ -142967,7 +146777,14 @@
       "sources": [
         "5x5-0B-BAO"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06385.json",
@@ -142990,7 +146807,14 @@
       "sources": [
         "5x5-0B-BCS"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06386.json",
@@ -143011,7 +146835,14 @@
       "sources": [
         "5x5-0B-AEJ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06387.json",
@@ -143032,7 +146863,14 @@
       "sources": [
         "5x5-0B-AFH"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06388.json",
@@ -143054,7 +146892,14 @@
       "sources": [
         "5x5-0B-BJN"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06389.json",
@@ -143075,7 +146920,14 @@
       "sources": [
         "5x5-0B-AKQ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06390.json",
@@ -143096,7 +146948,14 @@
       "sources": [
         "5x5-0B-AQA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06391.json",
@@ -143118,7 +146977,14 @@
       "sources": [
         "5x5-0B-ABZ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06392.json",
@@ -143139,7 +147005,14 @@
       "sources": [
         "5x5-0B-BIS"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06393.json",
@@ -143159,7 +147032,14 @@
       "sources": [
         "5x5-0B-AAA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06394.json",
@@ -143179,7 +147059,14 @@
       "sources": [
         "5x5-0B-AAT"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06395.json",
@@ -143199,7 +147086,14 @@
       "sources": [
         "5x5-0B-APX"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06396.json",
@@ -143220,7 +147114,14 @@
       "sources": [
         "5x5-0B-BHL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06397.json",
@@ -143241,7 +147142,14 @@
       "sources": [
         "5x5-0B-BGR"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06398.json",
@@ -143261,7 +147169,14 @@
       "sources": [
         "5x5-0B-AVA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06399.json",
@@ -143281,7 +147196,14 @@
       "sources": [
         "5x5-0B-AKU"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06400.json",
@@ -143302,7 +147224,14 @@
       "sources": [
         "5x5-0B-ACQ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06401.json",
@@ -143323,7 +147252,14 @@
       "sources": [
         "5x5-0B-BJY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06402.json",
@@ -143343,7 +147279,14 @@
       "sources": [
         "5x5-0B-BIY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06403.json",
@@ -143367,7 +147310,14 @@
       "sources": [
         "5x5-0B-AZX"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06404.json",
@@ -143390,7 +147340,14 @@
       "sources": [
         "5x5-0B-AEU"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06405.json",
@@ -143414,7 +147371,14 @@
       "sources": [
         "5x5-0B-BHF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06406.json",
@@ -143437,7 +147401,14 @@
       "sources": [
         "5x5-0B-BFT"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06407.json",
@@ -143458,7 +147429,14 @@
       "sources": [
         "5x5-0B-AOF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06408.json",
@@ -143481,7 +147459,14 @@
       "sources": [
         "5x5-0B-BJF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06409.json",
@@ -143504,7 +147489,14 @@
       "sources": [
         "5x5-0B-ACY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06410.json",
@@ -143526,7 +147518,14 @@
       "sources": [
         "5x5-0B-AVF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06411.json",
@@ -143550,7 +147549,14 @@
       "sources": [
         "5x5-0B-AYR"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06412.json",
@@ -143573,7 +147579,14 @@
       "sources": [
         "5x5-0B-ALW"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06413.json",
@@ -143596,7 +147609,14 @@
       "sources": [
         "5x5-0B-AII"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06414.json",
@@ -143618,7 +147638,14 @@
       "sources": [
         "5x5-0B-ALY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06415.json",
@@ -143641,7 +147668,14 @@
       "sources": [
         "5x5-0B-AYV"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06416.json",
@@ -143664,7 +147698,14 @@
       "sources": [
         "5x5-0B-AIR"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06417.json",
@@ -143687,7 +147728,14 @@
       "sources": [
         "5x5-0B-AZN"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06418.json",
@@ -143710,7 +147758,14 @@
       "sources": [
         "5x5-0B-AYM"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06419.json",
@@ -143732,7 +147787,14 @@
       "sources": [
         "5x5-0B-AZK"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06420.json",
@@ -143754,7 +147816,14 @@
       "sources": [
         "5x5-0B-ARK"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06421.json",
@@ -143776,7 +147845,14 @@
       "sources": [
         "5x5-0B-AIG"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06422.json",
@@ -143798,7 +147874,14 @@
       "sources": [
         "5x5-0B-AYX"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06423.json",
@@ -143820,7 +147903,14 @@
       "sources": [
         "5x5-0B-AVQ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06424.json",
@@ -143843,7 +147933,14 @@
       "sources": [
         "5x5-0B-BGX"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06425.json",
@@ -143865,7 +147962,14 @@
       "sources": [
         "5x5-0B-ATY"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06426.json",
@@ -143887,7 +147991,14 @@
       "sources": [
         "5x5-0B-BIL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06427.json",
@@ -143909,7 +148020,14 @@
       "sources": [
         "5x5-0B-BIM"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06428.json",
@@ -143931,7 +148049,14 @@
       "sources": [
         "5x5-0B-ATS"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06429.json",
@@ -143953,7 +148078,14 @@
       "sources": [
         "5x5-0B-BGR"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06430.json",
@@ -143975,7 +148107,14 @@
       "sources": [
         "5x5-0B-BHI"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06431.json",
@@ -143997,7 +148136,14 @@
       "sources": [
         "5x5-0B-BHM"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06432.json",
@@ -144018,7 +148164,14 @@
       "sources": [
         "5x5-0B-BHL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06433.json",
@@ -144040,7 +148193,14 @@
       "sources": [
         "5x5-0B-AYD"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06434.json",
@@ -144062,7 +148222,14 @@
       "sources": [
         "5x5-0B-AVL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06435.json",
@@ -144085,7 +148252,14 @@
       "sources": [
         "5x5-0B-ASM"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06436.json",
@@ -144108,7 +148282,14 @@
       "sources": [
         "5x5-0B-BCQ"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06437.json",
@@ -144131,7 +148312,14 @@
       "sources": [
         "5x5-0B-BCT"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06438.json",
@@ -144152,7 +148340,14 @@
       "sources": [
         "5x5-0B-AMG"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06439.json",
@@ -144174,7 +148369,14 @@
       "sources": [
         "5x5-0B-BCD"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06440.json",
@@ -144196,7 +148398,14 @@
       "sources": [
         "5x5-0B-BAF"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06441.json",
@@ -144218,7 +148427,14 @@
       "sources": [
         "5x5-0B-BCA"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06442.json",
@@ -144240,7 +148456,14 @@
       "sources": [
         "5x5-0B-AFL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06443.json",
@@ -144262,7 +148485,14 @@
       "sources": [
         "5x5-0B-AUG"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06444.json",
@@ -144284,7 +148514,14 @@
       "sources": [
         "5x5-0B-BJG"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06445.json",
@@ -144306,7 +148543,14 @@
       "sources": [
         "5x5-0B-ACL"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06446.json",
@@ -144327,7 +148571,14 @@
       "sources": [
         "5x5-0B-AUN"
       ],
-      "set": "set-6"
+      "set": "set-6",
+      "blockers": [
+        [
+          0,
+          0,
+          "B1"
+        ]
+      ]
     },
     {
       "file": "pair-swap-06447.json",

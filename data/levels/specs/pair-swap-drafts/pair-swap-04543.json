@@ -19,7 +19,7 @@
   "tier": "0B",
   "size": "4x5",
   "set": "set-4",
-  "note": "New bag from a 2x2 pair swap (SZ+VL, LR+RC). Not in the published catalog. Solution count has not been run.",
+  "note": "New bag from a 2x2 pair swap (SZ+VL, LR+RC). Not in the published catalog. Solution status: see tools/data/swap-candidates/pair-swap-drafts/draft-status.json.",
   "sources": [
     {
       "level": "4x5-0A-BCV",

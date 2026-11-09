@@ -20,7 +20,7 @@
   "tier": "0B",
   "size": "5x5",
   "set": "set-6",
-  "note": "New bag from a 2x2 pair swap (UT+DC, SS+LL). Not in the published catalog. Solution count has not been run.",
+  "note": "New bag from a 2x2 pair swap (UT+DC, SS+LL). Not in the published catalog. Solution status: see tools/data/swap-candidates/pair-swap-drafts/draft-status.json. Blockers taken from source level(s) 5x5-0B-ABZ.",
   "sources": [
     {
       "level": "5x5-0B-ABZ",
@@ -28,5 +28,12 @@
       "replaceWith": "UT+DC",
       "solutions": 2
     }
+  ],
+  "blockers": [
+    [
+      0,
+      0,
+      "B1"
+    ]
   ]
 }

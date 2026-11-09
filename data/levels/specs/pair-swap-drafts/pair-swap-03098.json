@@ -20,7 +20,7 @@
   "tier": "0A",
   "size": "5x6",
   "set": "set-2",
-  "note": "New bag from a 2x2 pair swap (UT+DB, LL+LR). Not in the published catalog. Solution count has not been run.",
+  "note": "New bag from a 2x2 pair swap (UT+DB, LL+LR). Not in the published catalog. Solution status: see tools/data/swap-candidates/pair-swap-drafts/draft-status.json.",
   "sources": [
     {
       "level": "5x6-0A-AZG",
