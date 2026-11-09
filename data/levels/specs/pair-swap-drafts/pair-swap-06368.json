@@ -1,0 +1,30 @@
+{
+  "board": {
+    "rows": 5,
+    "cols": 5,
+    "cells": 25
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DB": 1,
+    "DC": 1,
+    "ET": 1,
+    "LL": 1,
+    "SH": 1,
+    "UT": 7
+  },
+  "levelId": "pair-swap-06368",
+  "id": "pair-swap-06368",
+  "tier": "0B",
+  "size": "5x5",
+  "set": "set-6",
+  "note": "New bag from a 2x2 pair swap (UT+DC, SS+LL). Not in the published catalog. Solution count has not been run.",
+  "sources": [
+    {
+      "level": "5x5-0B-AAI",
+      "found": "SS+LL",
+      "replaceWith": "UT+DC",
+      "solutions": 1
+    }
+  ]
+}

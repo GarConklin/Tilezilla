@@ -1,0 +1,38 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 6,
+    "cells": 36
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LR": 1,
+    "QS": 1,
+    "RC": 3,
+    "SH": 1,
+    "SS": 3,
+    "UT": 3,
+    "VL": 5
+  },
+  "levelId": "pair-swap-01976",
+  "id": "pair-swap-01976",
+  "tier": "0B",
+  "size": "6x6",
+  "set": "set-1",
+  "note": "New bag from a 2x2 pair swap (SS+SZ, UT+QC, VL+VL). Not in the published catalog. Solution count has not been run.",
+  "sources": [
+    {
+      "level": "6x6-0B-AAJ",
+      "found": "SS+SZ",
+      "replaceWith": "VL+VL",
+      "solutions": 1
+    },
+    {
+      "level": "6x6-0B-AAK",
+      "found": "UT+QC",
+      "replaceWith": "VL+VL",
+      "solutions": 1
+    }
+  ]
+}
