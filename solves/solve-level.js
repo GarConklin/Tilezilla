@@ -90,6 +90,11 @@ function makeSolver(tilesJson) {
     return dominoCells(r, c, deg);
   }
 
+  /** Tiles carrying two snake segments (CR/CT/CQ, DB/DC/DS/QC/QS/QZ). */
+  function isTwoSegmentCell(cell) {
+    return edgesFor(cell.tile, cell.deg, 'A').length + edgesFor(cell.tile, cell.deg, 'B').length > 2;
+  }
+
   function edgesFor(tn, deg, wh) {
     const rn = rotName(deg);
     const t = tilesJson[tn];
@@ -495,43 +500,10 @@ function makeSolver(tilesJson) {
                     if (!inBounds(nr, nc)) continue;
                     const nk = key(nr, nc);
                     if (bVis.has(nk)) continue;
-                    if (board[nr][nc] === null) {
+                    if (board[nr][nc] === null || isTwoSegmentCell(board[nr][nc])) {
+                      // A placed two-segment tile can still carry the snake past it, so it does not wall off the route.
                       bVis.add(nk);
                       bQ.push([nr, nc]);
-                    } else if (board[nr][nc].tile === 'DB') {
-                      bVis.add(nk);
-                      const dbP = placedTiles.find((t) => t.id === board[nr][nc].tileId);
-                      if (dbP) {
-                        const dbC = targetCells(dbP.r, dbP.c, dbP.deg, dbP.tile);
-                        for (let dci = 0; dci < dbC.length; dci++) {
-                          const ok = key(dbC[dci][0], dbC[dci][1]);
-                          if (ok !== nk && !bVis.has(ok)) {
-                            bVis.add(ok);
-                            const dirs2 = [
-                              [-1, 0],
-                              [1, 0],
-                              [0, -1],
-                              [0, 1],
-                            ];
-                            for (let di2 = 0; di2 < dirs2.length; di2++) {
-                              const er = dbC[dci][0] + dirs2[di2][0];
-                              const ec = dbC[dci][1] + dirs2[di2][1];
-                              if (!inBounds(er, ec)) continue;
-                              const ek = key(er, ec);
-                              if (bVis.has(ek)) continue;
-                              if (er === etEntry.r && ec === etEntry.c) {
-                                reached = true;
-                                break;
-                              }
-                              if (board[er][ec] === null) {
-                                bVis.add(ek);
-                                bQ.push([er, ec]);
-                              }
-                            }
-                            if (reached) break;
-                          }
-                        }
-                      }
                     }
                   }
                 }
