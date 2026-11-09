@@ -19,6 +19,13 @@ function targetCells(r, c, deg) {
   return [[r, c], [r - 1, c]];
 }
 
+/** Same footprint rule as web/js/app_v16.js cellsForTile: 1-cell shapes (B1, E1) occupy only the anchor. */
+function cellsForTile(tilesJson, tileName, r, c, deg) {
+  const shape = tilesJson?.[tileName]?.shape;
+  if (Array.isArray(shape) && shape.length === 1) return [[r, c]];
+  return targetCells(r, c, deg);
+}
+
 function pathUsesBothHalves(pathObj) {
   const ends = pathObj?.ends;
   if (!ends || ends.length !== 2) return false;
@@ -160,16 +167,31 @@ function resolvePlacementPathChoices(cellInfo, placed, rows, cols, tilesJson) {
  * @param {number} opts.cols
  * @param {Array<{tile,r,c,deg}>} opts.placements
  * @param {object} opts.tilesJson
+ * @param {Array} [opts.blockers] catalog blockers [[r, c, tile = 'B1', deg = 0], ...]; fixed tiles with no live edges
  * @returns {{ ok: boolean, reason?: string, pathPick?: object }}
  */
 function validateCompleteLayout(opts) {
-  const { rows, cols, placements, tilesJson } = opts;
+  const { rows, cols, placements, tilesJson, blockers } = opts;
   const placed = placements.map((p, i) => ({ id: `t${i}`, ...p }));
   const cellInfo = Array(rows * cols).fill(null);
 
+  for (let bi = 0; bi < (blockers || []).length; bi++) {
+    const b = blockers[bi];
+    const tile = b[2] || 'B1';
+    const deg = Number(b[3]) || 0;
+    for (const [rr, cc] of cellsForTile(tilesJson, tile, Number(b[0]), Number(b[1]), deg)) {
+      if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) {
+        return { ok: false, reason: `off-board blocker at (${rr},${cc})` };
+      }
+      const ii = rr * cols + cc;
+      if (cellInfo[ii]) return { ok: false, reason: `overlap at (${rr},${cc})` };
+      cellInfo[ii] = { tile, deg: 0, which: 'A', placedId: `blocker-${bi}` };
+    }
+  }
+
   for (const t of placed) {
     const rot = ((t.deg % 360) + 360) % 360;
-    const cells = targetCells(t.r, t.c, rot);
+    const cells = cellsForTile(tilesJson, t.tile, t.r, t.c, rot);
     for (let i = 0; i < cells.length; i++) {
       const [rr, cc] = cells[i];
       if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) {
@@ -235,5 +257,6 @@ function validateCompleteLayout(opts) {
 module.exports = {
   validateCompleteLayout,
   targetCells,
+  cellsForTile,
   rotName,
 };

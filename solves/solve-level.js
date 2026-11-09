@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
  * Exhaustive enumerator for single-snake levels using data/tiles/tiles-live-edges.json only.
- * Catalog blockers: single-cell B1 only (fixed cells from level.blockers; no rotation; no live edges).
+ * Catalog blockers: fixed edge-free tiles from level.blockers ([r, c, "B1"|"B2", deg?]; B1 is one cell).
  * (standard live-edge tile defs — not wtiles / wide tileset).
  *
  * Tile bag is taken only from the level entry. CR/CT/CQ use explicit path wiring from JSON.
+ * Filler tiles with no live edges (E1/E2, B1/B2 in the bag) cover the cells the snake leaves empty.
  * pathMode multi / second-snake is not implemented — one SH, one ET.
  * Square boards: solutions deduped up to 90° rotation (C4). Non-square: half-turn only (180°).
  *
@@ -59,7 +60,7 @@ function rotName(deg) {
   return r === 0 ? 'r0' : r === 90 ? 'r90' : r === 180 ? 'r180' : 'r270';
 }
 
-function targetCells(r, c, deg) {
+function dominoCells(r, c, deg) {
   const rot = ((deg % 360) + 360) % 360;
   if (rot === 0) return [[r, c], [r, c + 1]];
   if (rot === 90) return [[r, c], [r + 1, c]];
@@ -67,7 +68,28 @@ function targetCells(r, c, deg) {
   return [[r, c], [r - 1, c]];
 }
 
+/** Same footprint rule as web/js/app_v16.js cellsForTile: 1-cell shapes (B1, E1) occupy only the anchor. */
+function isSingleCellTile(tilesJson, tn) {
+  const shape = tilesJson[tn]?.shape;
+  return Array.isArray(shape) && shape.length === 1;
+}
+
+/** Filler tiles (E1/E2/B1/B2) have no live edges in any rotation, so the snake walk never places them. */
+function hasLiveEdges(tilesJson, tn) {
+  const def = tilesJson[tn];
+  if (!def) return false;
+  for (const rn of ['r0', 'r90', 'r180', 'r270']) {
+    if ((def[rn]?.A || []).length || (def[rn]?.B || []).length) return true;
+  }
+  return false;
+}
+
 function makeSolver(tilesJson) {
+  function targetCells(r, c, deg, tn) {
+    if (tn && isSingleCellTile(tilesJson, tn)) return [[r, c]];
+    return dominoCells(r, c, deg);
+  }
+
   function edgesFor(tn, deg, wh) {
     const rn = rotName(deg);
     const t = tilesJson[tn];
@@ -98,7 +120,7 @@ function makeSolver(tilesJson) {
     let endpoint = placedTiles.find((t) => t.tile.indexOf('SH') >= 0);
     if (!endpoint) endpoint = placedTiles.find((t) => t.tile.indexOf('ET') >= 0);
     if (!endpoint) return null;
-    const epCells = targetCells(endpoint.r, endpoint.c, endpoint.deg);
+    const epCells = targetCells(endpoint.r, endpoint.c, endpoint.deg, endpoint.tile);
     let startR = null;
     let startC = null;
     let startEdge = null;
@@ -130,10 +152,10 @@ function makeSolver(tilesJson) {
       if (ne.indexOf(OPP[exitDir]) < 0) return null;
       const ck = `${nR},${nC}`;
       const tp = placedTiles.find((t) =>
-        targetCells(t.r, t.c, t.deg).some((cell) => cell[0] === nR && cell[1] === nC)
+        targetCells(t.r, t.c, t.deg, t.tile).some((cell) => cell[0] === nR && cell[1] === nC)
       );
       if (!tp) return null;
-      const tc = targetCells(tp.r, tp.c, tp.deg);
+      const tc = targetCells(tp.r, tp.c, tp.deg, tp.tile);
       const eci = tc.findIndex((cell) => cell[0] === nR && cell[1] === nC);
       const entryEdge = OPP[exitDir];
       const whIn = eci === 0 ? 'A' : 'B';
@@ -188,6 +210,12 @@ function makeSolver(tilesJson) {
 
   function solve(config, initial, levelTiles, maxSol, flags, maxIters, blockerCells, opts) {
     opts = opts || {};
+    const passiveTiles = new Set(
+      Object.keys(levelTiles).filter((tn) => levelTiles[tn] > 0 && !hasLiveEdges(tilesJson, tn))
+    );
+    const singleCellTiles = Object.keys(levelTiles).filter(
+      (tn) => levelTiles[tn] > 0 && isSingleCellTile(tilesJson, tn)
+    );
     const onUniqueSolution =
       typeof opts.onUniqueSolution === 'function' ? opts.onUniqueSolution : null;
     let stopSearch = false;
@@ -215,9 +243,10 @@ function makeSolver(tilesJson) {
       if (remaining[tk] !== undefined) remaining[tk] = levelTiles[tk];
     }
     const placedTiles = [];
+    const blockersForValidate = blockers.map((b) => [b.r, b.c]);
     for (let pi = 0; pi < initial.length; pi++) {
       const p = initial[pi];
-      const cells = targetCells(p.r, p.c, p.deg);
+      const cells = targetCells(p.r, p.c, p.deg, p.tile);
       const tid = `t${placedTiles.length}`;
       placedTiles.push({ id: tid, tile: p.tile, r: p.r, c: p.c, deg: p.deg });
       remaining[p.tile]--;
@@ -238,9 +267,16 @@ function makeSolver(tilesJson) {
       return r >= 0 && r < config.rows && c >= 0 && c < config.cols;
     }
 
+    /** Each unplaced 1-cell tile (E1) may absorb one isolated cell or odd-sized empty region. */
+    function singleCellLeft() {
+      let n = 0;
+      for (const tn of singleCellTiles) n += remaining[tn];
+      return n;
+    }
+
     function canPlaceSimple(tn, r, c, deg) {
       if (!remaining[tn] || remaining[tn] <= 0) return false;
-      const cells = targetCells(r, c, deg);
+      const cells = targetCells(r, c, deg, tn);
       for (let i = 0; i < cells.length; i++) {
         const rr = cells[i][0];
         const cc = cells[i][1];
@@ -286,6 +322,7 @@ function makeSolver(tilesJson) {
       }
       if (!hasLive) return false;
       if (flags.isolatedCheck) {
+        const isolated = new Set();
         for (let i = 0; i < cells.length; i++) {
           const rr = cells[i][0];
           const cc = cells[i][1];
@@ -312,15 +349,16 @@ function makeSolver(tilesJson) {
                 break;
               }
             }
-            if (!hasEN) return false;
+            if (!hasEN) isolated.add(`${nr},${nc}`);
           }
         }
+        if (isolated.size > singleCellLeft()) return false;
       }
       return true;
     }
 
     function place(tn, r, c, deg) {
-      const cells = targetCells(r, c, deg);
+      const cells = targetCells(r, c, deg, tn);
       const tid = `t${placedTiles.length}`;
       placedTiles.push({ id: tid, tile: tn, r, c, deg });
       remaining[tn]--;
@@ -337,7 +375,7 @@ function makeSolver(tilesJson) {
     function unplace() {
       const last = placedTiles.pop();
       remaining[last.tile]++;
-      const cells = targetCells(last.r, last.c, last.deg);
+      const cells = targetCells(last.r, last.c, last.deg, last.tile);
       for (let i = 0; i < cells.length; i++) board[cells[i][0]][cells[i][1]] = null;
     }
 
@@ -349,8 +387,10 @@ function makeSolver(tilesJson) {
         for (let cc = 0; cc < config.cols; cc++) if (board[rr][cc] === null) empties.push([rr, cc]);
       const key = (r, c) => `${r},${c}`;
       const emptySet = new Set(empties.map((e) => key(e[0], e[1])));
+      const spareSingles = singleCellLeft();
 
       if (flags.holeIsolated) {
+        let isolatedCount = 0;
         for (let ei = 0; ei < empties.length; ei++) {
           const rr = empties[ei][0];
           const cc = empties[ei][1];
@@ -367,7 +407,7 @@ function makeSolver(tilesJson) {
               break;
             }
           }
-          if (!has) {
+          if (!has && ++isolatedCount > spareSingles) {
             unplace();
             return true;
           }
@@ -375,6 +415,7 @@ function makeSolver(tilesJson) {
       }
 
       if (flags.holeEven) {
+        let oddRegions = 0;
         const vis = new Set();
         for (let ei = 0; ei < empties.length; ei++) {
           const sR = empties[ei][0];
@@ -400,7 +441,7 @@ function makeSolver(tilesJson) {
               }
             }
           }
-          if (reg.length % 2 !== 0) {
+          if (reg.length % 2 !== 0 && ++oddRegions > spareSingles) {
             unplace();
             return true;
           }
@@ -412,7 +453,7 @@ function makeSolver(tilesJson) {
         if (tip) {
           const etP = placedTiles.find((t) => t.tile.indexOf('ET') >= 0);
           if (etP) {
-            const etCells = targetCells(etP.r, etP.c, etP.deg);
+            const etCells = targetCells(etP.r, etP.c, etP.deg, etP.tile);
             let etEntry = null;
             for (let i = 0; i < etCells.length; i++) {
               const rr = etCells[i][0];
@@ -461,7 +502,7 @@ function makeSolver(tilesJson) {
                       bVis.add(nk);
                       const dbP = placedTiles.find((t) => t.id === board[nr][nc].tileId);
                       if (dbP) {
-                        const dbC = targetCells(dbP.r, dbP.c, dbP.deg);
+                        const dbC = targetCells(dbP.r, dbP.c, dbP.deg, dbP.tile);
                         for (let dci = 0; dci < dbC.length; dci++) {
                           const ok = key(dbC[dci][0], dbC[dci][1]);
                           if (ok !== nk && !bVis.has(ok)) {
@@ -509,9 +550,11 @@ function makeSolver(tilesJson) {
 
     function getOptions(tipR, tipC, neededEdge) {
       const opts = [];
-      let tileNames = Object.keys(remaining).filter((n) => !n.startsWith('_') && remaining[n] > 0);
+      let tileNames = Object.keys(remaining).filter(
+        (n) => !n.startsWith('_') && remaining[n] > 0 && !passiveTiles.has(n)
+      );
       let tilesLeft = 0;
-      for (const k of Object.keys(remaining)) if (!k.startsWith('_')) tilesLeft += remaining[k];
+      for (const k of Object.keys(remaining)) if (!k.startsWith('_') && !passiveTiles.has(k)) tilesLeft += remaining[k];
       const etLeft = remaining.ET || 0;
       if (tilesLeft - etLeft > 0) tileNames = tileNames.filter((n) => n !== 'ET');
       for (let ti = 0; ti < tileNames.length; ti++) {
@@ -523,7 +566,7 @@ function makeSolver(tilesJson) {
             if (!flags.useHole || !wouldCreateHole(tn, tipR, tipC, deg))
               opts.push({ tile: tn, r: tipR, c: tipC, deg });
           }
-          const bE = edgesFor(tn, deg, 'B');
+          const bE = isSingleCellTile(tilesJson, tn) ? [] : edgesFor(tn, deg, 'B');
           if (bE.indexOf(neededEdge) >= 0) {
             const rot = ((deg % 360) + 360) % 360;
             const aR = tipR + (rot === 90 ? -1 : rot === 270 ? 1 : 0);
@@ -559,29 +602,72 @@ function makeSolver(tilesJson) {
       return p.sort().join('|');
     }
 
+    function recordIfComplete() {
+      const pl = placedTiles.map((t) => ({ tile: t.tile, r: t.r, c: t.c, deg: t.deg }));
+      const layoutOk = validateCompleteLayout({
+        rows: config.rows,
+        cols: config.cols,
+        placements: pl,
+        tilesJson,
+        blockers: blockersForValidate,
+      });
+      if (!layoutOk.ok) return;
+      const h = hashBoard();
+      if (!hashes.has(h)) {
+        hashes.add(h);
+        if (onUniqueSolution) {
+          if (onUniqueSolution(pl)) stopSearch = true;
+        } else {
+          solutions.push(pl);
+        }
+      }
+    }
+
+    /** Exact-cover the cells the finished snake left empty with the bag's filler tiles. */
+    function fillPassive() {
+      if (stopSearch || (!onUniqueSolution && solutions.length >= maxSol)) return;
+      let er = -1;
+      let ec = -1;
+      for (let r = 0; r < config.rows && er < 0; r++) {
+        for (let c = 0; c < config.cols; c++) {
+          if (board[r][c] === null) {
+            er = r;
+            ec = c;
+            break;
+          }
+        }
+      }
+      const passiveLeft = [...passiveTiles].filter((tn) => remaining[tn] > 0);
+      if (er < 0) {
+        if (!passiveLeft.length) recordIfComplete();
+        return;
+      }
+      for (const tn of passiveLeft) {
+        const degs = isSingleCellTile(tilesJson, tn) ? [0] : [0, 90];
+        for (const deg of degs) {
+          const cells = targetCells(er, ec, deg, tn);
+          if (!cells.every(([r, c]) => inBounds(r, c) && board[r][c] === null)) continue;
+          place(tn, er, ec, deg);
+          fillPassive();
+          unplace();
+          if (stopSearch || (!onUniqueSolution && solutions.length >= maxSol)) return;
+        }
+      }
+    }
+
     function dfs() {
       iters++;
       if (stopSearch || iters > maxIters || (!onUniqueSolution && solutions.length >= maxSol)) return;
       let tl = 0;
-      for (const k of Object.keys(remaining)) if (!k.startsWith('_')) tl += remaining[k];
+      let passiveLeft = 0;
+      for (const k of Object.keys(remaining)) {
+        if (k.startsWith('_')) continue;
+        if (passiveTiles.has(k)) passiveLeft += remaining[k];
+        else tl += remaining[k];
+      }
       if (tl === 0) {
-        const pl = placedTiles.map((t) => ({ tile: t.tile, r: t.r, c: t.c, deg: t.deg }));
-        const layoutOk = validateCompleteLayout({
-          rows: config.rows,
-          cols: config.cols,
-          placements: pl,
-          tilesJson,
-        });
-        if (!layoutOk.ok) return;
-        const h = hashBoard();
-        if (!hashes.has(h)) {
-          hashes.add(h);
-          if (onUniqueSolution) {
-            if (onUniqueSolution(pl)) stopSearch = true;
-          } else {
-            solutions.push(pl);
-          }
-        }
+        if (passiveLeft > 0) fillPassive();
+        else recordIfComplete();
         return;
       }
       const tip = getSnakeTip(board, placedTiles, config);
@@ -619,8 +705,11 @@ function cellsHitBlockedSet(cells, blockedSet) {
   return false;
 }
 
-/** Fixed catalog blockers: only single-cell B1 (optional third element "B1"; two ints alone = B1). */
-function parseCatalogBlockers(blockers, rows, cols) {
+/**
+ * Fixed catalog blockers as in web/js/app_v16.js parseBlockerEntry: [r, c, tile = "B1", deg = 0].
+ * Any tile without live edges (B1, B2) is accepted; returns one entry per covered cell.
+ */
+function parseCatalogBlockers(blockers, rows, cols, tilesJson) {
   if (!blockers || !Array.isArray(blockers) || blockers.length === 0) {
     return { ok: true, cells: [] };
   }
@@ -636,17 +725,21 @@ function parseCatalogBlockers(blockers, rows, cols) {
     if (!Number.isInteger(r) || !Number.isInteger(c)) {
       return { ok: false, reason: `invalid blocker coordinates: ${JSON.stringify(b)}` };
     }
-    if (r < 0 || r >= rows || c < 0 || c >= cols) {
-      return { ok: false, reason: `blocker out of bounds (${r},${c}) for ${rows}x${cols}` };
+    const kind = b.length >= 3 && b[2] ? String(b[2]) : 'B1';
+    if (!tilesJson[kind] || hasLiveEdges(tilesJson, kind)) {
+      return { ok: false, reason: `blocker kind "${kind}" is not an edge-free tile` };
     }
-    const kind = b.length >= 3 ? String(b[2]) : 'B1';
-    if (kind !== 'B1') {
-      return { ok: false, reason: `blocker kind "${kind}" not supported (only B1 single-cell)` };
+    const deg = b.length >= 4 ? Number(b[3]) || 0 : 0;
+    const footprint = isSingleCellTile(tilesJson, kind) ? [[r, c]] : dominoCells(r, c, deg);
+    for (const [rr, cc] of footprint) {
+      if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) {
+        return { ok: false, reason: `blocker out of bounds (${rr},${cc}) for ${rows}x${cols}` };
+      }
+      const key = `${rr},${cc}`;
+      if (seen.has(key)) return { ok: false, reason: `duplicate blocker cell (${rr},${cc})` };
+      seen.add(key);
+      cells.push({ r: rr, c: cc, tile: kind });
     }
-    const key = `${r},${c}`;
-    if (seen.has(key)) return { ok: false, reason: `duplicate blocker cell (${r},${c})` };
-    seen.add(key);
-    cells.push({ r, c, tile: 'B1' });
   }
   return { ok: true, cells };
 }
@@ -657,13 +750,13 @@ function allSeeds(rows, cols, targetCellsFn, inBoundsFn, blockedSet) {
   for (let sr = 0; sr < rows; sr++) {
     for (let sc = 0; sc < cols; sc++) {
       for (const sd of degs) {
-        const shCells = targetCellsFn(sr, sc, sd);
+        const shCells = targetCellsFn(sr, sc, sd, 'SH');
         if (!shCells.every((cell) => inBoundsFn(cell[0], cell[1]))) continue;
         if (cellsHitBlockedSet(shCells, blockedSet)) continue;
         for (let er = 0; er < rows; er++) {
           for (let ec = 0; ec < cols; ec++) {
             for (const ed of degs) {
-              const etCells = targetCellsFn(er, ec, ed);
+              const etCells = targetCellsFn(er, ec, ed, 'ET');
               if (!etCells.every((cell) => inBoundsFn(cell[0], cell[1]))) continue;
               if (cellsOverlap(shCells, etCells)) continue;
               if (cellsHitBlockedSet(etCells, blockedSet)) continue;
@@ -947,7 +1040,7 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
   const cfg = { rows, cols };
   const levelTiles = level.tiles;
 
-  const blockerParse = parseCatalogBlockers(level.blockers, rows, cols);
+  const blockerParse = parseCatalogBlockers(level.blockers, rows, cols, tilesJson);
   if (!blockerParse.ok) {
     throw new Error(`[solve-level] ${labelTag}: ${blockerParse.reason}`);
   }
@@ -1196,7 +1289,7 @@ function runBatch4x4(flags, tilesJson, solve, targetCells) {
   const report = {
     schema: 'batch-4x4-enumeration-v2',
     note:
-      'Every single-snake 4x4 level in 0A+0B; full SH×ET seeds unless --max-seeds set. Rows include level tiles multiset; solutions deduped up to 90° rotation (C4) unless --batch-summary-only. CR/CT/CQ path routing matches tiles-live-edges paths[]. Single-cell tiles (E1/E2) still unsupported.',
+      'Every single-snake 4x4 level in 0A+0B; full SH×ET seeds unless --max-seeds set. Rows include level tiles multiset; solutions deduped up to 90° rotation (C4) unless --batch-summary-only. CR/CT/CQ path routing matches tiles-live-edges paths[]. Filler tiles (E1/E2/B1/B2) cover leftover cells after the snake.',
     generatedAt: new Date().toISOString(),
     pruning: flags.pruning,
     maxSolCap: batchFlags.maxSol,
@@ -1223,7 +1316,7 @@ function runBatch4x4(flags, tilesJson, solve, targetCells) {
         report.results.push({ id, tiles: level.tiles, skipped: 'unsupported-tiles', reasons: unsup });
         continue;
       }
-      const bp = parseCatalogBlockers(level.blockers, level.board.rows, level.board.cols);
+      const bp = parseCatalogBlockers(level.blockers, level.board.rows, level.board.cols, tilesJson);
       if (!bp.ok) {
         report.results.push({ id, tiles: level.tiles, skipped: 'unsupported-blockers', detail: bp.reason });
         continue;
