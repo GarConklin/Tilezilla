@@ -1,0 +1,3 @@
+# Local farm connection settings (contain the queue password)
+farm.local.json
+farm.*.local.json

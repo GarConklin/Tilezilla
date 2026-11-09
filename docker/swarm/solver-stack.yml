@@ -1,0 +1,88 @@
+# TileZilla solver farm - Docker Swarm stack (queue + 32 solvers).
+# Deployed on the manager VM by tools/swarm/build-and-deploy.sh:
+#
+#   SOLVER_IMAGE=127.0.0.1:5000/tilezilla-solver:<tag> docker stack deploy -c docker/swarm/solver-stack.yml farm
+#
+# Needs the swarm secret "farm_redis_password" (tools/swarm/bootstrap.sh creates it) and the image in
+# the farm registry (127.0.0.1:5000 works on every node through the swarm routing mesh).
+# Nothing is published to the network except the registry: Redis is only reachable on the overlay
+# network "farm_farm" (the admin scripts attach to it). Override settings with environment variables
+# when deploying, e.g. SOLVER_REPLICAS=16 MAX_SOL=1000000.
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command:
+      - sh
+      - -c
+      - >-
+        exec redis-server --appendonly yes --appendfsync everysec
+        --maxmemory-policy noeviction --save 300 10
+        --requirepass "$$(cat /run/secrets/farm_redis_password)"
+    volumes:
+      - farm_redis_data:/data
+    secrets:
+      - farm_redis_password
+    networks:
+      - farm
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+      resources:
+        limits:
+          memory: ${REDIS_MEMORY:-4G}
+
+  solver:
+    image: ${SOLVER_IMAGE:-127.0.0.1:5000/tilezilla-solver:latest}
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD_FILE: /run/secrets/farm_redis_password
+      NODE_NAME: "{{.Node.Hostname}}"
+      MAX_SOL: "${MAX_SOL:-500000}"
+      MAX_ATTEMPTS: "${MAX_ATTEMPTS:-3}"
+      LEASE_MS: "${LEASE_MS:-120000}"
+      HEARTBEAT_MS: "20000"
+      SOLVER_TIMEOUT_MS: "${SOLVER_TIMEOUT_MS:-0}"
+      SOLVER_NODE_OPTIONS: "--max-old-space-size=${SOLVER_HEAP_MB:-2560}"
+    secrets:
+      - farm_redis_password
+    networks:
+      - farm
+    stop_grace_period: 30s
+    deploy:
+      replicas: ${SOLVER_REPLICAS:-32}
+      placement:
+        max_replicas_per_node: 4
+      restart_policy:
+        condition: any
+        delay: 10s
+      update_config:
+        parallelism: 8
+        delay: 5s
+        order: stop-first
+        failure_action: continue
+      resources:
+        limits:
+          cpus: "${SOLVER_CPUS:-1.0}"
+          memory: ${SOLVER_MEMORY:-3G}
+        reservations:
+          memory: 256M
+
+networks:
+  farm:
+    driver: overlay
+    attachable: true
+
+volumes:
+  farm_redis_data:
+
+secrets:
+  farm_redis_password:
+    external: true

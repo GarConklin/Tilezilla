@@ -1,0 +1,8 @@
+*
+!data/tiles/tiles-live-edges.json
+!solves/solve-level.js
+!solves/is-viable-seed.js
+!tools/scripts/validate-complete-layout.js
+!tools/scripts/lib/layout-equivalence-key.js
+!tools/swarm/lib/
+!tools/swarm/farm.js

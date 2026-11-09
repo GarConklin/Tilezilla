@@ -1,0 +1,43 @@
+# Local test of the solver farm on one Docker Desktop (no Swarm). Separate project name so it never
+# touches the main tilezilla stack. Redis on host port 6390; workers publish no ports.
+#
+#   docker compose -p tz-farm-test -f docker/swarm/compose.local-test.yml up -d --build
+#   docker compose -p tz-farm-test -f docker/swarm/compose.local-test.yml down -v
+name: tz-farm-test
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction", "--requirepass", "${FARM_TEST_PASSWORD:-localtest}"]
+    ports:
+      - "127.0.0.1:6390:6379"
+    volumes:
+      - redis_data:/data
+
+  solver:
+    build:
+      context: ../..
+      dockerfile: docker/swarm/solver-worker.Dockerfile
+    image: tilezilla-solver:local-test
+    environment:
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${FARM_TEST_PASSWORD:-localtest}
+      NODE_NAME: local-test
+      MAX_SOL: "500000"
+      MAX_ATTEMPTS: "3"
+      LEASE_MS: "20000"
+      HEARTBEAT_MS: "5000"
+      REAP_EVERY_MS: "5000"
+      IDLE_POLL_MS: "2000"
+    stop_grace_period: 20s
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2G
+
+volumes:
+  redis_data:
