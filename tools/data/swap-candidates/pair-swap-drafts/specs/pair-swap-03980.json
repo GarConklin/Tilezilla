@@ -1,0 +1,33 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 5,
+    "cells": 30
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "ET": 1,
+    "LC": 1,
+    "LL": 1,
+    "LR": 3,
+    "QC": 2,
+    "RC": 1,
+    "SH": 1,
+    "UT": 2,
+    "VL": 3
+  },
+  "levelId": "pair-swap-03980",
+  "id": "pair-swap-03980",
+  "tier": "0B",
+  "size": "5x6",
+  "set": "set-3",
+  "note": "New bag from a 2x2 pair swap (LC+LL, VL+SS). Not in the published catalog. Solution count has not been run.",
+  "sources": [
+    {
+      "level": "5x6-0B-BTE",
+      "found": "VL+SS",
+      "replaceWith": "LC+LL",
+      "solutions": 8
+    }
+  ]
+}
