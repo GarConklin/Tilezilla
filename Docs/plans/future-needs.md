@@ -79,6 +79,16 @@ For each generated variant, normalize and fix blocker metadata in JSON:
 - Ensure placement-level tile refs and level-level blocker refs stay semantically aligned.
 - Recompute signature (`board + tiles + typed blockers`) so variants are deduped correctly.
 
+## Solver: movable-blocker solution search
+
+**Status:** Not implemented. `solves/solve-level.js` treats `B1` / `B2` as fixed cells at the level's `blockers` positions (they never move in play).
+
+### Goals
+
+- Optional search mode where blocker positions are free: try every legal `B1` cell (and `B2` cell + rotation), solve each, and report which blocker positions give solvable or uniquely solvable puzzles.
+- Use it to mint new level variants from an existing bag (same tiles, different blocker squares) and to check whether a draft's blocker position is the best choice.
+- Dedupe variants by layout equivalence including 180° rotation, with typed blockers in the signature (`board + tiles + typed blockers`).
+
 ## 0C logistics: CR ↔ DB (single-snake)
 
 **Note (authoring):** In **single-snake** / `pathMode: single`, **`CR` can replace `DB` in the level multiset** as a way to mint **0C-style** variants: same board size and bag shape, different art (`CR` uses explicit `paths` in `tiles-live-edges.json`; `DB` does not). A large share of **`solves/*.json`** already include at least one solution that places **`DB`**, so this is a **plausible bulk source** for CR-based 0C content.
