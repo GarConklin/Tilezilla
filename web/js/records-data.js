@@ -577,6 +577,7 @@ export async function fetchLeaderboardRows(progress, challengeDate = todayChalle
           solutionId: Number(row.solutionId) || null,
           solutionIndex: Number(row.solutionId) > 0 ? Number(row.solutionId) - 1 : null,
           hintsUsedCount: Math.max(0, Number(row.hintsUsedCount) || 0),
+          moveCount: Math.max(0, Number(row.moveCount ?? row.move_count) || 0),
           levelId: row.levelId || json.levelId || '',
           challengeDate: row.challengeDate || json.date || dateKey,
           completedAt: row.completedAt || null,
