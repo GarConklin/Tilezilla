@@ -23,7 +23,7 @@
       "solvesFile": "3x4-0C-AAA.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "3x4-0C-AAB",
@@ -84,7 +84,7 @@
       "solvesFile": "3x4-0C-AAD.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "3x4-0C-AAE",
@@ -105,7 +105,7 @@
       "solvesFile": "3x4-0C-AAE.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 5
     },
     {
       "id": "3x4-0C-AAF",
@@ -125,7 +125,7 @@
       "solvesFile": "3x4-0C-AAF.json",
       "pathMode": "single",
       "pathCount": 1,
-      "totalUniqueSolutions": 1
+      "totalUniqueSolutions": 2
     },
     {
       "id": "3x4-0C-AAG",
