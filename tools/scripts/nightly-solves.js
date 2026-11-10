@@ -21,7 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '../..');
 const STATE = path.join(ROOT, 'tools', 'data', 'solver-runs', 'nightly');
@@ -42,6 +42,9 @@ const setDone = (g) => {
 const SOLVER = path.join(ROOT, 'solves', 'solve-level.js');
 const MAX_SOL = 500000;
 const MAX_ATTEMPTS = 2;
+const CTRL_C_CONFIRM_MS = 10000;
+const CTRL_C_EXIT = 0xC000013A;
+const EXIT_USER_STOP = 130;
 const DEFAULT_OLD = 'C:\\Users\\~Gar\\Tile-Puzzle\\Tilezilla';
 
 const P = {
@@ -55,6 +58,7 @@ const P = {
   stop: path.join(STATE, 'STOP'),
   lock: path.join(STATE, 'runner.lock'),
   work: path.join(STATE, 'work'),
+  children: path.join(STATE, 'work', 'children.json'),
   logs: path.join(STATE, 'logs'),
   exports: path.join(STATE, 'export'),
 };
@@ -228,6 +232,23 @@ function pidAlive(pid) {
   try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; }
 }
 
+function isNodePid(pid) {
+  if (process.platform !== 'win32') return pidAlive(pid);
+  try {
+    return /node\.exe/i.test(execFileSync('tasklist', ['/FI', `PID eq ${pid}`, '/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true }));
+  } catch { return false; }
+}
+
+// Solvers run detached, so a runner that was killed outright leaves them running; stop them before starting again.
+function killOrphanSolvers(log) {
+  const prev = readJson(P.children, []);
+  for (const c of prev) {
+    if (!c || !c.pid || !pidAlive(c.pid) || !isNodePid(c.pid)) continue;
+    try { process.kill(c.pid); log(`stopped leftover solver pid ${c.pid} (${c.id}) from a runner that did not exit cleanly; it goes back in the queue`); } catch { /* gone */ }
+  }
+  try { fs.unlinkSync(P.children); } catch { /* none */ }
+}
+
 // Windows reuses pids, so a lock also needs a status file written in the last minute.
 function runnerAlive() {
   const lock = readJson(P.lock, null);
@@ -314,6 +335,10 @@ function cmdRun() {
   let killAt = Infinity;
   let exiting = false;
 
+  killOrphanSolvers(log);
+  const saveChildren = () => {
+    try { fs.writeFileSync(P.children, JSON.stringify(slots.filter((s) => s.job).map((s) => ({ pid: s.job.child.pid, id: s.job.id })))); } catch { /* next change */ }
+  };
   log(`run started: ${workers} worker(s), ${todo.length} puzzle(s) to start, stop starting new at ${isFinite(until) ? new Date(until).toString() : 'never'}`);
   log(`log ${logFile}`);
 
@@ -331,11 +356,22 @@ function cmdRun() {
   function startJob(slot, job) {
     const tmp = path.join(P.work, `w${slot.n}-${job.id}.json`);
     try { fs.unlinkSync(tmp); } catch { /* none */ }
-    const child = spawn(process.execPath, [
-      SOLVER, '--spec', specFor(job), '--viable-seeds-only', '--json-summary',
-      '--max-sol', String(MAX_SOL), '--write-solves', tmp,
-    ], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+    let child;
+    try {
+      // detached: solvers get no console, so a Ctrl+C in the run window does not kill them.
+      child = spawn(process.execPath, [
+        SOLVER, '--spec', specFor(job), '--viable-seeds-only', '--json-summary',
+        '--max-sol', String(MAX_SOL), '--write-solves', tmp,
+      ], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, detached: true });
+    } catch (e) {
+      appendResult({ id: job.id, group: job.group, status: 'failed', exit: null, secs: 0, ts: nowIso(), run: runStamp, tail: [`spawn failed: ${e.message}`] });
+      run.failed++;
+      G(job.group).failed++;
+      log(`w${slot.n} FAILED ${job.id} spawn failed: ${e.message}`);
+      return;
+    }
     slot.job = { ...job, child, tmp, t0: Date.now(), out: '', tail: [] };
+    saveChildren();
     const j = slot.job;
     child.stdout.on('data', (d) => { j.out += d; if (j.out.length > 1e6) j.out = j.out.slice(-1e5); });
     child.stderr.on('data', (d) => {
@@ -349,6 +385,16 @@ function cmdRun() {
   function onClose(slot, j, code) {
     if (slot.job !== j) return;
     slot.job = null;
+    saveChildren();
+    try { recordClose(slot, j, code); } catch (e) {
+      log(`w${slot.n} ERROR recording ${j.id}: ${e.stack || e} (puzzle goes back in the queue)`);
+    }
+    try { fs.unlinkSync(j.tmp); } catch { /* moved or none */ }
+    if (recent.length > 8) recent.length = 8;
+    safe('pump', pump);
+  }
+
+  function recordClose(slot, j, code) {
     const secs = +((Date.now() - j.t0) / 1000).toFixed(2);
     let summary = null;
     for (const line of j.out.split(/\r?\n/)) {
@@ -374,6 +420,9 @@ function cmdRun() {
     } else if (stopping === 'now' || j.killedForStop || exiting) {
       run.abandoned++;
       log(`w${slot.n} ABANDONED ${j.id} (back in the queue)`);
+    } else if (code === CTRL_C_EXIT && !j.timedOut) {
+      todo.push({ id: j.id, group: j.group, attempt: j.attempt });
+      log(`w${slot.n} INTERRUPTED ${j.id} by Ctrl+C (requeued, not counted as a failure)`);
     } else {
       const reason = j.timedOut ? 'timeout' : `exit ${code}`;
       appendResult({ id: j.id, group: j.group, status: j.timedOut ? 'timeout' : 'failed', exit: code, secs, ts: nowIso(), run: runStamp, tail: j.tail });
@@ -383,9 +432,10 @@ function cmdRun() {
       if (!j.timedOut && j.attempt < MAX_ATTEMPTS) todo.push({ id: j.id, group: j.group, attempt: j.attempt + 1 });
       else G(j.group).failed++;
     }
-    try { fs.unlinkSync(j.tmp); } catch { /* moved or none */ }
-    if (recent.length > 8) recent.length = 8;
-    pump();
+  }
+
+  function safe(what, fn) {
+    try { fn(); } catch (e) { log(`ERROR in ${what} (run continues): ${e.stack || e}`); }
   }
 
   function pump() {
@@ -430,52 +480,102 @@ function cmdRun() {
     };
   }
 
+  let notice = '';
   const tick = setInterval(() => {
     const nowT = Date.now();
-    for (const slot of slots) {
-      const j = slot.job;
-      if (!j) continue;
-      if (timeoutMs > 0 && nowT - j.t0 > timeoutMs && !j.timedOut) { j.timedOut = true; j.child.kill(); }
-      if (nowT >= killAt && !j.killedForStop) { j.killedForStop = true; j.child.kill(); }
-    }
-    pump();
-    const snap = snapshot();
-    try { fs.writeFileSync(P.status + '.tmp', JSON.stringify(snap)); fs.renameSync(P.status + '.tmp', P.status); } catch { /* next tick */ }
-    if (process.stdout.isTTY) render(snap, true);
-    else if (Math.floor((nowT - started) / 1000) % 60 < 2) console.log(oneLine(snap));
+    safe('timeouts', () => {
+      for (const slot of slots) {
+        const j = slot.job;
+        if (!j) continue;
+        if (timeoutMs > 0 && nowT - j.t0 > timeoutMs && !j.timedOut) { j.timedOut = true; j.child.kill(); }
+        if (nowT >= killAt && !j.killedForStop) { j.killedForStop = true; j.child.kill(); }
+      }
+    });
+    if (ctrlCAt && nowT - ctrlCAt > CTRL_C_CONFIRM_MS) { ctrlCAt = 0; notice = ''; log('Ctrl+C not confirmed: run continues'); }
+    safe('pump', pump);
+    safe('status', () => {
+      const snap = snapshot();
+      snap.notice = notice;
+      try { fs.writeFileSync(P.status + '.tmp', JSON.stringify(snap)); fs.renameSync(P.status + '.tmp', P.status); } catch { /* next tick */ }
+      if (process.stdout.isTTY) render(snap, true);
+      else if (Math.floor((nowT - started) / 1000) % 60 < 2) console.log(oneLine(snap));
+    });
   }, 2000);
 
+  function killChildren() {
+    for (const slot of slots) if (slot.job) { slot.job.killedForStop = true; try { slot.job.child.kill(); } catch { /* gone */ } }
+  }
+
   let finished = false;
+  let exitCode = 0;
   function finish() {
     if (finished) return;
     finished = true;
     clearInterval(tick);
-    const snap = snapshot();
-    snap.finished = nowIso();
-    fs.writeFileSync(P.status, JSON.stringify(snap));
-    if (process.stdout.isTTY) render(snap, true);
-    const why = stopping === 'until' ? '-Until reached' : stopping === 'stopfile' ? 'stop requested' : stopping === 'now' ? 'Ctrl+C' : 'nothing left to start';
+    const why = stopping === 'until' ? '-Until reached' : stopping === 'stopfile' ? 'stop requested'
+      : stopping === 'now' ? 'Ctrl+C pressed twice' : stopping === 'window' ? 'window closed' : 'nothing left to start';
+    try {
+      const snap = snapshot();
+      snap.finished = nowIso();
+      snap.exitReason = why;
+      fs.writeFileSync(P.status, JSON.stringify(snap));
+      if (process.stdout.isTTY) render(snap, true);
+    } catch (e) { log(`ERROR writing final status: ${e.stack || e}`); }
     log(`run finished (${why}): solved ${run.solved}, failed ${run.failed}, capped ${run.capped}, abandoned ${run.abandoned} in ${hhmm(Date.now() - started)}`);
     console.log(`\nRun finished (${why}): solved ${run.solved}, failed ${run.failed}, capped ${run.capped}, abandoned ${run.abandoned}. Log: ${logFile}`);
     try { fs.unlinkSync(P.lock); } catch { /* none */ }
     try { fs.unlinkSync(P.stop); } catch { /* none */ }
-    process.exit(0);
+    exitCode = stopping === 'now' || stopping === 'window' ? EXIT_USER_STOP : 0;
+    process.exit(exitCode);
   }
 
-  process.on('SIGINT', () => {
-    if (stopping === 'now') return;
-    stopping = 'now';
-    log('Ctrl+C: stopping now; in-flight puzzles go back in the queue');
-    for (const slot of slots) if (slot.job) { slot.job.killedForStop = true; try { slot.job.child.kill(); } catch { /* gone */ } }
+  function stopNow(reason) {
+    stopping = reason;
+    killChildren();
     setTimeout(() => {
       exiting = true;
       for (const slot of slots) if (slot.job) { run.abandoned++; log(`w${slot.n} ABANDONED ${slot.job.id}`); slot.job = null; }
       finish();
     }, 1500);
+  }
+
+  let ctrlCAt = 0;
+  process.on('SIGINT', () => {
+    if (stopping === 'now') return;
+    const nowT = Date.now();
+    if (ctrlCAt && nowT - ctrlCAt <= CTRL_C_CONFIRM_MS) {
+      log('Ctrl+C pressed twice: stopping now; in-flight puzzles go back in the queue');
+      notice = 'Stopping...';
+      stopNow('now');
+      return;
+    }
+    ctrlCAt = nowT;
+    notice = `Ctrl+C pressed. Press Ctrl+C AGAIN within ${CTRL_C_CONFIRM_MS / 1000}s to stop; otherwise the run carries on.`;
+    log('Ctrl+C pressed once: waiting for a second Ctrl+C to stop (run continues)');
+    if (!process.stdout.isTTY) console.log(notice);
+  });
+  // Console window closed / Ctrl+Break: Windows gives us a few seconds, so record it and stop the solvers.
+  for (const sig of ['SIGHUP', 'SIGBREAK']) {
+    process.on(sig, () => {
+      log(`${sig === 'SIGHUP' ? 'window closed' : 'Ctrl+Break'}: stopping now; in-flight puzzles go back in the queue`);
+      exiting = true;
+      killChildren();
+      stopping = 'window';
+      for (const slot of slots) if (slot.job) { run.abandoned++; slot.job = null; }
+      finish();
+    });
+  }
+  process.on('uncaughtException', (e) => log(`ERROR (uncaught, run continues): ${e.stack || e}`));
+  process.on('unhandledRejection', (e) => log(`ERROR (unhandled rejection, run continues): ${(e && e.stack) || e}`));
+  process.on('exit', (code) => {
+    killChildren();
+    if (!finished) {
+      try { log(`runner exiting unexpectedly (exit code ${code}); in-flight puzzles go back in the queue on the next start`); } catch { /* fd gone */ }
+    }
   });
 
   if (process.stdout.isTTY) process.stdout.write('\x1b[2J');
-  pump();
+  safe('pump', pump);
 }
 
 // ---------------------------------------------------------------- display
@@ -508,7 +608,9 @@ function render(s, clear) {
   L.push('Last results:');
   for (const r of s.recent) L.push(`  ${r}`);
   L.push('');
-  L.push('Ctrl+C = stop now (in-flight puzzles go back in the queue).  Finish in-flight then stop: run-nightly-solves.ps1 -Stop');
+  if (s.notice) L.push(`>>> ${s.notice}`);
+  if (s.exitReason) L.push(`>>> Stopped because: ${s.exitReason}`);
+  L.push('Ctrl+C twice = stop now (in-flight puzzles go back in the queue).  Finish in-flight then stop: run-nightly-solves.ps1 -Stop');
   L.push(`Log: ${s.logFile}`);
   const out = L.map((l) => l + '\x1b[K').join('\n') + '\n\x1b[J';
   process.stdout.write(clear ? `\x1b[H${out}` : out);

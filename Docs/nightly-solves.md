@@ -37,7 +37,7 @@ current group, what each worker is doing, and the last results.
 |---|---|
 | Watch from a second window | `.\tools\scripts\watch-nightly-solves.ps1` (close it any time) |
 | Totals only | `.\tools\scripts\watch-nightly-solves.ps1 -Totals` |
-| Stop now | Ctrl+C in the run window (puzzles in progress go back in the queue) |
+| Stop now | Ctrl+C **twice** within 10 s in the run window (puzzles in progress go back in the queue). One Ctrl+C only shows a warning and the run carries on. |
 | Finish what's running, then stop | `.\tools\scripts\run-nightly-solves.ps1 -Stop` from another window |
 | Resume | Run the nightly command again |
 | Retry puzzles that failed twice | add `-RetryFailed` |
@@ -45,6 +45,20 @@ current group, what each worker is doing, and the last results.
 A puzzle that fails is tried once more at the end of the run; after two failures it is skipped until you
 use `-RetryFailed`. A puzzle running longer than 60 minutes (`-TimeoutMinutes`) is stopped and skipped.
 Results that hit the 500,000 solution cap are marked **CAPPED** (the count is then a lower bound).
+
+### Staying up all night
+
+- **Ctrl+C:** one press is ignored (the window says to press again). Copying text from the window with
+  Ctrl+C used to stop the run; it no longer does.
+- **Sleep:** while it runs the script tells Windows to keep the PC awake. The screen can still turn off.
+  Closing the lid or pressing the power button still sleeps it.
+- **QuickEdit:** turned off for the run window, so a click in the window can't freeze it.
+- **Crashes:** a puzzle that errors is marked failed and the run moves on. If the runner itself exits
+  unexpectedly before `-Until`, the script restarts it after 15 s. Saved results are kept, puzzles that were in
+  progress are solved again, and leftover solver processes are stopped. It gives up after 5 crashes in a row
+  within a minute of starting.
+- **Why it stopped:** the last line in the window says, and so do `logs\run-*.log` (`run finished (...)`) and
+  `logs\wrapper-*.log` (every exit and restart), both in `tools\data\solver-runs\nightly\`.
 
 ## Where results go
 
