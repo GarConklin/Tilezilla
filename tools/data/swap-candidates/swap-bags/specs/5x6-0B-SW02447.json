@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0B-SW02447",
+ "name": "SW02447",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "QC": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "SZ": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02447.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-DMG",
+  "fromSolution": "solve-23",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

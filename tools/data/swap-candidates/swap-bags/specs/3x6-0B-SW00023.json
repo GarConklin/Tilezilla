@@ -1,0 +1,27 @@
+{
+ "id": "3x6-0B-SW00023",
+ "name": "SW00023",
+ "board": {
+  "rows": 3,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "UT": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "3x6-0B-SW00023.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "3x6-0A-AFK",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

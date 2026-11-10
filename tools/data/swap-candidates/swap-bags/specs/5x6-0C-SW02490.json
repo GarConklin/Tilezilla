@@ -1,0 +1,32 @@
+{
+ "id": "5x6-0C-SW02490",
+ "name": "SW02490",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 1,
+  "LR": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02490.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AEW",
+  "fromSolution": null,
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

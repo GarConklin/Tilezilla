@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01173",
+ "name": "SW01173",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "HL": 2,
+  "LC": 1,
+  "LL": 1,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01173.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-DJQ",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

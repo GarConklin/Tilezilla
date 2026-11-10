@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02463",
+ "name": "SW02463",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 3,
+  "LL": 2,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02463.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ACF",
+  "fromSolution": null,
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

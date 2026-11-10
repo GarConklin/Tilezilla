@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02546",
+ "name": "SW02546",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 2,
+  "ET": 1,
+  "LC": 2,
+  "LL": 2,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 2,
+  "UT": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02546.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AIB",
+  "fromSolution": null,
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

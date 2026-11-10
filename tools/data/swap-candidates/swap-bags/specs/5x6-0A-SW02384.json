@@ -1,0 +1,25 @@
+{
+ "id": "5x6-0A-SW02384",
+ "name": "SW02384",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 5,
+  "RC": 1,
+  "SH": 1,
+  "VL": 7
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0A-SW02384.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-DEV",
+  "fromSolution": "solve-1",
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

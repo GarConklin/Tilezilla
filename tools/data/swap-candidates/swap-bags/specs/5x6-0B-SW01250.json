@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW01250",
+ "name": "SW01250",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "RC": 5,
+  "SH": 1,
+  "SS": 3,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01250.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AAT",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

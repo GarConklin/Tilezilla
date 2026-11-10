@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02506",
+ "name": "SW02506",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 2,
+  "UT": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02506.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AFX",
+  "fromSolution": null,
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

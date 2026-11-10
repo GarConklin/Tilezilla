@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02535",
+ "name": "SW02535",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LR": 1,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02535.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AHU",
+  "fromSolution": null,
+  "removed": "LC+LL+SZ",
+  "added": "VL+VL+VL"
+ }
+}

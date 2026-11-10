@@ -1,0 +1,34 @@
+{
+ "id": "5x5-0B-SW00391",
+ "name": "SW00391",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "DS": 1,
+  "ET": 1,
+  "LC": 1,
+  "QC": 1,
+  "SH": 1,
+  "UT": 5,
+  "VL": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00391.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AXV",
+  "fromSolution": "solve-3",
+  "removed": "LR+RC+SS",
+  "added": "QC+UT+VL"
+ }
+}

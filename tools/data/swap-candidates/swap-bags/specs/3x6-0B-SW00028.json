@@ -1,0 +1,25 @@
+{
+ "id": "3x6-0B-SW00028",
+ "name": "SW00028",
+ "board": {
+  "rows": 3,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1
+ },
+ "blockers": [],
+ "solvesFile": "3x6-0B-SW00028.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "3x6-0A-AFM",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

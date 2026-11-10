@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW01905",
+ "name": "SW01905",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "VL": 6
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01905.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BGY",
+  "fromSolution": "solve-15",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

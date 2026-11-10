@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0B-SW01534",
+ "name": "SW01534",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "LR": 2,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01534.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-APT",
+  "fromSolution": "solve-8",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

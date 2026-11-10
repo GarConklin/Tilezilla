@@ -1,0 +1,32 @@
+{
+ "id": "3x5-0B-SW00001",
+ "name": "SW00001",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "QC": 1,
+  "SH": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0B-SW00001.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "3x5-0A-ABU",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

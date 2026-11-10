@@ -1,0 +1,34 @@
+{
+ "id": "5x5-0B-SW00369",
+ "name": "SW00369",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 3,
+  "LL": 1,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00369.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AVY",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

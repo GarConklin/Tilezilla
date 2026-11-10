@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW00771",
+ "name": "SW00771",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LL": 1,
+  "LR": 2,
+  "QC": 1,
+  "SH": 1,
+  "UT": 5,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00771.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-BMQ",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

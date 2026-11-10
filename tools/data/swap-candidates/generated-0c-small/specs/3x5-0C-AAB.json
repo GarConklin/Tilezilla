@@ -1,0 +1,27 @@
+{
+ "id": "3x5-0C-AAB",
+ "name": "AAB",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "SH": 1,
+  "ET": 1,
+  "UT": 3,
+  "CR": 1,
+  "LC": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-AAB.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-AAB"
+}

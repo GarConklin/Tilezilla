@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW02400",
+ "name": "SW02400",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 2,
+  "SZ": 1,
+  "VL": 6
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02400.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-DJD",
+  "fromSolution": "solve-3",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

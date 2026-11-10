@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW02275",
+ "name": "SW02275",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "UT": 1,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02275.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CNE",
+  "fromSolution": "solve-3",
+  "removed": "QC+UT+VL",
+  "added": "VL+VL+VL"
+ }
+}

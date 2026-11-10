@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01344",
+ "name": "SW01344",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01344.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-ANA",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

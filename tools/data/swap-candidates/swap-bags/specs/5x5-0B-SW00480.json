@@ -1,0 +1,35 @@
+{
+ "id": "5x5-0B-SW00480",
+ "name": "SW00480",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DS": 1,
+  "ET": 1,
+  "LL": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 3,
+  "VL": 2
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00480.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-BIX",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "SS+SZ+VL"
+ }
+}

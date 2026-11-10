@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0C-SW02571",
+ "name": "SW02571",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "LR": 1,
+  "RC": 2,
+  "SH": 1,
+  "UT": 3,
+  "VL": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02571.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AJS",
+  "fromSolution": null,
+  "removed": "LC+LL+SZ",
+  "added": "VL+VL+VL"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0C-SW01447",
+ "name": "SW01447",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 1,
+  "QS": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "UT": 1,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01447.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AOQ",
+  "fromSolution": "solve-8",
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

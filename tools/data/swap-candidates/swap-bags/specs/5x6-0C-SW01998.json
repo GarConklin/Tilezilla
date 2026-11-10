@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0C-SW01998",
+ "name": "SW01998",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "QS": 2,
+  "RC": 1,
+  "SH": 1,
+  "UT": 2,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01998.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BME",
+  "fromSolution": "solve-4",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

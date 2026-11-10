@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0B-SW01733",
+ "name": "SW01733",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 1,
+  "RC": 4,
+  "SH": 1,
+  "SS": 2,
+  "SZ": 2,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01733.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AVM",
+  "fromSolution": "solve-4",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

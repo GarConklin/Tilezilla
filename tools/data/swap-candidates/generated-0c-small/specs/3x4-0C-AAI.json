@@ -1,0 +1,22 @@
+{
+ "id": "3x4-0C-AAI",
+ "name": "AAI",
+ "board": {
+  "rows": 3,
+  "cols": 4
+ },
+ "tiles": {
+  "CT": 1,
+  "ET": 1,
+  "SH": 1,
+  "LR": 1,
+  "UT": 1,
+  "LC": 1
+ },
+ "blockers": [],
+ "solvesFile": "3x4-0C-AAI.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x4-0C-user/3x4-0C-AAJ"
+}

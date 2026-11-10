@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW02365",
+ "name": "SW02365",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 5,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02365.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CYN",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

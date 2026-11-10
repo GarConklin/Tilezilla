@@ -1,0 +1,26 @@
+{
+ "id": "4x5-0B-SW00212",
+ "name": "SW00212",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LR": 3,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00212.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-BCV",
+  "fromSolution": "solve-8",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

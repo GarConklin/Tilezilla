@@ -1,0 +1,29 @@
+{
+ "id": "3x5-0C-AAZ",
+ "name": "AAZ",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "SH": 1,
+  "ET": 1,
+  "SZ": 1,
+  "UT": 1,
+  "RC": 1,
+  "CQ": 1,
+  "CR": 1
+ },
+ "blockers": [
+  [
+   0,
+   2,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-AAZ.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-AAZ"
+}

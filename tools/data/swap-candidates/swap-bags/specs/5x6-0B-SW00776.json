@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW00776",
+ "name": "SW00776",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 2,
+  "LR": 5,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "UT": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00776.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-BNM",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

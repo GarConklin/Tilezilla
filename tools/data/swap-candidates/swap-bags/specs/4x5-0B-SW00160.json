@@ -1,0 +1,27 @@
+{
+ "id": "4x5-0B-SW00160",
+ "name": "SW00160",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 2,
+  "LR": 3,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00160.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-ASL",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "id": "4x5-0B-SW00106",
+ "name": "SW00106",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00106.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-AKF",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "SS+SZ+VL"
+ }
+}

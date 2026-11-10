@@ -1,0 +1,27 @@
+{
+ "id": "4x5-0B-SW00180",
+ "name": "SW00180",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LL": 2,
+  "LR": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00180.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-AUK",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

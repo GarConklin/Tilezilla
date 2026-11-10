@@ -1,0 +1,33 @@
+{
+ "id": "6x6-0C-SW02790",
+ "name": "SW02790",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "DB": 1,
+  "DC": 1,
+  "E1": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "LL": 2,
+  "LR": 2,
+  "QC": 2,
+  "RC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0C-SW02790.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0C-AAJ",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "QC+UT+VL"
+ }
+}

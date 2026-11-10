@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01530",
+ "name": "SW01530",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 3,
+  "QC": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01530.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-APT",
+  "fromSolution": "solve-3",
+  "removed": "SS+SZ+VL",
+  "added": "LR+RC+SS"
+ }
+}

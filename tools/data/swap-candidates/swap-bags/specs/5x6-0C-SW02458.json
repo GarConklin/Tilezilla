@@ -1,0 +1,32 @@
+{
+ "id": "5x6-0C-SW02458",
+ "name": "SW02458",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 2,
+  "LC": 1,
+  "LL": 2,
+  "LR": 2,
+  "QS": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02458.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ABO",
+  "fromSolution": "solve-6",
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

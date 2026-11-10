@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW00803",
+ "name": "SW00803",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "QC": 1,
+  "RC": 4,
+  "SH": 1,
+  "UT": 4,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00803.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-BTD",
+  "fromSolution": "solve-3",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "id": "5x6-0C-SW02521",
+ "name": "SW02521",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02521.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AGU",
+  "fromSolution": null,
+  "removed": "QC+UT+VL",
+  "added": "SS+SZ+VL"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0B-SW01087",
+ "name": "SW01087",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 1,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "UT": 4,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01087.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CVM",
+  "fromSolution": "solve-5",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

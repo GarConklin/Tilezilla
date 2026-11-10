@@ -22,8 +22,9 @@ What it does each time:
 1. **Imports the waiting list from the old copy** (`C:\Users\~Gar\Tile-Puzzle\Tilezilla`), read-only.
    It takes every pending puzzle and its spec, skipping everything the old ledger already has as done.
    The first time it copies about 270,000 spec files (about 5 minutes); after that it only copies new ones.
-2. **Solves in this order:** the 4,237 pair-swap drafts first, then the old waiting list smallest first
-   (5x6-0A, then 5x6-0B). No 6x6.
+2. **Solves in this order:** the candidate sets in `tools\data\swap-candidates\` (pasted-new-bags,
+   generated-0c-small, swap-bags, then the pair-swap drafts), then the old waiting list smallest first
+   (5x6-0A, then 5x6-0B). No 6x6. Changes to the order or the sets apply the next time you start the command.
 3. **Saves every result the moment it finishes.** Closing the window, Ctrl+C, a crash or a reboot loses only
    the puzzles that were in progress. Run the same command again and it carries on where it stopped.
 
@@ -51,12 +52,33 @@ All of this is git-ignored. Don't commit it.
 
 | What | Where |
 |---|---|
-| Pair-swap draft solutions | `tools\data\swap-candidates\pair-swap-drafts\results\<id>.json` (same as `run-candidate-queue.ps1`) |
+| Candidate-set solutions | `tools\data\swap-candidates\<set>\results\<id>.json` and `results-progress.ndjson` (same as `run-candidate-queue.ps1`) |
 | Old waiting-list solutions | `tools\data\solver-runs\nightly\enumerated\<id>.json` (same format as the old `enumerated\`) |
 | One line per result (count, capped, time) | `tools\data\solver-runs\nightly\results.ndjson` |
 | Run logs | `tools\data\solver-runs\nightly\logs\` |
 
 Puzzles with 0 solutions get a line in `results.ndjson` but no solutions file (same as the solver always did).
+
+## Candidate sets and duplicates
+
+Each set folder (`pasted-new-bags`, `generated-0c-small`, `swap-bags`, `pair-swap-drafts`) has `specs\` and
+`queue.txt`. Before a set is queued, remove puzzles that already exist elsewhere:
+
+```powershell
+node tools/scripts/dedupe-candidate-sets.js            # dry run: prints what it would drop
+node tools/scripts/dedupe-candidate-sets.js --apply    # writes queue.txt, promote.txt, duplicates.json
+```
+
+Same puzzle means the same board, tile bag and blockers, also after turning the whole board. It checks
+the live catalog, the old copy's ledger, the drafts, and the earlier sets. The full list stays in
+`queue-all.txt`; `duplicates.json` says where each dropped puzzle already is.
+
+- Already in the catalog, already solved in the old ledger, or a repeat inside the sets: **dropped**.
+- Still waiting in the old ledger: listed in `promote.txt`. That old-ledger puzzle is moved up to this set's
+  place in the queue and solved under its old id, so it isn't solved twice and the export records it.
+- 6x6: left out (too slow for a night).
+
+Results from the old solver that were in `results\` were moved to `results-old-solver\` for comparison.
 
 ## Getting results back into the old copy
 

@@ -1,0 +1,30 @@
+{
+ "id": "6x6-0B-SW02634",
+ "name": "SW02634",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 1,
+  "RC": 2,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3,
+  "VL": 4
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0B-SW02634.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0B-AAB",
+  "fromSolution": "solve-12",
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

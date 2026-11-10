@@ -1,0 +1,17 @@
+{
+ "note": "Not in queue.txt: same board, bag and blockers (after a whole-board turn) as sameAs.",
+ "duplicates": [
+  {
+   "id": "5x6-0B-PB001",
+   "sameAs": "5x6-0B-0MZF",
+   "where": "old ledger (waiting, in the nightly big list)",
+   "action": "promoted (solved under the old-ledger id)"
+  },
+  {
+   "id": "5x6-0A-PB002",
+   "sameAs": "5x6-0A-01HD",
+   "where": "old ledger (waiting, in the nightly big list)",
+   "action": "promoted (solved under the old-ledger id)"
+  }
+ ]
+}

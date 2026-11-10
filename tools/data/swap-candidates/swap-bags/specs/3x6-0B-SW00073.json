@@ -1,0 +1,27 @@
+{
+ "id": "3x6-0B-SW00073",
+ "name": "SW00073",
+ "board": {
+  "rows": 3,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 3,
+  "LR": 1,
+  "SH": 1,
+  "SZ": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "3x6-0B-SW00073.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "3x6-0A-AJG",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

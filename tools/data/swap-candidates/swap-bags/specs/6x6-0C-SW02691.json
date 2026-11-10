@@ -1,0 +1,30 @@
+{
+ "id": "6x6-0C-SW02691",
+ "name": "SW02691",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "QC": 1,
+  "QS": 1,
+  "RC": 4,
+  "SH": 1,
+  "SS": 4,
+  "SZ": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0C-SW02691.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0B-ABZ",
+  "fromSolution": "solve-4",
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

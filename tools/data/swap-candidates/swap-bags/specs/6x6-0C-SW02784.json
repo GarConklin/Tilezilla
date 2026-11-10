@@ -1,0 +1,33 @@
+{
+ "id": "6x6-0C-SW02784",
+ "name": "SW02784",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "CR": 1,
+  "DC": 1,
+  "E1": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 4,
+  "LR": 2,
+  "QS": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0C-SW02784.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0C-AAH",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

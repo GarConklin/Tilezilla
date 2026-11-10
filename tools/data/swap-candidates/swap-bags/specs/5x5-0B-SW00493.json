@@ -1,0 +1,34 @@
+{
+ "id": "5x5-0B-SW00493",
+ "name": "SW00493",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "UT": 3
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00493.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-BJS",
+  "fromSolution": "solve-2",
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

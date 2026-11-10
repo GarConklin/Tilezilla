@@ -1,0 +1,27 @@
+{
+ "id": "4x5-0B-SW00096",
+ "name": "SW00096",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "LR": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00096.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-AHL",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

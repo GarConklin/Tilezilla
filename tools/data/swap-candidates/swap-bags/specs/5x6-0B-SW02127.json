@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW02127",
+ "name": "SW02127",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "QC": 5,
+  "RC": 1,
+  "SH": 1,
+  "UT": 2,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02127.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BXU",
+  "fromSolution": "solve-3",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

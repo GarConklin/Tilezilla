@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW00629",
+ "name": "SW00629",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 2,
+  "LC": 1,
+  "LL": 3,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00629.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-AZZ",
+  "fromSolution": "solve-3",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

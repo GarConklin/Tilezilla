@@ -1,0 +1,28 @@
+{
+ "id": "4x5-0B-SW00164",
+ "name": "SW00164",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 2,
+  "LR": 2,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00164.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-ASO",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

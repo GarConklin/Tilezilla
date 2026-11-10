@@ -1,0 +1,33 @@
+{
+ "id": "5x5-0B-SW00283",
+ "name": "SW00283",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3,
+  "VL": 4
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00283.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AGP",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "VL+VL+VL"
+ }
+}

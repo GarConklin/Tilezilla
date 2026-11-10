@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0C-SW01433",
+ "name": "SW01433",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 3,
+  "QS": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 3,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01433.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AOD",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "id": "6x6-0B-SW02709",
+ "name": "SW02709",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "QC": 2,
+  "RC": 3,
+  "SH": 1,
+  "SS": 4,
+  "SZ": 1,
+  "UT": 2,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0B-SW02709.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0B-ACH",
+  "fromSolution": "solve-9",
+  "removed": "QC+UT+VL",
+  "added": "LR+RC+SS"
+ }
+}

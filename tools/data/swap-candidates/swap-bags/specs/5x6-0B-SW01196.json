@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01196",
+ "name": "SW01196",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 2,
+  "LR": 3,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "UT": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01196.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-DQH",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

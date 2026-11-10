@@ -1,0 +1,28 @@
+{
+ "id": "4x5-0B-SW00207",
+ "name": "SW00207",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 1,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00207.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-BAR",
+  "fromSolution": "solve-4",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01918",
+ "name": "SW01918",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 3,
+  "RC": 1,
+  "SH": 1,
+  "SS": 3,
+  "SZ": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01918.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BHG",
+  "fromSolution": "solve-17",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

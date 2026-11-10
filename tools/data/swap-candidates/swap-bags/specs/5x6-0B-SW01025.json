@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01025",
+ "name": "SW01025",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 3,
+  "LL": 3,
+  "LR": 1,
+  "RC": 2,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01025.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CRH",
+  "fromSolution": "solve-11",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02608",
+ "name": "SW02608",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "LL": 1,
+  "QC": 2,
+  "RC": 1,
+  "SH": 1,
+  "UT": 4,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02608.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ALS",
+  "fromSolution": null,
+  "removed": "LR+RC+SS",
+  "added": "QC+UT+VL"
+ }
+}

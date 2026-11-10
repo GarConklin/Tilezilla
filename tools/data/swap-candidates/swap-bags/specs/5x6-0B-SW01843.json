@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0B-SW01843",
+ "name": "SW01843",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "RC": 5,
+  "SH": 1,
+  "SS": 4,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01843.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BCK",
+  "fromSolution": "solve-12",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

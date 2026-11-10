@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0B-SW02143",
+ "name": "SW02143",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "SH": 1,
+  "SS": 3,
+  "SZ": 5,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02143.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BYU",
+  "fromSolution": "solve-6",
+  "removed": "VL+VL+VL",
+  "added": "SS+SZ+VL"
+ }
+}

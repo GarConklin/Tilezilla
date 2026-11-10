@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0B-SW00966",
+ "name": "SW00966",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 3,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00966.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-COJ",
+  "fromSolution": "solve-14",
+  "removed": "VL+VL+VL",
+  "added": "SS+SZ+VL"
+ }
+}

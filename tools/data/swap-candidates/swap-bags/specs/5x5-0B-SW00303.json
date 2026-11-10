@@ -1,0 +1,33 @@
+{
+ "id": "5x5-0B-SW00303",
+ "name": "SW00303",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DC": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 4
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00303.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AII",
+  "fromSolution": "solve-2",
+  "removed": "QC+UT+VL",
+  "added": "VL+VL+VL"
+ }
+}

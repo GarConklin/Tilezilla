@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01594",
+ "name": "SW01594",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 1,
+  "QC": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 3,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01594.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AQU",
+  "fromSolution": "solve-1",
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

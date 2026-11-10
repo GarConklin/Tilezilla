@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01008",
+ "name": "SW01008",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LR": 2,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1,
+  "UT": 3,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01008.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CQQ",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

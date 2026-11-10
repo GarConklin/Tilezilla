@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0C-SW02470",
+ "name": "SW02470",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DC": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 2,
+  "LR": 2,
+  "QS": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02470.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ACT",
+  "fromSolution": null,
+  "removed": "SS+SZ+VL",
+  "added": "LR+RC+SS"
+ }
+}

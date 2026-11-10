@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0A-SW02150",
+ "name": "SW02150",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "RC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0A-SW02150.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BZE",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

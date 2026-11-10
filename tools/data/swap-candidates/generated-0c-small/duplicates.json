@@ -1,0 +1,13 @@
+{
+ "note": "Not in queue.txt: same board, bag and blockers (after a whole-board turn) as sameAs.",
+ "duplicates": [
+  {
+   "id": "3x5-0C-ABC",
+   "sameAs": "3x5-0C-AAF",
+   "where": "generated-0c-small",
+   "solved": false,
+   "solutions": null,
+   "action": "dropped"
+  }
+ ]
+}

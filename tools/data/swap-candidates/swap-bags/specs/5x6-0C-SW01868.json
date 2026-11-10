@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0C-SW01868",
+ "name": "SW01868",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "QS": 1,
+  "RC": 4,
+  "SH": 1,
+  "UT": 2,
+  "VL": 4
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01868.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BEF",
+  "fromSolution": "solve-6",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

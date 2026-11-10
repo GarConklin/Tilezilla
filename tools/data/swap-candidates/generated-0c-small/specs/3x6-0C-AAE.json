@@ -1,0 +1,24 @@
+{
+ "id": "3x6-0C-AAE",
+ "name": "AAE",
+ "board": {
+  "rows": 3,
+  "cols": 6
+ },
+ "tiles": {
+  "CT": 1,
+  "SH": 1,
+  "RC": 2,
+  "UT": 1,
+  "LL": 1,
+  "SZ": 1,
+  "ET": 1,
+  "SS": 1
+ },
+ "blockers": [],
+ "solvesFile": "3x6-0C-AAE.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x6-0C-user/3x6-0C-AAE"
+}

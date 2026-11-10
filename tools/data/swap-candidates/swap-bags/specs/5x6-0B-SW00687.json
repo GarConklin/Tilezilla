@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW00687",
+ "name": "SW00687",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 1,
+  "QC": 1,
+  "SH": 1,
+  "UT": 5,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00687.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-BFG",
+  "fromSolution": "solve-2",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

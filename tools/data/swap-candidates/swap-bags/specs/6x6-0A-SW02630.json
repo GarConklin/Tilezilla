@@ -1,0 +1,30 @@
+{
+ "id": "6x6-0A-SW02630",
+ "name": "SW02630",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 1,
+  "LR": 1,
+  "RC": 3,
+  "SH": 1,
+  "UT": 3,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0A-SW02630.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0B-AAB",
+  "fromSolution": "solve-4",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

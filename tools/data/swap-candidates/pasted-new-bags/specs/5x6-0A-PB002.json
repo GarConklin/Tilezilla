@@ -1,0 +1,33 @@
+{
+  "board": {
+    "rows": 6,
+    "cols": 5,
+    "cells": 30
+  },
+  "tileSet": "tiles-live-edges.json",
+  "tiles": {
+    "DB": 1,
+    "ET": 1,
+    "HL": 3,
+    "LC": 1,
+    "LR": 3,
+    "RC": 1,
+    "SH": 1,
+    "UT": 3,
+    "VL": 1
+  },
+  "levelId": "5x6-0A-PB002",
+  "id": "5x6-0A-PB002",
+  "tier": "0A",
+  "size": "5x6",
+  "blockers": [],
+  "pathMode": "single",
+  "note": "New bag from a solve the user pasted on 2026-11-09 (not in the catalog). Pasted layout(s) in seeds/. Solution count has not been run.",
+  "sources": [
+    {
+      "paste": 4,
+      "solveId": "2026-11-09T04:02:43.853Z-d2ac57fd154b5",
+      "tiles": "DB ET HLx3 LC LRx3 RC SH UTx3 VL"
+    }
+  ]
+}

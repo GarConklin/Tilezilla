@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW02029",
+ "name": "SW02029",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 3,
+  "SZ": 2,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02029.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BOR",
+  "fromSolution": "solve-43",
+  "removed": "LR+RC+SS",
+  "added": "SS+SZ+VL"
+ }
+}

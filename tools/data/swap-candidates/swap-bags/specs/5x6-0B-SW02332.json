@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0B-SW02332",
+ "name": "SW02332",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 6,
+  "RC": 5,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02332.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CUN",
+  "fromSolution": "solve-5",
+  "removed": "SS+SZ+VL",
+  "added": "LR+RC+SS"
+ }
+}

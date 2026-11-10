@@ -1,0 +1,27 @@
+{
+ "id": "4x5-0B-SW00132",
+ "name": "SW00132",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LL": 3,
+  "LR": 2,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00132.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-AMJ",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

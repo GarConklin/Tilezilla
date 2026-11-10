@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0C-SW01988",
+ "name": "SW01988",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 3,
+  "QS": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 3,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01988.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BKS",
+  "fromSolution": "solve-13",
+  "removed": "SS+SZ+VL",
+  "added": "LC+LL+SZ"
+ }
+}

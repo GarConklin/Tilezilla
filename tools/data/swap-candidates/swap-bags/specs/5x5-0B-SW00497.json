@@ -1,0 +1,33 @@
+{
+ "id": "5x5-0B-SW00497",
+ "name": "SW00497",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "RC": 2,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3
+ },
+ "blockers": [
+  [
+   0,
+   0
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00497.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-BKR",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "LC+LL+SZ"
+ }
+}

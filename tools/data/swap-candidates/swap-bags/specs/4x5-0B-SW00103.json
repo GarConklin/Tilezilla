@@ -1,0 +1,27 @@
+{
+ "id": "4x5-0B-SW00103",
+ "name": "SW00103",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "LL": 2,
+  "QC": 1,
+  "SH": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00103.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-AIQ",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

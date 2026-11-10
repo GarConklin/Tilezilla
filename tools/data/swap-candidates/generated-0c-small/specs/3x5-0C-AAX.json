@@ -1,0 +1,29 @@
+{
+ "id": "3x5-0C-AAX",
+ "name": "AAX",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "CT": 1,
+  "ET": 1,
+  "SH": 1,
+  "RC": 1,
+  "UT": 1,
+  "LL": 1,
+  "SZ": 1
+ },
+ "blockers": [
+  [
+   0,
+   4,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-AAX.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-AAX"
+}

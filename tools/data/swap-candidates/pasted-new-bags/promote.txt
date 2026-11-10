@@ -1,0 +1,3 @@
+# pasted-new-bags: old-ledger puzzles identical to candidates here; the nightly import solves them in this set's place.
+5x6-0B-0MZF
+5x6-0A-01HD

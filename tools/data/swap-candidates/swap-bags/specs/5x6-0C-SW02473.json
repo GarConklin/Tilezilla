@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0C-SW02473",
+ "name": "SW02473",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 3,
+  "QS": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "UT": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02473.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AEK",
+  "fromSolution": null,
+  "removed": "LC+LL+SZ",
+  "added": "SS+SZ+VL"
+ }
+}

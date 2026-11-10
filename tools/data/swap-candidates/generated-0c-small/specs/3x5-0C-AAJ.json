@@ -1,0 +1,29 @@
+{
+ "id": "3x5-0C-AAJ",
+ "name": "AAJ",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "SH": 1,
+  "ET": 1,
+  "RC": 1,
+  "DS": 1,
+  "CR": 1,
+  "UT": 1,
+  "SS": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-AAJ.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-AAJ"
+}

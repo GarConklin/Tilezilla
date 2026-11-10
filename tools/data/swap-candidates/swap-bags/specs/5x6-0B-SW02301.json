@@ -1,0 +1,25 @@
+{
+ "id": "5x6-0B-SW02301",
+ "name": "SW02301",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "SH": 1,
+  "SZ": 2,
+  "VL": 7
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02301.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CRW",
+  "fromSolution": "solve-7",
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

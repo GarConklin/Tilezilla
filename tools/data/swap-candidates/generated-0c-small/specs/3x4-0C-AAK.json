@@ -1,0 +1,32 @@
+{
+ "id": "3x4-0C-AAK",
+ "name": "AAK",
+ "board": {
+  "rows": 3,
+  "cols": 4
+ },
+ "tiles": {
+  "UT": 1,
+  "CR": 1,
+  "SH": 1,
+  "ET": 1,
+  "RC": 1
+ },
+ "blockers": [
+  [
+   2,
+   1,
+   "B1"
+  ],
+  [
+   2,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x4-0C-AAK.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x4-0C-user/3x4-0C-AAL"
+}

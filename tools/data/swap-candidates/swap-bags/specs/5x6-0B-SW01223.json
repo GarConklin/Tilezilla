@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01223",
+ "name": "SW01223",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "QC": 1,
+  "RC": 3,
+  "SH": 1,
+  "UT": 5,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01223.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-DYI",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

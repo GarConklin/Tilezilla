@@ -1,0 +1,34 @@
+{
+ "id": "5x5-0B-SW00338",
+ "name": "SW00338",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "LL": 1,
+  "RC": 2,
+  "SH": 1,
+  "SZ": 2,
+  "UT": 3
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00338.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-ATM",
+  "fromSolution": "solve-2",
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "id": "6x6-0C-SW02785",
+ "name": "SW02785",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "DB": 1,
+  "DC": 1,
+  "E1": 2,
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "LL": 3,
+  "LR": 2,
+  "QS": 1,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0C-SW02785.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0C-AAI",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "VL+VL+VL"
+ }
+}

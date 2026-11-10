@@ -1,0 +1,30 @@
+{
+ "id": "4x6-0B-SW00253",
+ "name": "SW00253",
+ "board": {
+  "rows": 4,
+  "cols": 6
+ },
+ "tiles": {
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "LR": 1,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 2
+ },
+ "blockers": [],
+ "solvesFile": "4x6-0B-SW00253.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x6-0B-AMN",
+  "fromSolution": "solve-6",
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

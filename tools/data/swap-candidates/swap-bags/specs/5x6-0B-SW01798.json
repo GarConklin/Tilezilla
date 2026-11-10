@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01798",
+ "name": "SW01798",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 3,
+  "SZ": 3,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01798.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BAR",
+  "fromSolution": "solve-55",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

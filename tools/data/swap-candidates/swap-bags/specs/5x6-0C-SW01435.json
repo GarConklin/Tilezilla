@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0C-SW01435",
+ "name": "SW01435",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "QS": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01435.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AOI",
+  "fromSolution": "solve-2",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

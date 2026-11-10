@@ -1,0 +1,27 @@
+{
+ "id": "5x6-0B-SW01933",
+ "name": "SW01933",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "UT": 1,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01933.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BIB",
+  "fromSolution": "solve-4",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

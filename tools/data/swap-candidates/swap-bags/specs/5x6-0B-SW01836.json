@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01836",
+ "name": "SW01836",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 2,
+  "RC": 4,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01836.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BCB",
+  "fromSolution": "solve-5",
+  "removed": "SS+SZ+VL",
+  "added": "LC+LL+SZ"
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "id": "3x6-0B-SW00038",
+ "name": "SW00038",
+ "board": {
+  "rows": 3,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "3x6-0B-SW00038.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "3x6-0A-AIW",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "SS+SZ+VL"
+ }
+}

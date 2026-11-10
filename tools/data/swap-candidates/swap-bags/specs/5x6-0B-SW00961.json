@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW00961",
+ "name": "SW00961",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "LC": 4,
+  "LL": 2,
+  "RC": 2,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00961.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CME",
+  "fromSolution": "solve-6",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

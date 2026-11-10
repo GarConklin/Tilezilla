@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW01520",
+ "name": "SW01520",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "UT": 2,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01520.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-APS",
+  "fromSolution": "solve-5",
+  "removed": "QC+UT+VL",
+  "added": "VL+VL+VL"
+ }
+}

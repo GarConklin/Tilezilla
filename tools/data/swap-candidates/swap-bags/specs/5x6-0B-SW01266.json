@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0B-SW01266",
+ "name": "SW01266",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 4,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01266.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-ACT",
+  "fromSolution": "solve-1",
+  "removed": "QC+UT+VL",
+  "added": "LC+LL+SZ"
+ }
+}

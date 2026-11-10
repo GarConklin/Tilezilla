@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0C-SW01459",
+ "name": "SW01459",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "QC": 1,
+  "QS": 1,
+  "RC": 4,
+  "SH": 1,
+  "UT": 3,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01459.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AOU",
+  "fromSolution": "solve-6",
+  "removed": "SS+SZ+VL",
+  "added": "QC+UT+VL"
+ }
+}

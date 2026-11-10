@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW00886",
+ "name": "SW00886",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 1,
+  "UT": 3,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00886.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CFM",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "SS+SZ+VL"
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0C-SW02529",
+ "name": "SW02529",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "HL": 1,
+  "LL": 1,
+  "QC": 2,
+  "RC": 1,
+  "SH": 1,
+  "UT": 4,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02529.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AHI",
+  "fromSolution": null,
+  "removed": "SS+SZ+VL",
+  "added": "QC+UT+VL"
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "id": "5x5-0B-SW00344",
+ "name": "SW00344",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "HL": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "UT": 4,
+  "VL": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00344.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AUC",
+  "fromSolution": "solve-2",
+  "removed": "LR+RC+SS",
+  "added": "SS+SZ+VL"
+ }
+}

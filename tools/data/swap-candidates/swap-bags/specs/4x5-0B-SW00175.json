@@ -1,0 +1,28 @@
+{
+ "id": "4x5-0B-SW00175",
+ "name": "SW00175",
+ "board": {
+  "rows": 4,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LR": 1,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "UT": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "4x5-0B-SW00175.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "4x5-0A-ATP",
+  "fromSolution": "solve-4",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

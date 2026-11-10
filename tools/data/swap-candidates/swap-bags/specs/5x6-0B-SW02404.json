@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW02404",
+ "name": "SW02404",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "RC": 3,
+  "SH": 1,
+  "SS": 2,
+  "SZ": 2,
+  "UT": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02404.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-DJE",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "LC+LL+SZ"
+ }
+}

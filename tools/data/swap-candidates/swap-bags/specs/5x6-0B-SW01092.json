@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01092",
+ "name": "SW01092",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "LC": 1,
+  "LL": 2,
+  "LR": 2,
+  "RC": 3,
+  "SH": 1,
+  "SS": 1,
+  "UT": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01092.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-CVN",
+  "fromSolution": "solve-10",
+  "removed": "VL+VL+VL",
+  "added": "LR+RC+SS"
+ }
+}

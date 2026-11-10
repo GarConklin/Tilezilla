@@ -8,14 +8,14 @@
  *   node tools/scripts/nightly-solves.js watch | status | stop | export [--old <old repo>]
  *
  * State lives in tools/data/solver-runs/nightly/ (git-ignored):
- *   queue.json            ordered work list [[id, group]] (pair-swap drafts first, then smallest boards)
- *   specs/<id>.json       spec copies imported from the old copy's swap-named/specs (drafts use the repo spec)
+ *   queue.json            ordered work list [[id, group]]: candidate sets (SETS order), then smallest boards
+ *   specs/<id>.json       spec copies imported from the old copy's swap-named/specs (sets use the repo spec)
  *   results.ndjson        one line per finished puzzle, appended and fsynced the moment it finishes
  *   enumerated/<id>.json  full solutions for swap-named puzzles (same format as the old enumerated/)
  *   old-run-results.json  results the old copy's swap-parallel runs found but never recorded
  *   status.json           live status for `watch`; STOP asks a running runner to finish in-flight and exit
- * Pair-swap draft solutions go to tools/data/swap-candidates/pair-swap-drafts/results/<id>.json like
- * run-candidate-queue.ps1. The old copy is only ever read.
+ * Candidate-set solutions go to tools/data/swap-candidates/<set>/results/<id>.json (+ results-progress.ndjson)
+ * like run-candidate-queue.ps1. The old copy is only ever read.
  */
 'use strict';
 
@@ -25,8 +25,20 @@ const { spawn } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '../..');
 const STATE = path.join(ROOT, 'tools', 'data', 'solver-runs', 'nightly');
-const DRAFTS_REL = 'tools/data/swap-candidates/pair-swap-drafts';
-const DRAFTS = path.join(ROOT, ...DRAFTS_REL.split('/'));
+const CAND_REL = 'tools/data/swap-candidates';
+// Candidate sets, solved in this order before the old waiting list. Group name -> folder under CAND_REL.
+const SETS = [
+  ['pasted-new-bags', 'pasted-new-bags'],
+  ['generated-0c-small', 'generated-0c-small'],
+  ['swap-bags', 'swap-bags'],
+  ['drafts', 'pair-swap-drafts'],
+];
+const SET_DIR = new Map(SETS.map(([g, dir]) => [g, path.join(ROOT, ...CAND_REL.split('/'), dir)]));
+const isSet = (g) => SET_DIR.has(g);
+const setDone = (g) => {
+  const dir = path.join(SET_DIR.get(g), 'results');
+  return fs.existsSync(dir) ? new Set(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => n.slice(0, -5))) : new Set();
+};
 const SOLVER = path.join(ROOT, 'solves', 'solve-level.js');
 const MAX_SOL = 500000;
 const MAX_ATTEMPTS = 2;
@@ -150,19 +162,6 @@ function cmdImport() {
   log(`old runs: ${Object.keys(oldRuns).length} unrecorded result(s) found` +
     (skipOld ? ' - skipping those puzzles' : ' - solving them again (old counts often double 180-degree turns)'));
 
-  // Drafts first, in their queue.txt order.
-  const items = [];
-  const draftIds = fs.readFileSync(path.join(DRAFTS, 'queue.txt'), 'utf8').split(/\r?\n/)
-    .map((s) => s.trim()).filter((s) => s && !s.startsWith('#'));
-  let skipped6 = 0;
-  for (const id of draftIds) {
-    const spec = readJson(path.join(DRAFTS, 'specs', `${id}.json`), null);
-    if (!spec) continue;
-    if (spec.board && spec.board.rows === 6 && spec.board.cols === 6) { skipped6++; continue; }
-    items.push([id, 'drafts']);
-  }
-  log(`drafts: ${items.length} in queue.txt${skipped6 ? ` (${skipped6} 6x6 skipped)` : ''}`);
-
   const swap = pending
     .filter((id) => !id.startsWith('6x6-'))
     .filter((id) => !(skipOld && id in oldRuns))
@@ -184,7 +183,35 @@ function cmdImport() {
     }
     if ((copied + missing) % 10000 === 0) log(`  specs ${copied + missing}/${need.length}`);
   }
-  for (const id of swap) if (have.has(id)) items.push([id, groupOf(id)]);
+  // Candidate sets first, each in its queue.txt order, followed by the waiting-list puzzles it promotes
+  // (promote.txt: identical to a candidate, so solved here under the old-ledger id instead of twice).
+  const readIds = (file) => (fs.existsSync(file) ? fs.readFileSync(file, 'utf8').split(/\r?\n/)
+    .map((s) => s.trim()).filter((s) => s && !s.startsWith('#')) : []);
+  const waiting = new Set(swap.filter((id) => have.has(id)));
+  const promoted = new Set();
+  const items = [];
+  for (const [group] of SETS) {
+    const dir = SET_DIR.get(group);
+    if (!fs.existsSync(path.join(dir, 'queue.txt'))) continue;
+    let added = 0;
+    let skipped6 = 0;
+    for (const id of readIds(path.join(dir, 'queue.txt'))) {
+      const spec = readJson(path.join(dir, 'specs', `${id}.json`), null);
+      if (!spec) continue;
+      if (spec.board && spec.board.rows === 6 && spec.board.cols === 6) { skipped6++; continue; }
+      items.push([id, group]);
+      added++;
+    }
+    let up = 0;
+    for (const id of readIds(path.join(dir, 'promote.txt'))) {
+      if (!waiting.has(id) || promoted.has(id)) continue;
+      promoted.add(id);
+      items.push([id, groupOf(id)]);
+      up++;
+    }
+    log(`${group}: ${added} in queue.txt${up ? `, ${up} waiting-list puzzle(s) moved up` : ''}${skipped6 ? ` (${skipped6} 6x6 skipped)` : ''}`);
+  }
+  for (const id of swap) if (have.has(id) && !promoted.has(id)) items.push([id, groupOf(id)]);
 
   fs.writeFileSync(P.queue + '.tmp', JSON.stringify({ importedAt: nowIso(), items }));
   fs.renameSync(P.queue + '.tmp', P.queue);
@@ -223,7 +250,7 @@ function cmdRun() {
   fs.mkdirSync(P.work, { recursive: true });
   fs.mkdirSync(P.logs, { recursive: true });
   fs.mkdirSync(P.enumerated, { recursive: true });
-  fs.mkdirSync(path.join(DRAFTS, 'results'), { recursive: true });
+  for (const dir of SET_DIR.values()) if (fs.existsSync(dir)) fs.mkdirSync(path.join(dir, 'results'), { recursive: true });
 
   const queue = readJson(P.queue, null);
   if (!queue) {
@@ -248,10 +275,8 @@ function cmdRun() {
   };
 
   const { latest, failures } = readResults();
-  const draftDone = new Set(
-    fs.readdirSync(path.join(DRAFTS, 'results')).filter((n) => n.endsWith('.json')).map((n) => n.slice(0, -5))
-  );
-  const isDone = (id, g) => latest.has(id) || (g === 'drafts' && draftDone.has(id));
+  const setResults = new Map(SETS.map(([g]) => [g, setDone(g)]));
+  const isDone = (id, g) => latest.has(id) || (isSet(g) && setResults.get(g).has(id));
 
   const groups = new Map();
   const G = (g) => {
@@ -274,7 +299,6 @@ function cmdRun() {
     todo.push({ id, group: g, attempt: (failures.get(id) || 0) + 1 });
   }
   const resFd = fs.openSync(P.results, 'a');
-  const draftLog = path.join(DRAFTS, 'results-progress.ndjson');
   const appendResult = (row) => {
     fs.writeSync(resFd, JSON.stringify(row) + '\n');
     fs.fsyncSync(resFd);
@@ -294,13 +318,13 @@ function cmdRun() {
   log(`log ${logFile}`);
 
   function specFor(job) {
-    return job.group === 'drafts'
-      ? path.join(DRAFTS, 'specs', `${job.id}.json`)
+    return isSet(job.group)
+      ? path.join(SET_DIR.get(job.group), 'specs', `${job.id}.json`)
       : path.join(P.specs, `${job.id}.json`);
   }
   function finalPath(job) {
-    return job.group === 'drafts'
-      ? path.join(DRAFTS, 'results', `${job.id}.json`)
+    return isSet(job.group)
+      ? path.join(SET_DIR.get(job.group), 'results', `${job.id}.json`)
       : path.join(P.enumerated, `${job.id}.json`);
   }
 
@@ -337,8 +361,8 @@ function cmdRun() {
       if (count > 0 && fs.existsSync(j.tmp)) fs.renameSync(j.tmp, finalPath(j));
       const row = { id: j.id, group: j.group, status: 'ok', solutions: count, capped, exit: 0, secs, ts: nowIso(), run: runStamp };
       appendResult(row);
-      if (j.group === 'drafts') {
-        fs.appendFileSync(draftLog, JSON.stringify({ id: j.id, exit: 0, totalUniqueSolutions: count, hitMaxSolCap: capped, ts: new Date().toISOString() }) + '\n');
+      if (isSet(j.group)) {
+        fs.appendFileSync(path.join(SET_DIR.get(j.group), 'results-progress.ndjson'), JSON.stringify({ id: j.id, exit: 0, totalUniqueSolutions: count, hitMaxSolCap: capped, ts: new Date().toISOString() }) + '\n');
       }
       const s = G(j.group);
       s.done++; s.secs += secs; s.n++;
@@ -472,9 +496,9 @@ function render(s, clear) {
   L.push(`This run: solved ${s.run.solved}   failed ${s.run.failed}   capped ${s.run.capped}   abandoned ${s.run.abandoned}   ` +
     `rate ${s.ratePerHour == null ? '(measuring)' : `${s.ratePerHour.toLocaleString()} puzzles/hour`}   workers ${s.workers}`);
   L.push('');
-  L.push('Group        total      solved    waiting   failed   avg s   ETA (all workers)');
+  L.push('Group                 total      solved    waiting   failed   avg s   ETA (all workers)');
   for (const g of s.groups) {
-    L.push(`${(g.current ? '> ' : '  ') + g.group.padEnd(9)} ${String(g.total).padStart(7)} ${String(g.done).padStart(10)} ${String(g.waiting).padStart(10)} ` +
+    L.push(`${(g.current ? '> ' : '  ') + g.group.padEnd(18)} ${String(g.total).padStart(7)} ${String(g.done).padStart(10)} ${String(g.waiting).padStart(10)} ` +
       `${String(g.failed).padStart(8)} ${g.avgSecs == null ? '      ?' : g.avgSecs.toFixed(1).padStart(7)}   ${hhmm(g.etaMs)}`);
   }
   L.push('');
@@ -506,20 +530,18 @@ function cmdWatch() {
 function cmdStatus() {
   const queue = readJson(P.queue, { items: [] });
   const { latest, failures } = readResults();
-  const draftDone = fs.existsSync(path.join(DRAFTS, 'results'))
-    ? new Set(fs.readdirSync(path.join(DRAFTS, 'results')).filter((n) => n.endsWith('.json')).map((n) => n.slice(0, -5)))
-    : new Set();
+  const setResults = new Map(SETS.map(([g]) => [g, setDone(g)]));
   const rows = new Map();
   for (const [id, g] of queue.items) {
     if (!rows.has(g)) rows.set(g, { total: 0, done: 0, failed: 0, capped: 0 });
     const r = rows.get(g);
     r.total++;
-    if (latest.has(id) || (g === 'drafts' && draftDone.has(id))) { r.done++; if (latest.get(id)?.capped) r.capped++; }
+    if (latest.has(id) || (isSet(g) && setResults.get(g).has(id))) { r.done++; if (latest.get(id)?.capped) r.capped++; }
     else if ((failures.get(id) || 0) >= MAX_ATTEMPTS) r.failed++;
   }
-  console.log('group       total    solved   waiting   failed  capped');
+  console.log('group                 total    solved   waiting   failed  capped');
   for (const [g, r] of rows) {
-    console.log(`${g.padEnd(9)} ${String(r.total).padStart(7)} ${String(r.done).padStart(9)} ${String(r.total - r.done - r.failed).padStart(9)} ${String(r.failed).padStart(8)} ${String(r.capped).padStart(7)}`);
+    console.log(`${g.padEnd(18)} ${String(r.total).padStart(7)} ${String(r.done).padStart(9)} ${String(r.total - r.done - r.failed).padStart(9)} ${String(r.failed).padStart(8)} ${String(r.capped).padStart(7)}`);
   }
   const lock = runnerAlive();
   console.log(lock ? `runner running (pid ${lock.pid})` : 'runner not running');
@@ -543,10 +565,10 @@ function cmdExport() {
 
   const swapLines = [];
   const capped = [];
-  const drafts = [];
+  const candidates = [];
   let alreadySame = 0;
   for (const r of latest.values()) {
-    if (r.group === 'drafts') { drafts.push(`${r.id} ${r.solutions}${r.capped ? ' CAPPED' : ''}`); continue; }
+    if (isSet(r.group)) { candidates.push(`${r.group} ${r.id} ${r.solutions}${r.capped ? ' CAPPED' : ''}`); continue; }
     const prev = ledger.done[r.id];
     if (prev && prev.solutions === r.solutions) { alreadySame++; continue; }
     swapLines.push(`${r.id} ${r.solutions} 0`);
@@ -556,14 +578,14 @@ function cmdExport() {
   fs.writeFileSync(path.join(outDir, 'worker-nightly.txt'), swapLines.join('\n') + (swapLines.length ? '\n' : ''));
   fs.writeFileSync(path.join(outDir, 'capped.txt'), capped.join('\n') + (capped.length ? '\n' : ''));
   fs.writeFileSync(path.join(outDir, 'failed.txt'), failed.join('\n') + (failed.length ? '\n' : ''));
-  fs.writeFileSync(path.join(outDir, 'drafts.txt'), drafts.join('\n') + (drafts.length ? '\n' : ''));
+  fs.writeFileSync(path.join(outDir, 'candidates.txt'), candidates.join('\n') + (candidates.length ? '\n' : ''));
   const readme = [
     'Nightly solver results, ready to record in the old copy.',
     '',
     `worker-nightly.txt  ${swapLines.length} swap-named result(s) as "<id> <solutions> <exit>" (record-many format)`,
     `capped.txt          ${capped.length} result(s) that hit the 500000 solution cap (count is a lower bound)`,
     `failed.txt          ${failed.length} puzzle(s) that failed twice or timed out (not in worker-nightly.txt)`,
-    `drafts.txt          ${drafts.length} pair-swap draft result(s); full solutions are in ${DRAFTS_REL}/results/`,
+    `candidates.txt      ${candidates.length} candidate-set result(s) as "<set> <id> <solutions>"; full solutions are in ${CAND_REL}/<set folder>/results/`,
     '',
     'Counts use the catalog convention: a layout and its 180-degree turn count once. The old copy counted',
     'most non-square puzzles twice (it depended on the tiles in the bag), so many of these are half of what',

@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01580",
+ "name": "SW01580",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 2,
+  "QC": 2,
+  "RC": 4,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 2
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01580.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-AQQ",
+  "fromSolution": "solve-8",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

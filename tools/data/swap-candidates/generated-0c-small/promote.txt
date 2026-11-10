@@ -1,0 +1,1 @@
+# generated-0c-small: old-ledger puzzles identical to candidates here; the nightly import solves them in this set's place.

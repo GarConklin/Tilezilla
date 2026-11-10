@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW00743",
+ "name": "SW00743",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 2,
+  "ET": 1,
+  "HL": 2,
+  "LL": 2,
+  "QC": 1,
+  "SH": 1,
+  "UT": 5,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW00743.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-BLO",
+  "fromSolution": "solve-1",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

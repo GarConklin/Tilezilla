@@ -1,0 +1,2 @@
+# pasted-new-bags: puzzles to solve (queue-all.txt minus duplicates.json and 6x6). Written by dedupe-candidate-sets.js.
+5x6-0C-PB003

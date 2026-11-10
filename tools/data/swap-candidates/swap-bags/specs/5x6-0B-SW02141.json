@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0B-SW02141",
+ "name": "SW02141",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 4,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 3,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02141.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BYU",
+  "fromSolution": "solve-3",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

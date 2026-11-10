@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0A-SW02298",
+ "name": "SW02298",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 5,
+  "RC": 1,
+  "SH": 1,
+  "UT": 2,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0A-SW02298.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CRV",
+  "fromSolution": "solve-8",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

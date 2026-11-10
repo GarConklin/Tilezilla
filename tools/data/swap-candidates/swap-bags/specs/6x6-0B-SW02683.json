@@ -1,0 +1,29 @@
+{
+ "id": "6x6-0B-SW02683",
+ "name": "SW02683",
+ "board": {
+  "rows": 6,
+  "cols": 6
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 1,
+  "QC": 3,
+  "RC": 4,
+  "SH": 1,
+  "SS": 2,
+  "SZ": 1,
+  "UT": 4,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "6x6-0B-SW02683.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "6x6-0B-ABX",
+  "fromSolution": "solve-1",
+  "removed": "SS+SZ+VL",
+  "added": "QC+UT+VL"
+ }
+}

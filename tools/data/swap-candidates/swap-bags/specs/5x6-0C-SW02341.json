@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02341",
+ "name": "SW02341",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LC": 1,
+  "LL": 1,
+  "LR": 5,
+  "QS": 1,
+  "RC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "UT": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02341.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-CVI",
+  "fromSolution": "solve-5",
+  "removed": "VL+VL+VL",
+  "added": "LC+LL+SZ"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW02492",
+ "name": "SW02492",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LR": 2,
+  "QC": 1,
+  "RC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02492.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-AFJ",
+  "fromSolution": null,
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "id": "3x5-0C-AAT",
+ "name": "AAT",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "SH": 1,
+  "CQ": 1,
+  "RC": 1,
+  "UT": 2,
+  "ET": 1,
+  "DS": 1
+ },
+ "blockers": [
+  [
+   0,
+   4,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-AAT.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-AAT"
+}

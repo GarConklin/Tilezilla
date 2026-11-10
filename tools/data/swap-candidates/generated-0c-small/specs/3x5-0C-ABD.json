@@ -1,0 +1,28 @@
+{
+ "id": "3x5-0C-ABD",
+ "name": "ABD",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "UT": 2,
+  "SH": 1,
+  "ET": 1,
+  "LR": 1,
+  "LL": 1
+ },
+ "blockers": [
+  [
+   0,
+   4,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-ABD.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-ABD"
+}

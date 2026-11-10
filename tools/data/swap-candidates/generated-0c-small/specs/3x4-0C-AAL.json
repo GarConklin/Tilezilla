@@ -1,0 +1,22 @@
+{
+ "id": "3x4-0C-AAL",
+ "name": "AAL",
+ "board": {
+  "rows": 3,
+  "cols": 4
+ },
+ "tiles": {
+  "SH": 1,
+  "CQ": 1,
+  "ET": 1,
+  "UT": 1,
+  "SZ": 1,
+  "RC": 1
+ },
+ "blockers": [],
+ "solvesFile": "3x4-0C-AAL.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x4-0C-user/3x4-0C-AAM"
+}

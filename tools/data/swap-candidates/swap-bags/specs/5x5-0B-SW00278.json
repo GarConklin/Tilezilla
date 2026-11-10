@@ -1,0 +1,35 @@
+{
+ "id": "5x5-0B-SW00278",
+ "name": "SW00278",
+ "board": {
+  "rows": 5,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "SH": 1,
+  "SS": 1,
+  "SZ": 2,
+  "UT": 3,
+  "VL": 1
+ },
+ "blockers": [
+  [
+   0,
+   0,
+   "B1"
+  ]
+ ],
+ "solvesFile": "5x5-0B-SW00278.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x5-0B-AGC",
+  "fromSolution": "solve-3",
+  "removed": "QC+UT+VL",
+  "added": "SS+SZ+VL"
+ }
+}

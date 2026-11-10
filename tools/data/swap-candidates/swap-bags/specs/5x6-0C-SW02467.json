@@ -1,0 +1,32 @@
+{
+ "id": "5x6-0C-SW02467",
+ "name": "SW02467",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 2,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 2,
+  "LL": 2,
+  "RC": 1,
+  "SH": 1,
+  "SZ": 1,
+  "UT": 1,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02467.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ACP",
+  "fromSolution": null,
+  "removed": "LR+RC+SS",
+  "added": "LC+LL+SZ"
+ }
+}

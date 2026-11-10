@@ -1,0 +1,28 @@
+{
+ "id": "5x6-0B-SW02024",
+ "name": "SW02024",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 1,
+  "UT": 1,
+  "VL": 5
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02024.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BOJ",
+  "fromSolution": "solve-10",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01502",
+ "name": "SW01502",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 3,
+  "QC": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "UT": 1,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01502.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-APM",
+  "fromSolution": "solve-26",
+  "removed": "SS+SZ+VL",
+  "added": "LR+RC+SS"
+ }
+}

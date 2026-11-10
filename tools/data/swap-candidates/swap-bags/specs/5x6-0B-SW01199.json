@@ -1,0 +1,29 @@
+{
+ "id": "5x6-0B-SW01199",
+ "name": "SW01199",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "DB": 1,
+  "ET": 1,
+  "HL": 2,
+  "LL": 1,
+  "LR": 1,
+  "QC": 1,
+  "SH": 1,
+  "UT": 6,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW01199.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0A-DQJ",
+  "fromSolution": "solve-3",
+  "removed": "VL+VL+VL",
+  "added": "QC+UT+VL"
+ }
+}

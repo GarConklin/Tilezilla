@@ -1,0 +1,30 @@
+{
+ "id": "5x6-0C-SW01614",
+ "name": "SW01614",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LL": 1,
+  "LR": 3,
+  "QC": 1,
+  "QS": 1,
+  "RC": 2,
+  "SH": 1,
+  "SS": 2,
+  "UT": 2,
+  "VL": 1
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW01614.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-ARB",
+  "fromSolution": "solve-11",
+  "removed": "SS+SZ+VL",
+  "added": "LR+RC+SS"
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "id": "5x6-0B-SW02123",
+ "name": "SW02123",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "ET": 1,
+  "LR": 3,
+  "QC": 3,
+  "RC": 1,
+  "SH": 1,
+  "VL": 6
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0B-SW02123.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0B-BWI",
+  "fromSolution": "solve-14",
+  "removed": "SS+SZ+VL",
+  "added": "VL+VL+VL"
+ }
+}

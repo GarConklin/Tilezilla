@@ -1,0 +1,31 @@
+{
+ "id": "5x6-0C-SW02618",
+ "name": "SW02618",
+ "board": {
+  "rows": 6,
+  "cols": 5
+ },
+ "tiles": {
+  "CR": 1,
+  "DB": 1,
+  "DC": 1,
+  "ET": 1,
+  "HL": 1,
+  "LC": 1,
+  "LL": 1,
+  "RC": 1,
+  "SH": 1,
+  "UT": 3,
+  "VL": 3
+ },
+ "blockers": [],
+ "solvesFile": "5x6-0C-SW02618.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "_swap": {
+  "fromLevel": "5x6-0C-ANW",
+  "fromSolution": null,
+  "removed": "LR+RC+SS",
+  "added": "VL+VL+VL"
+ }
+}

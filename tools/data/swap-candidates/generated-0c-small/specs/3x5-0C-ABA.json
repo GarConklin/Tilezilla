@@ -1,0 +1,28 @@
+{
+ "id": "3x5-0C-ABA",
+ "name": "ABA",
+ "board": {
+  "rows": 3,
+  "cols": 5
+ },
+ "tiles": {
+  "SH": 1,
+  "CQ": 1,
+  "CR": 1,
+  "ET": 1,
+  "LL": 1,
+  "LR": 2
+ },
+ "blockers": [
+  [
+   2,
+   4,
+   "B1"
+  ]
+ ],
+ "solvesFile": "3x5-0C-ABA.json",
+ "pathMode": "single",
+ "pathCount": 1,
+ "totalUniqueSolutions": 1,
+ "_source": "3x5-0C-db-to-cr/3x5-0C-ABA"
+}
