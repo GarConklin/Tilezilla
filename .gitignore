@@ -26,6 +26,10 @@ tools/data/solver-runs/*
 !tools/data/solver-runs/.gitkeep
 !tools/data/solver-runs/README.txt
 
+# Candidate solve output (run-candidate-queue.ps1, run-nightly-solves.ps1)
+tools/data/swap-candidates/*/results/
+tools/data/swap-candidates/*/results-progress.ndjson
+
 # Production game bundles (built by scripts/build-game-bundle.ps1)
 deploy-export/
 
