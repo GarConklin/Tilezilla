@@ -1299,7 +1299,7 @@ def validate_random_popup_layout(payload: object) -> str | None:
 
 RECORDS_ITEM_KEYS = (
     "tabLeaderboard", "tabAdventure", "tabPersonalBest",
-    "fieldDailyPuzzleId", "fieldDailyDate", "fieldDailyTime",
+    "fieldDailyPuzzleId", "fieldDailyDate", "fieldDailyTime", "fieldMovesHeader",
     "paneTop", "paneBl", "paneBr",
     "listTop", "scrollerTop", "listBl", "scrollerBl", "listBr", "scrollerBr",
     "listRow", "listRowTop", "listRowBl", "listRowBr",

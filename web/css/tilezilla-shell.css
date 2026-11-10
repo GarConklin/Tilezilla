@@ -9551,6 +9551,22 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   z-index: 5;
 }
 
+.tz-records-field--moves-header {
+  left: calc(var(--tz-records-field-moves-header-x, 75.4) * 1% + var(--tz-records-field-moves-header-nudge-x, 0px));
+  top: calc(var(--tz-records-field-moves-header-y, 12.4) * 1% + var(--tz-records-field-moves-header-nudge-y, 0px));
+  width: calc(var(--tz-records-field-moves-header-w, 8.4) * 1%);
+  height: calc(var(--tz-records-field-moves-header-h, 2.3) * 1%);
+  font-size: var(--tz-records-field-moves-header-font-size, 2.61cqi);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  color: #2a1e12;
+  text-shadow: none;
+  justify-content: center;
+  text-align: center;
+  overflow: visible;
+  z-index: 5;
+}
+
 .tz-records-field--daily-date span[data-records-slot],
 .tz-records-field--daily-puzzle-id span[data-records-slot],
 .tz-records-field--daily-time span[data-records-slot] {
@@ -9871,8 +9887,13 @@ html.tz-phone-preview .tz-tileset-picker-frame {
   white-space: nowrap;
 }
 
+/* Time column ends under the painted TIME label; moves sit under the MOVES label. */
 .tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--pane-top .tz-records-list__row {
-  grid-template-columns: 14% minmax(0, 1fr) 28% 16%;
+  grid-template-columns: 14% minmax(0, 1fr) 22% 12.3%;
+}
+
+.tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--pane-top .tz-records-list__cell--moves {
+  text-align: center;
 }
 
 .tz-records-list__cell--size {
@@ -9917,7 +9938,8 @@ html.tz-phone-preview .tz-tileset-picker-frame {
 }
 
 .tz-records-panel[data-records-mode="leaderboard"] .tz-records-field--daily-time,
-.tz-records-panel[data-records-mode="adventure"] .tz-records-field--daily-time {
+.tz-records-panel[data-records-mode="adventure"] .tz-records-field--daily-time,
+.tz-records-panel:not([data-records-mode="leaderboard"]) .tz-records-field--moves-header {
   display: none !important;
 }
 

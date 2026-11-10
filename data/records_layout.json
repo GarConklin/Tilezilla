@@ -77,6 +77,15 @@
       "nudgeX": 0,
       "nudgeY": 0
     },
+    "fieldMovesHeader": {
+      "x": 75.4,
+      "y": 12.4,
+      "w": 8.4,
+      "h": 2.3,
+      "fontScale": 1,
+      "nudgeX": 0,
+      "nudgeY": 0
+    },
     "paneTop": {
       "x": 9.2,
       "y": 11.4,
@@ -265,7 +274,7 @@
       "paneTop": {
         "x": 9.2,
         "y": 11.4,
-        "w": 71.7,
+        "w": 76,
         "h": 37.7,
         "nudgeX": 0,
         "nudgeY": 0
@@ -289,7 +298,7 @@
       "listTop": {
         "x": 3,
         "y": 12,
-        "w": 92,
+        "w": 97,
         "h": 84,
         "nudgeX": 0,
         "nudgeY": 0
