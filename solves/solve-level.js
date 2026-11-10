@@ -23,8 +23,13 @@
  * Docker (from directory with docker-compose.yml; . is mounted at /app):
  *   docker compose run --rm web node solves/solve-level.js 5x6-0A-AAA --json-summary --stream-solves-dir data/solver-runs/my-run
  *
- * Full sweep (no seed cap): omit --max-seeds (defaults to all SH/ET pairs).
- * Skip seeds where SH/ET fail overlap/kiss/viability (see solves/is-viable-seed.js):
+ * Full sweep (no seed cap): omit --max-seeds (defaults to every seed).
+ * Seeds (--seed-mode): "sh" (default) places only SH and lets the DFS place ET as the last snake tile;
+ *   SH seeds are folded under a 180° board turn when the blockers are 180°-symmetric (--no-seed-symmetry
+ *   turns that off). "pairs" is the legacy SH×ET seeding. Per-seed iteration cap is unlimited in sh mode
+ *   unless --max-iters-seed is given. --progress-iters N prints a progress line every N DFS steps.
+ * Skip seeds that cannot start a snake (pairs: SH/ET overlap/kiss/viability, see solves/is-viable-seed.js;
+ *   sh: SH's live edge must lead onto an in-bounds, unblocked cell):
  *   node solves/solve-level.js 5x6-0A-BEF --viable-seeds-only --only-viable-seed-index 42 --json-summary
  * Write full solve document (when totalUniqueSolutions > 0) to solves/<solvesFile> or a path:
  *   node solves/solve-level.js 5x6-0A-BEF --viable-seeds-only --write-solves
@@ -223,6 +228,8 @@ function makeSolver(tilesJson) {
     );
     const onUniqueSolution =
       typeof opts.onUniqueSolution === 'function' ? opts.onUniqueSolution : null;
+    const progressIters = opts.progressIters > 0 ? opts.progressIters : 0;
+    const onProgress = progressIters && typeof opts.onProgress === 'function' ? opts.onProgress : null;
     let stopSearch = false;
     const board = [];
     for (let r = 0; r < config.rows; r++) {
@@ -513,10 +520,41 @@ function makeSolver(tilesJson) {
                 }
               }
             }
+          } else if (!reachableFitsRemaining(tip)) {
+            unplace();
+            return true;
           }
         }
       }
       unplace();
+      return false;
+    }
+
+    /** ET not placed yet (SH-only seeds): every unplaced snake tile must fit in the cells the tip can still reach. */
+    function reachableFitsRemaining(tip) {
+      let need = 0;
+      for (const k of Object.keys(remaining)) {
+        if (k.startsWith('_') || passiveTiles.has(k) || !(remaining[k] > 0)) continue;
+        need += remaining[k] * targetCells(0, 0, 0, k).length;
+      }
+      if (need === 0) return true;
+      const key = (r, c) => `${r},${c}`;
+      const vis = new Set([key(tip.needR, tip.needC)]);
+      const q = [[tip.needR, tip.needC]];
+      let empty = 0;
+      while (q.length > 0) {
+        const cur = q.pop();
+        if (board[cur[0]][cur[1]] === null && ++empty >= need) return true;
+        for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+          const nr = cur[0] + dr;
+          const nc = cur[1] + dc;
+          if (!inBounds(nr, nc) || vis.has(key(nr, nc))) continue;
+          if (board[nr][nc] === null || isTwoSegmentCell(board[nr][nc])) {
+            vis.add(key(nr, nc));
+            q.push([nr, nc]);
+          }
+        }
+      }
       return false;
     }
 
@@ -629,6 +667,7 @@ function makeSolver(tilesJson) {
 
     function dfs() {
       iters++;
+      if (onProgress && iters % progressIters === 0) onProgress(iters);
       if (stopSearch || iters > maxIters || (!onUniqueSolution && solutions.length >= maxSol)) return;
       let tl = 0;
       let passiveLeft = 0;
@@ -745,6 +784,61 @@ function allSeeds(rows, cols, targetCellsFn, inBoundsFn, blockedSet) {
   return seeds;
 }
 
+/** SH-only seeds (ET is left in the bag and placed by the DFS as the last snake tile). */
+function shSeeds(rows, cols, targetCellsFn, inBoundsFn, blockedSet) {
+  const seeds = [];
+  for (let sr = 0; sr < rows; sr++) {
+    for (let sc = 0; sc < cols; sc++) {
+      for (const sd of [0, 90, 180, 270]) {
+        const shCells = targetCellsFn(sr, sc, sd, 'SH');
+        if (!shCells.every((cell) => inBoundsFn(cell[0], cell[1]))) continue;
+        if (cellsHitBlockedSet(shCells, blockedSet)) continue;
+        seeds.push([{ tile: 'SH', r: sr, c: sc, deg: sd }]);
+      }
+    }
+  }
+  return seeds;
+}
+
+/** SH's live edge leads onto an in-bounds cell that is not a catalog blocker. */
+function shSeedHasOpenTip(sh, rows, cols, blockedSet, tilesJson, targetCellsFn) {
+  const cells = targetCellsFn(sh.r, sh.c, sh.deg, 'SH');
+  const rot = tilesJson.SH && tilesJson.SH[rotName(sh.deg)];
+  if (!rot) return false;
+  for (let i = 0; i < cells.length; i++) {
+    for (const e of rot[i === 0 ? 'A' : 'B'] || []) {
+      const nr = cells[i][0] + (e === 'N' ? -1 : e === 'S' ? 1 : 0);
+      const nc = cells[i][1] + (e === 'W' ? -1 : e === 'E' ? 1 : 0);
+      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+      if (blockedSet.has(`${nr},${nc}`)) continue;
+      if (cells.some((cell) => cell[0] === nr && cell[1] === nc)) continue;
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Blocked cells map onto blocked cells under a 180° board turn. */
+function blockersSymmetric180(blockedSet, rows, cols) {
+  for (const k of blockedSet) {
+    const [r, c] = k.split(',').map(Number);
+    if (!blockedSet.has(`${rows - 1 - r},${cols - 1 - c}`)) return false;
+  }
+  return true;
+}
+
+/**
+ * Keep one SH seed per 180° pair. Sound only when the blockers are 180°-symmetric: the turned copy of any
+ * layout is then also a layout, and uniqueLayoutKey folds 180° on every board shape.
+ */
+function foldSeedsUnder180(seeds, rows, cols) {
+  const ord = (p) => (p.r * cols + p.c) * 4 + (((p.deg % 360) + 360) % 360) / 90;
+  return seeds.filter(([sh]) => {
+    const turned = { r: rows - 1 - sh.r, c: cols - 1 - sh.c, deg: (sh.deg + 180) % 360 };
+    return ord(sh) <= ord(turned);
+  });
+}
+
 function canonicalSig(placements) {
   const norm = placements.map((p) => ({
     tile: p.tile,
@@ -840,6 +934,12 @@ function parseArgs(argv) {
     maxSol: 500,
     maxSeeds: Infinity,
     maxItersPerSeed: 80_000_000,
+    maxItersPerSeedSet: false,
+    /** 'sh' (default): seed SH only; 'pairs': legacy SH×ET seeds. */
+    seedMode: 'sh',
+    seedSymmetry: true,
+    /** In-seed progress line every N DFS steps (0 = off). */
+    progressIters: 0,
     pruning: 'full',
     streamSolvesOut: null,
     streamSolvesDir: null,
@@ -847,7 +947,7 @@ function parseArgs(argv) {
     progressEvery: 500,
     progressOnJson: false,
     viableSeedsOnly: false,
-    /** If set after --viable-seeds-only, enumerate only that SH/ET seed (0-based in viable list). */
+    /** If set after --viable-seeds-only, enumerate only that seed (0-based in the viable list of the seed mode). */
     onlyViableSeedIndex: null,
     /** null | true (default solves/<level.solvesFile>) | string path */
     writeSolves: null,
@@ -868,8 +968,16 @@ function parseArgs(argv) {
       if (pair.length === 2) flags.equate[pair[0].trim()] = pair[1].trim();
     } else if (args[i] === '--max-sol' && args[i + 1]) flags.maxSol = parseInt(args[++i], 10);
     else if (args[i] === '--max-seeds' && args[i + 1]) flags.maxSeeds = parseInt(args[++i], 10);
-    else if (args[i] === '--max-iters-seed' && args[i + 1])
+    else if (args[i] === '--max-iters-seed' && args[i + 1]) {
       flags.maxItersPerSeed = parseInt(args[++i], 10);
+      flags.maxItersPerSeedSet = true;
+    } else if (args[i] === '--seed-mode' && args[i + 1]) {
+      const m = args[++i];
+      if (m !== 'sh' && m !== 'pairs') throw new Error(`[solve-level] --seed-mode must be sh or pairs (got ${m})`);
+      flags.seedMode = m;
+    } else if (args[i] === '--no-seed-symmetry') flags.seedSymmetry = false;
+    else if (args[i] === '--progress-iters' && args[i + 1])
+      flags.progressIters = Math.max(0, parseInt(args[++i], 10) || 0);
     else if (args[i] === '--no-prune') flags.pruning = 'none';
     else if (args[i] === '--prune-isolated') flags.pruning = 'isolated';
     else if (args[i] === '--stream-solves-out' && args[i + 1]) flags.streamSolvesOut = args[++i];
@@ -942,7 +1050,7 @@ function buildPruneFlags(pruning) {
 }
 
 /**
- * Exhaustive SH×ET seeds × DFS; merges unique layouts (C4 on squares, half-turn on rectangles).
+ * Exhaustive seeds (SH-only or SH×ET) × DFS; merges unique layouts (C4 on squares, half-turn on rectangles).
  */
 function safeLevelDirName(labelTag) {
   return String(labelTag).replace(/[^a-zA-Z0-9._-]+/g, '_').replace(/^\.+/, '_') || 'level';
@@ -1082,15 +1190,24 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
   }
 
   const pruneFlags = buildPruneFlags(flags.pruning);
-  let seeds = allSeeds(rows, cols, targetCells, inBounds, blockedSet);
+  const shOnly = flags.seedMode !== 'pairs';
+  let seeds = shOnly
+    ? shSeeds(rows, cols, targetCells, inBounds, blockedSet)
+    : allSeeds(rows, cols, targetCells, inBounds, blockedSet);
   const seedsAllDomino = seeds.length;
+  const seedSymmetry180 = shOnly && flags.seedSymmetry && blockersSymmetric180(blockedSet, rows, cols);
+  if (seedSymmetry180) seeds = foldSeedsUnder180(seeds, rows, cols);
   if (flags.viableSeedsOnly) {
-    seeds = seeds.filter((pair) => {
-      const sh = pair[0];
-      const et = pair[1];
-      return isViableSeed({ r: sh.r, c: sh.c, deg: sh.deg }, { r: et.r, c: et.c, deg: et.deg }, rows, cols, tilesJson);
-    });
+    seeds = shOnly
+      ? seeds.filter(([sh]) => shSeedHasOpenTip(sh, rows, cols, blockedSet, tilesJson, targetCells))
+      : seeds.filter((pair) => {
+          const sh = pair[0];
+          const et = pair[1];
+          return isViableSeed({ r: sh.r, c: sh.c, deg: sh.deg }, { r: et.r, c: et.c, deg: et.deg }, rows, cols, tilesJson);
+        });
   }
+  const maxItersPerSeed = shOnly && !flags.maxItersPerSeedSet ? Infinity : flags.maxItersPerSeed;
+  let seedsHitIterCap = 0;
   const viableSeedsAfterFilter = seeds.length;
   if (flags.onlyViableSeedIndex != null) {
     if (!flags.viableSeedsOnly) {
@@ -1109,7 +1226,7 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
   if (!flags.jsonSummary) {
     console.error(`Level ${labelTag}  board ${rows}x${cols}  tiles from level JSON only  tileset data/tiles/tiles-live-edges.json`);
     console.error(
-      `SH/ET seeds: ${seedLimit}/${seeds.length}${flags.viableSeedsOnly ? ` (from ${seedsAllDomino} domino pairs)` : ''}  pruning: ${flags.pruning}`
+      `${shOnly ? 'SH' : 'SH/ET'} seeds: ${seedLimit}/${seeds.length}${flags.viableSeedsOnly || seedSymmetry180 ? ` (from ${seedsAllDomino} ${shOnly ? 'SH placements' : 'domino pairs'}${seedSymmetry180 ? ', 180° folded' : ''})` : ''}  seed-mode: ${flags.seedMode}  pruning: ${flags.pruning}`
     );
   }
 
@@ -1137,7 +1254,15 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
           return uniqueCount >= flags.maxSol;
         },
       }
-    : undefined;
+    : {};
+  const showProgress = !flags.jsonSummary || flags.progressOnJson;
+  const writeProgress = (line) => {
+    try {
+      fs.writeSync(2, line);
+    } catch {
+      console.error(line.trimEnd());
+    }
+  };
 
   try {
     for (let si = 0; si < seedLimit; si++) {
@@ -1149,11 +1274,19 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
         levelTiles,
         remainingSol,
         pruneFlags,
-        flags.maxItersPerSeed,
+        maxItersPerSeed,
         blockerCells,
-        solveOpts
+        {
+          ...solveOpts,
+          progressIters: showProgress ? flags.progressIters : 0,
+          onProgress: (it) =>
+            writeProgress(
+              ` Progress: seed ${si + 1}/${seedLimit} iters ${it}, unique layouts ${useStreamLowMem ? uniqueCount : allSolutions.length}, total iters ${totalIters + it}\n`
+            ),
+        }
       );
       totalIters += res.iters;
+      if (res.iters > maxItersPerSeed) seedsHitIterCap++;
       if (!useStreamLowMem) {
         for (const sol of res.solutions) {
           const layoutKey = uniqueLayoutKey(sol, rows, cols, tilesJson);
@@ -1185,13 +1318,8 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
       }
       const countNow = useStreamLowMem ? uniqueCount : allSolutions.length;
       if (countNow >= flags.maxSol) break;
-      if ((!flags.jsonSummary || flags.progressOnJson) && (si + 1) % flags.progressEvery === 0) {
-        const progressLine = ` Progress: seeds ${si + 1}/${seedLimit}, unique layouts ${countNow}, iters ${totalIters}\n`;
-        try {
-          fs.writeSync(2, progressLine);
-        } catch {
-          console.error(progressLine.trimEnd());
-        }
+      if (showProgress && (si + 1) % flags.progressEvery === 0) {
+        writeProgress(` Progress: seeds ${si + 1}/${seedLimit}, unique layouts ${countNow}, iters ${totalIters}\n`);
       }
     }
   } finally {
@@ -1215,6 +1343,9 @@ function performEnumeration(level, labelTag, flags, tilesJson, solve, targetCell
       seedsTotal: flags.onlyViableSeedIndex != null ? viableSeedsAfterFilter : seeds.length,
       seedsUsed: seedLimit,
       seedsDominoNonOverlap: seedsAllDomino,
+      seedMode: flags.seedMode,
+      ...(seedSymmetry180 ? { seedSymmetry180: true } : {}),
+      ...(seedsHitIterCap ? { seedsHitIterCap } : {}),
       ...(flags.viableSeedsOnly ? { viableSeedsOnly: true } : {}),
       ...(flags.onlyViableSeedIndex != null
         ? { onlyViableSeedIndex: flags.onlyViableSeedIndex, viableSeedsAfterFilter }
