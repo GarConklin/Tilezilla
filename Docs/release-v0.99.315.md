@@ -35,7 +35,17 @@ docker compose -f docker-compose.production.yml --env-file .env.production exec 
 docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
   sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
   < scripts/sql/update-missing-solve-counts-2026-11-11.sql
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < scripts/sql/add-missing-catalog-levels-2026-11-11.sql
+docker compose -f docker-compose.production.yml --env-file .env.production exec -T mysql \
+  sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < scripts/sql/check-missing-catalog-levels-2026-11-11.sql
 ```
+
+`add-missing-catalog-levels-2026-11-11.sql` adds the 185 catalog levels that were in the bucket files but not in
+`data/levels/levels.json` (172 `5x6-0B` DNR–DUG, `3x4-0C` AAD/AAF, `3x5-1A` AAA/AAB, `3x5-1C` AAA–AAC,
+`6x6-0B` AAC + ADT–ADX), so they had no `levels` row. The check should print 185 levels, 4153 solutions.
 
 ## Rollback
 
